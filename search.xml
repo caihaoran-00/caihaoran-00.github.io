@@ -1,6 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Hexo主题配置及美化之Next</title>
+    <url>/2025/01/14/Hexo%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%BE%8E%E5%8C%96%E4%B9%8BNext/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面介绍了Hexo + Github Pages环境的搭建和简单的走了一遍总体发布流程，本文介绍</p>
+<ul>
+<li>使用<a href="https://github.com/theme-next/hexo-theme-next">Next</a>主题进行页面美化</li>
+<li>对站点配置文件（blog&#x2F;_config.yml）和主题配置文件（blog&#x2F;themes&#x2F;next&#x2F;_config.yml）的部分配置进行使用和介绍</li>
+</ul>
+<p>关于markdown文件的撰写，下次文章介绍。</p>
+<hr>
+<span id="more"></span>
+
+<h3 id="1-安装Next主题"><a href="#1-安装Next主题" class="headerlink" title="1.安装Next主题"></a>1.安装Next主题</h3><ul>
+<li><p>与上文的yilia主题一样，在<code>blog</code>目录下运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开<code>blog/_config.yml</code>文件，拉到倒数第二项的theme配置部分，修改如下：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">theme: <span class="title">next</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>（可选）此时即可本地运行看下效果：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开<code>blog/themes/next/_config.yml</code>，搜索<code>scheme</code>，配置如下：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"># Schemes</span><br><span class="line">#scheme: Muse</span><br><span class="line">#scheme: Mist</span><br><span class="line">#scheme: Pisces</span><br><span class="line"><span class="function">scheme: <span class="title">Gemini</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>本地看下效果：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h2 id="2-页面美化"><a href="#2-页面美化" class="headerlink" title="2.页面美化"></a>2.页面美化</h2><h3 id="1-站点title"><a href="#1-站点title" class="headerlink" title="1.站点title"></a>1.站点title</h3><p>打开<code>blog/_config.yml</code>文件，开头部分：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"># Site</span><br><span class="line"><span class="function">title: <span class="title">Chr</span>&#x27;<span class="title">s</span> <span class="title">Blog</span></span></span><br><span class="line"><span class="function"><span class="title">subtitle</span>: &#x27;<span class="title">Record</span> <span class="title">and</span> <span class="title">Share</span>&#x27;</span></span><br><span class="line"><span class="function"><span class="title">description</span>: &#x27;<span class="title">Welcome</span> <span class="title">to</span> <span class="title">my</span> <span class="title">little</span> <span class="title">world</span>&#x27;</span></span><br><span class="line"><span class="function"><span class="title">keywords</span>: <span class="title">Hexo</span>,<span class="title">langgraph</span>,<span class="title">ASR</span>,<span class="title">LLM</span>,<span class="title">TTS</span></span></span><br><span class="line"><span class="function"><span class="title">author</span>: <span class="title">Chr</span></span></span><br><span class="line"><span class="function"><span class="title">language</span>: <span class="title">zh</span>-<span class="title">CN</span></span></span><br><span class="line"><span class="function"><span class="title">timezone</span>: &#x27;<span class="title">Asia</span>/<span class="title">Shanghai</span>&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-导航栏"><a href="#2-导航栏" class="headerlink" title="2.导航栏"></a>2.导航栏</h3><p>打开<code>blog/themes/next/_config.yml</code>，搜索<code>menu</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">menu:</span></span><br><span class="line"><span class="function">  <span class="title">home</span>: / || <span class="title">fa</span> <span class="title">fa</span>-<span class="title">home</span></span></span><br><span class="line"><span class="function">  <span class="title">about</span>: /<span class="title">about</span>/ || <span class="title">fa</span> <span class="title">fa</span>-<span class="title">user</span></span></span><br><span class="line"><span class="function">  <span class="title">tags</span>: /<span class="title">tags</span>/ || <span class="title">fa</span> <span class="title">fa</span>-<span class="title">tags</span></span></span><br><span class="line"><span class="function">  <span class="title">categories</span>: /<span class="title">categories</span>/ || <span class="title">fa</span> <span class="title">fa</span>-<span class="title">th</span></span></span><br><span class="line"><span class="function">  <span class="title">archives</span>: /<span class="title">archives</span>/ || <span class="title">fa</span> <span class="title">fa</span>-<span class="title">archive</span></span></span><br><span class="line"><span class="function">  #<span class="title">schedule</span>: /<span class="title">schedule</span>/ || <span class="title">fa</span> <span class="title">fa</span>-<span class="title">calendar</span></span></span><br><span class="line"><span class="function">  #<span class="title">sitemap</span>: /<span class="title">sitemap.xml</span> || <span class="title">fa</span> <span class="title">fa</span>-<span class="title">sitemap</span></span></span><br><span class="line"><span class="function">  #<span class="title">commonweal</span>: /404/ || <span class="title">fa</span> <span class="title">fa</span>-<span class="title">heartbeat</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-网页底部powered-By-Hexo"><a href="#3-网页底部powered-By-Hexo" class="headerlink" title="3.网页底部powered By Hexo"></a>3.网页底部powered By Hexo</h3><p>打开<code>blog/themes/next/_config.yml</code>，搜索<code>powered</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"># Powered by Hexo &amp; NexT</span><br><span class="line"><span class="function">  powered: <span class="title">false</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-代码高亮"><a href="#4-代码高亮" class="headerlink" title="4.代码高亮"></a>4.代码高亮</h3><p>打开<code>blog/_config.yml</code>文件，搜索<code>highlight</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">highlight:</span></span><br><span class="line"><span class="function">  <span class="title">enable</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  <span class="title">line_number</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  <span class="title">auto_detect</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  <span class="title">tab_replace</span>: &#x27;&#x27;</span></span><br><span class="line"><span class="function">  <span class="title">wrap</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  <span class="title">hljs</span>: <span class="title">false</span></span></span><br><span class="line"><span class="function"><span class="title">prismjs</span>:</span></span><br><span class="line"><span class="function">  <span class="title">preprocess</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  <span class="title">line_number</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  <span class="title">tab_replace</span>: &#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-代码段一键复制"><a href="#5-代码段一键复制" class="headerlink" title="5.代码段一键复制"></a>5.代码段一键复制</h3><p>打开<code>blog/themes/next/_config.yml</code>，搜索<code>codeblock</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">codeblock:</span></span><br><span class="line"><span class="function">  # <span class="title">Code</span> <span class="title">Highlight</span> <span class="title">theme</span></span></span><br><span class="line"><span class="function">  # <span class="title">All</span> <span class="title">available</span> <span class="title">themes</span>: <span class="title">https</span>://<span class="title">theme</span>-<span class="title">next.js.org</span>/<span class="title">highlight</span>/</span></span><br><span class="line"><span class="function">  <span class="title">theme</span>:</span></span><br><span class="line"><span class="function">    <span class="title">light</span>: <span class="title">github</span>-<span class="title">dark</span></span></span><br><span class="line"><span class="function">    <span class="title">dark</span>: <span class="title">github</span>-<span class="title">dark</span></span></span><br><span class="line"><span class="function">  <span class="title">prism</span>:</span></span><br><span class="line"><span class="function">    <span class="title">light</span>: <span class="title">prism</span></span></span><br><span class="line"><span class="function">    <span class="title">dark</span>: <span class="title">prism</span>-<span class="title">dark</span></span></span><br><span class="line"><span class="function">  # <span class="title">Add</span> <span class="title">copy</span> <span class="title">button</span> <span class="title">on</span> <span class="title">codeblock</span></span></span><br><span class="line"><span class="function">  <span class="title">copy_button</span>:</span></span><br><span class="line"><span class="function">    <span class="title">enable</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">    # <span class="title">Available</span> <span class="title">values</span>: <span class="title">default</span> | <span class="title">flat</span> | <span class="title">mac</span></span></span><br><span class="line"><span class="function">    <span class="title">style</span>: <span class="title">mac</span></span></span><br><span class="line"><span class="function">  # <span class="title">Fold</span> <span class="title">code</span> <span class="title">block</span></span></span><br><span class="line"><span class="function">  <span class="title">fold</span>:</span></span><br><span class="line"><span class="function">    <span class="title">enable</span>: <span class="title">false</span></span></span><br><span class="line"><span class="function">    <span class="title">height</span>: 500</span></span><br></pre></td></tr></table></figure>
+
+<p>可在<a href="https://theme-next.js.org/highlight/">这里</a>查看代码高亮主题，选择心仪主题。</p>
+<h3 id="6-显示浏览进度"><a href="#6-显示浏览进度" class="headerlink" title="6.显示浏览进度"></a>6.显示浏览进度</h3><p>打开<code>blog/themes/next/_config.yml</code>，搜索<code>back2top</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">back2top:</span></span><br><span class="line"><span class="function">  <span class="title">enable</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  # <span class="title">Back</span> <span class="title">to</span> <span class="title">top</span> <span class="title">in</span> <span class="title">sidebar</span>.</span></span><br><span class="line"><span class="function">  <span class="title">sidebar</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  # <span class="title">Scroll</span> <span class="title">percent</span> <span class="title">label</span> <span class="title">in</span> <span class="title">b2t</span> <span class="title">button</span>.</span></span><br><span class="line"><span class="function">  <span class="title">scrollpercent</span>: <span class="title">true</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="7-本地搜索"><a href="#7-本地搜索" class="headerlink" title="7.本地搜索"></a>7.本地搜索</h3><ul>
+<li><p>安装<code>hexo-generator-searchdb</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">npm install hexo-generator-searchdb --save</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开<code>blog/_config.yml</code>文件，添加以下代码到末尾：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">search:</span></span><br><span class="line"><span class="function"><span class="title">path</span>: <span class="title">search.xml</span></span></span><br><span class="line"><span class="function"><span class="title">field</span>: <span class="title">post</span></span></span><br><span class="line"><span class="function"><span class="title">format</span>: <span class="title">html</span></span></span><br><span class="line"><span class="function"><span class="title">limit</span>: 10000</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开<code>blog/themes/next/_config.yml</code>，搜索<code>local_search</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">local_search:</span></span><br><span class="line"><span class="function">  <span class="title">enable</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  # <span class="title">Show</span> <span class="title">top</span> <span class="title">n</span> <span class="title">results</span> <span class="title">per</span> <span class="title">article</span>, <span class="title">show</span> <span class="title">all</span> <span class="title">results</span> <span class="title">by</span> <span class="title">setting</span> <span class="title">to</span> -1</span></span><br><span class="line"><span class="function">  <span class="title">top_n_per_article</span>: 1</span></span><br><span class="line"><span class="function">  # <span class="title">Unescape</span> <span class="title">html</span> <span class="title">strings</span> <span class="title">to</span> <span class="title">the</span> <span class="title">readable</span> <span class="title">one</span>.</span></span><br><span class="line"><span class="function">  <span class="title">unescape</span>: <span class="title">false</span></span></span><br><span class="line"><span class="function">  # <span class="title">Preload</span> <span class="title">the</span> <span class="title">search</span> <span class="title">data</span> <span class="title">when</span> <span class="title">the</span> <span class="title">page</span> <span class="title">loads</span>.</span></span><br><span class="line"><span class="function">  <span class="title">preload</span>: <span class="title">false</span></span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="8-文章字数和阅读时长"><a href="#8-文章字数和阅读时长" class="headerlink" title="8.文章字数和阅读时长"></a>8.文章字数和阅读时长</h3><p>打开blog&#x2F;_config.yml文件，拉到最后的deploy配置部分，修改如下：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/username/username.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>repo填写你刚才创建的GitHub仓库地址</li>
+<li>如果你的仓库主分支是master，将branch改为master。</li>
+</ul>
+<h3 id="4-首次部署"><a href="#4-首次部署" class="headerlink" title="4.首次部署"></a>4.首次部署</h3><p>运行以下命令，将博客部署到GitHub Pages:</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>即可打开<code>https://username.github.io</code>查看你的博客。</p>
+<hr>
+<h2 id="4-自定义主题"><a href="#4-自定义主题" class="headerlink" title="4.自定义主题"></a>4.自定义主题</h2><h3 id="1-选择主题"><a href="#1-选择主题" class="headerlink" title="1.选择主题"></a>1.选择主题</h3><ul>
+<li><p>以<a href="https://github.com/litten/hexo-theme-yilia">hexo-theme-yilia</a>为例，在blog文件夹下运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开blog&#x2F;_config.yml文件，拉到倒数第二项的theme配置部分，修改如下：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">theme: <span class="title">yilia</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>（可选）本地预览，运行</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>部署到GitHub Pages:</p>
+<ul>
+<li><p>如果运行了本地预览，仅需Ctrl + C 结束掉本地预览，再运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>若未运行本地预览，需运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="5-写博客和更新"><a href="#5-写博客和更新" class="headerlink" title="5.写博客和更新"></a>5.写博客和更新</h2><h3 id="1-新建文章"><a href="#1-新建文章" class="headerlink" title="1.新建文章"></a>1.新建文章</h3><p>在blog目录下运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo new &quot;你的文章标题&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这会在<code>source/_posts</code> 文件夹下生成一个 <code>你的文章标题.md</code> 文件，你可以用任何文本编辑器编辑。</p>
+<h3 id="2-本地预览"><a href="#2-本地预览" class="headerlink" title="2.本地预览"></a>2.本地预览</h3><p>运行以下命令本地查看效果：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-发布更新到GitHub-Pages"><a href="#3-发布更新到GitHub-Pages" class="headerlink" title="3.发布更新到GitHub Pages"></a>3.发布更新到GitHub Pages</h3><p>每次修改或新增内容后运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Next</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2025/01/13/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
@@ -27,15 +134,15 @@
 <li><p>安装完成后，验证是否成功：</p>
 <figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure></li>
 </ul>
+<span id="more"></span>
+
 <h3 id="2-安装Git"><a href="#2-安装Git" class="headerlink" title="2.安装Git"></a>2.安装Git</h3><ul>
 <li><p>下载并安装Git</p>
 </li>
 <li><p>验证安装是否成功：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git --version</span><br></pre></td></tr></table></figure>
-
-<hr>
-</li>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git --version</span><br></pre></td></tr></table></figure></li>
 </ul>
+<hr>
 <h2 id="2-初始化Hexo博客"><a href="#2-初始化Hexo博客" class="headerlink" title="2.初始化Hexo博客"></a>2.初始化Hexo博客</h2><h3 id="1-安装Hexo"><a href="#1-安装Hexo" class="headerlink" title="1.安装Hexo"></a>1.安装Hexo</h3><p>终端运行：</p>
 <figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
 
@@ -104,5 +211,11 @@
 <figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure></li>
 </ul>
 ]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
   </entry>
 </search>
