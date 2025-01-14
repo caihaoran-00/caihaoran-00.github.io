@@ -20,7 +20,7 @@
   </entry>
   <entry>
     <title>Hexo主题配置及美化之Next</title>
-    <url>/2025/01/14/win10Hex+githubpages0%E6%88%90%E6%9C%AC%E6%89%98%E7%AE%A1%E5%8D%9A%E5%AE%A2/</url>
+    <url>/2025/01/14/hexo%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%BE%8E%E5%8C%96%E4%B9%8Bnext/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面介绍了Hexo + Github Pages环境的搭建和简单的走了一遍总体发布流程，本文介绍：</p>
 <ul>
 <li>使用<a href="https://github.com/theme-next/hexo-theme-next">Next</a>主题进行页面美化</li>
@@ -125,7 +125,7 @@
   </entry>
   <entry>
     <title>Win10 hexo+GitHub Pages 0成本托管博客</title>
-    <url>/2025/01/13/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2%E6%96%87%E7%AB%A0/</url>
+    <url>/2025/01/13/win10Hex+githubpages0%E6%88%90%E6%9C%AC%E6%89%98%E7%AE%A1%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1.环境准备"></a>1.环境准备</h2><h3 id="1-安装Node-js和npm"><a href="#1-安装Node-js和npm" class="headerlink" title="1.安装Node.js和npm"></a>1.安装Node.js和npm</h3><ul>
 <li><p>下载并安装<a href="https://nodejs.org/zh-cn">Node.js</a>（自带npm工具）</p>
 </li>
@@ -210,7 +210,7 @@
 </ul>
 ]]></content>
       <categories>
-        <category>Hexo</category>
+        <category>code</category>
       </categories>
       <tags>
         <tag>Hexo</tag>
