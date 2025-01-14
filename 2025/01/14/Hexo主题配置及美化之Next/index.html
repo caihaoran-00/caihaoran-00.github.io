@@ -19,15 +19,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="前言前面介绍了Hexo + Github Pages环境的搭建和简单的走了一遍总体发布流程，本文介绍  使用Next主题进行页面美化 对站点配置文件（blog&#x2F;_config.yml）和主题配置文件（blog&#x2F;themes&#x2F;next&#x2F;_config.yml）的部分配置进行使用和介绍  关于markdown文件的撰写，下次文章介绍。">
+    <meta name="description" content="前言前面介绍了Hexo + Github Pages环境的搭建和简单的走了一遍总体发布流程，本文介绍  使用Next主题进行页面美化 对站点配置文件（&#x2F;_config.yml）和主题配置文件（&#x2F;themes&#x2F;next&#x2F;_config.yml）的部分配置进行使用和介绍  关于markdown文件的撰写，下次文章介绍。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo主题配置及美化之Next">
 <meta property="og:url" content="https://caihaoran-00.github.io/2025/01/14/Hexo%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%BE%8E%E5%8C%96%E4%B9%8BNext/index.html">
 <meta property="og:site_name" content="Chr&#39;s Blog">
-<meta property="og:description" content="前言前面介绍了Hexo + Github Pages环境的搭建和简单的走了一遍总体发布流程，本文介绍  使用Next主题进行页面美化 对站点配置文件（blog&#x2F;_config.yml）和主题配置文件（blog&#x2F;themes&#x2F;next&#x2F;_config.yml）的部分配置进行使用和介绍  关于markdown文件的撰写，下次文章介绍。">
+<meta property="og:description" content="前言前面介绍了Hexo + Github Pages环境的搭建和简单的走了一遍总体发布流程，本文介绍  使用Next主题进行页面美化 对站点配置文件（&#x2F;_config.yml）和主题配置文件（&#x2F;themes&#x2F;next&#x2F;_config.yml）的部分配置进行使用和介绍  关于markdown文件的撰写，下次文章介绍。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-01-14T06:33:35.000Z">
-<meta property="article:modified_time" content="2025-01-14T08:31:34.385Z">
+<meta property="article:modified_time" content="2025-01-14T09:52:57.336Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="Hexo">
 <meta property="article:tag" content="Next">
@@ -140,7 +140,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85Next%E4%B8%BB%E9%A2%98"><span class="nav-number">1.1.</span> <span class="nav-text">1.安装Next主题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%A1%B5%E9%9D%A2%E7%BE%8E%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">2.页面美化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%AB%99%E7%82%B9title"><span class="nav-number">2.1.</span> <span class="nav-text">1.站点title</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AF%BC%E8%88%AA%E6%A0%8F"><span class="nav-number">2.2.</span> <span class="nav-text">2.导航栏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BD%91%E9%A1%B5%E5%BA%95%E9%83%A8powered-By-Hexo"><span class="nav-number">2.3.</span> <span class="nav-text">3.网页底部powered By Hexo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE"><span class="nav-number">2.4.</span> <span class="nav-text">4.代码高亮</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E4%BB%A3%E7%A0%81%E6%AE%B5%E4%B8%80%E9%94%AE%E5%A4%8D%E5%88%B6"><span class="nav-number">2.5.</span> <span class="nav-text">5.代码段一键复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%98%BE%E7%A4%BA%E6%B5%8F%E8%A7%88%E8%BF%9B%E5%BA%A6"><span class="nav-number">2.6.</span> <span class="nav-text">6.显示浏览进度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E6%9C%AC%E5%9C%B0%E6%90%9C%E7%B4%A2"><span class="nav-number">2.7.</span> <span class="nav-text">7.本地搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E6%96%87%E7%AB%A0%E5%AD%97%E6%95%B0%E5%92%8C%E9%98%85%E8%AF%BB%E6%97%B6%E9%95%BF"><span class="nav-number">2.8.</span> <span class="nav-text">8.文章字数和阅读时长</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%A6%96%E6%AC%A1%E9%83%A8%E7%BD%B2"><span class="nav-number">2.9.</span> <span class="nav-text">4.首次部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%BB%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">4.自定义主题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%80%89%E6%8B%A9%E4%B8%BB%E9%A2%98"><span class="nav-number">3.1.</span> <span class="nav-text">1.选择主题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%86%99%E5%8D%9A%E5%AE%A2%E5%92%8C%E6%9B%B4%E6%96%B0"><span class="nav-number">4.</span> <span class="nav-text">5.写博客和更新</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%96%B0%E5%BB%BA%E6%96%87%E7%AB%A0"><span class="nav-number">4.1.</span> <span class="nav-text">1.新建文章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%9C%AC%E5%9C%B0%E9%A2%84%E8%A7%88"><span class="nav-number">4.2.</span> <span class="nav-text">2.本地预览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%91%E5%B8%83%E6%9B%B4%E6%96%B0%E5%88%B0GitHub-Pages"><span class="nav-number">4.3.</span> <span class="nav-text">3.发布更新到GitHub Pages</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85Next%E4%B8%BB%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">1.安装Next主题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%A1%B5%E9%9D%A2%E7%BE%8E%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">2.页面美化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%AB%99%E7%82%B9title"><span class="nav-number">3.1.</span> <span class="nav-text">1.站点title</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%AF%BC%E8%88%AA%E6%A0%8F"><span class="nav-number">3.2.</span> <span class="nav-text">2.导航栏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BD%91%E9%A1%B5%E5%BA%95%E9%83%A8powered-By-Hexo"><span class="nav-number">3.3.</span> <span class="nav-text">3.网页底部powered By Hexo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BB%A3%E7%A0%81%E9%AB%98%E4%BA%AE"><span class="nav-number">3.4.</span> <span class="nav-text">4.代码高亮</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E4%BB%A3%E7%A0%81%E6%AE%B5%E4%B8%80%E9%94%AE%E5%A4%8D%E5%88%B6"><span class="nav-number">3.5.</span> <span class="nav-text">5.代码段一键复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%98%BE%E7%A4%BA%E6%B5%8F%E8%A7%88%E8%BF%9B%E5%BA%A6"><span class="nav-number">3.6.</span> <span class="nav-text">6.显示浏览进度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E6%9C%AC%E5%9C%B0%E6%90%9C%E7%B4%A2"><span class="nav-number">3.7.</span> <span class="nav-text">7.本地搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E6%96%87%E7%AB%A0%E5%AD%97%E6%95%B0%E3%80%81%E9%98%85%E8%AF%BB%E6%97%B6%E9%95%BF%E5%92%8C%E8%AE%BF%E5%AE%A2%E9%87%8F%E3%80%81%E6%96%87%E7%AB%A0%E9%98%85%E8%AF%BB%E9%87%8F"><span class="nav-number">3.8.</span> <span class="nav-text">8.文章字数、阅读时长和访客量、文章阅读量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-%E9%98%85%E8%AF%BB%E5%85%A8%E6%96%87"><span class="nav-number">3.9.</span> <span class="nav-text">9.阅读全文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-TODO"><span class="nav-number">3.10.</span> <span class="nav-text">10.TODO</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -223,7 +223,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2025-01-14 14:33:35 / 修改时间：16:31:34" itemprop="dateCreated datePublished" datetime="2025-01-14T14:33:35+08:00">2025-01-14</time>
+      <time title="创建时间：2025-01-14 14:33:35 / 修改时间：17:52:57" itemprop="dateCreated datePublished" datetime="2025-01-14T14:33:35+08:00">2025-01-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -249,7 +249,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>912</span>
+      <span>730</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -269,13 +269,13 @@
     <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面介绍了Hexo + Github Pages环境的搭建和简单的走了一遍总体发布流程，本文介绍</p>
 <ul>
 <li>使用<a target="_blank" rel="noopener" href="https://github.com/theme-next/hexo-theme-next">Next</a>主题进行页面美化</li>
-<li>对站点配置文件（blog&#x2F;_config.yml）和主题配置文件（blog&#x2F;themes&#x2F;next&#x2F;_config.yml）的部分配置进行使用和介绍</li>
+<li>对站点配置文件（&#x2F;_config.yml）和主题配置文件（&#x2F;themes&#x2F;next&#x2F;_config.yml）的部分配置进行使用和介绍</li>
 </ul>
 <p>关于markdown文件的撰写，下次文章介绍。</p>
 <hr>
 <span id="more"></span>
 
-<h3 id="1-安装Next主题"><a href="#1-安装Next主题" class="headerlink" title="1.安装Next主题"></a>1.安装Next主题</h3><ul>
+<h2 id="1-安装Next主题"><a href="#1-安装Next主题" class="headerlink" title="1.安装Next主题"></a>1.安装Next主题</h2><ul>
 <li><p>与上文的yilia主题一样，在<code>blog</code>目录下运行：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
 </li>
@@ -321,46 +321,15 @@
 <li><p>打开<code>blog/themes/next/_config.yml</code>，搜索<code>local_search</code>：</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">local_search:</span></span><br><span class="line"><span class="function">  <span class="title">enable</span>: <span class="title">true</span></span></span><br><span class="line"><span class="function">  # <span class="title">Show</span> <span class="title">top</span> <span class="title">n</span> <span class="title">results</span> <span class="title">per</span> <span class="title">article</span>, <span class="title">show</span> <span class="title">all</span> <span class="title">results</span> <span class="title">by</span> <span class="title">setting</span> <span class="title">to</span> -1</span></span><br><span class="line"><span class="function">  <span class="title">top_n_per_article</span>: 1</span></span><br><span class="line"><span class="function">  # <span class="title">Unescape</span> <span class="title">html</span> <span class="title">strings</span> <span class="title">to</span> <span class="title">the</span> <span class="title">readable</span> <span class="title">one</span>.</span></span><br><span class="line"><span class="function">  <span class="title">unescape</span>: <span class="title">false</span></span></span><br><span class="line"><span class="function">  # <span class="title">Preload</span> <span class="title">the</span> <span class="title">search</span> <span class="title">data</span> <span class="title">when</span> <span class="title">the</span> <span class="title">page</span> <span class="title">loads</span>.</span></span><br><span class="line"><span class="function">  <span class="title">preload</span>: <span class="title">false</span></span></span><br></pre></td></tr></table></figure></li>
 </ul>
-<h3 id="8-文章字数和阅读时长"><a href="#8-文章字数和阅读时长" class="headerlink" title="8.文章字数和阅读时长"></a>8.文章字数和阅读时长</h3><p>打开blog&#x2F;_config.yml文件，拉到最后的deploy配置部分，修改如下：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/username/username.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
+<h3 id="8-文章字数、阅读时长和访客量、文章阅读量"><a href="#8-文章字数、阅读时长和访客量、文章阅读量" class="headerlink" title="8.文章字数、阅读时长和访客量、文章阅读量"></a>8.文章字数、阅读时长和访客量、文章阅读量</h3><p>打开<code>blog/themes/next/_config.yml</code>，搜索<code>busuanzi_count</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">busuanzi_count:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">total_visitors:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">total_visitors_icon:</span> <span class="string">fa</span> <span class="string">fa-user</span></span><br><span class="line">  <span class="attr">total_views:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">total_views_icon:</span> <span class="string">fa</span> <span class="string">fa-eye</span></span><br><span class="line">  <span class="attr">post_views:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">post_views_icon:</span> <span class="string">far</span> <span class="string">fa-eye</span></span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>repo填写你刚才创建的GitHub仓库地址</li>
-<li>如果你的仓库主分支是master，将branch改为master。</li>
-</ul>
-<h3 id="4-首次部署"><a href="#4-首次部署" class="headerlink" title="4.首次部署"></a>4.首次部署</h3><p>运行以下命令，将博客部署到GitHub Pages:</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>即可打开<code>https://username.github.io</code>查看你的博客。</p>
-<hr>
-<h2 id="4-自定义主题"><a href="#4-自定义主题" class="headerlink" title="4.自定义主题"></a>4.自定义主题</h2><h3 id="1-选择主题"><a href="#1-选择主题" class="headerlink" title="1.选择主题"></a>1.选择主题</h3><ul>
-<li><p>以<a target="_blank" rel="noopener" href="https://github.com/litten/hexo-theme-yilia">hexo-theme-yilia</a>为例，在blog文件夹下运行：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>打开blog&#x2F;_config.yml文件，拉到倒数第二项的theme配置部分，修改如下：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">theme: <span class="title">yilia</span></span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>（可选）本地预览，运行</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>部署到GitHub Pages:</p>
-<ul>
-<li><p>如果运行了本地预览，仅需Ctrl + C 结束掉本地预览，再运行：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>若未运行本地预览，需运行：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="5-写博客和更新"><a href="#5-写博客和更新" class="headerlink" title="5.写博客和更新"></a>5.写博客和更新</h2><h3 id="1-新建文章"><a href="#1-新建文章" class="headerlink" title="1.新建文章"></a>1.新建文章</h3><p>在blog目录下运行：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;你的文章标题&quot;</span><br></pre></td></tr></table></figure>
-
-<p>这会在<code>source/_posts</code> 文件夹下生成一个 <code>你的文章标题.md</code> 文件，你可以用任何文本编辑器编辑。</p>
-<h3 id="2-本地预览"><a href="#2-本地预览" class="headerlink" title="2.本地预览"></a>2.本地预览</h3><p>运行以下命令本地查看效果：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-发布更新到GitHub-Pages"><a href="#3-发布更新到GitHub-Pages" class="headerlink" title="3.发布更新到GitHub Pages"></a>3.发布更新到GitHub Pages</h3><p>每次修改或新增内容后运行：</p>
-<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure></li>
-</ul>
+<blockquote>
+<p>注意：本地<code>hexo s</code>查看效果时网页底部的访客量和文章阅读量的统计会不正确（很大），但<code>hexo g</code>部署在<code>GitHub Pages</code>上就没问题了。</p>
+</blockquote>
+<h3 id="9-阅读全文"><a href="#9-阅读全文" class="headerlink" title="9.阅读全文"></a>9.阅读全文</h3><p>直接在md文件中添加<code>&lt;!--more--&gt;</code>即可控制摘要内容，即控制Read More（阅读全文）的位置，可添加前言对文章进行总结提炼，详情可点击阅读全文。</p>
+<h3 id="10-TODO"><a href="#10-TODO" class="headerlink" title="10.TODO"></a>10.TODO</h3><hr>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>1.<a target="_blank" rel="noopener" href="https://blog.csdn.net/Bennnnnnn/article/details/128000842">https://blog.csdn.net/Bennnnnnn/article/details/128000842</a></p>
 
     </div>
 
@@ -413,13 +382,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">2k</span>
+    <span title="站点总字数">1k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">6 分钟</span>
+    <span title="站点阅读时长">5 分钟</span>
   </span>
 </div>
 <div class="busuanzi-count">
