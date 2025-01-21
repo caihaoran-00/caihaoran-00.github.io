@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="论文名：LSTM Fully Convolutional Networks for Time Series Classification **作者：Fazle Karim1∗ , Somshubra Majumdar2∗ , Houshang Darabi1 , Senior Member, IEEE, and Shun Chen1 年份：2017 摘要​		全卷积神经网络（FCN）已经被证明在分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LSTM-FCN论文总结">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/01/14/LSTM-FCN/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="论文名：LSTM Fully Convolutional Networks for Time Series Classification **作者：Fazle Karim1∗ , Somshubra Majumdar2∗ , Houshang Darabi1 , Senior Member, IEEE, and Shun Chen1 年份：2017 摘要​		全卷积神经网络（FCN）已经被证明在分">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="e:\Achr_blog\blog\source_posts\%E5%9B%BE%E7%89%87\LSTM-FCN\tu1.jpg">
+<meta property="og:image" content="e:\Achr_blog\blog\source_posts\%E5%9B%BE%E7%89%87\LSTM-FCN\table1.jpg">
+<meta property="article:published_time" content="2025-01-14T11:49:57.000Z">
+<meta property="article:modified_time" content="2025-01-16T09:05:26.506Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="classification">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="e:\Achr_blog\blog\source_posts\%E5%9B%BE%E7%89%87\LSTM-FCN\tu1.jpg">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/01/14/LSTM-FCN/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/01/14/LSTM-FCN/","path":"2025/01/14/LSTM-FCN/","title":"LSTM-FCN论文总结"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>LSTM-FCN论文总结 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-number">1.</span> <span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">2.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%E5%B7%A5%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">背景工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E6%97%B6%E5%9F%9F%E5%8D%B7%E7%A7%AF"><span class="nav-number">3.1.</span> <span class="nav-text">A 时域卷积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-RNNs"><span class="nav-number">3.2.</span> <span class="nav-text">B RNNs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-LSTM"><span class="nav-number">3.3.</span> <span class="nav-text">C LSTM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#D-%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6"><span class="nav-number">3.4.</span> <span class="nav-text">D 注意力机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LSTM-FCN"><span class="nav-number">4.</span> <span class="nav-text">LSTM-FCN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84"><span class="nav-number">4.1.</span> <span class="nav-text">A.网络架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-%E7%BD%91%E7%BB%9C%E8%BE%93%E5%85%A5"><span class="nav-number">4.2.</span> <span class="nav-text">B.网络输入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%BE%AE%E8%B0%83"><span class="nav-number">4.3.</span> <span class="nav-text">C.模型的微调</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C"><span class="nav-number">5.</span> <span class="nav-text">实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#A-%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87"><span class="nav-number">5.1.</span> <span class="nav-text">A.评价指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-Results"><span class="nav-number">5.2.</span> <span class="nav-text">B. Results</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/01/14/LSTM-FCN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="LSTM-FCN论文总结 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LSTM-FCN论文总结
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-01-14 19:49:57" itemprop="dateCreated datePublished" datetime="2025-01-14T19:49:57+08:00">2025-01-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-01-16 17:05:26" itemprop="dateModified" datetime="2025-01-16T17:05:26+08:00">2025-01-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>12 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><em><strong>论文名：LSTM Fully Convolutional Networks for Time Series Classification</strong></em></p>
+<p>**<em>作者：<em><em><em>Fazle Karim1</em>∗</em> , Somshubra Majumdar2</em>∗</em> , Houshang Darabi1 , <em>Senior Member, IEEE, and Shun Chen</em>1</p>
+<p><em><strong>年份：2017</strong></em></p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>​		<em><em>全卷积神经网络（FCN）<strong>已经被证明在分类时间序列的任务上可取得最先进的性能。我们提出了利用</strong></em>LSTM</em><strong>子模块来增强</strong>FCN<strong>以进行时间序列分类。我们提出的方法显著增加了</strong>FCN<strong>的表现，模型大小只增加了一点，并且仅需对数据集进行很小的预处理。与其他算法相比，<strong>LSTM-FCN</strong>取得了最先进的性能。我们还使用</strong>注意长短期记忆全卷积网络（ALSTM-FCN）<strong>探索注意力机制在时序分类上的表现。通过注意力机制，人们可以可视化</strong>LSTM**记忆单元的决策过程。此外，我们提出微调作为提升已训练好模型表现的一种方式。最后对我们的模型进行了整体表现的分析并与其他技术进行比较。</p>
+<p><em><strong>Keywords：</strong></em> <em><strong>CNN</strong></em>, <em><strong>LSTM</strong></em>, <em><strong>RNN</strong></em>, 时序分类</p>
+<hr>
+<span id="more"></span>
+
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>​		在过去的十年里，人们对时间序列分类的兴趣越来越大。时间序列数据无处不在，存在于天气读数、财务记录、工业观察和心理信号[1]中。本文提出了两种深度学习模型来分类时间序列数据集，它们的性能都优于现有的最先进的模型。</p>
+<p>​		大量的研究已经使用基于特征的方式或方法来提取一组代表时间序列模式的特征。Bag-of-Words（BoW）[2]，Bag-of-features（TSBF）[3]，Bag-of-SFA-Symbols（BOSS）[4]，BOSSVS [5]，Word提取时间序列分类（WEASEL）[6]，已经在该领域取得了良好的结果。Bag-of-words量化提取的特征，并将BoW输入分类器。TSBF提取随机局部信息的多个子序列，由监督学习者将其压缩成一本用于预测时间序列标签的食谱。BOSS引入了一个基于距离的分类器和直方图的组合。直方图代表了使用符号傅里叶近似创建的时间序列的子结构。BOSSVS扩展了这种方法，提出了一个向量空间模型，在保持性能的同时降低了时间复杂度。WEASEL利用滑动窗口将时间序列转换为特征向量。机器学习算法利用这些特征向量来检测和分类时间序列。所有这些分类器都需要大量的特征提取和特征工程。</p>
+<p>​		集成算法在时序分类问题上也取得了先进的性能表现。三种最成功的集成算法合并时间序列的各种特征，Elastic Ensemble (PROP)[7]是一种使用加权集成方法集成了11个时间序列分类器的模型，Shapelet ensemble (SE) [8]是一种将异构集合应用于变换后的形状集的模型，flat collective of transform based ensembles (COTE) [8]是一种融合35种不同分类器到一个分类器的模型。</p>
+<p>​		最近，深度神经网络被用于时间序列分类任务。多尺度卷积神经网络（MCNN）[9]、全卷积网络（FCN）[10]和残差网络（ResNet）[10]是利用卷积神经网络（CNN）对单变量时间序列进行端到端分类的深度学习方法。MCNN使用降采样、跳过采样和滑动窗口对数据进行预处理。MCNN分类器的性能高度依赖于应用于数据集的预处理和对该模型的大量超参数集的调整。另一方面，FCN和ResNet不需要对数据或特征工程进行任何繁重的预处理。在本文中，我们通过扩张FCN模块的方式来提高FCN的性能，扩张FCN模块的方式为长短期递归神经网络（LSTM RNN）子模块LSTM-FCN或称为ALSTM-FCN的结合注意力机制的LSTM RNN。与FCN类似，所提出的两个模型都可以用于可视化卷积层的类激活图（CAM），以检测贡献于类标签的区域。此外，ALSTM还可以通过Attention LSTM单元的上下文向量来检测输入序列中贡献于类标签的区域。LSTM-FCN和ALSTM-FCN模型的一个主要优点是，它不需要大量的预处理或特征工程。结果表明，新提出的模型，LSTM-FCN和ALSTMFCN，显著提高了加州大学河滨分校（UCR）基准数据集[11]的性能。在大多数UCR基准数据集上，LSTMFCN和ALSTM-FCN比几种最先进的集成算法产生更好的结果。</p>
+<p>​		本文提出了两种端端时间序列分类的深度学习模型。所提出的模型不需要对数据或特征工程进行大量的预处理。这两种模型都在所有85个UCR时间序列基准测试上进行了测试，其性能优于大多数最先进的模型。本文的其余部分组织如下。第二节回顾了背景工作。第三节介绍了所提出的模型的体系结构。第四节，对上述实验结果进行了分析和讨论。最后，在第五节中得出了结论。</p>
+<hr>
+<h2 id="背景工作"><a href="#背景工作" class="headerlink" title="背景工作"></a>背景工作</h2><h3 id="A-时域卷积"><a href="#A-时域卷积" class="headerlink" title="A 时域卷积"></a>A 时域卷积</h3><p>​		我们使用时域卷积网络作为一个全卷积网络（FCN）分支中的特征提取模块。基本卷积块由卷积层组成，然后是批归一化[13]，然后是激活函数，它可以是校正线性单元（ReLU）或参数校正线性单元（PRELU）[14]。</p>
+<h3 id="B-RNNs"><a href="#B-RNNs" class="headerlink" title="B RNNs"></a>B RNNs</h3><p>…</p>
+<h3 id="C-LSTM"><a href="#C-LSTM" class="headerlink" title="C LSTM"></a>C LSTM</h3><p>​		虽然lstm具有学习序列中的时间依赖的能力，但它们在长序列中难以学习长期依赖。通过学习这些依赖关系而提出的注意机制[18]可以帮助LSTM学习长期依赖。</p>
+<h3 id="D-注意力机制"><a href="#D-注意力机制" class="headerlink" title="D 注意力机制"></a>D 注意力机制</h3><p>…</p>
+<blockquote>
+<p>此处原理部分后续博客进行图文讲解。</p>
+</blockquote>
+<hr>
+<h2 id="LSTM-FCN"><a href="#LSTM-FCN" class="headerlink" title="LSTM-FCN"></a>LSTM-FCN</h2><h3 id="A-网络架构"><a href="#A-网络架构" class="headerlink" title="A.网络架构"></a>A.网络架构</h3><p>​		时域卷积已被证明是解决时间序列分类问题[10]的一种有效的学习模型。由时域卷积组成的全卷积网络通常被用作特征提取器，全局平均池[19]用于在分类前减少模型中的参数量。在所提出的模型中，全卷积块增加了一个LSTM块，然后是dropout[20]，如图1所示。</p>
+<p><img src="E:\Achr_blog\blog\source_posts\图片\LSTM-FCN\tu1.jpg" alt="LSTM-FCN architecture" title="LSTM-FCN architecture"></p>
+<p>​		全卷积块由三个堆叠的时域卷积块组成，滤波器大小分别为128、256和128。每个卷积块都与Wang等人[10]提出的CNN体系结构中的卷积块相同。每个块由一个时域卷积层组成，它伴随着批归一化[13]（动量momentum为0.99，速度epsilon为0.001），然后是一个ReLU激活函数。最后，在最终的卷积块之后应用全局平均池化。</p>
+<p>​		同时，时间序列输入被传递到一个维度洗牌层（在III-B节中解释）。然后将从维度洗牌转换后的时间序列传递到LSTM块中。LSTM块包括一个一般的LSTM层或一个注意的LSTM层，然后是一个dropout。全局池化层和LSTM块的输出被连接并传递到一个softmax分类层。</p>
+<h3 id="B-网络输入"><a href="#B-网络输入" class="headerlink" title="B.网络输入"></a>B.网络输入</h3><p>​		全卷积块和LSTM块在两个不同的视图中感知相同的时间序列输入。全卷积块将时间序列视为具有多个时间步长的单变量时间序列。如果有一个长度为N的时间序列，则全卷积块将以N个时间步长接收数据。</p>
+<p>​		相反，该架构中的LSTM块接收输入的时间序列作为一个具有单个时间步长的多元时间序列。这是通过维度洗牌层来完成的，它改变了时间序列的时间维度。一个长度为N的单变量时间序列，经过变换后，将被视为一个具有单一时间步长的多元时间序列（有N个变量）。</p>
+<p>​		这种方法是提高所提体系架构的性能表现的关键。相比之下，当LSTM块接收到具有N个时间步长的单变量时间序列时，由于对小的短序列UCR数据集的快速过拟合以及在较大的长序列UCR数据集中无法学习长期依赖关系，性能显著降低。</p>
+<h3 id="C-模型的微调"><a href="#C-模型的微调" class="headerlink" title="C.模型的微调"></a>C.模型的微调</h3><p>​		迁移学习是一种技术，在另一个数据集上训练模型时，在数据集上训练模型所获得的知识可以重用，这样新数据集的域与先验域[21]有一定的相似性。类似地，微调可以被描述为在同一数据集上的迁移学习。</p>
+<p>​		因此，训练过程可以分为两个不同的阶段。在初始阶段，为给定的数据集选择模型的最优超参数。然后使用这些超参数设置在给定的数据集上训练模型。在第二步中，我们对这个初始模型应用微调。</p>
+<p>​		使用原始数据集，在微调阶段迭代迁移学习的过程。每次重复都使用上一次迭代的模型权重进行初始化。在每次迭代中，学习率都会减半。此外，每次迭代将批量大小减半。这样做，直到初始学习速率是1e−4，批处理大小是32。这个过程重复K次，其中K是一个任意的常数，一般设为5。</p>
+<p><img src="E:\Achr_blog\blog\source_posts\图片\LSTM-FCN\table1.jpg" alt="Fine-tuning algorithm" title="Fine-tuning algorithm"></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>​		该模型已在所有85个UCR时间序列数据集[11]上进行了测试。在所有实验中，FCN块都保持不变。通过对8~128个记忆单元的超参数搜索，得到了LSTM记忆单元cell的最佳数量。训练期的数量通常在2000个epochs保持不变，但在算法需要更长时间才能收敛的数据集上会增加epochs。初始batch size为128，在微调算法的每次连续迭代时减半。在使用LSTM或ALSTM层后，使用80%的高dropout来防止过拟合。类别不平衡问题通过一个受King等人[22]启发的类别加权方案进行处理。</p>
+<p>​		所有模型均通过Adam优化器[23]进行训练，初始学习率为1e−3，最终学习率为1e−4。所有的卷积内核都用由He等人. [24]提出的初始化方法。如果验证得分没有提高，那么每100个epoches让学习率lr降低$1&#x2F;\sqrt[3]{2}$，直到达到最终的学习率。没有对UCR数据集进行额外的预处理，因为它们接近0均值和单位方差。所有模型都进行了微调，表I中所述的分数是指模型在微调前后获得的分数。</p>
+<h3 id="A-评价指标"><a href="#A-评价指标" class="headerlink" title="A.评价指标"></a>A.评价指标</h3><p>​		在本文中，我们使用Wang等人[10]所述的精度、基于秩的统计数据和每类误差的平均值来对该模型进行了评估。</p>
+<p>​		使用的基于秩的评估是算术秩、几何秩和威尔克森符号秩检验。算术秩是数据集的秩的算术平均值。几何秩是每个数据集的秩的几何平均值。采用威尔科克森符号秩检验来比较所提模型与现有模型的最先进模型的中值秩。原假设和备择假设如下：<br>$$<br>H_o: \text{Median}<em>{\text{proposed model}} &#x3D; \text{Median}</em>{\text{state-of-the-art model}} \<br>H_a: \text{Median}<em>{\text{proposed model}} \neq \text{Median}</em>{\text{state-of-the-art model}}<br>$$<br>​		平均每类误差（Mean Per Class Error，MPCE）定义为每类误差（PCE）的算术平均值，<br>$$<br>PCE_k &#x3D; \frac{1 - \text{accuracy}}{\text{number of unique classes}} \<br>MPCE &#x3D; \frac{1}{K} \sum PCE_k.<br>$$</p>
+<h3 id="B-Results"><a href="#B-Results" class="headerlink" title="B. Results"></a>B. Results</h3><p>​		图2是在“CBF”数据集上的ALSTM记忆单元的可视化表示的一个例子。图中序列被“压缩”在一起的点是所有类具有相同权重的点。这些是时间序列中注意力LSTM可以正确识别类的点。通过对实际时间序列的目视检查，进一步支持了这一点。挤压点是每个类可以相互区分的点，如图2所示。</p>
+<p>​		表i总结了UCR数据集上的性能。彩色单元格是优于该数据集的最先进模型的单元格。所提出的模型，ALSTM-FCN模型和LSTMFCN模型，在两个阶段，没有微调（阶段1）和微调（阶段2），在至少43个数据集上优于最先进的模型。图3中的平均算术排名表明了我们提出的模型优于现有的最先进的模型。使用Wilcoxon符号秩检验进一步验证了这一点，其中与现有的最先进的模型相比，每个提出的模型的p值都小于0.05，表2。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/classification/" rel="tag"># classification</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/01/14/hexo%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%BE%8E%E5%8C%96%E4%B9%8Bnext/" rel="prev" title="Hexo主题配置及美化之Next">
+                  <i class="fa fa-angle-left"></i> Hexo主题配置及美化之Next
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/" rel="next" title="AudioSet数据集介绍">
+                  AudioSet数据集介绍 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">8k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>
