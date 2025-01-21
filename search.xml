@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2025/01/13/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-  </entry>
-  <entry>
     <title>AudioSet数据集介绍</title>
     <url>/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在找狗叫数据集，发现<a href="https://research.google.com/audioset///dataset/index.html">AuidoSet</a>数据集。这是google在2017年推出的用于<em><strong>音频事件</strong></em>研究的大规模手动注释音频事件数据集。其中包含632个音频事件类别以及从<em><strong>YouTube视频</strong></em>中提取的2,084,320个人工标记的10秒声音片段集合（527个标签），google期望通过发布AudioSet为音频事件检测提供一个通用的、符合实际规模（与现实相符）的评估任务，并为全面的声音事件词汇表提供一个起点。</p>
@@ -26,13 +8,17 @@
 <span id="more"></span>
 
 <h2 id="本体（Ontology）"><a href="#本体（Ontology）" class="headerlink" title="本体（Ontology）"></a>本体（Ontology）</h2><p>​		AudioSet 本体是按层次结构组织的声音事件的集合。该本体涵盖了各种日常声音，从人类和动物的声音到自然和环境声音，再到音乐和其他声音。这也解释了为什么AudioSet的音频事件类别是632个，而标签个数是527，因为分层结构导致的类别比标签多。</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\本体En.jpg" alt="AudioSet本体顶层的两层" title="AudioSet本体顶层的两层"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/%E6%9C%AC%E4%BD%93En.jpg" class="" title="AudioSet本体顶层的两层 AudioSet本体顶层的两层">
+
+
+
 <center>图 1: AudioSet本体顶层的两层</center>
 
 <p>​		图1给出了AudioSet数据集本体顶层的两层分类，下一层还有更小的分类。</p>
 <hr>
 <h2 id="数据集介绍"><a href="#数据集介绍" class="headerlink" title="数据集介绍"></a>数据集介绍</h2><p>​		所有数据集的详细分类可在<a href="https://research.google.com/audioset///dataset/index.html">此页面</a>查询，数据集分为三个不相交的集合：平衡评估集、平衡训练集和不平衡训练集。平衡集中每个类别具有相同数量的示例，不平衡训练集包含其余（除Evaluation和Balanced train外）的带注释片段。</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\dog.jpg" alt="Dog数据集的详细信息" title="Dog数据集的详细信息"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/dog.jpg" class="" title="Dog数据集的详细信息 Dog数据集的详细信息">
+
 <center>图 2: Dog数据集的详细信息</center>
 
 <p>​		图2给出便签中包含狗的数据集的详细信息，以Dog标签为例，可看出：<br>$$<br>totals&#x3D;Evalution+Balanced train+Unbalanced train<br>$$<br>​		注意，非平衡训练集的标签可能会很不准确，即视频的标定10秒段内并没有出现对应标签的声音事件，使用时需筛选。</p>
@@ -54,7 +40,8 @@
 <figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">-<span class="number">0</span>RWZT-miFs, <span class="number">420</span>.<span class="number">000</span>, <span class="number">430</span>.<span class="number">000</span>, &quot;/m/<span class="number">03</span>v3yw,/m/<span class="number">0</span>k4j&quot;</span><br></pre></td></tr></table></figure>
 
 <p>表示<a href="https://www.youtube.com/watch?v=-0RWZT-miFs&t=420s">Youtube视频</a><code>-0RWZT-miFs</code>的10秒声音事件段开始于420秒，结束于430秒，标注人员确认这10秒内存在&#x2F;m&#x2F;03v3yw（“钥匙叮当声”）和 &#x2F;m&#x2F;0k4j（“汽车声”），关于positive_labels的具体意义，请参与<a href="https://github.com/audioset/ontology/blob/master/ontology.json">ontology.json</a>，例如：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\ontology.jpg" alt="&#x2F;m&#x2F;03v3yw本体" title="&#x2F;m&#x2F;03v3yw本体"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/ontology.jpg" class="" title="&#x2F;m&#x2F;03v3yw本体 &#x2F;m&#x2F;03v3yw本体">
+
 <center>图 3: /m/03v3yw本体</center>
 
 <h3 id="YouTube视频链接格式"><a href="#YouTube视频链接格式" class="headerlink" title="YouTube视频链接格式"></a>YouTube视频链接格式</h3><p>以<code>https://www.youtube.com/watch?v=-0RWZT-miFs&amp;t=30s</code>为例，其中：</p>
@@ -70,55 +57,69 @@
 </li>
 <li><p><strong>ffmpeg</strong> and <strong>ffprobe</strong></p>
 <p><code>yt-dlp</code>依赖<code>ffmpeg</code>和<code>ffprobe</code>，点击<a href="https://www.ffmpeg.org/">ffmpeg</a>按下述图文操作安装即可：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\ffmpeg1.jpg"></p>
-</li>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/ffmpeg1.jpg" class=""></li>
 </ul>
 <p>点击链接后，按上图点击顺序操作，随后下滑到release builds，点击下图所示zip压缩文件进行下载：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\ffmpeg2.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/ffmpeg2.jpg" class="">
+
 <p>解压后得到：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\ffmpeg3.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/ffmpeg3.jpg" class="">
+
 <p>在<code>bin</code>文件夹下可看到：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\ffmpeg4.jpg"></p>
-<p>次数在<code>bin</code>目录下打开<code>cmd</code>，输入<code>ffmpeg</code>，可看到下图输出信息：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\ffmpeg5.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/ffmpeg4.jpg" class="">
+
+<p><code>bin</code>目录下打开<code>cmd</code>，输入<code>ffmpeg</code>，可看到下图输出信息：</p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/ffmpeg5.jpg" class="">
+
 <p>但是在其他路径下运行<code>ffmpeg</code>命令会提示：<code>&#39;ffmpeg&#39; 不是内部或外部命令，也不是可运行的程序 或批处理文件。</code>是因为我们没有把可执行文件添加到系统路径中，打开系统环境变量，将刚才的<code>bin</code>目录路径添加到用户变量或系统变量的<code>Path</code>中即可，如：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\ffmpeg6.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/ffmpeg6.jpg" class="">
+
 <p>设置好环境变量后，新起一个<code>cmd</code>窗口，即可在任意路径调用<code>ffmpeg</code>命令。</p>
 <ul>
-<li><p>完事具备！开始展示！到你<code>yt-dlp.exe</code>所在的文件夹打开<code>cmd</code>，先下载个视频试试效果，运行：</p>
+<li><p>万事具备！开始展示！到你<code>yt-dlp.exe</code>所在的文件夹打开<code>cmd</code>，先下载个视频试试效果，运行：</p>
 <figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">yt-dlp.exe https://www.youtube.com/watch?v=<span class="number">0</span>Wkk9iNzA9c</span><br></pre></td></tr></table></figure>
 
 <p>这个时候如果没有魔法上网，将会一直超时重试：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\retry.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/retry.jpg" class="">
+
 <p>打开魔法上网，注意想在<code>cmd窗口</code>使用代理，需要如下图配置下（配置后别忘了重新开一个cmd窗口）：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\clash.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/clash.jpg" class="">
+
 <p>重新在<code>yt-dlp.exe</code>所在的文件夹打开<code>cmd</code>，再次运行上述命名，你将会看到：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\error1.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/error1.jpg" class="">
+
 <p>这是<code>yt-dlp</code>在下载指定<code>YouTube</code>视频时遇到了需要登录验证的问题，如果在你的浏览器上已经登陆了（或者登录过且Cookies没过期）<code>YouTube</code>，（以chrome谷歌浏览器举例)那么可以添加<code>--cookies-from-browser chrome</code>参数，如果没登录过，可以去登录下，如果这个方式行不通，就需要使用<code>--cookies</code>参数指定你自己导出的<code>Cookies</code>文件（下面会讲）。</p>
 <p>运行：</p>
 <figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">yt-dlp --cookies-from-browser chrome https://www.youtube.com/watch?v=<span class="number">0</span>Wkk9iNzA9c</span><br></pre></td></tr></table></figure>
 
 <p>出现：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\error2.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/error2.jpg" class="">
+
 <p>关闭你的chrome浏览器，再运行上述命令，得到：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\error3.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/error3.jpg" class="">
+
 <p>害，只能使用插件导出<code>Cookies</code>文件了，去安装<a href="https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc">Get cookies.txt LOCALLY</a><code>Chrome</code>插件后，按顺序点击：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\chrome.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/chrome.jpg" class="">
+
 <p>然后，打开<a href="https://www.youtube.com/">youtube</a>首页，再按顺序点击：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\chrome2.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/chrome2.jpg" class="">
+
 <p>即会下载<code>www.youtube.com_cookies.txt</code>，将其放在<code>yt-dlp.exe</code>同级目录下，运行：</p>
 <figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">yt-dlp --cookies www.youtube.com_cookies.txt https://www.youtube.com/watch?v=<span class="number">0</span>Wkk9iNzA9c</span><br></pre></td></tr></table></figure>
 
-<p>***OK!***下载成功：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\down1.jpg"></p>
+<p>**OK!**下载成功：</p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/down1.jpg" class="">
+
 <p>从打印信息可看出，实际上是下载了两个东西，首先是<code>Corgi Cuteness with Puppy Growl! [0Wkk9iNzA9c].f135.mp4</code>视频文件，然后是<code>Corgi Cuteness with Puppy Growl! [0Wkk9iNzA9c].f140.m4a</code>音频文件，然后将这两个文件合并成<code>Corgi Cuteness with Puppy Growl! [0Wkk9iNzA9c].mp4</code>视频文件，最后是将两个单独的文件删除。</p>
 <p>运行下面命令以：</p>
 <figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">yt-dlp --cookies www.youtube.com_cookies.txt --list-formats https://www.youtube.com/watch?v=<span class="number">0</span>Wkk9iNzA9c</span><br></pre></td></tr></table></figure>
 
 <p>铛铛铛铛，又出问题了：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\error4.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/error4.jpg" class="">
+
 <p>打开你的<code>www.youtube.com_cookies.txt</code>，搜索<code>LOGIN_INFO</code>和<code>SAPISID</code>，是不是发现没有这两个关键词，哦原来是我们在生成cookies的网页上没有做登录<code>Youtube</code>的操作，让我们重新操作下，先把已登录的<code>Youtube</code>账号退掉，再打开一个新网页登录<code>Youtube</code>账号，后续生成<code>cookies</code>的操作和之前介绍一致，再次运行上述命令：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\list.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/list.jpg" class="">
+
 <p>好，我们看到一些格式信息，上面的<code>f135</code>就对应这里的<code>ID:135</code>，是<code>video only</code>，也就是不包含音频，<code>f140</code>对应<code>ID:140</code>，是<code>audio only</code>，也就是不包含视频。</p>
 <p>我只需要音频，并不需要视频该怎么做呢，聪明的你可能大概想到了，通过<code>-f</code>指定<code>ID</code>：</p>
 <figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">yt-dlp --cookies www.youtube.com_cookies.txt -f <span class="number">140</span> https://www.youtube.com/watch?v=<span class="number">0</span>Wkk9iNzA9c</span><br></pre></td></tr></table></figure>
@@ -156,11 +157,14 @@
 <p>好，现在知道这些对应信息了，那怎么获取Youtube视频ID呢？两种方式：</p>
 <ul>
 <li><p>在这个页面直接搜，比如<code>bark</code>：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\bark.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/bark.jpg" class="">
+
 <p>点击进去可以看到一些有用信息：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\bark1.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/bark1.jpg" class="">
+
 <p>再往下拉会看到一系列视频，以第一视频为例：</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\AudioSet\bark2.jpg"></p>
+<img src="/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/bark2.jpg" class="">
+
 <p>可以看到下方有一系列标签，视频的播放位置也是人为标定的开始点，直接右键<code>复制视频的url</code>即得到了<code>url</code>，开始时间为<code>10s</code>结束时间为<code>19s</code>，但这种方式只适合获取少量音频，如果下载大量数据会极大的浪费人力。</p>
 </li>
 <li><p>使用上文提到的<code>csv文件</code>，配合python脚本批量下载。</p>
@@ -184,6 +188,74 @@
       <tags>
         <tag>classification</tag>
         <tag>dataset</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2025/01/13/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>LSTM-FCN论文总结</title>
+    <url>/2025/01/14/LSTM-FCN/</url>
+    <content><![CDATA[<p><em><strong>论文名：LSTM Fully Convolutional Networks for Time Series Classification</strong></em></p>
+<p>**<em>作者：<em><em><em>Fazle Karim1</em>∗</em> , Somshubra Majumdar2</em>∗</em> , Houshang Darabi1 , <em>Senior Member, IEEE, and Shun Chen</em>1</p>
+<p><em><strong>年份：2017</strong></em></p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>​		<em><em>全卷积神经网络（FCN）<strong>已经被证明在分类时间序列的任务上可取得最先进的性能。我们提出了利用</strong></em>LSTM</em><strong>子模块来增强</strong>FCN<strong>以进行时间序列分类。我们提出的方法显著增加了</strong>FCN<strong>的表现，模型大小只增加了一点，并且仅需对数据集进行很小的预处理。与其他算法相比，<strong>LSTM-FCN</strong>取得了最先进的性能。我们还使用</strong>注意长短期记忆全卷积网络（ALSTM-FCN）<strong>探索注意力机制在时序分类上的表现。通过注意力机制，人们可以可视化</strong>LSTM**记忆单元的决策过程。此外，我们提出微调作为提升已训练好模型表现的一种方式。最后对我们的模型进行了整体表现的分析并与其他技术进行比较。</p>
+<p><em><strong>Keywords：</strong></em> <em><strong>CNN</strong></em>, <em><strong>LSTM</strong></em>, <em><strong>RNN</strong></em>, 时序分类</p>
+<hr>
+<span id="more"></span>
+
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>​		在过去的十年里，人们对时间序列分类的兴趣越来越大。时间序列数据无处不在，存在于天气读数、财务记录、工业观察和心理信号[1]中。本文提出了两种深度学习模型来分类时间序列数据集，它们的性能都优于现有的最先进的模型。</p>
+<p>​		大量的研究已经使用基于特征的方式或方法来提取一组代表时间序列模式的特征。Bag-of-Words（BoW）[2]，Bag-of-features（TSBF）[3]，Bag-of-SFA-Symbols（BOSS）[4]，BOSSVS [5]，Word提取时间序列分类（WEASEL）[6]，已经在该领域取得了良好的结果。Bag-of-words量化提取的特征，并将BoW输入分类器。TSBF提取随机局部信息的多个子序列，由监督学习者将其压缩成一本用于预测时间序列标签的食谱。BOSS引入了一个基于距离的分类器和直方图的组合。直方图代表了使用符号傅里叶近似创建的时间序列的子结构。BOSSVS扩展了这种方法，提出了一个向量空间模型，在保持性能的同时降低了时间复杂度。WEASEL利用滑动窗口将时间序列转换为特征向量。机器学习算法利用这些特征向量来检测和分类时间序列。所有这些分类器都需要大量的特征提取和特征工程。</p>
+<p>​		集成算法在时序分类问题上也取得了先进的性能表现。三种最成功的集成算法合并时间序列的各种特征，Elastic Ensemble (PROP)[7]是一种使用加权集成方法集成了11个时间序列分类器的模型，Shapelet ensemble (SE) [8]是一种将异构集合应用于变换后的形状集的模型，flat collective of transform based ensembles (COTE) [8]是一种融合35种不同分类器到一个分类器的模型。</p>
+<p>​		最近，深度神经网络被用于时间序列分类任务。多尺度卷积神经网络（MCNN）[9]、全卷积网络（FCN）[10]和残差网络（ResNet）[10]是利用卷积神经网络（CNN）对单变量时间序列进行端到端分类的深度学习方法。MCNN使用降采样、跳过采样和滑动窗口对数据进行预处理。MCNN分类器的性能高度依赖于应用于数据集的预处理和对该模型的大量超参数集的调整。另一方面，FCN和ResNet不需要对数据或特征工程进行任何繁重的预处理。在本文中，我们通过扩张FCN模块的方式来提高FCN的性能，扩张FCN模块的方式为长短期递归神经网络（LSTM RNN）子模块LSTM-FCN或称为ALSTM-FCN的结合注意力机制的LSTM RNN。与FCN类似，所提出的两个模型都可以用于可视化卷积层的类激活图（CAM），以检测贡献于类标签的区域。此外，ALSTM还可以通过Attention LSTM单元的上下文向量来检测输入序列中贡献于类标签的区域。LSTM-FCN和ALSTM-FCN模型的一个主要优点是，它不需要大量的预处理或特征工程。结果表明，新提出的模型，LSTM-FCN和ALSTMFCN，显著提高了加州大学河滨分校（UCR）基准数据集[11]的性能。在大多数UCR基准数据集上，LSTMFCN和ALSTM-FCN比几种最先进的集成算法产生更好的结果。</p>
+<p>​		本文提出了两种端端时间序列分类的深度学习模型。所提出的模型不需要对数据或特征工程进行大量的预处理。这两种模型都在所有85个UCR时间序列基准测试上进行了测试，其性能优于大多数最先进的模型。本文的其余部分组织如下。第二节回顾了背景工作。第三节介绍了所提出的模型的体系结构。第四节，对上述实验结果进行了分析和讨论。最后，在第五节中得出了结论。</p>
+<hr>
+<h2 id="背景工作"><a href="#背景工作" class="headerlink" title="背景工作"></a>背景工作</h2><h3 id="A-时域卷积"><a href="#A-时域卷积" class="headerlink" title="A 时域卷积"></a>A 时域卷积</h3><p>​		我们使用时域卷积网络作为一个全卷积网络（FCN）分支中的特征提取模块。基本卷积块由卷积层组成，然后是批归一化[13]，然后是激活函数，它可以是校正线性单元（ReLU）或参数校正线性单元（PRELU）[14]。</p>
+<h3 id="B-RNNs"><a href="#B-RNNs" class="headerlink" title="B RNNs"></a>B RNNs</h3><p>…</p>
+<h3 id="C-LSTM"><a href="#C-LSTM" class="headerlink" title="C LSTM"></a>C LSTM</h3><p>​		虽然lstm具有学习序列中的时间依赖的能力，但它们在长序列中难以学习长期依赖。通过学习这些依赖关系而提出的注意机制[18]可以帮助LSTM学习长期依赖。</p>
+<h3 id="D-注意力机制"><a href="#D-注意力机制" class="headerlink" title="D 注意力机制"></a>D 注意力机制</h3><p>…</p>
+<blockquote>
+<p>此处原理部分后续博客进行图文讲解。</p>
+</blockquote>
+<hr>
+<h2 id="LSTM-FCN"><a href="#LSTM-FCN" class="headerlink" title="LSTM-FCN"></a>LSTM-FCN</h2><h3 id="A-网络架构"><a href="#A-网络架构" class="headerlink" title="A.网络架构"></a>A.网络架构</h3><p>​		时域卷积已被证明是解决时间序列分类问题[10]的一种有效的学习模型。由时域卷积组成的全卷积网络通常被用作特征提取器，全局平均池[19]用于在分类前减少模型中的参数量。在所提出的模型中，全卷积块增加了一个LSTM块，然后是dropout[20]，如图1所示。</p>
+<p><img src="E:\Achr_blog\blog\source_posts\图片\LSTM-FCN\tu1.jpg" alt="LSTM-FCN architecture" title="LSTM-FCN architecture"></p>
+<p>​		全卷积块由三个堆叠的时域卷积块组成，滤波器大小分别为128、256和128。每个卷积块都与Wang等人[10]提出的CNN体系结构中的卷积块相同。每个块由一个时域卷积层组成，它伴随着批归一化[13]（动量momentum为0.99，速度epsilon为0.001），然后是一个ReLU激活函数。最后，在最终的卷积块之后应用全局平均池化。</p>
+<p>​		同时，时间序列输入被传递到一个维度洗牌层（在III-B节中解释）。然后将从维度洗牌转换后的时间序列传递到LSTM块中。LSTM块包括一个一般的LSTM层或一个注意的LSTM层，然后是一个dropout。全局池化层和LSTM块的输出被连接并传递到一个softmax分类层。</p>
+<h3 id="B-网络输入"><a href="#B-网络输入" class="headerlink" title="B.网络输入"></a>B.网络输入</h3><p>​		全卷积块和LSTM块在两个不同的视图中感知相同的时间序列输入。全卷积块将时间序列视为具有多个时间步长的单变量时间序列。如果有一个长度为N的时间序列，则全卷积块将以N个时间步长接收数据。</p>
+<p>​		相反，该架构中的LSTM块接收输入的时间序列作为一个具有单个时间步长的多元时间序列。这是通过维度洗牌层来完成的，它改变了时间序列的时间维度。一个长度为N的单变量时间序列，经过变换后，将被视为一个具有单一时间步长的多元时间序列（有N个变量）。</p>
+<p>​		这种方法是提高所提体系架构的性能表现的关键。相比之下，当LSTM块接收到具有N个时间步长的单变量时间序列时，由于对小的短序列UCR数据集的快速过拟合以及在较大的长序列UCR数据集中无法学习长期依赖关系，性能显著降低。</p>
+<h3 id="C-模型的微调"><a href="#C-模型的微调" class="headerlink" title="C.模型的微调"></a>C.模型的微调</h3><p>​		迁移学习是一种技术，在另一个数据集上训练模型时，在数据集上训练模型所获得的知识可以重用，这样新数据集的域与先验域[21]有一定的相似性。类似地，微调可以被描述为在同一数据集上的迁移学习。</p>
+<p>​		因此，训练过程可以分为两个不同的阶段。在初始阶段，为给定的数据集选择模型的最优超参数。然后使用这些超参数设置在给定的数据集上训练模型。在第二步中，我们对这个初始模型应用微调。</p>
+<p>​		使用原始数据集，在微调阶段迭代迁移学习的过程。每次重复都使用上一次迭代的模型权重进行初始化。在每次迭代中，学习率都会减半。此外，每次迭代将批量大小减半。这样做，直到初始学习速率是1e−4，批处理大小是32。这个过程重复K次，其中K是一个任意的常数，一般设为5。</p>
+<p><img src="E:\Achr_blog\blog\source_posts\图片\LSTM-FCN\table1.jpg" alt="Fine-tuning algorithm" title="Fine-tuning algorithm"></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>​		该模型已在所有85个UCR时间序列数据集[11]上进行了测试。在所有实验中，FCN块都保持不变。通过对8~128个记忆单元的超参数搜索，得到了LSTM记忆单元cell的最佳数量。训练期的数量通常在2000个epochs保持不变，但在算法需要更长时间才能收敛的数据集上会增加epochs。初始batch size为128，在微调算法的每次连续迭代时减半。在使用LSTM或ALSTM层后，使用80%的高dropout来防止过拟合。类别不平衡问题通过一个受King等人[22]启发的类别加权方案进行处理。</p>
+<p>​		所有模型均通过Adam优化器[23]进行训练，初始学习率为1e−3，最终学习率为1e−4。所有的卷积内核都用由He等人. [24]提出的初始化方法。如果验证得分没有提高，那么每100个epoches让学习率lr降低$1&#x2F;\sqrt[3]{2}$，直到达到最终的学习率。没有对UCR数据集进行额外的预处理，因为它们接近0均值和单位方差。所有模型都进行了微调，表I中所述的分数是指模型在微调前后获得的分数。</p>
+<h3 id="A-评价指标"><a href="#A-评价指标" class="headerlink" title="A.评价指标"></a>A.评价指标</h3><p>​		在本文中，我们使用Wang等人[10]所述的精度、基于秩的统计数据和每类误差的平均值来对该模型进行了评估。</p>
+<p>​		使用的基于秩的评估是算术秩、几何秩和威尔克森符号秩检验。算术秩是数据集的秩的算术平均值。几何秩是每个数据集的秩的几何平均值。采用威尔科克森符号秩检验来比较所提模型与现有模型的最先进模型的中值秩。原假设和备择假设如下：<br>$$<br>H_o: \text{Median}<em>{\text{proposed model}} &#x3D; \text{Median}</em>{\text{state-of-the-art model}} \<br>H_a: \text{Median}<em>{\text{proposed model}} \neq \text{Median}</em>{\text{state-of-the-art model}}<br>$$<br>​		平均每类误差（Mean Per Class Error，MPCE）定义为每类误差（PCE）的算术平均值，<br>$$<br>PCE_k &#x3D; \frac{1 - \text{accuracy}}{\text{number of unique classes}} \<br>MPCE &#x3D; \frac{1}{K} \sum PCE_k.<br>$$</p>
+<h3 id="B-Results"><a href="#B-Results" class="headerlink" title="B. Results"></a>B. Results</h3><p>​		图2是在“CBF”数据集上的ALSTM记忆单元的可视化表示的一个例子。图中序列被“压缩”在一起的点是所有类具有相同权重的点。这些是时间序列中注意力LSTM可以正确识别类的点。通过对实际时间序列的目视检查，进一步支持了这一点。挤压点是每个类可以相互区分的点，如图2所示。</p>
+<p>​		表i总结了UCR数据集上的性能。彩色单元格是优于该数据集的最先进模型的单元格。所提出的模型，ALSTM-FCN模型和LSTMFCN模型，在两个阶段，没有微调（阶段1）和微调（阶段2），在至少43个数据集上优于最先进的模型。图3中的平均算术排名表明了我们提出的模型优于现有的最先进的模型。使用Wilcoxon符号秩检验进一步验证了这一点，其中与现有的最先进的模型相比，每个提出的模型的p值都小于0.05，表2。</p>
+]]></content>
+      <categories>
+        <category>theory</category>
+      </categories>
+      <tags>
+        <tag>classification</tag>
       </tags>
   </entry>
   <entry>
@@ -382,56 +454,6 @@
       </categories>
       <tags>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>LSTM-FCN论文总结</title>
-    <url>/2025/01/14/LSTM-FCN/</url>
-    <content><![CDATA[<p><em><strong>论文名：LSTM Fully Convolutional Networks for Time Series Classification</strong></em></p>
-<p>**<em>作者：<em><em><em>Fazle Karim1</em>∗</em> , Somshubra Majumdar2</em>∗</em> , Houshang Darabi1 , <em>Senior Member, IEEE, and Shun Chen</em>1</p>
-<p><em><strong>年份：2017</strong></em></p>
-<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>​		<em><em>全卷积神经网络（FCN）<strong>已经被证明在分类时间序列的任务上可取得最先进的性能。我们提出了利用</strong></em>LSTM</em><strong>子模块来增强</strong>FCN<strong>以进行时间序列分类。我们提出的方法显著增加了</strong>FCN<strong>的表现，模型大小只增加了一点，并且仅需对数据集进行很小的预处理。与其他算法相比，<strong>LSTM-FCN</strong>取得了最先进的性能。我们还使用</strong>注意长短期记忆全卷积网络（ALSTM-FCN）<strong>探索注意力机制在时序分类上的表现。通过注意力机制，人们可以可视化</strong>LSTM**记忆单元的决策过程。此外，我们提出微调作为提升已训练好模型表现的一种方式。最后对我们的模型进行了整体表现的分析并与其他技术进行比较。</p>
-<p><em><strong>Keywords：</strong></em> <em><strong>CNN</strong></em>, <em><strong>LSTM</strong></em>, <em><strong>RNN</strong></em>, 时序分类</p>
-<hr>
-<span id="more"></span>
-
-<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>​		在过去的十年里，人们对时间序列分类的兴趣越来越大。时间序列数据无处不在，存在于天气读数、财务记录、工业观察和心理信号[1]中。本文提出了两种深度学习模型来分类时间序列数据集，它们的性能都优于现有的最先进的模型。</p>
-<p>​		大量的研究已经使用基于特征的方式或方法来提取一组代表时间序列模式的特征。Bag-of-Words（BoW）[2]，Bag-of-features（TSBF）[3]，Bag-of-SFA-Symbols（BOSS）[4]，BOSSVS [5]，Word提取时间序列分类（WEASEL）[6]，已经在该领域取得了良好的结果。Bag-of-words量化提取的特征，并将BoW输入分类器。TSBF提取随机局部信息的多个子序列，由监督学习者将其压缩成一本用于预测时间序列标签的食谱。BOSS引入了一个基于距离的分类器和直方图的组合。直方图代表了使用符号傅里叶近似创建的时间序列的子结构。BOSSVS扩展了这种方法，提出了一个向量空间模型，在保持性能的同时降低了时间复杂度。WEASEL利用滑动窗口将时间序列转换为特征向量。机器学习算法利用这些特征向量来检测和分类时间序列。所有这些分类器都需要大量的特征提取和特征工程。</p>
-<p>​		集成算法在时序分类问题上也取得了先进的性能表现。三种最成功的集成算法合并时间序列的各种特征，Elastic Ensemble (PROP)[7]是一种使用加权集成方法集成了11个时间序列分类器的模型，Shapelet ensemble (SE) [8]是一种将异构集合应用于变换后的形状集的模型，flat collective of transform based ensembles (COTE) [8]是一种融合35种不同分类器到一个分类器的模型。</p>
-<p>​		最近，深度神经网络被用于时间序列分类任务。多尺度卷积神经网络（MCNN）[9]、全卷积网络（FCN）[10]和残差网络（ResNet）[10]是利用卷积神经网络（CNN）对单变量时间序列进行端到端分类的深度学习方法。MCNN使用降采样、跳过采样和滑动窗口对数据进行预处理。MCNN分类器的性能高度依赖于应用于数据集的预处理和对该模型的大量超参数集的调整。另一方面，FCN和ResNet不需要对数据或特征工程进行任何繁重的预处理。在本文中，我们通过扩张FCN模块的方式来提高FCN的性能，扩张FCN模块的方式为长短期递归神经网络（LSTM RNN）子模块LSTM-FCN或称为ALSTM-FCN的结合注意力机制的LSTM RNN。与FCN类似，所提出的两个模型都可以用于可视化卷积层的类激活图（CAM），以检测贡献于类标签的区域。此外，ALSTM还可以通过Attention LSTM单元的上下文向量来检测输入序列中贡献于类标签的区域。LSTM-FCN和ALSTM-FCN模型的一个主要优点是，它不需要大量的预处理或特征工程。结果表明，新提出的模型，LSTM-FCN和ALSTMFCN，显著提高了加州大学河滨分校（UCR）基准数据集[11]的性能。在大多数UCR基准数据集上，LSTMFCN和ALSTM-FCN比几种最先进的集成算法产生更好的结果。</p>
-<p>​		本文提出了两种端端时间序列分类的深度学习模型。所提出的模型不需要对数据或特征工程进行大量的预处理。这两种模型都在所有85个UCR时间序列基准测试上进行了测试，其性能优于大多数最先进的模型。本文的其余部分组织如下。第二节回顾了背景工作。第三节介绍了所提出的模型的体系结构。第四节，对上述实验结果进行了分析和讨论。最后，在第五节中得出了结论。</p>
-<hr>
-<h2 id="背景工作"><a href="#背景工作" class="headerlink" title="背景工作"></a>背景工作</h2><h3 id="A-时域卷积"><a href="#A-时域卷积" class="headerlink" title="A 时域卷积"></a>A 时域卷积</h3><p>​		我们使用时域卷积网络作为一个全卷积网络（FCN）分支中的特征提取模块。基本卷积块由卷积层组成，然后是批归一化[13]，然后是激活函数，它可以是校正线性单元（ReLU）或参数校正线性单元（PRELU）[14]。</p>
-<h3 id="B-RNNs"><a href="#B-RNNs" class="headerlink" title="B RNNs"></a>B RNNs</h3><p>…</p>
-<h3 id="C-LSTM"><a href="#C-LSTM" class="headerlink" title="C LSTM"></a>C LSTM</h3><p>​		虽然lstm具有学习序列中的时间依赖的能力，但它们在长序列中难以学习长期依赖。通过学习这些依赖关系而提出的注意机制[18]可以帮助LSTM学习长期依赖。</p>
-<h3 id="D-注意力机制"><a href="#D-注意力机制" class="headerlink" title="D 注意力机制"></a>D 注意力机制</h3><p>…</p>
-<blockquote>
-<p>此处原理部分后续博客进行图文讲解。</p>
-</blockquote>
-<hr>
-<h2 id="LSTM-FCN"><a href="#LSTM-FCN" class="headerlink" title="LSTM-FCN"></a>LSTM-FCN</h2><h3 id="A-网络架构"><a href="#A-网络架构" class="headerlink" title="A.网络架构"></a>A.网络架构</h3><p>​		时域卷积已被证明是解决时间序列分类问题[10]的一种有效的学习模型。由时域卷积组成的全卷积网络通常被用作特征提取器，全局平均池[19]用于在分类前减少模型中的参数量。在所提出的模型中，全卷积块增加了一个LSTM块，然后是dropout[20]，如图1所示。</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\LSTM-FCN\tu1.jpg" alt="LSTM-FCN architecture" title="LSTM-FCN architecture"></p>
-<p>​		全卷积块由三个堆叠的时域卷积块组成，滤波器大小分别为128、256和128。每个卷积块都与Wang等人[10]提出的CNN体系结构中的卷积块相同。每个块由一个时域卷积层组成，它伴随着批归一化[13]（动量momentum为0.99，速度epsilon为0.001），然后是一个ReLU激活函数。最后，在最终的卷积块之后应用全局平均池化。</p>
-<p>​		同时，时间序列输入被传递到一个维度洗牌层（在III-B节中解释）。然后将从维度洗牌转换后的时间序列传递到LSTM块中。LSTM块包括一个一般的LSTM层或一个注意的LSTM层，然后是一个dropout。全局池化层和LSTM块的输出被连接并传递到一个softmax分类层。</p>
-<h3 id="B-网络输入"><a href="#B-网络输入" class="headerlink" title="B.网络输入"></a>B.网络输入</h3><p>​		全卷积块和LSTM块在两个不同的视图中感知相同的时间序列输入。全卷积块将时间序列视为具有多个时间步长的单变量时间序列。如果有一个长度为N的时间序列，则全卷积块将以N个时间步长接收数据。</p>
-<p>​		相反，该架构中的LSTM块接收输入的时间序列作为一个具有单个时间步长的多元时间序列。这是通过维度洗牌层来完成的，它改变了时间序列的时间维度。一个长度为N的单变量时间序列，经过变换后，将被视为一个具有单一时间步长的多元时间序列（有N个变量）。</p>
-<p>​		这种方法是提高所提体系架构的性能表现的关键。相比之下，当LSTM块接收到具有N个时间步长的单变量时间序列时，由于对小的短序列UCR数据集的快速过拟合以及在较大的长序列UCR数据集中无法学习长期依赖关系，性能显著降低。</p>
-<h3 id="C-模型的微调"><a href="#C-模型的微调" class="headerlink" title="C.模型的微调"></a>C.模型的微调</h3><p>​		迁移学习是一种技术，在另一个数据集上训练模型时，在数据集上训练模型所获得的知识可以重用，这样新数据集的域与先验域[21]有一定的相似性。类似地，微调可以被描述为在同一数据集上的迁移学习。</p>
-<p>​		因此，训练过程可以分为两个不同的阶段。在初始阶段，为给定的数据集选择模型的最优超参数。然后使用这些超参数设置在给定的数据集上训练模型。在第二步中，我们对这个初始模型应用微调。</p>
-<p>​		使用原始数据集，在微调阶段迭代迁移学习的过程。每次重复都使用上一次迭代的模型权重进行初始化。在每次迭代中，学习率都会减半。此外，每次迭代将批量大小减半。这样做，直到初始学习速率是1e−4，批处理大小是32。这个过程重复K次，其中K是一个任意的常数，一般设为5。</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\LSTM-FCN\table1.jpg" alt="Fine-tuning algorithm" title="Fine-tuning algorithm"></p>
-<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>​		该模型已在所有85个UCR时间序列数据集[11]上进行了测试。在所有实验中，FCN块都保持不变。通过对8~128个记忆单元的超参数搜索，得到了LSTM记忆单元cell的最佳数量。训练期的数量通常在2000个epochs保持不变，但在算法需要更长时间才能收敛的数据集上会增加epochs。初始batch size为128，在微调算法的每次连续迭代时减半。在使用LSTM或ALSTM层后，使用80%的高dropout来防止过拟合。类别不平衡问题通过一个受King等人[22]启发的类别加权方案进行处理。</p>
-<p>​		所有模型均通过Adam优化器[23]进行训练，初始学习率为1e−3，最终学习率为1e−4。所有的卷积内核都用由He等人. [24]提出的初始化方法。如果验证得分没有提高，那么每100个epoches让学习率lr降低$1&#x2F;\sqrt[3]{2}$，直到达到最终的学习率。没有对UCR数据集进行额外的预处理，因为它们接近0均值和单位方差。所有模型都进行了微调，表I中所述的分数是指模型在微调前后获得的分数。</p>
-<h3 id="A-评价指标"><a href="#A-评价指标" class="headerlink" title="A.评价指标"></a>A.评价指标</h3><p>​		在本文中，我们使用Wang等人[10]所述的精度、基于秩的统计数据和每类误差的平均值来对该模型进行了评估。</p>
-<p>​		使用的基于秩的评估是算术秩、几何秩和威尔克森符号秩检验。算术秩是数据集的秩的算术平均值。几何秩是每个数据集的秩的几何平均值。采用威尔科克森符号秩检验来比较所提模型与现有模型的最先进模型的中值秩。原假设和备择假设如下：<br>$$<br>H_o: \text{Median}<em>{\text{proposed model}} &#x3D; \text{Median}</em>{\text{state-of-the-art model}} \<br>H_a: \text{Median}<em>{\text{proposed model}} \neq \text{Median}</em>{\text{state-of-the-art model}}<br>$$<br>​		平均每类误差（Mean Per Class Error，MPCE）定义为每类误差（PCE）的算术平均值，<br>$$<br>PCE_k &#x3D; \frac{1 - \text{accuracy}}{\text{number of unique classes}} \<br>MPCE &#x3D; \frac{1}{K} \sum PCE_k.<br>$$</p>
-<h3 id="B-Results"><a href="#B-Results" class="headerlink" title="B. Results"></a>B. Results</h3><p>​		图2是在“CBF”数据集上的ALSTM记忆单元的可视化表示的一个例子。图中序列被“压缩”在一起的点是所有类具有相同权重的点。这些是时间序列中注意力LSTM可以正确识别类的点。通过对实际时间序列的目视检查，进一步支持了这一点。挤压点是每个类可以相互区分的点，如图2所示。</p>
-<p>​		表i总结了UCR数据集上的性能。彩色单元格是优于该数据集的最先进模型的单元格。所提出的模型，ALSTM-FCN模型和LSTMFCN模型，在两个阶段，没有微调（阶段1）和微调（阶段2），在至少43个数据集上优于最先进的模型。图3中的平均算术排名表明了我们提出的模型优于现有的最先进的模型。使用Wilcoxon符号秩检验进一步验证了这一点，其中与现有的最先进的模型相比，每个提出的模型的p值都小于0.05，表2。</p>
-]]></content>
-      <categories>
-        <category>theory</category>
-      </categories>
-      <tags>
-        <tag>classification</tag>
       </tags>
   </entry>
 </search>
