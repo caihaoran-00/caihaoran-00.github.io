@@ -26,14 +26,14 @@
 <meta property="og:site_name" content="Chr&#39;s Blog">
 <meta property="og:description" content="论文名：LSTM Fully Convolutional Networks for Time Series Classification **作者：Fazle Karim1∗ , Somshubra Majumdar2∗ , Houshang Darabi1 , Senior Member, IEEE, and Shun Chen1 年份：2017 摘要​		全卷积神经网络（FCN）已经被证明在分">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="e:\Achr_blog\blog\source_posts\%E5%9B%BE%E7%89%87\LSTM-FCN\tu1.jpg">
-<meta property="og:image" content="e:\Achr_blog\blog\source_posts\%E5%9B%BE%E7%89%87\LSTM-FCN\table1.jpg">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/01/14/LSTM-FCN/tu1.jpg">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/01/14/LSTM-FCN/table1.jpg">
 <meta property="article:published_time" content="2025-01-14T11:49:57.000Z">
-<meta property="article:modified_time" content="2025-01-16T09:05:26.506Z">
+<meta property="article:modified_time" content="2025-01-21T09:15:34.677Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="classification">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="e:\Achr_blog\blog\source_posts\%E5%9B%BE%E7%89%87\LSTM-FCN\tu1.jpg">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/01/14/LSTM-FCN/tu1.jpg">
 
 
 <link rel="canonical" href="https://caihaoran-00.github.io/2025/01/14/LSTM-FCN/">
@@ -233,7 +233,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-01-16 17:05:26" itemprop="dateModified" datetime="2025-01-16T17:05:26+08:00">2025-01-16</time>
+      <time title="修改时间：2025-01-21 17:15:34" itemprop="dateModified" datetime="2025-01-21T17:15:34+08:00">2025-01-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -299,7 +299,8 @@
 </blockquote>
 <hr>
 <h2 id="LSTM-FCN"><a href="#LSTM-FCN" class="headerlink" title="LSTM-FCN"></a>LSTM-FCN</h2><h3 id="A-网络架构"><a href="#A-网络架构" class="headerlink" title="A.网络架构"></a>A.网络架构</h3><p>​		时域卷积已被证明是解决时间序列分类问题[10]的一种有效的学习模型。由时域卷积组成的全卷积网络通常被用作特征提取器，全局平均池[19]用于在分类前减少模型中的参数量。在所提出的模型中，全卷积块增加了一个LSTM块，然后是dropout[20]，如图1所示。</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\LSTM-FCN\tu1.jpg" alt="LSTM-FCN architecture" title="LSTM-FCN architecture"></p>
+<img src="/2025/01/14/LSTM-FCN/tu1.jpg" class="" title="LSTM-FCN architecture LSTM-FCN architecture">
+
 <p>​		全卷积块由三个堆叠的时域卷积块组成，滤波器大小分别为128、256和128。每个卷积块都与Wang等人[10]提出的CNN体系结构中的卷积块相同。每个块由一个时域卷积层组成，它伴随着批归一化[13]（动量momentum为0.99，速度epsilon为0.001），然后是一个ReLU激活函数。最后，在最终的卷积块之后应用全局平均池化。</p>
 <p>​		同时，时间序列输入被传递到一个维度洗牌层（在III-B节中解释）。然后将从维度洗牌转换后的时间序列传递到LSTM块中。LSTM块包括一个一般的LSTM层或一个注意的LSTM层，然后是一个dropout。全局池化层和LSTM块的输出被连接并传递到一个softmax分类层。</p>
 <h3 id="B-网络输入"><a href="#B-网络输入" class="headerlink" title="B.网络输入"></a>B.网络输入</h3><p>​		全卷积块和LSTM块在两个不同的视图中感知相同的时间序列输入。全卷积块将时间序列视为具有多个时间步长的单变量时间序列。如果有一个长度为N的时间序列，则全卷积块将以N个时间步长接收数据。</p>
@@ -308,7 +309,8 @@
 <h3 id="C-模型的微调"><a href="#C-模型的微调" class="headerlink" title="C.模型的微调"></a>C.模型的微调</h3><p>​		迁移学习是一种技术，在另一个数据集上训练模型时，在数据集上训练模型所获得的知识可以重用，这样新数据集的域与先验域[21]有一定的相似性。类似地，微调可以被描述为在同一数据集上的迁移学习。</p>
 <p>​		因此，训练过程可以分为两个不同的阶段。在初始阶段，为给定的数据集选择模型的最优超参数。然后使用这些超参数设置在给定的数据集上训练模型。在第二步中，我们对这个初始模型应用微调。</p>
 <p>​		使用原始数据集，在微调阶段迭代迁移学习的过程。每次重复都使用上一次迭代的模型权重进行初始化。在每次迭代中，学习率都会减半。此外，每次迭代将批量大小减半。这样做，直到初始学习速率是1e−4，批处理大小是32。这个过程重复K次，其中K是一个任意的常数，一般设为5。</p>
-<p><img src="E:\Achr_blog\blog\source_posts\图片\LSTM-FCN\table1.jpg" alt="Fine-tuning algorithm" title="Fine-tuning algorithm"></p>
+<img src="/2025/01/14/LSTM-FCN/table1.jpg" class="" title="Fine-tuning algorithm Fine-tuning algorithm">
+
 <h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>​		该模型已在所有85个UCR时间序列数据集[11]上进行了测试。在所有实验中，FCN块都保持不变。通过对8~128个记忆单元的超参数搜索，得到了LSTM记忆单元cell的最佳数量。训练期的数量通常在2000个epochs保持不变，但在算法需要更长时间才能收敛的数据集上会增加epochs。初始batch size为128，在微调算法的每次连续迭代时减半。在使用LSTM或ALSTM层后，使用80%的高dropout来防止过拟合。类别不平衡问题通过一个受King等人[22]启发的类别加权方案进行处理。</p>
 <p>​		所有模型均通过Adam优化器[23]进行训练，初始学习率为1e−3，最终学习率为1e−4。所有的卷积内核都用由He等人. [24]提出的初始化方法。如果验证得分没有提高，那么每100个epoches让学习率lr降低$1&#x2F;\sqrt[3]{2}$，直到达到最终的学习率。没有对UCR数据集进行额外的预处理，因为它们接近0均值和单位方差。所有模型都进行了微调，表I中所述的分数是指模型在微调前后获得的分数。</p>
 <h3 id="A-评价指标"><a href="#A-评价指标" class="headerlink" title="A.评价指标"></a>A.评价指标</h3><p>​		在本文中，我们使用Wang等人[10]所述的精度、基于秩的统计数据和每类误差的平均值来对该模型进行了评估。</p>
@@ -375,7 +377,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">29 分钟</span>
+    <span title="站点阅读时长">30 分钟</span>
   </span>
 </div>
 <div class="busuanzi-count">
@@ -430,6 +432,12 @@
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
 
 
 
