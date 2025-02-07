@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言本文梳理一些常用的git命令，以使用场景为切入点进行git指令介绍。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git常用命令">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言本文梳理一些常用的git命令，以使用场景为切入点进行git指令介绍。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20250205113431936.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20250205113617249.png">
+<meta property="article:published_time" content="2025-01-23T07:18:22.000Z">
+<meta property="article:modified_time" content="2025-02-05T08:15:49.371Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20250205113431936.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/","path":"2025/01/23/git常用命令/","title":"git常用命令"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>git常用命令 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93-%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="nav-number">2.</span> <span class="nav-text">一、本地仓库-&gt;远程仓库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%88%9D%E5%A7%8B%E5%8C%96%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93"><span class="nav-number">2.1.</span> <span class="nav-text">1.初始化本地仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%88%9B%E5%BB%BA%E6%96%87%E4%BB%B6%E5%B9%B6%E6%8F%90%E4%BA%A4%E5%88%B0%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93"><span class="nav-number">2.2.</span> <span class="nav-text">2.创建文件并提交到本地仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93-%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="nav-number">2.3.</span> <span class="nav-text">3. 本地仓库-&gt;远程仓库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93-%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">二、远程仓库-&gt;本地仓库（推荐）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%88%9B%E5%BB%BA%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93"><span class="nav-number">3.1.</span> <span class="nav-text">1.创建远程仓库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93%E6%96%87%E4%BB%B6%E5%88%9B%E5%BB%BA"><span class="nav-number">3.2.</span> <span class="nav-text">2. 本地仓库文件创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93-%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93-1"><span class="nav-number">3.3.</span> <span class="nav-text">3. 本地仓库-&gt;远程仓库</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="git常用命令 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          git常用命令
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-01-23 15:18:22" itemprop="dateCreated datePublished" datetime="2025-01-23T15:18:22+08:00">2025-01-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-02-05 16:15:49" itemprop="dateModified" datetime="2025-02-05T16:15:49+08:00">2025-02-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文梳理一些常用的git命令，以<strong>使用场景</strong>为切入点进行git指令介绍。</p>
+<span id="more"></span>
+
+<h2 id="一、本地仓库-远程仓库"><a href="#一、本地仓库-远程仓库" class="headerlink" title="一、本地仓库-&gt;远程仓库"></a>一、本地仓库-&gt;远程仓库</h2><h3 id="1-初始化本地仓库"><a href="#1-初始化本地仓库" class="headerlink" title="1.初始化本地仓库"></a>1.初始化本地仓库</h3><ul>
+<li><p>创建一个项目文件夹，比如我创建了一个<code>agent_langgraph</code>文件夹</p>
+</li>
+<li><p>进入这个文件夹，命令行运行：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">hint: <span class="title">Using</span> &#x27;<span class="title">master</span>&#x27; <span class="title">as</span> <span class="title">the</span> <span class="title">name</span> <span class="title">for</span> <span class="title">the</span> <span class="title">initial</span> <span class="title">branch</span>. <span class="title">This</span> <span class="title">default</span> <span class="title">branch</span> <span class="title">name</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">is</span> <span class="title">subject</span> <span class="title">to</span> <span class="title">change</span>. <span class="title">To</span> <span class="title">configure</span> <span class="title">the</span> <span class="title">initial</span> <span class="title">branch</span> <span class="title">name</span> <span class="title">to</span> <span class="title">use</span> <span class="title">in</span> <span class="title">all</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">of</span> <span class="title">your</span> <span class="title">new</span> <span class="title">repositories</span>, <span class="title">which</span> <span class="title">will</span> <span class="title">suppress</span> <span class="title">this</span> <span class="title">warning</span>, <span class="title">call</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:   <span class="title">git</span> <span class="title">config</span> --<span class="title">global</span> <span class="title">init.defaultBranch</span> &lt;<span class="title">name</span>&gt;</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">Names</span> <span class="title">commonly</span> <span class="title">chosen</span> <span class="title">instead</span> <span class="title">of</span> &#x27;<span class="title">master</span>&#x27; <span class="title">are</span> &#x27;<span class="title">main</span>&#x27;, &#x27;<span class="title">trunk</span>&#x27; <span class="title">and</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: &#x27;<span class="title">development</span>&#x27;. <span class="title">The</span> <span class="title">just</span>-<span class="title">created</span> <span class="title">branch</span> <span class="title">can</span> <span class="title">be</span> <span class="title">renamed</span> <span class="title">via</span> <span class="title">this</span> <span class="title">command</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:   <span class="title">git</span> <span class="title">branch</span> -<span class="title">m</span> &lt;<span class="title">name</span>&gt;</span></span><br><span class="line"><span class="function"><span class="title">Initialized</span> <span class="title">empty</span> <span class="title">Git</span> <span class="title">repository</span> <span class="title">in</span> <span class="title">E</span>:/<span class="title">chr_git</span>/<span class="title">agent_langgraph</span>/.<span class="title">git</span>/</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-创建文件并提交到本地仓库"><a href="#2-创建文件并提交到本地仓库" class="headerlink" title="2.创建文件并提交到本地仓库"></a>2.创建文件并提交到本地仓库</h3><p>先创建几个项目文件：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> # 基于langgraph的agent应用 &gt; README.<span class="built_in">md</span></span><br><span class="line"><span class="built_in">echo</span> &quot;<span class="built_in">print</span>(&#x27;Hello, LangGraph!&#x27;)&quot; &gt; main.py</span><br></pre></td></tr></table></figure>
+
+<p>查看当前状态：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">On branch master</span><br><span class="line"></span><br><span class="line">No commits yet</span><br><span class="line"></span><br><span class="line">Untracked files:</span><br><span class="line">  (use <span class="string">&quot;git add &lt;file&gt;...&quot;</span> to include <span class="keyword">in</span> what will be committed)</span><br><span class="line">        README.md</span><br><span class="line">        main.py</span><br><span class="line"></span><br><span class="line">nothing added to commit but untracked files present (use <span class="string">&quot;git add&quot;</span> to track)</span><br></pre></td></tr></table></figure>
+
+<p>将这些文件加入Git的<code>暂存区</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br></pre></td></tr></table></figure>
+
+<p>再次查看状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">On branch master</span><br><span class="line"></span><br><span class="line">No commits yet</span><br><span class="line"></span><br><span class="line">Changes to be committed:</span><br><span class="line">  (use <span class="string">&quot;git rm --cached &lt;file&gt;...&quot;</span> to unstage)</span><br><span class="line">        new file:   README.md</span><br><span class="line">        new file:   main.py</span><br></pre></td></tr></table></figure>
+
+<p>提交到Git仓库：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Initial commit: add README and main.py&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[master (root-commit) e1b1d5b] Initial commit: add README and main.py</span><br><span class="line"> 2 files changed, 2 insertions(+)</span><br><span class="line"> create mode 100644 README.md</span><br><span class="line"> create mode 100644 main.py</span><br></pre></td></tr></table></figure>
+
+<p>注意，到这里只是在<strong>本地创建和管理</strong>这个Git仓库，并没有把项目上传到<code>Github</code>上。如果想让项目出现在你的<code>Github</code>账户里，还需要执行一些额外步骤，将本地仓库推送到Github。</p>
+<h3 id="3-本地仓库-远程仓库"><a href="#3-本地仓库-远程仓库" class="headerlink" title="3. 本地仓库-&gt;远程仓库"></a>3. 本地仓库-&gt;远程仓库</h3><p>先在<code>Github</code>上创建一个远程仓库：</p>
+<ul>
+<li>登录你的<code>Github</code>账户，点击右上角的<code>+</code>按钮，选择<code>New repository</code></li>
+<li>填写项目名称，如<code>agent_langgraph</code>，可在此界面添加项目描述(Description)，选择项目是公开可见(Public)还是仅你指定的人可见(Private)，选择初始化仓库时是否增加README文件，选择是否添加<code>.gitignore</code>模板，用于模板列表中选择不跟踪的文件，这里选择<code>Python</code>，最后还可以选择许可证(license)。、</li>
+<li>点击<code>Create repository</code>以创建仓库</li>
+</ul>
+<p>现在就可以将本地仓库与Github远程仓库关联了，在你的本地项目目录下运行:</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://github.com/&lt;your_username&gt;/agent_langgraph.git</span><br><span class="line"></span><br><span class="line">如</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/caihaoran-<span class="number">00</span>/agent_langgraph</span><br></pre></td></tr></table></figure>
+
+<p>检查关联是否成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">origin  https://github.com/caihaoran-<span class="number">00</span>/agent_langgraph (fetch)</span><br><span class="line">origin  https://github.com/caihaoran-<span class="number">00</span>/agent_langgraph (push)</span><br></pre></td></tr></table></figure>
+
+<p>查看本地分支名称：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">* master</span><br></pre></td></tr></table></figure>
+
+<p>推送代码到远程仓库：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">warning: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">Enumerating</span> <span class="title">objects</span>: 4, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Counting</span> <span class="title">objects</span>: 100% (4/4), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Delta</span> <span class="title">compression</span> <span class="title">using</span> <span class="title">up</span> <span class="title">to</span> 16 <span class="title">threads</span></span></span><br><span class="line"><span class="function"><span class="title">Compressing</span> <span class="title">objects</span>: 100% (2/2), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Writing</span> <span class="title">objects</span>: 100% (4/4), 335 <span class="title">bytes</span> | 335.00 <span class="title">KiB</span>/<span class="title">s</span>, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Total</span> 4 (<span class="title">delta</span> 0), <span class="title">reused</span> 0 (<span class="title">delta</span> 0), <span class="title">pack</span>-<span class="title">reused</span> 0</span></span><br><span class="line"><span class="function"><span class="title">remote</span>:</span></span><br><span class="line"><span class="function"><span class="title">remote</span>: <span class="title">Create</span> <span class="title">a</span> <span class="title">pull</span> <span class="title">request</span> <span class="title">for</span> &#x27;<span class="title">master</span>&#x27; <span class="title">on</span> <span class="title">GitHub</span> <span class="title">by</span> <span class="title">visiting</span>:</span></span><br><span class="line"><span class="function"><span class="title">remote</span>:      <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span>/<span class="title">pull</span>/<span class="title">new</span>/<span class="title">master</span></span></span><br><span class="line"><span class="function"><span class="title">remote</span>:</span></span><br><span class="line"><span class="function"><span class="title">To</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function"> * [<span class="title">new</span> <span class="title">branch</span>]      <span class="title">master</span> -&gt; <span class="title">master</span></span></span><br><span class="line"><span class="function"><span class="title">branch</span> &#x27;<span class="title">master</span>&#x27; <span class="title">set</span> <span class="title">up</span> <span class="title">to</span> <span class="title">track</span> &#x27;<span class="title">origin</span>/<span class="title">master</span>&#x27;.</span></span><br></pre></td></tr></table></figure>
+
+<p>好，推送成功了，打开我们的<code>git仓库</code>看看</p>
+<img src="/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20250205113431936.png" class="" title="image-20250205113431936">
+
+<p>咦，怎么没有呢？我们发现现在是两个分支了(2 Branches)，点击<code>main</code>切换到<code>master</code>分支，</p>
+<img src="/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20250205113617249.png" class="" title="image-20250205113617249">
+
+<p>哦，在这里啊，这是怎么回事呢，回到我们的第一个命令<code>git init</code>的输出，原来一开始就建议我们使用<code>main</code>而不是<code>master</code>作为默认分支了，首先运行：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global init.defaultBranch main</span><br></pre></td></tr></table></figure>
+
+<p>让所有新仓库用<code>main</code>作为默认分支，然后重命名本地<code>master</code>分支为<code>main</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -m master main</span><br></pre></td></tr></table></figure>
+
+<p>将本地<code>main</code>和远程<code>main</code>关联：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">warning: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">To</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function"> ! [<span class="title">rejected</span>]        <span class="title">main</span> -&gt; <span class="title">main</span> (<span class="title">fetch</span> <span class="title">first</span>)</span></span><br><span class="line"><span class="function"><span class="title">error</span>: <span class="title">failed</span> <span class="title">to</span> <span class="title">push</span> <span class="title">some</span> <span class="title">refs</span> <span class="title">to</span> &#x27;<span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span>&#x27;</span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">Updates</span> <span class="title">were</span> <span class="title">rejected</span> <span class="title">because</span> <span class="title">the</span> <span class="title">remote</span> <span class="title">contains</span> <span class="title">work</span> <span class="title">that</span> <span class="title">you</span> <span class="title">do</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">not</span> <span class="title">have</span> <span class="title">locally</span>. <span class="title">This</span> <span class="title">is</span> <span class="title">usually</span> <span class="title">caused</span> <span class="title">by</span> <span class="title">another</span> <span class="title">repository</span> <span class="title">pushing</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">to</span> <span class="title">the</span> <span class="title">same</span> <span class="title">ref</span>. <span class="title">You</span> <span class="title">may</span> <span class="title">want</span> <span class="title">to</span> <span class="title">first</span> <span class="title">integrate</span> <span class="title">the</span> <span class="title">remote</span> <span class="title">changes</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: (<span class="title">e.g</span>., &#x27;<span class="title">git</span> <span class="title">pull</span> ...&#x27;) <span class="title">before</span> <span class="title">pushing</span> <span class="title">again</span>.</span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">See</span> <span class="title">the</span> &#x27;<span class="title">Note</span> <span class="title">about</span> <span class="title">fast</span>-<span class="title">forwards</span>&#x27; <span class="title">in</span> &#x27;<span class="title">git</span> <span class="title">push</span> --<span class="title">help</span>&#x27; <span class="title">for</span> <span class="title">details</span>.</span></span><br></pre></td></tr></table></figure>
+
+<p>这是因为创建远程<code>main</code>分支的时候添加了<code>.gitignore</code>文件，但本地<code>main</code>分支并没有同步远程的更新，所以<code>Git</code>拒绝了你的推送，执行</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git pull --rebase origin main</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">remote: <span class="title">Enumerating</span> <span class="title">objects</span>: 3, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">remote</span>: <span class="title">Counting</span> <span class="title">objects</span>: 100% (3/3), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">remote</span>: <span class="title">Compressing</span> <span class="title">objects</span>: 100% (2/2), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">remote</span>: <span class="title">Total</span> 3 (<span class="title">delta</span> 0), <span class="title">reused</span> 0 (<span class="title">delta</span> 0), <span class="title">pack</span>-<span class="title">reused</span> 0 (<span class="title">from</span> 0)</span></span><br><span class="line"><span class="function"><span class="title">Unpacking</span> <span class="title">objects</span>: 100% (3/3), 2.32 <span class="title">KiB</span> | 198.00 <span class="title">KiB</span>/<span class="title">s</span>, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">From</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function"> * <span class="title">branch</span>            <span class="title">main</span>       -&gt; <span class="title">FETCH_HEAD</span></span></span><br><span class="line"><span class="function"> * [<span class="title">new</span> <span class="title">branch</span>]      <span class="title">main</span>       -&gt; <span class="title">origin</span>/<span class="title">main</span></span></span><br><span class="line"><span class="function"><span class="title">Successfully</span> <span class="title">rebased</span> <span class="title">and</span> <span class="title">updated</span> <span class="title">refs</span>/<span class="title">heads</span>/<span class="title">main</span>.</span></span><br></pre></td></tr></table></figure>
+
+<p>运行：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">warning: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">Enumerating</span> <span class="title">objects</span>: 5, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Counting</span> <span class="title">objects</span>: 100% (5/5), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Delta</span> <span class="title">compression</span> <span class="title">using</span> <span class="title">up</span> <span class="title">to</span> 16 <span class="title">threads</span></span></span><br><span class="line"><span class="function"><span class="title">Compressing</span> <span class="title">objects</span>: 100% (2/2), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Writing</span> <span class="title">objects</span>: 100% (4/4), 405 <span class="title">bytes</span> | 405.00 <span class="title">KiB</span>/<span class="title">s</span>, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Total</span> 4 (<span class="title">delta</span> 0), <span class="title">reused</span> 0 (<span class="title">delta</span> 0), <span class="title">pack</span>-<span class="title">reused</span> 0</span></span><br><span class="line"><span class="function"><span class="title">To</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function">   <span class="title">a8dd2f9</span>..<span class="title">d26a2dd</span>  <span class="title">main</span> -&gt; <span class="title">main</span></span></span><br><span class="line"><span class="function"><span class="title">branch</span> &#x27;<span class="title">main</span>&#x27; <span class="title">set</span> <span class="title">up</span> <span class="title">to</span> <span class="title">track</span> &#x27;<span class="title">origin</span>/<span class="title">main</span>&#x27;.</span></span><br></pre></td></tr></table></figure>
+
+<p>OK!成功了，看下远程仓库也确实推送上去了，最后删除掉刚才的<code>master</code>分支：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git push origin --delete master</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">warning: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">To</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function"> - [<span class="title">deleted</span>]         <span class="title">master</span></span></span><br></pre></td></tr></table></figure>
+
+<p>检查下远程仓库，确实删除掉了，这些<code>warning</code>怎么解决呢？</p>
+<p>这理由两方面警告：</p>
+<ul>
+<li><p><code>git-credential-manager-core</code>被重命名为<code>git-credential-manager</code></p>
+<p>升级<a target="_blank" rel="noopener" href="https://git-scm.com/downloads/win">git</a>，然后<code>git --version</code>查看是否升级成功，再</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git config --global credential.helper manager</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> # 基于langgraph的agent应用示例 &gt; README.<span class="built_in">md</span></span><br><span class="line">git add .</span><br><span class="line">git commit -m &quot;Modified README&quot;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<p>最终输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Enumerating objects: <span class="number">5</span>, done.</span><br><span class="line">Counting objects: <span class="number">100</span>% (<span class="number">5</span>/<span class="number">5</span>), done.</span><br><span class="line">Delta compression using up to <span class="number">16</span> threads</span><br><span class="line">Compressing objects: <span class="number">100</span>% (<span class="number">2</span>/<span class="number">2</span>), done.</span><br><span class="line">Writing objects: <span class="number">100</span>% (<span class="number">3</span>/<span class="number">3</span>), <span class="number">348</span> bytes | <span class="number">348</span>.<span class="number">00</span> KiB/s, done.</span><br><span class="line">Total <span class="number">3</span> (delta <span class="number">0</span>), reused <span class="number">0</span> (delta <span class="number">0</span>), pack-reused <span class="number">0</span> (from <span class="number">0</span>)</span><br><span class="line">To https://github.com/caihaoran-<span class="number">00</span>/agent_langgraph</span><br><span class="line">   d26a2dd..ca9d0de  main -&gt; main</span><br></pre></td></tr></table></figure>
+
+<p>没有警告了，完美。</p>
+</li>
+</ul>
+<p>但是发现readme文件显示乱码了，通过任意编辑器打开readme文件，选择<code>UTF-8</code>格式保存，再：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m &quot;Modified README&quot;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<p>即可。</p>
+<hr>
+<h2 id="二、远程仓库-本地仓库（推荐）"><a href="#二、远程仓库-本地仓库（推荐）" class="headerlink" title="二、远程仓库-&gt;本地仓库（推荐）"></a>二、远程仓库-&gt;本地仓库（推荐）</h2><h3 id="1-创建远程仓库"><a href="#1-创建远程仓库" class="headerlink" title="1.创建远程仓库"></a>1.创建远程仓库</h3><p>第二个案例我们从新建远程仓库看起，与案例一大同小异，首先创建远程仓库，名称为<code>agent</code>。</p>
+<h3 id="2-本地仓库文件创建"><a href="#2-本地仓库文件创建" class="headerlink" title="2. 本地仓库文件创建"></a>2. 本地仓库文件创建</h3><p>克隆这个仓库到本地：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/caihaoran-<span class="number">00</span>/agent.git</span><br></pre></td></tr></table></figure>
+
+<p>然后进入这个文件夹，在本地新建几个文件：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> # 原生的agent应用 &gt; README.<span class="built_in">md</span></span><br><span class="line"><span class="built_in">echo</span> &quot;<span class="built_in">print</span>(&#x27;Hello, agent!&#x27;)&quot; &gt; main.py</span><br></pre></td></tr></table></figure>
+
+<p>然后可以运行：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<p>查看下状态，输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">On branch main</span><br><span class="line">Your branch is up to <span class="built_in">date</span> with &#x27;origin/main&#x27;.</span><br><span class="line"></span><br><span class="line">Changes <span class="keyword">not</span> staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)</span><br><span class="line">  (use &quot;git <span class="built_in">restore</span> &lt;file&gt;...&quot; to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line"><span class="function">        modified:   <span class="title">README.md</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">Untracked</span> <span class="title">files</span>:</span></span><br><span class="line"><span class="function">  (<span class="title">use</span> &quot;<span class="title">git</span> <span class="title">add</span> &lt;<span class="title">file</span>&gt;...&quot; <span class="title">to</span> <span class="title">include</span> <span class="title">in</span> <span class="title">what</span> <span class="title">will</span> <span class="title">be</span> <span class="title">committed</span>)</span></span><br><span class="line"><span class="function">        <span class="title">main.py</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">no</span> <span class="title">changes</span> <span class="title">added</span> <span class="title">to</span> <span class="title">commit</span> (<span class="title">use</span> &quot;<span class="title">git</span> <span class="title">add</span>&quot; <span class="title">and</span>/<span class="title">or</span> &quot;<span class="title">git</span> <span class="title">commit</span> -<span class="title">a</span>&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-本地仓库-远程仓库-1"><a href="#3-本地仓库-远程仓库-1" class="headerlink" title="3. 本地仓库-&gt;远程仓库"></a>3. 本地仓库-&gt;远程仓库</h3><p>运行：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m &quot;Initial commit: add README and main.py&quot;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<p>最终输出：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Enumerating objects: <span class="number">6</span>, done.</span><br><span class="line">Counting objects: <span class="number">100</span>% (<span class="number">6</span>/<span class="number">6</span>), done.</span><br><span class="line">Delta compression using up to <span class="number">16</span> threads</span><br><span class="line">Compressing objects: <span class="number">100</span>% (<span class="number">2</span>/<span class="number">2</span>), done.</span><br><span class="line">Writing objects: <span class="number">100</span>% (<span class="number">4</span>/<span class="number">4</span>), <span class="number">355</span> bytes | <span class="number">355</span>.<span class="number">00</span> KiB/s, done.</span><br><span class="line">Total <span class="number">4</span> (delta <span class="number">0</span>), reused <span class="number">0</span> (delta <span class="number">0</span>), pack-reused <span class="number">0</span> (from <span class="number">0</span>)</span><br><span class="line">To https://github.com/caihaoran-<span class="number">00</span>/agent.git</span><br><span class="line">   <span class="number">43</span>b6c82..<span class="number">765</span>f15b  main -&gt; main</span><br></pre></td></tr></table></figure>
+
+<p>好了，是不是要比案例一要简单一些呢。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/01/22/conda%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" rel="prev" title="conda常用命令">
+                  <i class="fa fa-angle-left"></i> conda常用命令
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/02/05/fastapi-request%E6%9E%84%E5%BB%BA%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="next" title="fastapi+request构建语音识别微服务">
+                  fastapi+request构建语音识别微服务 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">13k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">47 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

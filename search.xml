@@ -1,58 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>LSTM-FCN论文总结</title>
-    <url>/2025/01/14/LSTM-FCN/</url>
-    <content><![CDATA[<p><em><strong>论文名：LSTM Fully Convolutional Networks for Time Series Classification</strong></em></p>
-<p>**<em>作者：<em><em><em>Fazle Karim1</em>∗</em> , Somshubra Majumdar2</em>∗</em> , Houshang Darabi1 , <em>Senior Member, IEEE, and Shun Chen</em>1</p>
-<p><em><strong>年份：2017</strong></em></p>
-<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>​		<em><em>全卷积神经网络（FCN）<strong>已经被证明在分类时间序列的任务上可取得最先进的性能。我们提出了利用</strong></em>LSTM</em><strong>子模块来增强</strong>FCN<strong>以进行时间序列分类。我们提出的方法显著增加了</strong>FCN<strong>的表现，模型大小只增加了一点，并且仅需对数据集进行很小的预处理。与其他算法相比，<strong>LSTM-FCN</strong>取得了最先进的性能。我们还使用</strong>注意长短期记忆全卷积网络（ALSTM-FCN）<strong>探索注意力机制在时序分类上的表现。通过注意力机制，人们可以可视化</strong>LSTM**记忆单元的决策过程。此外，我们提出微调作为提升已训练好模型表现的一种方式。最后对我们的模型进行了整体表现的分析并与其他技术进行比较。</p>
-<p><em><strong>Keywords：</strong></em> <em><strong>CNN</strong></em>, <em><strong>LSTM</strong></em>, <em><strong>RNN</strong></em>, 时序分类</p>
-<hr>
-<span id="more"></span>
-
-<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>​		在过去的十年里，人们对时间序列分类的兴趣越来越大。时间序列数据无处不在，存在于天气读数、财务记录、工业观察和心理信号[1]中。本文提出了两种深度学习模型来分类时间序列数据集，它们的性能都优于现有的最先进的模型。</p>
-<p>​		大量的研究已经使用基于特征的方式或方法来提取一组代表时间序列模式的特征。Bag-of-Words（BoW）[2]，Bag-of-features（TSBF）[3]，Bag-of-SFA-Symbols（BOSS）[4]，BOSSVS [5]，Word提取时间序列分类（WEASEL）[6]，已经在该领域取得了良好的结果。Bag-of-words量化提取的特征，并将BoW输入分类器。TSBF提取随机局部信息的多个子序列，由监督学习者将其压缩成一本用于预测时间序列标签的食谱。BOSS引入了一个基于距离的分类器和直方图的组合。直方图代表了使用符号傅里叶近似创建的时间序列的子结构。BOSSVS扩展了这种方法，提出了一个向量空间模型，在保持性能的同时降低了时间复杂度。WEASEL利用滑动窗口将时间序列转换为特征向量。机器学习算法利用这些特征向量来检测和分类时间序列。所有这些分类器都需要大量的特征提取和特征工程。</p>
-<p>​		集成算法在时序分类问题上也取得了先进的性能表现。三种最成功的集成算法合并时间序列的各种特征，Elastic Ensemble (PROP)[7]是一种使用加权集成方法集成了11个时间序列分类器的模型，Shapelet ensemble (SE) [8]是一种将异构集合应用于变换后的形状集的模型，flat collective of transform based ensembles (COTE) [8]是一种融合35种不同分类器到一个分类器的模型。</p>
-<p>​		最近，深度神经网络被用于时间序列分类任务。多尺度卷积神经网络（MCNN）[9]、全卷积网络（FCN）[10]和残差网络（ResNet）[10]是利用卷积神经网络（CNN）对单变量时间序列进行端到端分类的深度学习方法。MCNN使用降采样、跳过采样和滑动窗口对数据进行预处理。MCNN分类器的性能高度依赖于应用于数据集的预处理和对该模型的大量超参数集的调整。另一方面，FCN和ResNet不需要对数据或特征工程进行任何繁重的预处理。在本文中，我们通过扩张FCN模块的方式来提高FCN的性能，扩张FCN模块的方式为长短期递归神经网络（LSTM RNN）子模块LSTM-FCN或称为ALSTM-FCN的结合注意力机制的LSTM RNN。与FCN类似，所提出的两个模型都可以用于可视化卷积层的类激活图（CAM），以检测贡献于类标签的区域。此外，ALSTM还可以通过Attention LSTM单元的上下文向量来检测输入序列中贡献于类标签的区域。LSTM-FCN和ALSTM-FCN模型的一个主要优点是，它不需要大量的预处理或特征工程。结果表明，新提出的模型，LSTM-FCN和ALSTMFCN，显著提高了加州大学河滨分校（UCR）基准数据集[11]的性能。在大多数UCR基准数据集上，LSTMFCN和ALSTM-FCN比几种最先进的集成算法产生更好的结果。</p>
-<p>​		本文提出了两种端端时间序列分类的深度学习模型。所提出的模型不需要对数据或特征工程进行大量的预处理。这两种模型都在所有85个UCR时间序列基准测试上进行了测试，其性能优于大多数最先进的模型。本文的其余部分组织如下。第二节回顾了背景工作。第三节介绍了所提出的模型的体系结构。第四节，对上述实验结果进行了分析和讨论。最后，在第五节中得出了结论。</p>
-<hr>
-<h2 id="背景工作"><a href="#背景工作" class="headerlink" title="背景工作"></a>背景工作</h2><h3 id="A-时域卷积"><a href="#A-时域卷积" class="headerlink" title="A 时域卷积"></a>A 时域卷积</h3><p>​		我们使用时域卷积网络作为一个全卷积网络（FCN）分支中的特征提取模块。基本卷积块由卷积层组成，然后是批归一化[13]，然后是激活函数，它可以是校正线性单元（ReLU）或参数校正线性单元（PRELU）[14]。</p>
-<h3 id="B-RNNs"><a href="#B-RNNs" class="headerlink" title="B RNNs"></a>B RNNs</h3><p>…</p>
-<h3 id="C-LSTM"><a href="#C-LSTM" class="headerlink" title="C LSTM"></a>C LSTM</h3><p>​		虽然lstm具有学习序列中的时间依赖的能力，但它们在长序列中难以学习长期依赖。通过学习这些依赖关系而提出的注意机制[18]可以帮助LSTM学习长期依赖。</p>
-<h3 id="D-注意力机制"><a href="#D-注意力机制" class="headerlink" title="D 注意力机制"></a>D 注意力机制</h3><p>…</p>
-<blockquote>
-<p>此处原理部分后续博客进行图文讲解。</p>
-</blockquote>
-<hr>
-<h2 id="LSTM-FCN"><a href="#LSTM-FCN" class="headerlink" title="LSTM-FCN"></a>LSTM-FCN</h2><h3 id="A-网络架构"><a href="#A-网络架构" class="headerlink" title="A.网络架构"></a>A.网络架构</h3><p>​		时域卷积已被证明是解决时间序列分类问题[10]的一种有效的学习模型。由时域卷积组成的全卷积网络通常被用作特征提取器，全局平均池[19]用于在分类前减少模型中的参数量。在所提出的模型中，全卷积块增加了一个LSTM块，然后是dropout[20]，如图1所示。</p>
-<img src="/2025/01/14/LSTM-FCN/tu1.jpg" class="" title="LSTM-FCN architecture LSTM-FCN architecture">
-
-<p>​		全卷积块由三个堆叠的时域卷积块组成，滤波器大小分别为128、256和128。每个卷积块都与Wang等人[10]提出的CNN体系结构中的卷积块相同。每个块由一个时域卷积层组成，它伴随着批归一化[13]（动量momentum为0.99，速度epsilon为0.001），然后是一个ReLU激活函数。最后，在最终的卷积块之后应用全局平均池化。</p>
-<p>​		同时，时间序列输入被传递到一个维度洗牌层（在III-B节中解释）。然后将从维度洗牌转换后的时间序列传递到LSTM块中。LSTM块包括一个一般的LSTM层或一个注意的LSTM层，然后是一个dropout。全局池化层和LSTM块的输出被连接并传递到一个softmax分类层。</p>
-<h3 id="B-网络输入"><a href="#B-网络输入" class="headerlink" title="B.网络输入"></a>B.网络输入</h3><p>​		全卷积块和LSTM块在两个不同的视图中感知相同的时间序列输入。全卷积块将时间序列视为具有多个时间步长的单变量时间序列。如果有一个长度为N的时间序列，则全卷积块将以N个时间步长接收数据。</p>
-<p>​		相反，该架构中的LSTM块接收输入的时间序列作为一个具有单个时间步长的多元时间序列。这是通过维度洗牌层来完成的，它改变了时间序列的时间维度。一个长度为N的单变量时间序列，经过变换后，将被视为一个具有单一时间步长的多元时间序列（有N个变量）。</p>
-<p>​		这种方法是提高所提体系架构的性能表现的关键。相比之下，当LSTM块接收到具有N个时间步长的单变量时间序列时，由于对小的短序列UCR数据集的快速过拟合以及在较大的长序列UCR数据集中无法学习长期依赖关系，性能显著降低。</p>
-<h3 id="C-模型的微调"><a href="#C-模型的微调" class="headerlink" title="C.模型的微调"></a>C.模型的微调</h3><p>​		迁移学习是一种技术，在另一个数据集上训练模型时，在数据集上训练模型所获得的知识可以重用，这样新数据集的域与先验域[21]有一定的相似性。类似地，微调可以被描述为在同一数据集上的迁移学习。</p>
-<p>​		因此，训练过程可以分为两个不同的阶段。在初始阶段，为给定的数据集选择模型的最优超参数。然后使用这些超参数设置在给定的数据集上训练模型。在第二步中，我们对这个初始模型应用微调。</p>
-<p>​		使用原始数据集，在微调阶段迭代迁移学习的过程。每次重复都使用上一次迭代的模型权重进行初始化。在每次迭代中，学习率都会减半。此外，每次迭代将批量大小减半。这样做，直到初始学习速率是1e−4，批处理大小是32。这个过程重复K次，其中K是一个任意的常数，一般设为5。</p>
-<img src="/2025/01/14/LSTM-FCN/table1.jpg" class="" title="Fine-tuning algorithm Fine-tuning algorithm">
-
-<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>​		该模型已在所有85个UCR时间序列数据集[11]上进行了测试。在所有实验中，FCN块都保持不变。通过对8~128个记忆单元的超参数搜索，得到了LSTM记忆单元cell的最佳数量。训练期的数量通常在2000个epochs保持不变，但在算法需要更长时间才能收敛的数据集上会增加epochs。初始batch size为128，在微调算法的每次连续迭代时减半。在使用LSTM或ALSTM层后，使用80%的高dropout来防止过拟合。类别不平衡问题通过一个受King等人[22]启发的类别加权方案进行处理。</p>
-<p>​		所有模型均通过Adam优化器[23]进行训练，初始学习率为1e−3，最终学习率为1e−4。所有的卷积内核都用由He等人. [24]提出的初始化方法。如果验证得分没有提高，那么每100个epoches让学习率lr降低$1&#x2F;\sqrt[3]{2}$，直到达到最终的学习率。没有对UCR数据集进行额外的预处理，因为它们接近0均值和单位方差。所有模型都进行了微调，表I中所述的分数是指模型在微调前后获得的分数。</p>
-<h3 id="A-评价指标"><a href="#A-评价指标" class="headerlink" title="A.评价指标"></a>A.评价指标</h3><p>​		在本文中，我们使用Wang等人[10]所述的精度、基于秩的统计数据和每类误差的平均值来对该模型进行了评估。</p>
-<p>​		使用的基于秩的评估是算术秩、几何秩和威尔克森符号秩检验。算术秩是数据集的秩的算术平均值。几何秩是每个数据集的秩的几何平均值。采用威尔科克森符号秩检验来比较所提模型与现有模型的最先进模型的中值秩。原假设和备择假设如下：<br>$$<br>H_o: \text{Median}<em>{\text{proposed model}} &#x3D; \text{Median}</em>{\text{state-of-the-art model}} \<br>H_a: \text{Median}<em>{\text{proposed model}} \neq \text{Median}</em>{\text{state-of-the-art model}}<br>$$<br>​		平均每类误差（Mean Per Class Error，MPCE）定义为每类误差（PCE）的算术平均值，<br>$$<br>PCE_k &#x3D; \frac{1 - \text{accuracy}}{\text{number of unique classes}} \<br>MPCE &#x3D; \frac{1}{K} \sum PCE_k.<br>$$</p>
-<h3 id="B-Results"><a href="#B-Results" class="headerlink" title="B. Results"></a>B. Results</h3><p>​		图2是在“CBF”数据集上的ALSTM记忆单元的可视化表示的一个例子。图中序列被“压缩”在一起的点是所有类具有相同权重的点。这些是时间序列中注意力LSTM可以正确识别类的点。通过对实际时间序列的目视检查，进一步支持了这一点。挤压点是每个类可以相互区分的点，如图2所示。</p>
-<p>​		表i总结了UCR数据集上的性能。彩色单元格是优于该数据集的最先进模型的单元格。所提出的模型，ALSTM-FCN模型和LSTMFCN模型，在两个阶段，没有微调（阶段1）和微调（阶段2），在至少43个数据集上优于最先进的模型。图3中的平均算术排名表明了我们提出的模型优于现有的最先进的模型。使用Wilcoxon符号秩检验进一步验证了这一点，其中与现有的最先进的模型相比，每个提出的模型的p值都小于0.05，表2。</p>
-]]></content>
-      <categories>
-        <category>theory</category>
-      </categories>
-      <tags>
-        <tag>classification</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>AudioSet数据集介绍</title>
     <url>/2025/01/16/AudioSet%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在找狗叫数据集，发现<a href="https://research.google.com/audioset///dataset/index.html">AuidoSet</a>数据集。这是google在2017年推出的用于<em><strong>音频事件</strong></em>研究的大规模手动注释音频事件数据集。其中包含632个音频事件类别以及从<em><strong>YouTube视频</strong></em>中提取的2,084,320个人工标记的10秒声音片段集合（527个标签），google期望通过发布AudioSet为音频事件检测提供一个通用的、符合实际规模（与现实相符）的评估任务，并为全面的声音事件词汇表提供一个起点。</p>
@@ -243,22 +191,429 @@
       </tags>
   </entry>
   <entry>
-    <title>Hello World</title>
-    <url>/2025/01/13/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+    <title>LSTM-FCN论文总结</title>
+    <url>/2025/01/14/LSTM-FCN/</url>
+    <content><![CDATA[<p><em><strong>论文名：LSTM Fully Convolutional Networks for Time Series Classification</strong></em></p>
+<p><em><strong>作者：Fazle Karim1 , Somshubra Majumdar2 , Houshang Darabi1 and Shun Chen</strong></em></p>
+<p><em><strong>年份：2017</strong></em></p>
+<h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p><b>全卷积神经网络（FCN）</b>已经被证明在分类时间序列的任务上可取得最先进的性能。我们提出了利用<strong>LSTM</strong>子模块来增强<strong>FCN</strong>以进行时间序列分类。我们提出的方法显著增加了<strong>FCN</strong>的表现，模型大小只增加了一点，并且仅需对数据集进行很小的预处理。与其他算法相比，<strong>LSTM-FCN</strong>取得了最先进的性能。我们还使用<strong>注意长短期记忆全卷积网络（ALSTM-FCN）<strong>探索注意力机制在时序分类上的表现。通过注意力机制，人们可以可视化</strong>LSTM</strong>记忆单元的决策过程。此外，我们提出微调作为提升已训练好模型表现的一种方式。最后对我们的模型进行了整体表现的分析并与其他技术进行比较。</p>
+<p><em><strong>Keywords：</strong></em> <em><strong>CNN</strong></em>, <em><strong>LSTM</strong></em>, <em><strong>RNN</strong></em>, <em><strong>时序分类</strong></em></p>
+<hr>
+<span id="more"></span>
 
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>​		在过去的十年里，人们对时间序列分类的兴趣越来越大。时间序列数据无处不在，存在于天气读数、财务记录、工业观察和心理信号[1]中。本文提出了两种深度学习模型来分类时间序列数据集，它们的性能都优于现有的最先进的模型。</p>
+<p>​		大量的研究已经使用基于特征的方式或方法来提取一组代表时间序列模式的特征。Bag-of-Words（BoW）[2]，Bag-of-features（TSBF）[3]，Bag-of-SFA-Symbols（BOSS）[4]，BOSSVS [5]，Word提取时间序列分类（WEASEL）[6]，已经在该领域取得了良好的结果。Bag-of-words量化提取的特征，并将BoW输入分类器。TSBF提取随机局部信息的多个子序列，由监督学习者将其压缩成一本用于预测时间序列标签的食谱。BOSS引入了一个基于距离的分类器和直方图的组合。直方图代表了使用符号傅里叶近似创建的时间序列的子结构。BOSSVS扩展了这种方法，提出了一个向量空间模型，在保持性能的同时降低了时间复杂度。WEASEL利用滑动窗口将时间序列转换为特征向量。机器学习算法利用这些特征向量来检测和分类时间序列。所有这些分类器都需要大量的特征提取和特征工程。</p>
+<p>​		集成算法在时序分类问题上也取得了先进的性能表现。三种最成功的集成算法合并时间序列的各种特征，Elastic Ensemble (PROP)[7]是一种使用加权集成方法集成了11个时间序列分类器的模型，Shapelet ensemble (SE) [8]是一种将异构集合应用于变换后的形状集的模型，flat collective of transform based ensembles (COTE) [8]是一种融合35种不同分类器到一个分类器的模型。</p>
+<p>​		最近，深度神经网络被用于时间序列分类任务。多尺度卷积神经网络（MCNN）[9]、全卷积网络（FCN）[10]和残差网络（ResNet）[10]是利用卷积神经网络（CNN）对单变量时间序列进行端到端分类的深度学习方法。MCNN使用降采样、跳过采样和滑动窗口对数据进行预处理。MCNN分类器的性能高度依赖于应用于数据集的预处理和对该模型的大量超参数集的调整。另一方面，FCN和ResNet不需要对数据或特征工程进行任何繁重的预处理。在本文中，我们通过扩张FCN模块的方式来提高FCN的性能，扩张FCN模块的方式为长短期递归神经网络（LSTM RNN）子模块LSTM-FCN或称为ALSTM-FCN的结合注意力机制的LSTM RNN。与FCN类似，所提出的两个模型都可以用于可视化卷积层的类激活图（CAM），以检测贡献于类标签的区域。此外，ALSTM还可以通过Attention LSTM单元的上下文向量来检测输入序列中贡献于类标签的区域。LSTM-FCN和ALSTM-FCN模型的一个主要优点是，它不需要大量的预处理或特征工程。结果表明，新提出的模型，LSTM-FCN和ALSTMFCN，显著提高了加州大学河滨分校（UCR）基准数据集[11]的性能。在大多数UCR基准数据集上，LSTMFCN和ALSTM-FCN比几种最先进的集成算法产生更好的结果。</p>
+<p>​		本文提出了两种端端时间序列分类的深度学习模型。所提出的模型不需要对数据或特征工程进行大量的预处理。这两种模型都在所有85个UCR时间序列基准测试上进行了测试，其性能优于大多数最先进的模型。本文的其余部分组织如下。第二节回顾了背景工作。第三节介绍了所提出的模型的体系结构。第四节，对上述实验结果进行了分析和讨论。最后，在第五节中得出了结论。</p>
+<hr>
+<h2 id="背景工作"><a href="#背景工作" class="headerlink" title="背景工作"></a>背景工作</h2><h3 id="A-时域卷积"><a href="#A-时域卷积" class="headerlink" title="A 时域卷积"></a>A 时域卷积</h3><p>​		我们使用时域卷积网络作为一个全卷积网络（FCN）分支中的特征提取模块。基本卷积块由卷积层组成，然后是批归一化[13]，然后是激活函数，它可以是校正线性单元（ReLU）或参数校正线性单元（PRELU）[14]。</p>
+<h3 id="B-RNNs"><a href="#B-RNNs" class="headerlink" title="B RNNs"></a>B RNNs</h3><p>…</p>
+<h3 id="C-LSTM"><a href="#C-LSTM" class="headerlink" title="C LSTM"></a>C LSTM</h3><p>​		虽然lstm具有学习序列中的时间依赖的能力，但它们在长序列中难以学习长期依赖。通过学习这些依赖关系而提出的注意机制[18]可以帮助LSTM学习长期依赖。</p>
+<h3 id="D-注意力机制"><a href="#D-注意力机制" class="headerlink" title="D 注意力机制"></a>D 注意力机制</h3><p>…</p>
+<blockquote>
+<p>此处原理部分后续博客进行图文讲解。</p>
+</blockquote>
+<hr>
+<h2 id="LSTM-FCN"><a href="#LSTM-FCN" class="headerlink" title="LSTM-FCN"></a>LSTM-FCN</h2><h3 id="A-网络架构"><a href="#A-网络架构" class="headerlink" title="A.网络架构"></a>A.网络架构</h3><p>​		时域卷积已被证明是解决时间序列分类问题[10]的一种有效的学习模型。由时域卷积组成的全卷积网络通常被用作特征提取器，全局平均池[19]用于在分类前减少模型中的参数量。在所提出的模型中，全卷积块增加了一个LSTM块，然后是dropout[20]，如图1所示。</p>
+<img src="/2025/01/14/LSTM-FCN/tu1.jpg" class="" title="LSTM-FCN architecture LSTM-FCN architecture">
 
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>​		全卷积块由三个堆叠的时域卷积块组成，滤波器大小分别为128、256和128。每个卷积块都与Wang等人[10]提出的CNN体系结构中的卷积块相同。每个块由一个时域卷积层组成，它伴随着批归一化[13]（动量momentum为0.99，速度epsilon为0.001），然后是一个ReLU激活函数。最后，在最终的卷积块之后应用全局平均池化。</p>
+<p>​		同时，时间序列输入被传递到一个维度洗牌层（在III-B节中解释）。然后将从维度洗牌转换后的时间序列传递到LSTM块中。LSTM块包括一个一般的LSTM层或一个注意的LSTM层，然后是一个dropout。全局池化层和LSTM块的输出被连接并传递到一个softmax分类层。</p>
+<h3 id="B-网络输入"><a href="#B-网络输入" class="headerlink" title="B.网络输入"></a>B.网络输入</h3><p>​		全卷积块和LSTM块在两个不同的视图中感知相同的时间序列输入。全卷积块将时间序列视为具有多个时间步长的单变量时间序列。如果有一个长度为N的时间序列，则全卷积块将以N个时间步长接收数据。</p>
+<p>​		相反，该架构中的LSTM块接收输入的时间序列作为一个具有单个时间步长的多元时间序列。这是通过维度洗牌层来完成的，它改变了时间序列的时间维度。一个长度为N的单变量时间序列，经过变换后，将被视为一个具有单一时间步长的多元时间序列（有N个变量）。</p>
+<p>​		这种方法是提高所提体系架构的性能表现的关键。相比之下，当LSTM块接收到具有N个时间步长的单变量时间序列时，由于对小的短序列UCR数据集的快速过拟合以及在较大的长序列UCR数据集中无法学习长期依赖关系，性能显著降低。</p>
+<h3 id="C-模型的微调"><a href="#C-模型的微调" class="headerlink" title="C.模型的微调"></a>C.模型的微调</h3><p>​		迁移学习是一种技术，在另一个数据集上训练模型时，在数据集上训练模型所获得的知识可以重用，这样新数据集的域与先验域[21]有一定的相似性。类似地，微调可以被描述为在同一数据集上的迁移学习。</p>
+<p>​		因此，训练过程可以分为两个不同的阶段。在初始阶段，为给定的数据集选择模型的最优超参数。然后使用这些超参数设置在给定的数据集上训练模型。在第二步中，我们对这个初始模型应用微调。</p>
+<p>​		使用原始数据集，在微调阶段迭代迁移学习的过程。每次重复都使用上一次迭代的模型权重进行初始化。在每次迭代中，学习率都会减半。此外，每次迭代将批量大小减半。这样做，直到初始学习速率是1e−4，批处理大小是32。这个过程重复K次，其中K是一个任意的常数，一般设为5。</p>
+<img src="/2025/01/14/LSTM-FCN/table1.jpg" class="" title="Fine-tuning algorithm Fine-tuning algorithm">
 
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><p>​		该模型已在所有85个UCR时间序列数据集[11]上进行了测试。在所有实验中，FCN块都保持不变。通过对8~128个记忆单元的超参数搜索，得到了LSTM记忆单元cell的最佳数量。训练期的数量通常在2000个epochs保持不变，但在算法需要更长时间才能收敛的数据集上会增加epochs。初始batch size为128，在微调算法的每次连续迭代时减半。在使用LSTM或ALSTM层后，使用80%的高dropout来防止过拟合。类别不平衡问题通过一个受King等人[22]启发的类别加权方案进行处理。</p>
+<p>​		所有模型均通过Adam优化器[23]进行训练，初始学习率为1e−3，最终学习率为1e−4。所有的卷积内核都用由He等人. [24]提出的初始化方法。如果验证得分没有提高，那么每100个epoches让学习率lr降低$1&#x2F;\sqrt[3]{2}$，直到达到最终的学习率。没有对UCR数据集进行额外的预处理，因为它们接近0均值和单位方差。所有模型都进行了微调，表I中所述的分数是指模型在微调前后获得的分数。</p>
+<h3 id="A-评价指标"><a href="#A-评价指标" class="headerlink" title="A.评价指标"></a>A.评价指标</h3><p>​		在本文中，我们使用Wang等人[10]所述的精度、基于秩的统计数据和每类误差的平均值来对该模型进行了评估。</p>
+<p>​		使用的基于秩的评估是算术秩、几何秩和威尔克森符号秩检验。算术秩是数据集的秩的算术平均值。几何秩是每个数据集的秩的几何平均值。采用威尔科克森符号秩检验来比较所提模型与现有模型的最先进模型的中值秩。原假设和备择假设如下：<br>$$<br>H_o: \text{Median}<em>{\text{proposed model}} &#x3D; \text{Median}</em>{\text{state-of-the-art model}} \<br>H_a: \text{Median}<em>{\text{proposed model}} \neq \text{Median}</em>{\text{state-of-the-art model}}<br>$$<br>​		平均每类误差（Mean Per Class Error，MPCE）定义为每类误差（PCE）的算术平均值，<br>$$<br>PCE_k &#x3D; \frac{1 - \text{accuracy}}{\text{number of unique classes}} \<br>MPCE &#x3D; \frac{1}{K} \sum PCE_k.<br>$$</p>
+<h3 id="B-Results"><a href="#B-Results" class="headerlink" title="B. Results"></a>B. Results</h3><p>​		图2是在“CBF”数据集上的ALSTM记忆单元的可视化表示的一个例子。图中序列被“压缩”在一起的点是所有类具有相同权重的点。这些是时间序列中注意力LSTM可以正确识别类的点。通过对实际时间序列的目视检查，进一步支持了这一点。挤压点是每个类可以相互区分的点，如图2所示。</p>
+<p>​		表i总结了UCR数据集上的性能。彩色单元格是优于该数据集的最先进模型的单元格。所提出的模型，ALSTM-FCN模型和LSTMFCN模型，在两个阶段，没有微调（阶段1）和微调（阶段2），在至少43个数据集上优于最先进的模型。图3中的平均算术排名表明了我们提出的模型优于现有的最先进的模型。使用Wilcoxon符号秩检验进一步验证了这一点，其中与现有的最先进的模型相比，每个提出的模型的p值都小于0.05，表2。</p>
 ]]></content>
+      <categories>
+        <category>theory</category>
+      </categories>
+      <tags>
+        <tag>classification</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LSTM-FCN代码解析</title>
+    <url>/2025/01/22/LSTM-FCN%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://caihaoran-00.github.io/2025/01/14/LSTM-FCN/">前面</a>我们介绍了<a href="https://arxiv.org/abs/1709.05206">LSTM-FCN</a>的论文内容，本文我们开始代码撰写和介绍。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>首先，从<code>Github</code>搜索<code>LSTM-FCN</code>，会看到一系列与之相关的结果，第一个就是<a href="https://github.com/titu1994/LSTM-FCN">官方实现</a>，但其是基于<code>keras</code>的，我喜欢使用<code>pytorch</code>，向下翻一翻，看到两个<code>pytorch</code>的实现，<a href="https://github.com/roytalman/LSTM-FCN-Pytorch">roytalman&#x2F;LSTM-FCN-Pytorch</a>和<a href="https://github.com/flaviagiammarino/lstm-fcn-pytorch">flaviagiammarino&#x2F;lstm-fcn-pytorch</a>，下面就参考这三个实现用pytorch进行LSTM-FCN的实现。</p>
+<p>第一步还是先跑通官方的实现吧，先更改下<code>requirement.txt</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">tensorflow</span><br><span class="line">keras</span><br><span class="line">scipy</span><br><span class="line">numpy</span><br><span class="line">pandas</span><br><span class="line">scikit-learn</span><br><span class="line">h5py</span><br><span class="line">matplotlib</span><br><span class="line">joblib</span><br></pre></td></tr></table></figure>
+
+<p>然后依次运行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/titu1994/LSTM-FCN.git</span><br><span class="line"></span><br><span class="line">conda create -n LSTM_FCN python=3.8</span><br><span class="line"></span><br><span class="line">conda activate LSTM_FCN</span><br><span class="line"></span><br><span class="line">pip install -r requirement.txt</span><br></pre></td></tr></table></figure>
+
+<p>然后下载官方所用的<a href="https://www.cs.ucr.edu/%7Eeamonn/time_series_data_2018/">UCR2018版</a>，这个（2015版）压缩包的解压密码是<code>attempttoclassify</code>，运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">unzip UCRArchive_2018.zip</span><br></pre></td></tr></table></figure>
+
+<p>这时候会让你输入密码，输入：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">someone</span><br></pre></td></tr></table></figure>
+
+<p>即可解压，如果下载的是<a href="https://www.cs.ucr.edu/~eamonn/time_series_data/">UCR2015版</a>，<strong>删除重下!</strong>（手动狗头），如果你想看看2015版的内容，上面的两行命令替换成：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">unzip UCR_TS_Archive_2015.zip</span><br><span class="line"></span><br><span class="line">attempttoclassify</span><br></pre></td></tr></table></figure>
+
+<p>然后，将<code>LSTM-FCN/utils</code>目录下的<code>extract_all_datasets.py</code>复制到你解压后的文件夹中，运行这个文件:</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">python extract_all_datasets.py</span><br></pre></td></tr></table></figure>
+
+<p>即可提取文本：</p>
+<p>在你的解压后的文件夹中会多一个<code>_data</code>目录，这就是提取出来的文本：</p>
+<p>将提取出来的全部文本放在<code>LSTM-FCN/Data</code>目录下就做完了准备工作。</p>
+<hr>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>打开<code>LSTM-FCN/all_datasets_training.py</code>，开炮！好的，哑火了，先看看代码吧：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">pip install scikit-image</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://github.com/titu1994/LSTM-FCN">https://github.com/titu1994/LSTM-FCN</a></li>
+<li><a href="https://github.com/roytalman/LSTM-FCN-Pytorch">https://github.com/roytalman/LSTM-FCN-Pytorch</a></li>
+<li><a href="https://github.com/flaviagiammarino/lstm-fcn-pytorch">https://github.com/flaviagiammarino/lstm-fcn-pytorch</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>classification</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>conda常用命令</title>
+    <url>/2025/01/22/conda%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>大致按日常使用频率来介绍conda的常用命令。</p>
+<h5 id="创建环境"><a href="#创建环境" class="headerlink" title="创建环境"></a>创建环境</h5><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">conda create -n ENV_NAME python=<span class="number">3</span>.<span class="number">9</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建名为<code>ENV_NAME</code>的新环境，并指定<code>python版本</code>为<code>3.9</code>。</li>
+</ul>
+<h5 id="激活环境"><a href="#激活环境" class="headerlink" title="激活环境"></a>激活环境</h5><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">conda activate ENV_NAME</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>激活你的<code>ENV_NAME</code>环境。</li>
+</ul>
+<h5 id="退出环境"><a href="#退出环境" class="headerlink" title="退出环境"></a>退出环境</h5><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">conda deactivate</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h5 id="安装包"><a href="#安装包" class="headerlink" title="安装包"></a>安装包</h5><h6 id="使用pip安装"><a href="#使用pip安装" class="headerlink" title="使用pip安装"></a>使用pip安装</h6><ul>
+<li><p>安装单个包：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">pip install PACKAGE_NAME</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装依赖包列表</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>-r</code>是选项<code>--requirement</code>的缩写，表示告诉<code>pip</code>从一个指定的文件中读取需要安装的依赖包列表。</p>
+</li>
+</ul>
+<h6 id="使用conda包管理安装"><a href="#使用conda包管理安装" class="headerlink" title="使用conda包管理安装"></a>使用conda包管理安装</h6><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">conda install PACKAGE_NAME</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>安装<code>PACKAGE_NAME</code>包</li>
+</ul>
+<h5 id="列出所有环境"><a href="#列出所有环境" class="headerlink" title="列出所有环境"></a>列出所有环境</h5><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">conda env list</span><br></pre></td></tr></table></figure>
+
+<h5 id="删除环境"><a href="#删除环境" class="headerlink" title="删除环境"></a>删除环境</h5><figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">conda remove -n ENV_NAME --all</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>conda</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>cursor接入DeepSeek-R1和DeepSeek-V3教程</title>
+    <url>/2025/02/06/cursor%E6%8E%A5%E5%85%A5DeepSeek-R1%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>目前（2025&#x2F;2&#x2F;6），deepseek大火，超低训练成本取得了超高的性能表现，且cursor现已不能无限白嫖（锁机器码），想充值cursor还要申请个海外信用卡，本人对信用卡比较抵触，遂还是使用deepseek接入的方式吧。想申请海外信用卡的小友可参考<a href="https://www.youtube.com/watch?v=Ag5918UY-CM">这个视频</a>操作。</p>
+<span id="more"></span>
+
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><img src="/2025/02/06/cursor%E6%8E%A5%E5%85%A5DeepSeek-R1%E6%95%99%E7%A8%8B/image-20250206141315961.png" class="" title="image-20250206141315961">
+
+<p><a href="https://api-docs.deepseek.com/zh-cn/news/news250120">图片来源</a>，从上图可以看出，<code>DeepSeek-R1</code>拥有比肩<code>OpenAI o1</code>的性能，且比<code>DeepSeek-V3</code>更强些，价格方面：</p>
+<img src="/2025/02/06/cursor%E6%8E%A5%E5%85%A5DeepSeek-R1%E6%95%99%E7%A8%8B/image-20250206141754281.png" class="" title="image-20250206141754281">
+
+<p><a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing">图片来源</a>，但是<code>DeepSeek-V3</code>比<code>DeepSeek-R1</code>价格要便宜的多，所以我打算两种模型都接入<code>cursor</code>实验效果。</p>
+<p>好，开始操作：</p>
+<img src="/2025/02/06/cursor%E6%8E%A5%E5%85%A5DeepSeek-R1%E6%95%99%E7%A8%8B/image-20250206142750109.png" class="" title="image-20250206142750109">
+
+<p><a href="https://api-docs.deepseek.com/zh-cn/">图片来源</a></p>
+<ul>
+<li><p>打开<code>cursor设置</code>-&gt;<code>Models</code>-&gt;取消掉所有模型的勾选</p>
+</li>
+<li><p>点击<code>Model Names</code>栏最下面的<code>+Add model</code>，先添加<code>DeepSeek-V3</code>，输出<code>deepseek-chat</code></p>
+</li>
+<li><p>点击上方图片所示的<code>API key</code>-&gt;<code>创建API key</code>-&gt;<code>输入名称：deepseek-chat</code>，你将得到<code>API key:sk-xxxx....</code>，复制下来</p>
+</li>
+<li><p>在下方的<code>Override OpenAI Base URL(when using key)</code>栏中输入：<code>https://api.deepseek.com/v1</code></p>
+</li>
+<li><p>点击<code>Override OpenAI Base URL(when using key)</code>栏右方的<code>Save</code>，点击<code>OpenAI API Key</code>右方的<code>Verify</code>，你将看到：</p>
+<img src="/2025/02/06/cursor%E6%8E%A5%E5%85%A5DeepSeek-R1%E6%95%99%E7%A8%8B/image-20250206143959966.png" class="" title="image-20250206143959966"></li>
+</ul>
+<p>好，实验一下：</p>
+<p>不对劲，非常不对劲，由于现在deepseek依旧服务器压力很大（被攻击），后续再试吧。</p>
+<p>TODO…</p>
+<h2 id="试试魔法："><a href="#试试魔法：" class="headerlink" title="试试魔法："></a>试试魔法：</h2><ul>
+<li>点击<a href="https://github.com/bestK/cursor-fake-machine/releases/download/v0.0.2/cursor-fake-machine-0.0.2.vsix">这里</a>下载插件</li>
+<li>将下载的插件拖到cursor扩展中</li>
+<li><code>ctrl+shift+p</code>输入<code>fake</code>，选择<code>Fake Cursor</code>，会提示你重启<code>cursor</code>，重启之后就能用了</li>
+<li>进入<code>C:\Users\chr\AppData\Roaming\Cursor\User\globalStorage</code>文件夹，找到<code>storage.json</code>，右键属性，将其改为只读</li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://www.bilibili.com/video/BV1uVrCYEE1W/?vd_source=075a061948e76c87e2ee8754e264056e">https://www.bilibili.com/video/BV1uVrCYEE1W/?vd_source=075a061948e76c87e2ee8754e264056e</a></li>
+<li><a href="https://blog.csdn.net/qq_43592352/article/details/145020410">https://blog.csdn.net/qq_43592352/article/details/145020410</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>theory</category>
+      </categories>
+      <tags>
+        <tag>cursor</tag>
+        <tag>deepseek</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>fastapi+request构建语音识别微服务</title>
+    <url>/2025/02/05/fastapi-request%E6%9E%84%E5%BB%BA%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文介绍如何使用<strong>fastapi+request</strong>构建<strong>HTTP微服务</strong>，给出两个示例，首先是基础的例子用以展示基础用法，然后搭配<strong>silero vad</strong>和<strong>funasr</strong>实现语音识别微服务，并实现类似于**关键词识别（KWS)**的功能，通过将汉字转化为拼音实现更高的匹配率。</p>
+<span id="more"></span>
+
+<hr>
+<h3 id="一、基础用法"><a href="#一、基础用法" class="headerlink" title="一、基础用法"></a>一、基础用法</h3><p>Python发送HTTP请求可以使用request库，这是一个简单易用的HTTP库，FastAPI和Flask都是Python的Web框架，用于构建HTTP服务器，FastAPI基于ASGI(Asynchronous Server Gateway Interface,异步服务器网关接口）原生支持async&#x2F;await，所以可以同时处理多个请求，提高并发能力，搭配<code>uvicorn</code>作为高性能ASGI服务器；而Flask基于WSGI(同步网关接口)，一次只能处理一个请求。更具体的对比见下表。</p>
+<table>
+<thead>
+<tr>
+<th align="center"><strong>特点</strong></th>
+<th align="center"><strong>Flask</strong> 🐍</th>
+<th align="center"><strong>FastAPI</strong> 🚀</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>性能</strong></td>
+<td align="center">较慢（基于 WSGI，同步）</td>
+<td align="center"><strong>非常快</strong>（基于 ASGI，异步）</td>
+</tr>
+<tr>
+<td align="center"><strong>异步支持</strong></td>
+<td align="center">需要手动用 <code>gevent</code>、<code>asyncio</code></td>
+<td align="center"><strong>原生支持 <code>async/await</code></strong></td>
+</tr>
+<tr>
+<td align="center"><strong>数据校验</strong></td>
+<td align="center">需要手写校验逻辑（配合 <code>marshmallow</code> 或 <code>pydantic</code>）</td>
+<td align="center"><strong>内置 <code>Pydantic</code> 自动校验数据</strong></td>
+</tr>
+<tr>
+<td align="center"><strong>API 文档</strong></td>
+<td align="center">需要额外工具，如 <code>Flasgger</code></td>
+<td align="center"><strong>自动生成 Swagger 和 Redoc</strong></td>
+</tr>
+<tr>
+<td align="center"><strong>学习成本</strong></td>
+<td align="center">简单，上手快</td>
+<td align="center"><strong>稍高，但开发效率更高</strong></td>
+</tr>
+<tr>
+<td align="center"><strong>适用场景</strong></td>
+<td align="center">传统 Web、简单 API</td>
+<td align="center"><strong>高性能 API，微服务，异步应用</strong></td>
+</tr>
+</tbody></table>
+<p>所以我选择FastAPI，客户端代码：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> fastapi <span class="keyword">import</span> FastAPI</span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建 FastAPI 实例</span></span><br><span class="line">app = FastAPI(title=<span class="string">&quot;Basic FastAPI Example&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义请求数据模型</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    name: <span class="built_in">str</span></span><br><span class="line">    age: <span class="built_in">int</span></span><br><span class="line">    email: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>  <span class="comment"># 可选字段</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># GET 接口，带路径参数</span></span><br><span class="line"><span class="meta">@app.get(<span class="params"><span class="string">&quot;/users/&#123;user_id&#125;&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_user</span>(<span class="params">user_id: <span class="built_in">int</span></span>):</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">f&quot;获取用户信息&quot;</span>, <span class="string">&quot;user_id&quot;</span>: user_id&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># GET 接口，带查询参数</span></span><br><span class="line"><span class="meta">@app.get(<span class="params"><span class="string">&quot;/search/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">search_users</span>(<span class="params">name: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>, age: <span class="type">Optional</span>[<span class="built_in">int</span>] = <span class="literal">None</span></span>):</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;搜索用户&quot;</span>, <span class="string">&quot;name&quot;</span>: name, <span class="string">&quot;age&quot;</span>: age&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># POST 接口，接收 JSON 请求体</span></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/users/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_user</span>(<span class="params">user: User</span>):</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;用户已创建&quot;</span>, <span class="string">&quot;user&quot;</span>: user&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行 FastAPI 服务器（直接运行 `python server.py`）</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">import</span> uvicorn</span><br><span class="line">    uvicorn.run(app, host=<span class="string">&quot;0.0.0.0&quot;</span>, port=<span class="number">8000</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个时候就可以打开：</p>
+<ul>
+<li><strong>Swagger UI</strong>: <a href="http://192.168.0.138:8000/docs">http://192.168.0.138:8000/docs</a></li>
+<li><strong>Redoc 文档</strong>: <a href="http://192.168.0.138:8000/redoc">http://192.168.0.138:8000/redoc</a></li>
+</ul>
+<p>注意，<code>url</code>根据自己情况设置。</p>
+<p>客户端代码：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">BASE_URL = <span class="string">&quot;http://0.0.0.0:8000&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 发送 GET 请求（路径参数）</span></span><br><span class="line">response = requests.get(<span class="string">f&quot;<span class="subst">&#123;BASE_URL&#125;</span>/users/123&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET /users/123:&quot;</span>, response.json())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 发送 GET 请求（查询参数）</span></span><br><span class="line">params = &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Alice&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">25</span>&#125;</span><br><span class="line">response = requests.get(<span class="string">f&quot;<span class="subst">&#123;BASE_URL&#125;</span>/search/&quot;</span>, params=params)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;GET /search:&quot;</span>, response.json())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 发送 POST 请求（JSON 请求体）</span></span><br><span class="line">user_data = &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Bob&quot;</span>, <span class="string">&quot;age&quot;</span>: <span class="number">30</span>, <span class="string">&quot;email&quot;</span>: <span class="string">&quot;bob@example.com&quot;</span>&#125;</span><br><span class="line">response = requests.post(<span class="string">f&quot;<span class="subst">&#123;BASE_URL&#125;</span>/users/&quot;</span>, json=user_data)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;POST /users:&quot;</span>, response.json())</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">GET /users/<span class="number">123</span>: &#123;<span class="string">&#x27;message&#x27;</span>: <span class="string">&#x27;获取用户信息&#x27;</span>, <span class="string">&#x27;user_id&#x27;</span>: <span class="number">123</span>&#125;</span><br><span class="line">GET /search: &#123;<span class="string">&#x27;message&#x27;</span>: <span class="string">&#x27;搜索用户&#x27;</span>, <span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;Alice&#x27;</span>, <span class="string">&#x27;age&#x27;</span>: <span class="number">25</span>&#125;</span><br><span class="line">POST /users: &#123;<span class="string">&#x27;message&#x27;</span>: <span class="string">&#x27;用户已创建&#x27;</span>, <span class="string">&#x27;user&#x27;</span>: &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;Bob&#x27;</span>, <span class="string">&#x27;age&#x27;</span>: <span class="number">30</span>, <span class="string">&#x27;email&#x27;</span>: <span class="string">&#x27;bob@example.com&#x27;</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二、微服务用法"><a href="#二、微服务用法" class="headerlink" title="二、微服务用法"></a>二、微服务用法</h3><p>本案例准备实现：</p>
+<ul>
+<li>客户端：通过silero vad判断有效语音，有则进行base64编码后发送(HTTP)到服务端进行语音识别。</li>
+<li>服务端：是一个微服务，重点在于ASR服务，顺便实现一个KWS功能。</li>
+</ul>
+<p>服务端代码：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>fastapi</tag>
+        <tag>funasr</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git常用命令</title>
+    <url>/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文梳理一些常用的git命令，以<strong>使用场景</strong>为切入点进行git指令介绍。</p>
+<span id="more"></span>
+
+<h2 id="一、本地仓库-远程仓库"><a href="#一、本地仓库-远程仓库" class="headerlink" title="一、本地仓库-&gt;远程仓库"></a>一、本地仓库-&gt;远程仓库</h2><h3 id="1-初始化本地仓库"><a href="#1-初始化本地仓库" class="headerlink" title="1.初始化本地仓库"></a>1.初始化本地仓库</h3><ul>
+<li><p>创建一个项目文件夹，比如我创建了一个<code>agent_langgraph</code>文件夹</p>
+</li>
+<li><p>进入这个文件夹，命令行运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">hint: <span class="title">Using</span> &#x27;<span class="title">master</span>&#x27; <span class="title">as</span> <span class="title">the</span> <span class="title">name</span> <span class="title">for</span> <span class="title">the</span> <span class="title">initial</span> <span class="title">branch</span>. <span class="title">This</span> <span class="title">default</span> <span class="title">branch</span> <span class="title">name</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">is</span> <span class="title">subject</span> <span class="title">to</span> <span class="title">change</span>. <span class="title">To</span> <span class="title">configure</span> <span class="title">the</span> <span class="title">initial</span> <span class="title">branch</span> <span class="title">name</span> <span class="title">to</span> <span class="title">use</span> <span class="title">in</span> <span class="title">all</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">of</span> <span class="title">your</span> <span class="title">new</span> <span class="title">repositories</span>, <span class="title">which</span> <span class="title">will</span> <span class="title">suppress</span> <span class="title">this</span> <span class="title">warning</span>, <span class="title">call</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:   <span class="title">git</span> <span class="title">config</span> --<span class="title">global</span> <span class="title">init.defaultBranch</span> &lt;<span class="title">name</span>&gt;</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">Names</span> <span class="title">commonly</span> <span class="title">chosen</span> <span class="title">instead</span> <span class="title">of</span> &#x27;<span class="title">master</span>&#x27; <span class="title">are</span> &#x27;<span class="title">main</span>&#x27;, &#x27;<span class="title">trunk</span>&#x27; <span class="title">and</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: &#x27;<span class="title">development</span>&#x27;. <span class="title">The</span> <span class="title">just</span>-<span class="title">created</span> <span class="title">branch</span> <span class="title">can</span> <span class="title">be</span> <span class="title">renamed</span> <span class="title">via</span> <span class="title">this</span> <span class="title">command</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:</span></span><br><span class="line"><span class="function"><span class="title">hint</span>:   <span class="title">git</span> <span class="title">branch</span> -<span class="title">m</span> &lt;<span class="title">name</span>&gt;</span></span><br><span class="line"><span class="function"><span class="title">Initialized</span> <span class="title">empty</span> <span class="title">Git</span> <span class="title">repository</span> <span class="title">in</span> <span class="title">E</span>:/<span class="title">chr_git</span>/<span class="title">agent_langgraph</span>/.<span class="title">git</span>/</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-创建文件并提交到本地仓库"><a href="#2-创建文件并提交到本地仓库" class="headerlink" title="2.创建文件并提交到本地仓库"></a>2.创建文件并提交到本地仓库</h3><p>先创建几个项目文件：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> # 基于langgraph的agent应用 &gt; README.<span class="built_in">md</span></span><br><span class="line"><span class="built_in">echo</span> &quot;<span class="built_in">print</span>(&#x27;Hello, LangGraph!&#x27;)&quot; &gt; main.py</span><br></pre></td></tr></table></figure>
+
+<p>查看当前状态：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">On branch master</span><br><span class="line"></span><br><span class="line">No commits yet</span><br><span class="line"></span><br><span class="line">Untracked files:</span><br><span class="line">  (use <span class="string">&quot;git add &lt;file&gt;...&quot;</span> to include <span class="keyword">in</span> what will be committed)</span><br><span class="line">        README.md</span><br><span class="line">        main.py</span><br><span class="line"></span><br><span class="line">nothing added to commit but untracked files present (use <span class="string">&quot;git add&quot;</span> to track)</span><br></pre></td></tr></table></figure>
+
+<p>将这些文件加入Git的<code>暂存区</code>：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add .</span><br></pre></td></tr></table></figure>
+
+<p>再次查看状态：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">On branch master</span><br><span class="line"></span><br><span class="line">No commits yet</span><br><span class="line"></span><br><span class="line">Changes to be committed:</span><br><span class="line">  (use <span class="string">&quot;git rm --cached &lt;file&gt;...&quot;</span> to unstage)</span><br><span class="line">        new file:   README.md</span><br><span class="line">        new file:   main.py</span><br></pre></td></tr></table></figure>
+
+<p>提交到Git仓库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;Initial commit: add README and main.py&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[master (root-commit) e1b1d5b] Initial commit: add README and main.py</span><br><span class="line"> 2 files changed, 2 insertions(+)</span><br><span class="line"> create mode 100644 README.md</span><br><span class="line"> create mode 100644 main.py</span><br></pre></td></tr></table></figure>
+
+<p>注意，到这里只是在<strong>本地创建和管理</strong>这个Git仓库，并没有把项目上传到<code>Github</code>上。如果想让项目出现在你的<code>Github</code>账户里，还需要执行一些额外步骤，将本地仓库推送到Github。</p>
+<h3 id="3-本地仓库-远程仓库"><a href="#3-本地仓库-远程仓库" class="headerlink" title="3. 本地仓库-&gt;远程仓库"></a>3. 本地仓库-&gt;远程仓库</h3><p>先在<code>Github</code>上创建一个远程仓库：</p>
+<ul>
+<li>登录你的<code>Github</code>账户，点击右上角的<code>+</code>按钮，选择<code>New repository</code></li>
+<li>填写项目名称，如<code>agent_langgraph</code>，可在此界面添加项目描述(Description)，选择项目是公开可见(Public)还是仅你指定的人可见(Private)，选择初始化仓库时是否增加README文件，选择是否添加<code>.gitignore</code>模板，用于模板列表中选择不跟踪的文件，这里选择<code>Python</code>，最后还可以选择许可证(license)。、</li>
+<li>点击<code>Create repository</code>以创建仓库</li>
+</ul>
+<p>现在就可以将本地仓库与Github远程仓库关联了，在你的本地项目目录下运行:</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git remote add origin https://github.com/&lt;your_username&gt;/agent_langgraph.git</span><br><span class="line"></span><br><span class="line">如</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/caihaoran-<span class="number">00</span>/agent_langgraph</span><br></pre></td></tr></table></figure>
+
+<p>检查关联是否成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">origin  https://github.com/caihaoran-<span class="number">00</span>/agent_langgraph (fetch)</span><br><span class="line">origin  https://github.com/caihaoran-<span class="number">00</span>/agent_langgraph (push)</span><br></pre></td></tr></table></figure>
+
+<p>查看本地分支名称：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git branch</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">* master</span><br></pre></td></tr></table></figure>
+
+<p>推送代码到远程仓库：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">warning: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">Enumerating</span> <span class="title">objects</span>: 4, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Counting</span> <span class="title">objects</span>: 100% (4/4), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Delta</span> <span class="title">compression</span> <span class="title">using</span> <span class="title">up</span> <span class="title">to</span> 16 <span class="title">threads</span></span></span><br><span class="line"><span class="function"><span class="title">Compressing</span> <span class="title">objects</span>: 100% (2/2), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Writing</span> <span class="title">objects</span>: 100% (4/4), 335 <span class="title">bytes</span> | 335.00 <span class="title">KiB</span>/<span class="title">s</span>, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Total</span> 4 (<span class="title">delta</span> 0), <span class="title">reused</span> 0 (<span class="title">delta</span> 0), <span class="title">pack</span>-<span class="title">reused</span> 0</span></span><br><span class="line"><span class="function"><span class="title">remote</span>:</span></span><br><span class="line"><span class="function"><span class="title">remote</span>: <span class="title">Create</span> <span class="title">a</span> <span class="title">pull</span> <span class="title">request</span> <span class="title">for</span> &#x27;<span class="title">master</span>&#x27; <span class="title">on</span> <span class="title">GitHub</span> <span class="title">by</span> <span class="title">visiting</span>:</span></span><br><span class="line"><span class="function"><span class="title">remote</span>:      <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span>/<span class="title">pull</span>/<span class="title">new</span>/<span class="title">master</span></span></span><br><span class="line"><span class="function"><span class="title">remote</span>:</span></span><br><span class="line"><span class="function"><span class="title">To</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function"> * [<span class="title">new</span> <span class="title">branch</span>]      <span class="title">master</span> -&gt; <span class="title">master</span></span></span><br><span class="line"><span class="function"><span class="title">branch</span> &#x27;<span class="title">master</span>&#x27; <span class="title">set</span> <span class="title">up</span> <span class="title">to</span> <span class="title">track</span> &#x27;<span class="title">origin</span>/<span class="title">master</span>&#x27;.</span></span><br></pre></td></tr></table></figure>
+
+<p>好，推送成功了，打开我们的<code>git仓库</code>看看</p>
+<img src="/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20250205113431936.png" class="" title="image-20250205113431936">
+
+<p>咦，怎么没有呢？我们发现现在是两个分支了(2 Branches)，点击<code>main</code>切换到<code>master</code>分支，</p>
+<img src="/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20250205113617249.png" class="" title="image-20250205113617249">
+
+<p>哦，在这里啊，这是怎么回事呢，回到我们的第一个命令<code>git init</code>的输出，原来一开始就建议我们使用<code>main</code>而不是<code>master</code>作为默认分支了，首先运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git config --global init.defaultBranch main</span><br></pre></td></tr></table></figure>
+
+<p>让所有新仓库用<code>main</code>作为默认分支，然后重命名本地<code>master</code>分支为<code>main</code>：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git branch -m master main</span><br></pre></td></tr></table></figure>
+
+<p>将本地<code>main</code>和远程<code>main</code>关联：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">warning: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">To</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function"> ! [<span class="title">rejected</span>]        <span class="title">main</span> -&gt; <span class="title">main</span> (<span class="title">fetch</span> <span class="title">first</span>)</span></span><br><span class="line"><span class="function"><span class="title">error</span>: <span class="title">failed</span> <span class="title">to</span> <span class="title">push</span> <span class="title">some</span> <span class="title">refs</span> <span class="title">to</span> &#x27;<span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span>&#x27;</span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">Updates</span> <span class="title">were</span> <span class="title">rejected</span> <span class="title">because</span> <span class="title">the</span> <span class="title">remote</span> <span class="title">contains</span> <span class="title">work</span> <span class="title">that</span> <span class="title">you</span> <span class="title">do</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">not</span> <span class="title">have</span> <span class="title">locally</span>. <span class="title">This</span> <span class="title">is</span> <span class="title">usually</span> <span class="title">caused</span> <span class="title">by</span> <span class="title">another</span> <span class="title">repository</span> <span class="title">pushing</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">to</span> <span class="title">the</span> <span class="title">same</span> <span class="title">ref</span>. <span class="title">You</span> <span class="title">may</span> <span class="title">want</span> <span class="title">to</span> <span class="title">first</span> <span class="title">integrate</span> <span class="title">the</span> <span class="title">remote</span> <span class="title">changes</span></span></span><br><span class="line"><span class="function"><span class="title">hint</span>: (<span class="title">e.g</span>., &#x27;<span class="title">git</span> <span class="title">pull</span> ...&#x27;) <span class="title">before</span> <span class="title">pushing</span> <span class="title">again</span>.</span></span><br><span class="line"><span class="function"><span class="title">hint</span>: <span class="title">See</span> <span class="title">the</span> &#x27;<span class="title">Note</span> <span class="title">about</span> <span class="title">fast</span>-<span class="title">forwards</span>&#x27; <span class="title">in</span> &#x27;<span class="title">git</span> <span class="title">push</span> --<span class="title">help</span>&#x27; <span class="title">for</span> <span class="title">details</span>.</span></span><br></pre></td></tr></table></figure>
+
+<p>这是因为创建远程<code>main</code>分支的时候添加了<code>.gitignore</code>文件，但本地<code>main</code>分支并没有同步远程的更新，所以<code>Git</code>拒绝了你的推送，执行</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git pull --rebase origin main</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">remote: <span class="title">Enumerating</span> <span class="title">objects</span>: 3, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">remote</span>: <span class="title">Counting</span> <span class="title">objects</span>: 100% (3/3), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">remote</span>: <span class="title">Compressing</span> <span class="title">objects</span>: 100% (2/2), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">remote</span>: <span class="title">Total</span> 3 (<span class="title">delta</span> 0), <span class="title">reused</span> 0 (<span class="title">delta</span> 0), <span class="title">pack</span>-<span class="title">reused</span> 0 (<span class="title">from</span> 0)</span></span><br><span class="line"><span class="function"><span class="title">Unpacking</span> <span class="title">objects</span>: 100% (3/3), 2.32 <span class="title">KiB</span> | 198.00 <span class="title">KiB</span>/<span class="title">s</span>, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">From</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function"> * <span class="title">branch</span>            <span class="title">main</span>       -&gt; <span class="title">FETCH_HEAD</span></span></span><br><span class="line"><span class="function"> * [<span class="title">new</span> <span class="title">branch</span>]      <span class="title">main</span>       -&gt; <span class="title">origin</span>/<span class="title">main</span></span></span><br><span class="line"><span class="function"><span class="title">Successfully</span> <span class="title">rebased</span> <span class="title">and</span> <span class="title">updated</span> <span class="title">refs</span>/<span class="title">heads</span>/<span class="title">main</span>.</span></span><br></pre></td></tr></table></figure>
+
+<p>运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">warning: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">Enumerating</span> <span class="title">objects</span>: 5, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Counting</span> <span class="title">objects</span>: 100% (5/5), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Delta</span> <span class="title">compression</span> <span class="title">using</span> <span class="title">up</span> <span class="title">to</span> 16 <span class="title">threads</span></span></span><br><span class="line"><span class="function"><span class="title">Compressing</span> <span class="title">objects</span>: 100% (2/2), <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Writing</span> <span class="title">objects</span>: 100% (4/4), 405 <span class="title">bytes</span> | 405.00 <span class="title">KiB</span>/<span class="title">s</span>, <span class="title">done</span>.</span></span><br><span class="line"><span class="function"><span class="title">Total</span> 4 (<span class="title">delta</span> 0), <span class="title">reused</span> 0 (<span class="title">delta</span> 0), <span class="title">pack</span>-<span class="title">reused</span> 0</span></span><br><span class="line"><span class="function"><span class="title">To</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function">   <span class="title">a8dd2f9</span>..<span class="title">d26a2dd</span>  <span class="title">main</span> -&gt; <span class="title">main</span></span></span><br><span class="line"><span class="function"><span class="title">branch</span> &#x27;<span class="title">main</span>&#x27; <span class="title">set</span> <span class="title">up</span> <span class="title">to</span> <span class="title">track</span> &#x27;<span class="title">origin</span>/<span class="title">main</span>&#x27;.</span></span><br></pre></td></tr></table></figure>
+
+<p>OK!成功了，看下远程仓库也确实推送上去了，最后删除掉刚才的<code>master</code>分支：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git push origin --delete master</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">warning: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span>-<span class="title">core</span> <span class="title">was</span> <span class="title">renamed</span> <span class="title">to</span> <span class="title">git</span>-<span class="title">credential</span>-<span class="title">manager</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">see</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">rename</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span></span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ----------------- <span class="title">SECURITY</span> <span class="title">WARNING</span> ----------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: | <span class="title">TLS</span> <span class="title">certificate</span> <span class="title">verification</span> <span class="title">has</span> <span class="title">been</span> <span class="title">disabled</span>! |</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: ---------------------------------------------------</span></span><br><span class="line"><span class="function"><span class="title">warning</span>: <span class="title">HTTPS</span> <span class="title">connections</span> <span class="title">may</span> <span class="title">not</span> <span class="title">be</span> <span class="title">secure</span>. <span class="title">See</span> <span class="title">https</span>://<span class="title">aka.ms</span>/<span class="title">gcm</span>/<span class="title">tlsverify</span> <span class="title">for</span> <span class="title">more</span> <span class="title">information</span>.</span></span><br><span class="line"><span class="function"><span class="title">To</span> <span class="title">https</span>://<span class="title">github.com</span>/<span class="title">caihaoran</span>-00/<span class="title">agent_langgraph</span></span></span><br><span class="line"><span class="function"> - [<span class="title">deleted</span>]         <span class="title">master</span></span></span><br></pre></td></tr></table></figure>
+
+<p>检查下远程仓库，确实删除掉了，这些<code>warning</code>怎么解决呢？</p>
+<p>这理由两方面警告：</p>
+<ul>
+<li><p><code>git-credential-manager-core</code>被重命名为<code>git-credential-manager</code></p>
+<p>升级<a href="https://git-scm.com/downloads/win">git</a>，然后<code>git --version</code>查看是否升级成功，再</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git config --global credential.helper manager</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> # 基于langgraph的agent应用示例 &gt; README.<span class="built_in">md</span></span><br><span class="line">git add .</span><br><span class="line">git commit -m &quot;Modified README&quot;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<p>最终输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">Enumerating objects: <span class="number">5</span>, done.</span><br><span class="line">Counting objects: <span class="number">100</span>% (<span class="number">5</span>/<span class="number">5</span>), done.</span><br><span class="line">Delta compression using up to <span class="number">16</span> threads</span><br><span class="line">Compressing objects: <span class="number">100</span>% (<span class="number">2</span>/<span class="number">2</span>), done.</span><br><span class="line">Writing objects: <span class="number">100</span>% (<span class="number">3</span>/<span class="number">3</span>), <span class="number">348</span> bytes | <span class="number">348</span>.<span class="number">00</span> KiB/s, done.</span><br><span class="line">Total <span class="number">3</span> (delta <span class="number">0</span>), reused <span class="number">0</span> (delta <span class="number">0</span>), pack-reused <span class="number">0</span> (from <span class="number">0</span>)</span><br><span class="line">To https://github.com/caihaoran-<span class="number">00</span>/agent_langgraph</span><br><span class="line">   d26a2dd..ca9d0de  main -&gt; main</span><br></pre></td></tr></table></figure>
+
+<p>没有警告了，完美。</p>
+</li>
+</ul>
+<p>但是发现readme文件显示乱码了，通过任意编辑器打开readme文件，选择<code>UTF-8</code>格式保存，再：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m &quot;Modified README&quot;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<p>即可。</p>
+<hr>
+<h2 id="二、远程仓库-本地仓库（推荐）"><a href="#二、远程仓库-本地仓库（推荐）" class="headerlink" title="二、远程仓库-&gt;本地仓库（推荐）"></a>二、远程仓库-&gt;本地仓库（推荐）</h2><h3 id="1-创建远程仓库"><a href="#1-创建远程仓库" class="headerlink" title="1.创建远程仓库"></a>1.创建远程仓库</h3><p>第二个案例我们从新建远程仓库看起，与案例一大同小异，首先创建远程仓库，名称为<code>agent</code>。</p>
+<h3 id="2-本地仓库文件创建"><a href="#2-本地仓库文件创建" class="headerlink" title="2. 本地仓库文件创建"></a>2. 本地仓库文件创建</h3><p>克隆这个仓库到本地：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/caihaoran-<span class="number">00</span>/agent.git</span><br></pre></td></tr></table></figure>
+
+<p>然后进入这个文件夹，在本地新建几个文件：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> # 原生的agent应用 &gt; README.<span class="built_in">md</span></span><br><span class="line"><span class="built_in">echo</span> &quot;<span class="built_in">print</span>(&#x27;Hello, agent!&#x27;)&quot; &gt; main.py</span><br></pre></td></tr></table></figure>
+
+<p>然后可以运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<p>查看下状态，输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">On branch main</span><br><span class="line">Your branch is up to <span class="built_in">date</span> with &#x27;origin/main&#x27;.</span><br><span class="line"></span><br><span class="line">Changes <span class="keyword">not</span> staged <span class="keyword">for</span> commit:</span><br><span class="line">  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)</span><br><span class="line">  (use &quot;git <span class="built_in">restore</span> &lt;file&gt;...&quot; to discard changes <span class="keyword">in</span> working directory)</span><br><span class="line"><span class="function">        modified:   <span class="title">README.md</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">Untracked</span> <span class="title">files</span>:</span></span><br><span class="line"><span class="function">  (<span class="title">use</span> &quot;<span class="title">git</span> <span class="title">add</span> &lt;<span class="title">file</span>&gt;...&quot; <span class="title">to</span> <span class="title">include</span> <span class="title">in</span> <span class="title">what</span> <span class="title">will</span> <span class="title">be</span> <span class="title">committed</span>)</span></span><br><span class="line"><span class="function">        <span class="title">main.py</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="title">no</span> <span class="title">changes</span> <span class="title">added</span> <span class="title">to</span> <span class="title">commit</span> (<span class="title">use</span> &quot;<span class="title">git</span> <span class="title">add</span>&quot; <span class="title">and</span>/<span class="title">or</span> &quot;<span class="title">git</span> <span class="title">commit</span> -<span class="title">a</span>&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-本地仓库-远程仓库-1"><a href="#3-本地仓库-远程仓库-1" class="headerlink" title="3. 本地仓库-&gt;远程仓库"></a>3. 本地仓库-&gt;远程仓库</h3><p>运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m &quot;Initial commit: add README and main.py&quot;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<p>最终输出：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">Enumerating objects: <span class="number">6</span>, done.</span><br><span class="line">Counting objects: <span class="number">100</span>% (<span class="number">6</span>/<span class="number">6</span>), done.</span><br><span class="line">Delta compression using up to <span class="number">16</span> threads</span><br><span class="line">Compressing objects: <span class="number">100</span>% (<span class="number">2</span>/<span class="number">2</span>), done.</span><br><span class="line">Writing objects: <span class="number">100</span>% (<span class="number">4</span>/<span class="number">4</span>), <span class="number">355</span> bytes | <span class="number">355</span>.<span class="number">00</span> KiB/s, done.</span><br><span class="line">Total <span class="number">4</span> (delta <span class="number">0</span>), reused <span class="number">0</span> (delta <span class="number">0</span>), pack-reused <span class="number">0</span> (from <span class="number">0</span>)</span><br><span class="line">To https://github.com/caihaoran-<span class="number">00</span>/agent.git</span><br><span class="line">   <span class="number">43</span>b6c82..<span class="number">765</span>f15b  main -&gt; main</span><br></pre></td></tr></table></figure>
+
+<p>好了，是不是要比案例一要简单一些呢。</p>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
   </entry>
   <entry>
     <title>Hexo主题配置及美化之Next</title>
@@ -375,6 +730,89 @@
       <tags>
         <tag>Hexo</tag>
         <tag>Next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2025/01/13/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>silero_vad onnx方式使用示例</title>
+    <url>/2025/02/07/onnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>语音活动检测（VAD, Voice Activity Detection）是语音处理中的重要技术，它用于检测音频流中是否存在语音信号。VAD 在语音识别、语音通信、语音增强等应用中起到了关键作用。例如，在语音助手、语音转写、降噪等任务中，VAD 可以帮助系统忽略无声片段，提高处理效率。</p>
+<p><strong>Silero VAD</strong> 是一个轻量级、性能优异的 VAD 模型，它基于深度学习，可高效检测实时音频中的语音活动。本文将介绍如何使用 <strong>Silero VAD</strong> 进行实时语音检测，并给出一个简单的实现示例。</p>
+<span id="more"></span>
+
+<h2 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line">torch.set_num_threads(<span class="number">1</span>)</span><br><span class="line"><span class="keyword">import</span> pyaudio</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">from</span> queue <span class="keyword">import</span> Queue</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载 Silero VAD 模型</span></span><br><span class="line">model, utils = torch.hub.load(repo_or_dir=<span class="string">&#x27;snakers4/silero-vad&#x27;</span>,</span><br><span class="line">                              model=<span class="string">&#x27;silero_vad&#x27;</span>,</span><br><span class="line">                              trust_repo=<span class="literal">True</span>,</span><br><span class="line">                              onnx=<span class="literal">True</span>,</span><br><span class="line">                              <span class="comment"># force_reload=True</span></span><br><span class="line">                              )</span><br><span class="line"></span><br><span class="line"><span class="comment"># 录音参数</span></span><br><span class="line">FORMAT = pyaudio.paFloat32</span><br><span class="line">CHANNELS = <span class="number">1</span></span><br><span class="line">SAMPLE_RATE = <span class="number">16000</span></span><br><span class="line">num_samples = <span class="number">512</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化 PyAudio</span></span><br><span class="line">audio = pyaudio.PyAudio()</span><br><span class="line">stream = audio.<span class="built_in">open</span>(<span class="built_in">format</span>=FORMAT,</span><br><span class="line">                    channels=CHANNELS,</span><br><span class="line">                    rate=SAMPLE_RATE,</span><br><span class="line">                    <span class="built_in">input</span>=<span class="literal">True</span>,</span><br><span class="line">                    frames_per_buffer=num_samples)</span><br><span class="line"></span><br><span class="line">audio_queue = Queue()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 录音线程</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">start_recording</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Recording...\n&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        data = stream.read(num_samples)</span><br><span class="line">        audio_chunk = np.frombuffer(data, dtype=np.float32)</span><br><span class="line">        audio_queue.put(audio_chunk)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">vad_process</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Starting VAD...\n&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        audio_chunk = audio_queue.get()</span><br><span class="line">        speech_prob = model(torch.from_numpy(audio_chunk.copy()), SAMPLE_RATE).item()</span><br><span class="line">        <span class="keyword">if</span> speech_prob &gt; <span class="number">0.5</span>:</span><br><span class="line">            <span class="built_in">print</span>(speech_prob, flush=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    threading.Thread(target=start_recording, daemon=<span class="literal">True</span>).start()</span><br><span class="line">    vad_process()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="代码解析"><a href="#代码解析" class="headerlink" title="代码解析"></a>代码解析</h3><p>该示例展示了如何使用 <strong>Silero VAD</strong> 进行实时语音检测，主要包括以下步骤：</p>
+<ol>
+<li><strong>加载 Silero VAD 模型</strong><ul>
+<li>使用 <code>torch.hub.load</code> 下载并加载模型。</li>
+<li>设置 <code>onnx=True</code> 以使用 ONNX 版本的模型，提高推理速度。</li>
+</ul>
+</li>
+<li><strong>初始化音频流</strong><ul>
+<li>采用 <code>pyaudio</code> 进行音频采集，设置 <strong>采样率 16kHz</strong>，每次读取 <strong>512 个样本</strong>。</li>
+<li>使用 <code>Queue</code> 作为音频缓冲队列，实现<strong>生产者-消费者模型</strong>。</li>
+</ul>
+</li>
+<li><strong>录音线程</strong> (<code>start_recording</code>)<ul>
+<li>从麦克风采集音频数据并存入 <code>Queue</code>，实现<strong>非阻塞录音</strong>。</li>
+</ul>
+</li>
+<li><strong>VAD 处理线程</strong> (<code>vad_process</code>)<ul>
+<li>从 <code>Queue</code> 获取音频块，输入 <strong>Silero VAD 模型</strong> 进行预测。</li>
+<li><code>speech_prob &gt; 0.5</code> 表示当前帧检测到语音，并打印语音置信度。</li>
+</ul>
+</li>
+<li><strong>多线程运行</strong><ul>
+<li>录音和 VAD 处理分别运行在<strong>不同的线程</strong>，保证实时性。</li>
+</ul>
+</li>
+</ol>
+<h3 id="一些小细节"><a href="#一些小细节" class="headerlink" title="一些小细节"></a>一些小细节</h3><ul>
+<li><strong>Silero VAD</strong>输入的数据是<code>float</code>型，每次处理<code>512</code>个样本点（<code>16000kHz</code>采样率下）</li>
+<li>注释掉<code>force_reload</code>以保证每次运行代码时不会从新下载模型文件（虽然不大）</li>
+<li><code>audio_chunk</code>是只读数据，所以需要<code>audio_chunk.copy()</code>复制一份进行操作，不然会有警告，另外也可以使用<code>torch.tensor(audio_chunk)</code></li>
+<li>关于依赖项可查看参考链接。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本示例展示了 <strong>Silero VAD</strong> 在 <strong>实时语音检测</strong> 中的基本用法。通过 <strong>PyAudio 录音 + Silero VAD 语音检测</strong>，可以实现实时 VAD 应用，如：</p>
+<ul>
+<li>语音助手唤醒</li>
+<li>语音聊天的端点检测</li>
+<li>噪音环境中的语音活动检测</li>
+</ul>
+<p>如果需要进一步优化，可以考虑：</p>
+<ul>
+<li><strong>结合 WebSocket 或 HTTP 服务，实现远程语音检测</strong></li>
+<li><strong>使用 GPU 加速，提升推理速度</strong></li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://github.com/snakers4/silero-vad/wiki/Examples-and-Dependencies#examples">https://github.com/snakers4/silero-vad/wiki/Examples-and-Dependencies#examples</a></li>
+<li><a href="https://github.com/snakers4/silero-vad">https://github.com/snakers4/silero-vad</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>VAD</tag>
+        <tag>silero vad</tag>
       </tags>
   </entry>
   <entry>
