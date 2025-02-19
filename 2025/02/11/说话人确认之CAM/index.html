@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言说话人确认，又名说话人验证（SV, Speaker Verification）、声纹认证、语音认证、说话人认证，是声纹识别的一个子任务，主要用于确认某个人的身份，即这个人是不是那个人。验证采用1:1对比，即用户提供的语音与已注册的声纹模版进行匹配，以决定是否通过认证。 本文以3D-speaker中的CAM++（ERES2Net V2也类似）为例，实验说话人确认效果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="说话人确认之CAM++">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言说话人确认，又名说话人验证（SV, Speaker Verification）、声纹认证、语音认证、说话人认证，是声纹识别的一个子任务，主要用于确认某个人的身份，即这个人是不是那个人。验证采用1:1对比，即用户提供的语音与已注册的声纹模版进行匹配，以决定是否通过认证。 本文以3D-speaker中的CAM++（ERES2Net V2也类似）为例，实验说话人确认效果。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/image-20250211173755013.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/image-20250211173929098.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/image-20250211175900335.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/image-20250211181501480.png">
+<meta property="article:published_time" content="2025-02-11T09:24:14.000Z">
+<meta property="article:modified_time" content="2025-02-17T10:30:46.414Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="Speaker Verification">
+<meta property="article:tag" content="SV">
+<meta property="article:tag" content="CAM++">
+<meta property="article:tag" content="ERES2NET(V2)">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/image-20250211173755013.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/","path":"2025/02/11/说话人确认之CAM/","title":"说话人确认之CAM++"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>说话人确认之CAM++ | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.</span> <span class="nav-text">微服务</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="说话人确认之CAM++ | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          说话人确认之CAM++
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-02-11 17:24:14" itemprop="dateCreated datePublished" datetime="2025-02-11T17:24:14+08:00">2025-02-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-02-17 18:30:46" itemprop="dateModified" datetime="2025-02-17T18:30:46+08:00">2025-02-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>9 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>说话人确认，又名说话人验证（SV, Speaker Verification）、声纹认证、语音认证、说话人认证，是声纹识别的一个子任务，主要用于确认某个人的身份，即<strong>这个人是不是那个人</strong>。验证采用<strong>1:1对比</strong>，即用户提供的语音与已注册的声纹模版进行匹配，以决定是否通过认证。</p>
+<p>本文以3D-speaker中的CAM++（ERES2Net V2也类似）为例，实验说话人确认效果。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>打开<a target="_blank" rel="noopener" href="https://modelscope.cn/models?page=1&tabKey=task&tasks=speaker-verification&type=audio">这个页面</a>：</p>
+<img src="/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/image-20250211173755013.png" class="" title="image-20250211173755013">
+
+<p>点击上图所示箭头，往下拉可看到示例：</p>
+<img src="/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/image-20250211173929098.png" class="" title="image-20250211173929098">
+
+<p>我们实操下：</p>
+<ul>
+<li><p>首先准备下环境（缺啥安啥）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install modelscope addict datasets simplejson sortedcontainers</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>运行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> modelscope.pipelines <span class="keyword">import</span> pipeline</span><br><span class="line">sv_pipeline = pipeline(</span><br><span class="line">    task=<span class="string">&#x27;speaker-verification&#x27;</span>,</span><br><span class="line">    model=<span class="string">&#x27;iic/speech_campplus_sv_zh_en_16k-common_advanced&#x27;</span>,</span><br><span class="line">    model_revision=<span class="string">&#x27;v1.0.0&#x27;</span></span><br><span class="line">)</span><br><span class="line">speaker1_a_wav = <span class="string">&#x27;https://modelscope.cn/api/v1/models/iic/speech_campplus_sv_zh_en_16k-common_advanced/repo?Revision=master&amp;FilePath=examples/speaker1_a_cn_16k.wav&#x27;</span></span><br><span class="line">speaker1_b_wav = <span class="string">&#x27;https://modelscope.cn/api/v1/models/iic/speech_campplus_sv_zh_en_16k-common_advanced/repo?Revision=master&amp;FilePath=examples/speaker1_b_cn_16k.wav&#x27;</span></span><br><span class="line">speaker2_a_wav = <span class="string">&#x27;https://modelscope.cn/api/v1/models/iic/speech_campplus_sv_zh_en_16k-common_advanced/repo?Revision=master&amp;FilePath=examples/speaker2_a_cn_16k.wav&#x27;</span></span><br><span class="line"><span class="comment"># 相同说话人语音</span></span><br><span class="line">result = sv_pipeline([speaker1_a_wav, speaker1_b_wav])</span><br><span class="line"><span class="built_in">print</span>(result)</span><br><span class="line"><span class="comment"># 不同说话人语音</span></span><br><span class="line">result = sv_pipeline([speaker1_a_wav, speaker2_a_wav])</span><br><span class="line"><span class="built_in">print</span>(result)</span><br><span class="line"><span class="comment"># 可以自定义得分阈值来进行识别，阈值越高，判定为同一人的条件越严格</span></span><br><span class="line">result = sv_pipeline([speaker1_a_wav, speaker2_a_wav], thr=<span class="number">0.33</span>)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br><span class="line"><span class="comment"># 可以传入output_emb参数，输出结果中就会包含提取到的说话人embedding</span></span><br><span class="line">result = sv_pipeline([speaker1_a_wav, speaker2_a_wav], output_emb=<span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(result[<span class="string">&#x27;embs&#x27;</span>], result[<span class="string">&#x27;outputs&#x27;</span>])</span><br><span class="line"><span class="comment"># 可以传入save_dir参数，提取到的说话人embedding会存储在save_dir目录中</span></span><br><span class="line">result = sv_pipeline([speaker1_a_wav, speaker2_a_wav], save_dir=<span class="string">&#x27;savePath/&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>输出：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br></pre></td><td class="code"><pre><span class="line">D:\Anaconda3\envs\langchain\python.exe E:\chr_git\langchain_t\langgraph\sv_cam.py </span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">39</span>,<span class="number">106</span> - modelscope - INFO - Use user-specified model revision: v1<span class="number">.0</span><span class="number">.0</span></span><br><span class="line">Downloading Model to directory: C:\Users\<span class="built_in">chr</span>\.cache\modelscope\hub\iic\speech_campplus_sv_zh_en_16k-common_advanced</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">40</span>,<span class="number">208</span> - modelscope - INFO - Use user-specified model revision: v1<span class="number">.0</span><span class="number">.0</span></span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">40</span>,<span class="number">494</span> - modelscope - INFO - Got <span class="number">9</span> files, start to download ...</span><br><span class="line">Processing <span class="number">9</span> items:   <span class="number">0</span>%|          | <span class="number">0.00</span>/<span class="number">9.00</span> [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?it/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:   <span class="number">0</span>%|          | <span class="number">0.00</span>/<span class="number">26.7</span>M [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?B/s]</span><br><span class="line"></span><br><span class="line">Downloading [config.yaml]:   <span class="number">0</span>%|          | <span class="number">0.00</span>/<span class="number">537</span> [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?B/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [dingding.jpg]:   <span class="number">0</span>%|          | <span class="number">0.00</span>/180k [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?B/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [quickstart.md]:   <span class="number">0</span>%|          | <span class="number">0.00</span>/<span class="number">1.53</span>k [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?B/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [README.md]:   <span class="number">0</span>%|          | <span class="number">0.00</span>/<span class="number">5.83</span>k [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?B/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [examples/speaker1_a_cn_16k.wav]:   <span class="number">0</span>%|          | <span class="number">0.00</span>/116k [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?B/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [examples/speaker1_b_cn_16k.wav]:   <span class="number">0</span>%|          | <span class="number">0.00</span>/153k [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?B/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [examples/speaker2_a_cn_16k.wav]:   <span class="number">0</span>%|          | <span class="number">0.00</span>/166k [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?B/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [quickstart.md]: <span class="number">100</span>%|██████████| <span class="number">1.53</span>k/<span class="number">1.53</span>k [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, <span class="number">3.96</span>kB/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [config.yaml]: <span class="number">100</span>%|██████████| <span class="number">537</span>/<span class="number">537</span> [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, <span class="number">1.32</span>kB/s]</span><br><span class="line">Processing <span class="number">9</span> items:  <span class="number">11</span>%|█         | <span class="number">1.00</span>/<span class="number">9.00</span> [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:03, <span class="number">2.43</span>it/s]</span><br><span class="line"></span><br><span class="line">Downloading [structure.png]:   <span class="number">0</span>%|          | <span class="number">0.00</span>/279k [<span class="number">00</span>:<span class="number">00</span>&lt;?, ?B/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [README.md]: <span class="number">100</span>%|██████████| <span class="number">5.83</span>k/<span class="number">5.83</span>k [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, <span class="number">13.0</span>kB/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [examples/speaker1_a_cn_16k.wav]: <span class="number">100</span>%|██████████| 116k/116k [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, 225kB/s]</span><br><span class="line">Processing <span class="number">9</span> items:  <span class="number">44</span>%|████▍     | <span class="number">4.00</span>/<span class="number">9.00</span> [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, <span class="number">8.67</span>it/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [examples/speaker2_a_cn_16k.wav]: <span class="number">100</span>%|██████████| 166k/166k [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, 311kB/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [examples/speaker2_a_cn_16k.wav]: <span class="number">100</span>%|██████████| 166k/166k [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, 311kB/s]</span><br><span class="line">Downloading [examples/speaker1_b_cn_16k.wav]: <span class="number">100</span>%|██████████| 153k/153k [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, 287kB/s]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Downloading [dingding.jpg]: <span class="number">100</span>%|██████████| 180k/180k [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, 273kB/s]</span><br><span class="line">Processing <span class="number">9</span> items:  <span class="number">78</span>%|███████▊  | <span class="number">7.00</span>/<span class="number">9.00</span> [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, <span class="number">12.7</span>it/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:   <span class="number">4</span>%|▎         | <span class="number">1.00</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">19</span>, <span class="number">1.38</span>MB/s]</span><br><span class="line"></span><br><span class="line">Downloading [structure.png]: <span class="number">100</span>%|██████████| 279k/279k [<span class="number">00</span>:<span class="number">00</span>&lt;<span class="number">00</span>:<span class="number">00</span>, 466kB/s]</span><br><span class="line"></span><br><span class="line">Downloading [campplus_cn_en_common.pt]:   <span class="number">7</span>%|▋         | <span class="number">2.00</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:01&lt;<span class="number">00</span>:<span class="number">12</span>, <span class="number">2.02</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">11</span>%|█         | <span class="number">3.00</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:01&lt;<span class="number">00</span>:<span class="number">11</span>, <span class="number">2.14</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">15</span>%|█▍        | <span class="number">4.00</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:01&lt;<span class="number">00</span>:09, <span class="number">2.49</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">19</span>%|█▊        | <span class="number">5.00</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:02&lt;<span class="number">00</span>:06, <span class="number">3.35</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">22</span>%|██▏       | <span class="number">6.00</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:02&lt;<span class="number">00</span>:08, <span class="number">2.69</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">26</span>%|██▌       | <span class="number">7.00</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:02&lt;<span class="number">00</span>:07, <span class="number">2.59</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">30</span>%|██▉       | <span class="number">8.00</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:03&lt;<span class="number">00</span>:07, <span class="number">2.51</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">34</span>%|███▎      | <span class="number">9.00</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:03&lt;<span class="number">00</span>:07, <span class="number">2.43</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">37</span>%|███▋      | <span class="number">10.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:04&lt;<span class="number">00</span>:07, <span class="number">2.45</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">41</span>%|████      | <span class="number">11.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:04&lt;<span class="number">00</span>:05, <span class="number">2.87</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">45</span>%|████▍     | <span class="number">12.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:04&lt;<span class="number">00</span>:05, <span class="number">2.67</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">49</span>%|████▊     | <span class="number">13.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:05&lt;<span class="number">00</span>:05, <span class="number">2.57</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">52</span>%|█████▏    | <span class="number">14.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:05&lt;<span class="number">00</span>:05, <span class="number">2.54</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">56</span>%|█████▌    | <span class="number">15.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:05&lt;<span class="number">00</span>:03, <span class="number">3.16</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">60</span>%|█████▉    | <span class="number">16.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:06&lt;<span class="number">00</span>:04, <span class="number">2.80</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">64</span>%|██████▎   | <span class="number">17.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:06&lt;<span class="number">00</span>:03, <span class="number">2.58</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">67</span>%|██████▋   | <span class="number">18.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:07&lt;<span class="number">00</span>:03, <span class="number">2.50</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">71</span>%|███████   | <span class="number">19.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:07&lt;<span class="number">00</span>:02, <span class="number">3.22</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">75</span>%|███████▍  | <span class="number">20.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:07&lt;<span class="number">00</span>:02, <span class="number">3.34</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">79</span>%|███████▊  | <span class="number">21.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:08&lt;<span class="number">00</span>:02, <span class="number">2.49</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">82</span>%|████████▏ | <span class="number">22.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:09&lt;<span class="number">00</span>:03, <span class="number">1.50</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">90</span>%|████████▉ | <span class="number">24.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:<span class="number">10</span>&lt;<span class="number">00</span>:01, <span class="number">2.41</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">93</span>%|█████████▎| <span class="number">25.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:<span class="number">10</span>&lt;<span class="number">00</span>:<span class="number">00</span>, <span class="number">2.10</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]:  <span class="number">97</span>%|█████████▋| <span class="number">26.0</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:<span class="number">11</span>&lt;<span class="number">00</span>:<span class="number">00</span>, <span class="number">2.05</span>MB/s]</span><br><span class="line">Downloading [campplus_cn_en_common.pt]: <span class="number">100</span>%|██████████| <span class="number">26.7</span>M/<span class="number">26.7</span>M [<span class="number">00</span>:<span class="number">11</span>&lt;<span class="number">00</span>:<span class="number">00</span>, <span class="number">2.40</span>MB/s]</span><br><span class="line">Processing <span class="number">9</span> items: <span class="number">100</span>%|██████████| <span class="number">9.00</span>/<span class="number">9.00</span> [<span class="number">00</span>:<span class="number">11</span>&lt;<span class="number">00</span>:<span class="number">00</span>, <span class="number">1.30</span>s/it]</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">177</span> - modelscope - INFO - Download model <span class="string">&#x27;iic/speech_campplus_sv_zh_en_16k-common_advanced&#x27;</span> successfully.</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">409</span> - modelscope - INFO - initiate model <span class="keyword">from</span> C:\Users\<span class="built_in">chr</span>\.cache\modelscope\hub\iic\speech_campplus_sv_zh_en_16k-common_advanced</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">410</span> - modelscope - INFO - initiate model <span class="keyword">from</span> location C:\Users\<span class="built_in">chr</span>\.cache\modelscope\hub\iic\speech_campplus_sv_zh_en_16k-common_advanced.</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">414</span> - modelscope - INFO - initialize model <span class="keyword">from</span> C:\Users\<span class="built_in">chr</span>\.cache\modelscope\hub\iic\speech_campplus_sv_zh_en_16k-common_advanced</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">422</span> - modelscope - INFO - cuda <span class="keyword">is</span> <span class="keyword">not</span> available, using cpu instead.</span><br><span class="line">D:\Anaconda3\envs\langchain\lib\site-packages\modelscope\models\audio\sv\DTDNN.py:<span class="number">201</span>: FutureWarning: You are using `torch.load` <span class="keyword">with</span> `weights_only=<span class="literal">False</span>` (the current default value), which uses the default pickle module implicitly. It <span class="keyword">is</span> possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md<span class="comment">#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#x27;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.</span></span><br><span class="line">  torch.load(</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">673</span> - modelscope - WARNING - No preprocessor field found <span class="keyword">in</span> cfg.</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">673</span> - modelscope - WARNING - No val key <span class="keyword">and</span> <span class="built_in">type</span> key found <span class="keyword">in</span> preprocessor domain of configuration.json file.</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">673</span> - modelscope - WARNING - Cannot find available config to build preprocessor at mode inference, current config: &#123;<span class="string">&#x27;model_dir&#x27;</span>: <span class="string">&#x27;C:\\Users\\chr\\.cache\\modelscope\\hub\\iic\\speech_campplus_sv_zh_en_16k-common_advanced&#x27;</span>&#125;. trying to build by task <span class="keyword">and</span> model information.</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">673</span> - modelscope - WARNING - No preprocessor key (<span class="string">&#x27;cam++-sv&#x27;</span>, <span class="string">&#x27;speaker-verification&#x27;</span>) found <span class="keyword">in</span> PREPROCESSOR_MAP, skip building preprocessor.</span><br><span class="line"><span class="number">2025</span>-02-<span class="number">11</span> <span class="number">17</span>:<span class="number">51</span>:<span class="number">52</span>,<span class="number">677</span> - modelscope - INFO - cuda <span class="keyword">is</span> <span class="keyword">not</span> available, using cpu instead.</span><br><span class="line">&#123;<span class="string">&#x27;score&#x27;</span>: <span class="number">0.66675</span>, <span class="string">&#x27;text&#x27;</span>: <span class="string">&#x27;yes&#x27;</span>&#125;</span><br><span class="line">&#123;<span class="string">&#x27;score&#x27;</span>: <span class="number">0.06705</span>, <span class="string">&#x27;text&#x27;</span>: <span class="string">&#x27;no&#x27;</span>&#125;</span><br><span class="line">&#123;<span class="string">&#x27;score&#x27;</span>: <span class="number">0.06705</span>, <span class="string">&#x27;text&#x27;</span>: <span class="string">&#x27;no&#x27;</span>&#125;</span><br><span class="line">[[ <span class="number">5.17292559e-01</span>  <span class="number">3.51756930e-01</span> -<span class="number">5.19109607e-01</span>  <span class="number">1.04136956e+00</span></span><br><span class="line">  -<span class="number">8.84463251e-01</span>  <span class="number">1.86093241e-01</span> -<span class="number">7.06084728e-01</span> -<span class="number">1.14493757e-01</span></span><br><span class="line">  -<span class="number">4.59557921e-02</span>  <span class="number">8.43211293e-01</span> -<span class="number">4.84604180e-01</span>  <span class="number">7.73771107e-01</span></span><br><span class="line">   <span class="number">5.21692932e-01</span> -<span class="number">6.00100309e-02</span>  <span class="number">5.60589850e-01</span> -<span class="number">2.14882836e-01</span></span><br><span class="line">  -<span class="number">4.54094410e-02</span>  <span class="number">1.47872639e+00</span> -<span class="number">5.22940993e-01</span> -<span class="number">2.57876813e-01</span></span><br><span class="line">  -<span class="number">9.69329894e-01</span> -<span class="number">4.64182615e-01</span>  <span class="number">8.96886945e-01</span> -<span class="number">8.14425230e-01</span></span><br><span class="line">  -<span class="number">4.68755901e-01</span>  <span class="number">9.49460089e-01</span>  <span class="number">1.12195504e+00</span> -<span class="number">1.54829323e-02</span></span><br><span class="line">  -<span class="number">1.00103891e+00</span>  <span class="number">2.16494590e-01</span> -<span class="number">5.27387917e-01</span>  <span class="number">1.17877491e-01</span></span><br><span class="line">  -<span class="number">2.15744048e-01</span>  <span class="number">3.73795688e-01</span> -<span class="number">1.35419041e-01</span>  <span class="number">1.53922290e-01</span></span><br><span class="line">  -<span class="number">1.19627900e-01</span> -<span class="number">5.01048803e-01</span>  <span class="number">5.88355064e-02</span> -<span class="number">3.22206885e-01</span></span><br><span class="line">  -<span class="number">5.98066866e-01</span>  <span class="number">7.55107403e-03</span>  <span class="number">1.73359513e-02</span>  <span class="number">1.94534451e-01</span></span><br><span class="line">   <span class="number">2.74982810e-01</span>  <span class="number">8.69932890e-01</span>  <span class="number">1.19620025e-01</span> -<span class="number">2.21478686e-01</span></span><br><span class="line">  -<span class="number">7.24950612e-01</span>  <span class="number">9.44164038e-01</span> -<span class="number">1.06343377e+00</span>  <span class="number">3.97718161e-01</span></span><br><span class="line">   <span class="number">8.16908181e-02</span>  <span class="number">3.06026936e-01</span>  <span class="number">4.76752698e-01</span> -<span class="number">9.23305750e-03</span></span><br><span class="line">  -<span class="number">8.83808494e-01</span> -<span class="number">6.84341550e-01</span> -<span class="number">7.87354589e-01</span> -<span class="number">3.96643579e-01</span></span><br><span class="line">   <span class="number">9.05797243e-01</span>  <span class="number">1.10675704e+00</span>  <span class="number">5.30054748e-01</span> -<span class="number">3.84964705e-01</span></span><br><span class="line">   <span class="number">2.64517397e-01</span>  <span class="number">1.62003934e-01</span>  <span class="number">7.51856685e-01</span> -<span class="number">2.92150199e-01</span></span><br><span class="line">  -<span class="number">2.36718655e-01</span> -<span class="number">2.30451941e-01</span> -<span class="number">5.44483185e-01</span> -<span class="number">9.03511643e-02</span></span><br><span class="line">  -<span class="number">4.38859731e-01</span> -<span class="number">4.57940936e-01</span>  <span class="number">1.22628438e+00</span>  <span class="number">8.45105052e-01</span></span><br><span class="line">  -<span class="number">3.02865386e-01</span> -<span class="number">1.12381375e+00</span> -<span class="number">9.06042695e-01</span> -<span class="number">7.30945691e-02</span></span><br><span class="line">   <span class="number">7.12829977e-02</span>  <span class="number">5.69367051e-01</span>  <span class="number">3.02581012e-01</span>  <span class="number">4.60172236e-01</span></span><br><span class="line">  -<span class="number">3.80096495e-01</span>  <span class="number">5.49874485e-01</span>  <span class="number">4.31633592e-02</span> -<span class="number">1.28434777e-01</span></span><br><span class="line">  -<span class="number">3.43303561e-01</span> -<span class="number">1.93311483e-01</span> -<span class="number">3.29556495e-01</span> -<span class="number">4.82387066e-01</span></span><br><span class="line">  -<span class="number">6.99172556e-01</span>  <span class="number">9.15286541e-02</span> -<span class="number">7.82371938e-01</span>  <span class="number">2.61282325e-01</span></span><br><span class="line">  -<span class="number">5.33845603e-01</span>  <span class="number">1.07789731e+00</span> -<span class="number">4.53783393e-01</span> -<span class="number">1.72081560e-01</span></span><br><span class="line">  -<span class="number">1.39055848e-02</span>  <span class="number">2.54161805e-02</span>  <span class="number">6.15289286e-02</span> -<span class="number">1.92653209e-01</span></span><br><span class="line">   <span class="number">1.19427991e+00</span> -<span class="number">3.27776909e-01</span> -<span class="number">8.29883754e-01</span>  <span class="number">6.54659748e-01</span></span><br><span class="line">   <span class="number">2.49716938e-01</span>  <span class="number">8.99712503e-01</span>  <span class="number">3.86061668e-01</span>  <span class="number">1.30253151e-01</span></span><br><span class="line">   <span class="number">8.22714567e-01</span> -<span class="number">3.76180500e-01</span>  <span class="number">1.74437940e-01</span> -<span class="number">5.13129532e-01</span></span><br><span class="line">  -<span class="number">4.34209645e-01</span>  <span class="number">9.74657416e-01</span> -<span class="number">1.05046511e+00</span> -<span class="number">1.09075785e-01</span></span><br><span class="line">  -<span class="number">2.31605679e-01</span>  <span class="number">5.99238396e-01</span> -<span class="number">1.51118135e+00</span>  <span class="number">7.44090855e-01</span></span><br><span class="line">  -<span class="number">1.90891251e-01</span> -<span class="number">4.40841556e-01</span>  <span class="number">1.02210104e+00</span> -<span class="number">2.54133761e-01</span></span><br><span class="line">   <span class="number">8.02177846e-01</span> -<span class="number">8.05513710e-02</span>  <span class="number">4.17059243e-01</span> -<span class="number">9.72769558e-02</span></span><br><span class="line">  -<span class="number">9.29510295e-02</span> -<span class="number">3.53281915e-01</span>  <span class="number">2.89921045e-01</span> -<span class="number">2.42230371e-01</span></span><br><span class="line">  -<span class="number">6.14224136e-01</span>  <span class="number">7.31607139e-01</span>  <span class="number">7.88372993e-01</span> -<span class="number">2.74549931e-01</span></span><br><span class="line">  -<span class="number">4.67905670e-01</span>  <span class="number">1.52577460e-01</span>  <span class="number">1.48346639e+00</span> -<span class="number">6.66111171e-01</span></span><br><span class="line">   <span class="number">2.17945620e-01</span> -<span class="number">7.95153007e-02</span>  <span class="number">1.85961217e-01</span>  <span class="number">1.15073085e-01</span></span><br><span class="line">   <span class="number">3.58417809e-01</span> -<span class="number">6.94913507e-01</span> -<span class="number">2.00562179e-01</span> -<span class="number">1.54712462e+00</span></span><br><span class="line">   <span class="number">9.81292009e-01</span>  <span class="number">8.26795280e-01</span>  <span class="number">7.15665519e-02</span> -<span class="number">9.62617457e-01</span></span><br><span class="line">   <span class="number">5.09188056e-01</span> -<span class="number">4.38147187e-02</span>  <span class="number">1.20770991e-01</span>  <span class="number">6.51952267e-01</span></span><br><span class="line">   <span class="number">2.24566415e-01</span> -<span class="number">6.61961317e-01</span> -<span class="number">7.10181653e-01</span> -<span class="number">6.14712238e-02</span></span><br><span class="line">   <span class="number">8.87019038e-01</span> -<span class="number">2.26258770e-01</span>  <span class="number">2.09042192e-01</span> -<span class="number">4.44577336e-02</span></span><br><span class="line">   <span class="number">5.74253201e-01</span>  <span class="number">2.51746982e-01</span>  <span class="number">9.16980624e-01</span> -<span class="number">9.91094634e-02</span></span><br><span class="line">  -<span class="number">1.21540618e+00</span> -<span class="number">5.14432073e-01</span> -<span class="number">6.20832205e-01</span>  <span class="number">5.94622552e-01</span></span><br><span class="line">  -<span class="number">3.11303854e-01</span>  <span class="number">5.03932536e-01</span>  <span class="number">4.79328573e-01</span>  <span class="number">8.39833319e-02</span></span><br><span class="line">  -<span class="number">6.90203846e-01</span> -<span class="number">4.30748940e-01</span> -<span class="number">4.96636212e-01</span> -<span class="number">5.60464203e-01</span></span><br><span class="line">   <span class="number">1.27690360e-01</span> -<span class="number">5.91111362e-01</span>  <span class="number">6.79141521e-01</span> -<span class="number">1.45777613e-01</span></span><br><span class="line">   <span class="number">4.13525581e-01</span>  <span class="number">5.22236824e-01</span>  <span class="number">4.90390390e-01</span>  <span class="number">8.48809719e-01</span>]</span><br><span class="line"> [ <span class="number">3.15564185e-01</span>  <span class="number">4.57967043e-01</span> -<span class="number">4.94653881e-01</span>  <span class="number">6.57682896e-01</span></span><br><span class="line">  -<span class="number">4.51911688e-01</span> -<span class="number">5.90668023e-01</span> -<span class="number">4.62758869e-01</span>  <span class="number">8.63914073e-01</span></span><br><span class="line">   <span class="number">8.74602020e-01</span>  <span class="number">3.85936528e-01</span> -<span class="number">3.78984511e-01</span>  <span class="number">5.50751984e-02</span></span><br><span class="line">  -<span class="number">4.65507030e-01</span> -<span class="number">8.40046555e-02</span> -<span class="number">5.19473851e-03</span>  <span class="number">1.10222042e-01</span></span><br><span class="line">  -<span class="number">6.22997403e-01</span> -<span class="number">7.10828304e-01</span>  <span class="number">3.81044805e-01</span> -<span class="number">8.32391381e-02</span></span><br><span class="line">   <span class="number">2.97066033e-01</span>  <span class="number">3.62760156e-01</span> -<span class="number">2.54004717e-01</span>  <span class="number">5.34730077e-01</span></span><br><span class="line">  -<span class="number">9.28971231e-01</span>  <span class="number">1.34461880e-01</span> -<span class="number">6.27328813e-01</span> -<span class="number">1.30564496e-01</span></span><br><span class="line">   <span class="number">8.80748332e-02</span> -<span class="number">7.82362044e-01</span> -<span class="number">4.40445215e-01</span>  <span class="number">8.15549135e-01</span></span><br><span class="line">  -<span class="number">1.85342640e-01</span> -<span class="number">5.37359416e-01</span>  <span class="number">6.61574423e-01</span>  <span class="number">7.33562648e-01</span></span><br><span class="line">   <span class="number">1.96874350e-01</span>  <span class="number">2.51633137e-01</span> -<span class="number">5.20558178e-01</span>  <span class="number">3.16209406e-01</span></span><br><span class="line">  -<span class="number">2.16073051e-01</span>  <span class="number">7.34751105e-01</span>  <span class="number">2.39810407e-01</span> -<span class="number">2.94980928e-02</span></span><br><span class="line">  -<span class="number">2.09395558e-01</span>  <span class="number">8.97269487e-01</span>  <span class="number">9.30367827e-01</span>  <span class="number">1.29151270e-01</span></span><br><span class="line">  -<span class="number">4.42958087e-01</span>  <span class="number">5.96124351e-01</span> -<span class="number">1.33888125e-02</span> -<span class="number">1.97758794e-01</span></span><br><span class="line">  -<span class="number">1.19977486e+00</span>  <span class="number">3.11827540e-01</span>  <span class="number">1.02562070e+00</span>  <span class="number">2.68472373e-01</span></span><br><span class="line">   <span class="number">2.87927538e-01</span> -<span class="number">1.93298161e-02</span> -<span class="number">6.61130130e-01</span> -<span class="number">1.50255144e-01</span></span><br><span class="line">  -<span class="number">2.03645170e-01</span> -<span class="number">3.59881043e-01</span>  <span class="number">4.36608911e-01</span>  <span class="number">8.33720744e-01</span></span><br><span class="line">   <span class="number">5.38385570e-01</span> -<span class="number">5.74404895e-01</span>  <span class="number">1.07515907e+00</span>  <span class="number">9.43793476e-01</span></span><br><span class="line">   <span class="number">7.93444753e-01</span>  <span class="number">1.82356954e-01</span> -<span class="number">1.03665091e-01</span>  <span class="number">7.72922933e-02</span></span><br><span class="line">   <span class="number">1.46000326e-01</span>  <span class="number">3.47233146e-01</span> -<span class="number">4.96966898e-01</span>  <span class="number">3.10336739e-01</span></span><br><span class="line">  -<span class="number">2.02182326e-02</span> -<span class="number">3.96373332e-01</span>  <span class="number">4.41722274e-02</span> -<span class="number">6.83741868e-01</span></span><br><span class="line">   <span class="number">1.38280725e+00</span>  <span class="number">7.01525509e-01</span>  <span class="number">1.23545921e+00</span> -<span class="number">9.07853723e-01</span></span><br><span class="line">  -<span class="number">6.90056920e-01</span>  <span class="number">4.35101867e-01</span> -<span class="number">2.04400703e-01</span> -<span class="number">7.76575983e-01</span></span><br><span class="line">  -<span class="number">1.36691511e+00</span> -<span class="number">6.62955493e-02</span> -<span class="number">3.98840904e-01</span>  <span class="number">8.06303442e-01</span></span><br><span class="line">  -<span class="number">4.37378556e-01</span> -<span class="number">9.84914899e-02</span>  <span class="number">8.84133279e-02</span> -<span class="number">8.12064528e-01</span></span><br><span class="line">   <span class="number">1.07465684e-02</span> -<span class="number">4.01330411e-01</span>  <span class="number">6.80235505e-01</span>  <span class="number">7.63685465e-01</span></span><br><span class="line">   <span class="number">1.58732682e-01</span>  <span class="number">3.67013425e-01</span>  <span class="number">3.19862068e-02</span> -<span class="number">2.44175047e-01</span></span><br><span class="line">   <span class="number">2.53655404e-01</span>  <span class="number">9.12933707e-01</span> -<span class="number">4.69770804e-02</span>  <span class="number">6.44307971e-01</span></span><br><span class="line">   <span class="number">1.49383228e-02</span>  <span class="number">2.61292070e-01</span> -<span class="number">6.32562160e-01</span> -<span class="number">3.49105418e-01</span></span><br><span class="line">  -<span class="number">4.75405365e-01</span> -<span class="number">6.52082801e-01</span>  <span class="number">5.21956563e-01</span>  <span class="number">9.67081189e-02</span></span><br><span class="line">  -<span class="number">1.32706627e-01</span> -<span class="number">2.04909891e-01</span>  <span class="number">3.35076064e-01</span> -<span class="number">6.14212632e-01</span></span><br><span class="line">   <span class="number">1.15394831e+00</span>  <span class="number">1.23360729e+00</span> -<span class="number">2.94713438e-01</span>  <span class="number">5.84973454e-01</span></span><br><span class="line">  -<span class="number">3.37145239e-01</span>  <span class="number">1.29075080e-01</span>  <span class="number">9.09939706e-02</span> -<span class="number">8.49090099e-01</span></span><br><span class="line">   <span class="number">5.97871602e-01</span>  <span class="number">4.67231959e-01</span>  <span class="number">7.34776258e-04</span>  <span class="number">5.30537724e-01</span></span><br><span class="line">  -<span class="number">9.21570659e-02</span> -<span class="number">3.04171085e-01</span> -<span class="number">5.05705416e-01</span> -<span class="number">2.09868699e-01</span></span><br><span class="line">   <span class="number">2.11636186e-01</span>  <span class="number">7.23479390e-01</span> -<span class="number">2.44709343e-01</span> -<span class="number">6.41815186e-01</span></span><br><span class="line">  -<span class="number">2.89389044e-01</span>  <span class="number">5.78832030e-01</span> -<span class="number">1.12853718e+00</span>  <span class="number">9.20033813e-01</span></span><br><span class="line">  -<span class="number">5.97535789e-01</span> -<span class="number">2.32375890e-01</span>  <span class="number">1.47983253e-01</span>  <span class="number">1.73475608e-01</span></span><br><span class="line">   <span class="number">1.11372106e-01</span> -<span class="number">1.11495459e+00</span> -<span class="number">5.47205508e-01</span> -<span class="number">5.25614560e-01</span></span><br><span class="line">   <span class="number">7.83065557e-02</span>  <span class="number">3.37094992e-01</span> -<span class="number">4.04473186e-01</span> -<span class="number">3.56748551e-01</span></span><br><span class="line">  -<span class="number">1.10799873e+00</span> -<span class="number">1.43664896e-01</span> -<span class="number">1.92755520e-01</span> -<span class="number">5.26487410e-01</span></span><br><span class="line">   <span class="number">1.35022593e+00</span>  <span class="number">1.07109398e-02</span>  <span class="number">9.16564941e-01</span>  <span class="number">3.09872508e-01</span></span><br><span class="line">  -<span class="number">3.61863613e-01</span>  <span class="number">9.91901100e-01</span>  <span class="number">4.22148585e-01</span>  <span class="number">5.31754851e-01</span></span><br><span class="line">   <span class="number">1.30577040e+00</span> -<span class="number">2.45162472e-02</span> -<span class="number">3.92629087e-01</span>  <span class="number">2.64692843e-01</span></span><br><span class="line">  -<span class="number">1.76238507e-01</span>  <span class="number">1.78861052e-01</span>  <span class="number">4.46414322e-01</span> -<span class="number">6.35122657e-01</span></span><br><span class="line">   <span class="number">4.95202839e-02</span>  <span class="number">5.47002256e-03</span> -<span class="number">2.41250843e-01</span>  <span class="number">1.43662542e-01</span></span><br><span class="line">  -<span class="number">3.43859792e-01</span> -<span class="number">5.02784669e-01</span> -<span class="number">5.02928913e-01</span> -<span class="number">1.25779867e-01</span></span><br><span class="line">   <span class="number">2.29348108e-01</span> -<span class="number">2.40141839e-01</span> -<span class="number">1.79208696e-01</span> -<span class="number">2.16224715e-02</span></span><br><span class="line">   <span class="number">7.27228999e-01</span>  <span class="number">4.39823978e-02</span>  <span class="number">5.71268380e-01</span>  <span class="number">3.78142953e-01</span>]] &#123;<span class="string">&#x27;score&#x27;</span>: <span class="number">0.06705</span>, <span class="string">&#x27;text&#x27;</span>: <span class="string">&#x27;no&#x27;</span>&#125;</span><br><span class="line"></span><br><span class="line">进程已结束，退出代码为 <span class="number">0</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>同时也出现个新文件夹包含说话人的embedding：</p>
+</li>
+</ul>
+<img src="/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/image-20250211175900335.png" class="" title="image-20250211175900335">
+
+<p>好，目前看下来还不错，用实际的录音测试下效果：</p>
+<p>准备了五条音频：</p>
+<img src="/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/image-20250211181501480.png" class="" title="image-20250211181501480">
+
+<p>两条中文（zh），两条英文（en），一条先中后英，设计几组实验：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> modelscope.pipelines <span class="keyword">import</span> pipeline</span><br><span class="line">sv_pipeline = pipeline(</span><br><span class="line">    task=<span class="string">&#x27;speaker-verification&#x27;</span>,</span><br><span class="line">    model=<span class="string">&#x27;iic/speech_campplus_sv_zh_en_16k-common_advanced&#x27;</span>,</span><br><span class="line">    model_revision=<span class="string">&#x27;v1.0.0&#x27;</span></span><br><span class="line">)</span><br><span class="line">en1 = <span class="string">&quot;en.wav&quot;</span></span><br><span class="line">en2 = <span class="string">&quot;en2.wav&quot;</span></span><br><span class="line">zh1 = <span class="string">&quot;zh.wav&quot;</span></span><br><span class="line">zh2 = <span class="string">&quot;zh2.wav&quot;</span></span><br><span class="line">zh_en = <span class="string">&quot;zh_en.wav&quot;</span></span><br><span class="line"></span><br><span class="line">result = sv_pipeline([zh1, zh2])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;zh1-zh2=<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">result = sv_pipeline([zh1, en1])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;zh1-en1=<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">result = sv_pipeline([zh2, en2])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;zh2-en2=<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">result = sv_pipeline([en1, en2])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;en1-en2=<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">result = sv_pipeline([en1, zh1])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;en1-zh1=<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">result = sv_pipeline([en1, zh_en])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;en1-zh_en=<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">result = sv_pipeline([zh1, zh_en])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;zh1-zh_en=<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>分数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh1-zh2</td>
+<td>0.72488</td>
+</tr>
+<tr>
+<td>zh1-en1</td>
+<td>0.5038</td>
+</tr>
+<tr>
+<td>zh2-en2</td>
+<td>0.4602</td>
+</tr>
+<tr>
+<td>en1-en2</td>
+<td>0.77959</td>
+</tr>
+<tr>
+<td>en1-zh1</td>
+<td>0.5038</td>
+</tr>
+<tr>
+<td>en1-zh_en</td>
+<td>0.67625</td>
+</tr>
+<tr>
+<td>zh1-zh_en</td>
+<td>0.71017</td>
+</tr>
+</tbody></table>
+<p>从上表可以看出：</p>
+<ul>
+<li>zh1-en1与en1-zh1分数一样（0.5038），故与顺序无关</li>
+<li>同语言情况下比跨语言情况得分明显要高</li>
+<li>双语情况下比同语言情况得分略低一点</li>
+</ul>
+<h2 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h2><p>完事，万事俱备，制作个微服务玩玩，<a href="https://caihaoran-00.github.io/2025/02/05/fastapi-request%E6%9E%84%E5%BB%BA%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1/">参考</a>：</p>
+<p>服务端代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> funasr <span class="keyword">import</span> AutoModel</span><br><span class="line"><span class="keyword">from</span> funasr.utils.postprocess_utils <span class="keyword">import</span> rich_transcription_postprocess</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">from</span> fastapi <span class="keyword">import</span> FastAPI</span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model = AutoModel(</span><br><span class="line">    model=<span class="string">&quot;iic/SenseVoiceSmall&quot;</span>,</span><br><span class="line">    vad_model=<span class="string">&quot;fsmn-vad&quot;</span>,</span><br><span class="line">    vad_kwargs=&#123;<span class="string">&quot;max_single_segment_time&quot;</span>: <span class="number">30000</span>&#125;,</span><br><span class="line">    disable_update=<span class="literal">True</span>,</span><br><span class="line">    device=<span class="string">&quot;cuda:0&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建FASTAPI实例</span></span><br><span class="line">app = FastAPI(title=<span class="string">&quot;Sensevoice+KWS&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AudioData</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    audio_base64: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/asr/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">asr_endpoint</span>(<span class="params">audio_data: AudioData</span>):</span><br><span class="line">    audio_bytes = base64.b64decode(audio_data.audio_base64)</span><br><span class="line"></span><br><span class="line">    res = model.generate(</span><br><span class="line">        <span class="built_in">input</span>=audio_bytes,</span><br><span class="line">        cache=&#123;&#125;,</span><br><span class="line">        language=<span class="string">&quot;auto&quot;</span>,  <span class="comment"># &quot;zn&quot;, &quot;en&quot;, &quot;yue&quot;, &quot;ja&quot;, &quot;ko&quot;, &quot;nospeech&quot;</span></span><br><span class="line">        use_itn=<span class="literal">True</span>,</span><br><span class="line">        batch_size_s=<span class="number">60</span>,</span><br><span class="line">        merge_vad=<span class="literal">True</span>,</span><br><span class="line">        merge_length_s=<span class="number">15</span>,</span><br><span class="line">    )</span><br><span class="line">    text = rich_transcription_postprocess(res[<span class="number">0</span>][<span class="string">&quot;text&quot;</span>])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;transcription&quot;</span>: text&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">import</span> uvicorn</span><br><span class="line">    uvicorn.run(app, host=<span class="string">&quot;0.0.0.0&quot;</span>, port=<span class="number">8000</span>)</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Speaker-Verification/" rel="tag"># Speaker Verification</a>
+              <a href="/tags/SV/" rel="tag"># SV</a>
+              <a href="/tags/CAM/" rel="tag"># CAM++</a>
+              <a href="/tags/ERES2NET-V2/" rel="tag"># ERES2NET(V2)</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/02/10/langgraph%E4%BB%8B%E7%BB%8D%E5%8F%8Ademo/" rel="prev" title="langgraph介绍及demo">
+                  <i class="fa fa-angle-left"></i> langgraph介绍及demo
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/" rel="next" title="MobaXterm连接公司服务器部署ASR环境">
+                  MobaXterm连接公司服务器部署ASR环境 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">33k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:59</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
