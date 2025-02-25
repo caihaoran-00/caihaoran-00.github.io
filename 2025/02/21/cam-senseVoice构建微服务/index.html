@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言前面分别介绍了silero_vad onnx方式使用示例，fastapi+request构建语音识别微服务，说话人确认之CAM++，本文将实现三者的融合。客户端通过VAD识别有声段，识别到有一定长度的有声段就发送到服务端，服务端先判断是否有声纹注册文件，没有则要求三秒语音段进行声纹注册，有则直接进行CAM++说话人确认，通过说话人确认后再进行关键词识别，这里的关键词识别通过转化为拼音，再通过编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="cam+senseVoice构建微服务">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言前面分别介绍了silero_vad onnx方式使用示例，fastapi+request构建语音识别微服务，说话人确认之CAM++，本文将实现三者的融合。客户端通过VAD识别有声段，识别到有一定长度的有声段就发送到服务端，服务端先判断是否有声纹注册文件，没有则要求三秒语音段进行声纹注册，有则直接进行CAM++说话人确认，通过说话人确认后再进行关键词识别，这里的关键词识别通过转化为拼音，再通过编">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/image-20250222141147476.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/image-20250222153210894.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/image-20250222161254018.png">
+<meta property="article:published_time" content="2025-02-21T07:32:59.000Z">
+<meta property="article:modified_time" content="2025-02-22T08:25:30.795Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="funasr">
+<meta property="article:tag" content="Speaker Verification">
+<meta property="article:tag" content="SV">
+<meta property="article:tag" content="CAM++">
+<meta property="article:tag" content="fastapi">
+<meta property="article:tag" content="senseVoice">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/image-20250222141147476.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/","path":"2025/02/21/cam-senseVoice构建微服务/","title":"cam+senseVoice构建微服务"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>cam+senseVoice构建微服务 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%9E%8D%E5%90%88"><span class="nav-number">2.</span> <span class="nav-text">基本融合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%9A%84%E6%9C%89%E8%B6%A3%E6%89%A9%E5%B1%95"><span class="nav-number">3.</span> <span class="nav-text">小的有趣扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">4.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="cam+senseVoice构建微服务 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          cam+senseVoice构建微服务
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-02-21 15:32:59" itemprop="dateCreated datePublished" datetime="2025-02-21T15:32:59+08:00">2025-02-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-02-22 16:25:30" itemprop="dateModified" datetime="2025-02-22T16:25:30+08:00">2025-02-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面分别介绍了<a href="https://caihaoran-00.github.io/2025/02/07/silerovadonnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/">silero_vad onnx方式使用示例</a>，<a href="https://caihaoran-00.github.io/2025/02/05/fastapi-request%E6%9E%84%E5%BB%BA%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1/">fastapi+request构建语音识别微服务</a>，<a href="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/">说话人确认之CAM++</a>，本文将实现三者的融合。客户端通过VAD识别有声段，识别到有一定长度的有声段就发送到服务端，服务端先判断是否有声纹注册文件，没有则要求三秒语音段进行声纹注册，有则直接进行CAM++说话人确认，通过说话人确认后再进行关键词识别，这里的关键词识别通过转化为拼音，再通过编辑距离确定相似性以提高识别的准确性，通过关键词识别（语音唤醒）后最后将进行语音识别。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="基本融合"><a href="#基本融合" class="headerlink" title="基本融合"></a>基本融合</h2><p>服务端：</p>
+<figure class="highlight python"><figcaption><span>cam_senseVoice_server.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">from</span> fastapi <span class="keyword">import</span> FastAPI</span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> modelscope.pipelines <span class="keyword">import</span> pipeline</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> fastapi.responses <span class="keyword">import</span> JSONResponse</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> soundfile <span class="keyword">as</span> sf</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> funasr <span class="keyword">import</span> AutoModel</span><br><span class="line"><span class="keyword">from</span> funasr.utils.postprocess_utils <span class="keyword">import</span> rich_transcription_postprocess</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model = AutoModel(</span><br><span class="line">    model=<span class="string">&quot;iic/SenseVoiceSmall&quot;</span>,</span><br><span class="line">    <span class="comment"># vad_model=&quot;fsmn-vad&quot;,</span></span><br><span class="line">    vad_kwargs=&#123;<span class="string">&quot;max_single_segment_time&quot;</span>: <span class="number">30000</span>&#125;,</span><br><span class="line">    disable_update=<span class="literal">True</span>,</span><br><span class="line">    <span class="comment">#device=&quot;cuda:0&quot;,</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">sv_pipeline = pipeline(</span><br><span class="line">    task=<span class="string">&#x27;speaker-verification&#x27;</span>,</span><br><span class="line">    model=<span class="string">&#x27;iic/speech_campplus_sv_zh_en_16k-common_advanced&#x27;</span>,</span><br><span class="line">    model_revision=<span class="string">&#x27;v1.0.0&#x27;</span>,</span><br><span class="line">    device=<span class="string">&#x27;cpu&#x27;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义注册音频目录</span></span><br><span class="line">REGISTERED_DIR = <span class="string">&quot;./registered_audio&quot;</span></span><br><span class="line">REGISTERED_PATH = os.path.join(REGISTERED_DIR, <span class="string">&quot;registered.wav&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建FASTAPI实例</span></span><br><span class="line">app = FastAPI(title=<span class="string">&quot;senseVoice + sv_cam++&quot;</span>)</span><br><span class="line">regist_samples = []</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AudioData</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    audio_base64: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询是否有声纹注册文件</span></span><br><span class="line"><span class="meta">@app.get(<span class="params"><span class="string">&quot;/check/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_registered</span>():</span><br><span class="line">    <span class="keyword">global</span> regist_samples</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(REGISTERED_PATH):</span><br><span class="line">        <span class="keyword">return</span> JSONResponse(status_code=<span class="number">404</span>, content=&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;File not found&quot;</span>&#125;)</span><br><span class="line">    regist_samples, _ = sf.read(REGISTERED_PATH)</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;File exists&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注册声纹</span></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/register/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">register</span>(<span class="params">audio_data: AudioData</span>):</span><br><span class="line">    <span class="keyword">global</span> regist_samples</span><br><span class="line">    <span class="comment"># 1 解析 Base64 编码的音频数据</span></span><br><span class="line">    audio_bytes = base64.b64decode(audio_data.audio_base64)</span><br><span class="line"></span><br><span class="line">    audio_array = np.frombuffer(audio_bytes, dtype=np.int16)</span><br><span class="line"></span><br><span class="line">    regist_samples = audio_array.astype(np.float32) / <span class="number">32768.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;Audio saved successfully&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/verify/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sv_endpoint</span>(<span class="params">audio_data: AudioData</span>):</span><br><span class="line">    audio_bytes = base64.b64decode(audio_data.audio_base64)</span><br><span class="line"></span><br><span class="line">    audio_array = np.frombuffer(audio_bytes, dtype=np.int16)</span><br><span class="line"></span><br><span class="line">    current_samples = audio_array.astype(np.float32) / <span class="number">32768.0</span></span><br><span class="line"></span><br><span class="line">    result = sv_pipeline([regist_samples, current_samples], thr=<span class="number">0.35</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;result=<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> result[<span class="string">&#x27;text&#x27;</span>] == <span class="string">&quot;yes&quot;</span>:</span><br><span class="line">        res = model.generate(</span><br><span class="line">            <span class="built_in">input</span>=audio_bytes,</span><br><span class="line">            cache=&#123;&#125;,</span><br><span class="line">            language=<span class="string">&quot;auto&quot;</span>,  <span class="comment"># &quot;zn&quot;, &quot;en&quot;, &quot;yue&quot;, &quot;ja&quot;, &quot;ko&quot;, &quot;nospeech&quot;</span></span><br><span class="line">            use_itn=<span class="literal">True</span>,</span><br><span class="line">            batch_size_s=<span class="number">60</span>,</span><br><span class="line">            merge_vad=<span class="literal">True</span>,</span><br><span class="line">            merge_length_s=<span class="number">15</span>,</span><br><span class="line">        )</span><br><span class="line">        text = rich_transcription_postprocess(res[<span class="number">0</span>][<span class="string">&quot;text&quot;</span>])</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        text = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;text&quot;</span>: text&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">import</span> uvicorn</span><br><span class="line">    uvicorn.run(app, host=<span class="string">&quot;0.0.0.0&quot;</span>, port=<span class="number">8000</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>客户端</strong>：</p>
+<figure class="highlight python"><figcaption><span>cam_senseVoice_client.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> pyaudio</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">from</span> queue <span class="keyword">import</span> Queue</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line">torch.set_num_threads(<span class="number">1</span>)</span><br><span class="line">debug_mode = <span class="literal">False</span>  <span class="comment"># 控制是否保存部分音频及打印信息</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载 Silero VAD 模型</span></span><br><span class="line">model, utils = torch.hub.load(repo_or_dir=<span class="string">&#x27;snakers4/silero-vad&#x27;</span>,</span><br><span class="line">                              model=<span class="string">&#x27;silero_vad&#x27;</span>,</span><br><span class="line">                              trust_repo=<span class="literal">True</span>,</span><br><span class="line">                              onnx=<span class="literal">True</span>,</span><br><span class="line">                              <span class="comment"># force_reload=True</span></span><br><span class="line">                              )</span><br><span class="line"></span><br><span class="line"><span class="comment"># 录音参数</span></span><br><span class="line">FORMAT = pyaudio.paFloat32</span><br><span class="line">CHANNELS = <span class="number">1</span></span><br><span class="line">SAMPLE_RATE = <span class="number">16000</span></span><br><span class="line">num_samples = <span class="number">512</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化 PyAudio</span></span><br><span class="line">audio = pyaudio.PyAudio()</span><br><span class="line">stream = audio.<span class="built_in">open</span>(<span class="built_in">format</span>=FORMAT,</span><br><span class="line">                    channels=CHANNELS,</span><br><span class="line">                    rate=SAMPLE_RATE,</span><br><span class="line">                    <span class="built_in">input</span>=<span class="literal">True</span>,</span><br><span class="line">                    frames_per_buffer=num_samples)</span><br><span class="line"></span><br><span class="line">audio_record_queue = Queue()</span><br><span class="line">BASE_URL = <span class="string">&quot;http://127.0.0.1:8000&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">StateManage</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.threshold = <span class="number">0.5</span></span><br><span class="line">        <span class="variable language_">self</span>.min_speech_duration_ms = <span class="number">64</span></span><br><span class="line">        <span class="variable language_">self</span>.min_silence_duration_ms = <span class="number">480</span></span><br><span class="line">        <span class="variable language_">self</span>.pre_chunk_add = <span class="number">4</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">state_manage = StateManage()</span><br><span class="line"></span><br><span class="line">pre_speech_buffer = collections.deque(maxlen=state_manage.min_speech_duration_ms // <span class="number">32</span> + state_manage.pre_chunk_add)</span><br><span class="line"><span class="built_in">print</span>(state_manage.min_speech_duration_ms // <span class="number">32</span> + state_manage.pre_chunk_add)</span><br><span class="line">first_chunk_detected = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_audio_to_server</span>(<span class="params">audio_fragment</span>):</span><br><span class="line">    audio_base64 = base64.b64encode(audio_fragment).decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">    data = &#123;</span><br><span class="line">        <span class="string">&#x27;audio_base64&#x27;</span>: audio_base64,</span><br><span class="line">    &#125;</span><br><span class="line">    response = requests.post(<span class="string">f&quot;<span class="subst">&#123;BASE_URL&#125;</span>/verify/&quot;</span>, json=data)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> debug_mode:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;response.json()=<span class="subst">&#123;response.json()&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response.json()[<span class="string">&#x27;text&#x27;</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_audio_to_regist</span>(<span class="params">audio_fragment</span>):</span><br><span class="line">    audio_base64 = base64.b64encode(audio_fragment).decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">    data = &#123;</span><br><span class="line">        <span class="string">&#x27;audio_base64&#x27;</span>: audio_base64,</span><br><span class="line">    &#125;</span><br><span class="line">    response = requests.post(<span class="string">f&quot;<span class="subst">&#123;BASE_URL&#125;</span>/register/&quot;</span>, json=data)</span><br><span class="line">    <span class="keyword">return</span> response.json()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">VADContext</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,</span></span><br><span class="line"><span class="params">                 threshold=<span class="number">0.5</span>,</span></span><br><span class="line"><span class="params">                 min_speech_duration_ms=<span class="number">64</span>,</span></span><br><span class="line"><span class="params">                 min_silence_duration_ms=<span class="number">480</span></span>):</span><br><span class="line">        <span class="variable language_">self</span>.threshold = threshold</span><br><span class="line">        <span class="variable language_">self</span>.min_speech_frames = <span class="built_in">int</span>(min_speech_duration_ms * SAMPLE_RATE / <span class="number">1000</span> / num_samples)</span><br><span class="line">        <span class="variable language_">self</span>.min_silence_frames = <span class="built_in">int</span>(min_silence_duration_ms * SAMPLE_RATE / <span class="number">1000</span> / num_samples)</span><br><span class="line">        <span class="variable language_">self</span>.speech_frame_count = <span class="number">0</span></span><br><span class="line">        <span class="variable language_">self</span>.silence_frame_count = <span class="number">0</span></span><br><span class="line">        <span class="variable language_">self</span>.is_speech = <span class="literal">False</span></span><br><span class="line">        <span class="variable language_">self</span>.was_speech = <span class="literal">False</span>  <span class="comment"># 跟踪上一帧是否是语音</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self, confidence</span>):</span><br><span class="line">        <span class="variable language_">self</span>.was_speech = <span class="variable language_">self</span>.is_speech  <span class="comment"># 保存上一帧的状态</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>.is_speech:</span><br><span class="line">            <span class="keyword">if</span> confidence &gt;= <span class="variable language_">self</span>.threshold:</span><br><span class="line">                <span class="variable language_">self</span>.speech_frame_count += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> <span class="variable language_">self</span>.speech_frame_count &gt;= <span class="variable language_">self</span>.min_speech_frames:</span><br><span class="line">                    <span class="variable language_">self</span>.is_speech = <span class="literal">True</span></span><br><span class="line">                    <span class="variable language_">self</span>.silence_frame_count = <span class="number">0</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="variable language_">self</span>.speech_frame_count = <span class="number">0</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> confidence &lt;= <span class="variable language_">self</span>.threshold - <span class="number">0.15</span>:</span><br><span class="line">                <span class="variable language_">self</span>.silence_frame_count += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> <span class="variable language_">self</span>.silence_frame_count &gt;= <span class="variable language_">self</span>.min_silence_frames:</span><br><span class="line">                    <span class="variable language_">self</span>.is_speech = <span class="literal">False</span></span><br><span class="line">                    <span class="variable language_">self</span>.speech_frame_count = <span class="number">0</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="variable language_">self</span>.silence_frame_count = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.is_speech</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">is_speech_end</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;检查是否是语音结束&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.was_speech <span class="keyword">and</span> <span class="keyword">not</span> <span class="variable language_">self</span>.is_speech</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">recording_and_vad_thread</span>():</span><br><span class="line">    <span class="keyword">global</span> first_chunk_detected</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Recording...\n&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line">    vad_context = VADContext(</span><br><span class="line">        threshold=state_manage.threshold,</span><br><span class="line">        min_speech_duration_ms=state_manage.min_speech_duration_ms,</span><br><span class="line">        min_silence_duration_ms=state_manage.min_silence_duration_ms,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> debug_mode:</span><br><span class="line">        raw_audio_chunks = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        data = stream.read(num_samples)</span><br><span class="line">        audio_chunk = np.frombuffer(data, dtype=np.float32)</span><br><span class="line">        speech_prob = model(torch.from_numpy(audio_chunk.copy()), SAMPLE_RATE).item()</span><br><span class="line">        is_speech = vad_context.update(speech_prob)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 放入缓冲区</span></span><br><span class="line">        pre_speech_buffer.append(audio_chunk)</span><br><span class="line">        <span class="keyword">if</span> is_speech:</span><br><span class="line">            <span class="comment"># 如果刚检测到语音</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> first_chunk_detected:</span><br><span class="line">                first_chunk_detected = <span class="literal">True</span></span><br><span class="line">                <span class="keyword">while</span> pre_speech_buffer:</span><br><span class="line">                    pre_chunk = pre_speech_buffer.popleft()</span><br><span class="line">                    int16_chunk = (pre_chunk * <span class="number">32767</span>).astype(np.int16)</span><br><span class="line">                    audio_record_queue.put(int16_chunk)</span><br><span class="line">                    <span class="keyword">if</span> debug_mode:</span><br><span class="line">                        raw_audio_chunks.append(int16_chunk)  <span class="comment"># 保存原始数据</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                audio_chunk_int16 = (audio_chunk * <span class="number">32767</span>).astype(np.int16)</span><br><span class="line">                audio_record_queue.put(audio_chunk_int16)</span><br><span class="line">                <span class="keyword">if</span> debug_mode:</span><br><span class="line">                    raw_audio_chunks.append(audio_chunk_int16)   <span class="comment"># 保存原始数据</span></span><br><span class="line">        <span class="keyword">elif</span> vad_context.is_speech_end():</span><br><span class="line">            audio_record_queue.put(<span class="literal">None</span>)</span><br><span class="line">            first_chunk_detected = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> debug_mode <span class="keyword">and</span> raw_audio_chunks:</span><br><span class="line">                raw_audio_data = np.concatenate(raw_audio_chunks)</span><br><span class="line">                sf.write(<span class="string">&quot;debug_raw_audio.wav&quot;</span>, raw_audio_data, samplerate=<span class="number">16000</span>, subtype=<span class="string">&quot;PCM_16&quot;</span>)</span><br><span class="line">                raw_audio_chunks.clear()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动录音线程</span></span><br><span class="line">recording_thread = threading.Thread(target=recording_and_vad_thread, daemon=<span class="literal">True</span>)</span><br><span class="line">recording_thread.start()</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> soundfile <span class="keyword">as</span> sf</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send_audio</span>():</span><br><span class="line">    audio_chunks = []</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        chunk = audio_record_queue.get()</span><br><span class="line">        <span class="keyword">if</span> chunk <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">if</span> audio_chunks:</span><br><span class="line">                audio_data = np.concatenate(audio_chunks)</span><br><span class="line">                <span class="keyword">if</span> debug_mode:</span><br><span class="line">                    sf.write(<span class="string">&quot;audio.wav&quot;</span>, audio_data, samplerate=<span class="number">16000</span>, subtype=<span class="string">&quot;PCM_16&quot;</span>)</span><br><span class="line">                audio_data_bytes = audio_data.tobytes()</span><br><span class="line"></span><br><span class="line">                <span class="comment"># 发送到ASR服务器</span></span><br><span class="line">                result = send_audio_to_server(audio_data_bytes)</span><br><span class="line"></span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;result: <span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">                audio_chunks.clear()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            audio_chunks.append(chunk)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">regist_voice</span>():</span><br><span class="line">    audio_chunks = []</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        chunk = audio_record_queue.get()</span><br><span class="line">        <span class="keyword">if</span> chunk <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">if</span> audio_chunks:</span><br><span class="line">                audio_data = np.concatenate(audio_chunks)</span><br><span class="line">                audio_data_bytes = audio_data.tobytes()</span><br><span class="line">                <span class="keyword">if</span> debug_mode:</span><br><span class="line">                    sf.write(<span class="string">&quot;regist.wav&quot;</span>, audio_data, samplerate=<span class="number">16000</span>, subtype=<span class="string">&quot;PCM_16&quot;</span>)</span><br><span class="line"></span><br><span class="line">                <span class="comment"># 发送到sv服务器</span></span><br><span class="line">                result = send_audio_to_regist(audio_data_bytes)</span><br><span class="line">                <span class="keyword">if</span> result <span class="keyword">and</span> result[<span class="string">&quot;message&quot;</span>] == <span class="string">&quot;Audio saved successfully&quot;</span>:</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">&quot;声纹注册成功，让我们开始交流吧！&quot;</span>)</span><br><span class="line"></span><br><span class="line">                audio_chunks.clear()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            audio_chunks.append(chunk)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="comment"># 先查询是否有注册文件</span></span><br><span class="line">    response = requests.get(<span class="string">f&quot;<span class="subst">&#123;BASE_URL&#125;</span>/check/&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;已开启声纹识别&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">elif</span> response.status_code == <span class="number">404</span>:   <span class="comment"># 没有注册文件就提示并注册声纹</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;缺少声纹注册文件，请说一段3 S左右语音以注册声纹。&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;录音中&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line">        regist_voice()</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;出错&quot;</span>, flush=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    send_audio()</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/image-20250222141147476.png" class="" title="image-20250222141147476">
+
+<p>注意事项：</p>
+<ul>
+<li>这里使用的说话人确认的阈值是3.5（因为测试人员与我的声音分数达到了3.3+）</li>
+<li>对于两个人说话间隔很短（或基本无间隔）的情况下，可以理解为发送到服务器的语音前一段是我的语音，后一段是测试人员的语音，这种情况也有可能超过阈值，进而进行处理</li>
+<li>是在我的笔记本电脑（3060显卡）上做的实验，也测试了torch可以使用GPU，但是实际发现服务端代码使用GPU或CPU在运行速度上人肉察觉不到速度变化（后续部署在服务器上再加代码统计时间吧）</li>
+</ul>
+<h2 id="小的有趣扩展"><a href="#小的有趣扩展" class="headerlink" title="小的有趣扩展"></a>小的有趣扩展</h2><p>在上文基础上增加上类似于关键词识别的功能，在开始之前，先写个示例demo测试下即将添加的小功能：</p>
+<figure class="highlight python"><figcaption><span>pinyin_kws.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pypinyin</span><br><span class="line"><span class="keyword">import</span> Levenshtein</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">similarity_score</span>(<span class="params">pinyin1, pinyin2</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;计算两个拼音序列的相似度，越接近1越相似&quot;&quot;&quot;</span></span><br><span class="line">    distance = Levenshtein.distance(<span class="string">&quot;&quot;</span>.join(pinyin1), <span class="string">&quot;&quot;</span>.join(pinyin2))</span><br><span class="line">    max_len = <span class="built_in">max</span>(<span class="built_in">len</span>(pinyin1), <span class="built_in">len</span>(pinyin2))</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span> - distance / max_len <span class="keyword">if</span> max_len &gt; <span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">is_wakeup_word</span>(<span class="params">asr_pinyin, wake_pinyin_list, threshold=<span class="number">0.8</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;判断ASR拼音结果是否匹配唤醒词拼音&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> word_pinyin <span class="keyword">in</span> wake_pinyin_list:</span><br><span class="line">        score = similarity_score(asr_pinyin, word_pinyin)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;score=<span class="subst">&#123;score&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> score &gt;= threshold:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 示例：</span></span><br><span class="line">wake_words = [<span class="string">&quot;你好小熊&quot;</span>, <span class="string">&quot;小熊小熊&quot;</span>]</span><br><span class="line">wake_pinyin_list = [[p[<span class="number">0</span>] <span class="keyword">for</span> p <span class="keyword">in</span> pypinyin.pinyin(word, style=pypinyin.NORMAL)] <span class="keyword">for</span> word <span class="keyword">in</span> wake_words]</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    asr_text = <span class="built_in">input</span>(<span class="string">&quot;请输入ASR识别结果: &quot;</span>)  <span class="comment"># 这里用ASR模块替换</span></span><br><span class="line">    asr_pinyin = [p[<span class="number">0</span>] <span class="keyword">for</span> p <span class="keyword">in</span> pypinyin.pinyin(asr_text, style=pypinyin.NORMAL)]</span><br><span class="line">    <span class="keyword">if</span> is_wakeup_word(asr_pinyin, wake_pinyin_list):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;唤醒成功！&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;未唤醒&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/image-20250222153210894.png" class="" title="image-20250222153210894">
+
+<p>思路：</p>
+<ul>
+<li>将语音识别结果和预先定义的关键词都先转化为拼音</li>
+<li>然后再计算两个拼音的相似度</li>
+<li>如果得分大于事先设定的阈值，就认为唤醒成功，否则失败</li>
+<li>Levenshtein.distance，Levenshtein 距离（编辑距离）是一种<strong>字符串相似度度量方法</strong>，用于计算<strong>将一个字符串变为另一个字符串所需的最少编辑操作次数</strong>，包括替换、插入、删除。</li>
+<li>会将语音识别结果与每个预定义的关键词进行相似度匹配，所以上面会输出两个分数（两会关键词），若第一个关键词就匹配上了，那只输出一个分数。</li>
+</ul>
+<p>好的，现在把上面代码融起来，这里只用改服务端代码：</p>
+<figure class="highlight python"><figcaption><span>cam_senseVoice_kws_server.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">from</span> fastapi <span class="keyword">import</span> FastAPI</span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> modelscope.pipelines <span class="keyword">import</span> pipeline</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> fastapi.responses <span class="keyword">import</span> JSONResponse</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> soundfile <span class="keyword">as</span> sf</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> funasr <span class="keyword">import</span> AutoModel</span><br><span class="line"><span class="keyword">from</span> funasr.utils.postprocess_utils <span class="keyword">import</span> rich_transcription_postprocess</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> pypinyin</span><br><span class="line"><span class="keyword">import</span> Levenshtein</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">similarity_score</span>(<span class="params">pinyin1, pinyin2</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;计算两个拼音序列的相似度，越接近1越相似&quot;&quot;&quot;</span></span><br><span class="line">    distance = Levenshtein.distance(<span class="string">&quot;&quot;</span>.join(pinyin1), <span class="string">&quot;&quot;</span>.join(pinyin2))</span><br><span class="line">    max_len = <span class="built_in">max</span>(<span class="built_in">len</span>(pinyin1), <span class="built_in">len</span>(pinyin2))</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span> - distance / max_len <span class="keyword">if</span> max_len &gt; <span class="number">0</span> <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">is_wakeup_word</span>(<span class="params">asr_pinyin, wake_pinyin_list, threshold=<span class="number">0.8</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;判断ASR拼音结果是否匹配唤醒词拼音&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> word_pinyin <span class="keyword">in</span> wake_pinyin_list:</span><br><span class="line">        score = similarity_score(asr_pinyin, word_pinyin)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;score=<span class="subst">&#123;score&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> score &gt;= threshold:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 示例：</span></span><br><span class="line">wake_words = [<span class="string">&quot;你好小熊&quot;</span>, <span class="string">&quot;小熊小熊&quot;</span>]</span><br><span class="line">wake_pinyin_list = [[p[<span class="number">0</span>] <span class="keyword">for</span> p <span class="keyword">in</span> pypinyin.pinyin(word, style=pypinyin.NORMAL)] <span class="keyword">for</span> word <span class="keyword">in</span> wake_words]</span><br><span class="line">wake_flag = <span class="literal">False</span>    <span class="comment"># 是否已经触发过关键词唤醒</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model = AutoModel(</span><br><span class="line">    model=<span class="string">&quot;iic/SenseVoiceSmall&quot;</span>,</span><br><span class="line">    <span class="comment"># vad_model=&quot;fsmn-vad&quot;,</span></span><br><span class="line">    vad_kwargs=&#123;<span class="string">&quot;max_single_segment_time&quot;</span>: <span class="number">30000</span>&#125;,</span><br><span class="line">    disable_update=<span class="literal">True</span>,</span><br><span class="line">    <span class="comment">#device=&quot;cuda:0&quot;,</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">sv_pipeline = pipeline(</span><br><span class="line">    task=<span class="string">&#x27;speaker-verification&#x27;</span>,</span><br><span class="line">    model=<span class="string">&#x27;iic/speech_campplus_sv_zh_en_16k-common_advanced&#x27;</span>,</span><br><span class="line">    model_revision=<span class="string">&#x27;v1.0.0&#x27;</span>,</span><br><span class="line">    device=<span class="string">&#x27;cpu&#x27;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义注册音频目录</span></span><br><span class="line">REGISTERED_DIR = <span class="string">&quot;./registered_audio&quot;</span></span><br><span class="line">REGISTERED_PATH = os.path.join(REGISTERED_DIR, <span class="string">&quot;registered.wav&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建FASTAPI实例</span></span><br><span class="line">app = FastAPI(title=<span class="string">&quot;senseVoice + sv_cam++&quot;</span>)</span><br><span class="line">regist_samples = []</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AudioData</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    audio_base64: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询是否有声纹注册文件</span></span><br><span class="line"><span class="meta">@app.get(<span class="params"><span class="string">&quot;/check/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_registered</span>():</span><br><span class="line">    <span class="keyword">global</span> regist_samples</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(REGISTERED_PATH):</span><br><span class="line">        <span class="keyword">return</span> JSONResponse(status_code=<span class="number">404</span>, content=&#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;File not found&quot;</span>&#125;)</span><br><span class="line">    regist_samples, _ = sf.read(REGISTERED_PATH)</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;File exists&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注册声纹</span></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/register/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">register</span>(<span class="params">audio_data: AudioData</span>):</span><br><span class="line">    <span class="keyword">global</span> regist_samples</span><br><span class="line">    <span class="comment"># 1 解析 Base64 编码的音频数据</span></span><br><span class="line">    audio_bytes = base64.b64decode(audio_data.audio_base64)</span><br><span class="line"></span><br><span class="line">    audio_array = np.frombuffer(audio_bytes, dtype=np.int16)</span><br><span class="line"></span><br><span class="line">    regist_samples = audio_array.astype(np.float32) / <span class="number">32768.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;Audio saved successfully&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/verify/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sv_endpoint</span>(<span class="params">audio_data: AudioData</span>):</span><br><span class="line">    <span class="keyword">global</span> wake_flag</span><br><span class="line">    audio_bytes = base64.b64decode(audio_data.audio_base64)</span><br><span class="line"></span><br><span class="line">    audio_array = np.frombuffer(audio_bytes, dtype=np.int16)</span><br><span class="line"></span><br><span class="line">    current_samples = audio_array.astype(np.float32) / <span class="number">32768.0</span></span><br><span class="line"></span><br><span class="line">    result = sv_pipeline([regist_samples, current_samples], thr=<span class="number">0.35</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;result=<span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> result[<span class="string">&#x27;text&#x27;</span>] == <span class="string">&quot;yes&quot;</span>:</span><br><span class="line">        res = model.generate(</span><br><span class="line">            <span class="built_in">input</span>=audio_bytes,</span><br><span class="line">            cache=&#123;&#125;,</span><br><span class="line">            language=<span class="string">&quot;auto&quot;</span>,  <span class="comment"># &quot;zn&quot;, &quot;en&quot;, &quot;yue&quot;, &quot;ja&quot;, &quot;ko&quot;, &quot;nospeech&quot;</span></span><br><span class="line">            use_itn=<span class="literal">True</span>,</span><br><span class="line">            batch_size_s=<span class="number">60</span>,</span><br><span class="line">            merge_vad=<span class="literal">True</span>,</span><br><span class="line">            merge_length_s=<span class="number">15</span>,</span><br><span class="line">        )</span><br><span class="line">        text = rich_transcription_postprocess(res[<span class="number">0</span>][<span class="string">&quot;text&quot;</span>])</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 判断是否触发过关键词唤醒</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> wake_flag:</span><br><span class="line">            asr_pinyin = [p[<span class="number">0</span>] <span class="keyword">for</span> p <span class="keyword">in</span> pypinyin.pinyin(text, style=pypinyin.NORMAL)]</span><br><span class="line">            <span class="keyword">if</span> is_wakeup_word(asr_pinyin, wake_pinyin_list):</span><br><span class="line">                wake_flag = <span class="literal">True</span></span><br><span class="line">                <span class="keyword">return</span> &#123;<span class="string">&quot;text&quot;</span>: <span class="string">&quot;唤醒成功，现在我们可以交流啦！&quot;</span>&#125;</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> &#123;<span class="string">&quot;text&quot;</span>: <span class="string">&quot;关键词错误，唤醒失败...&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        text = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;text&quot;</span>: text&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">import</span> uvicorn</span><br><span class="line">    uvicorn.run(app, host=<span class="string">&quot;0.0.0.0&quot;</span>, port=<span class="number">8000</span>)</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/image-20250222161254018.png" class="" title="image-20250222161254018">
+
+<p>好的，下一节我们将接入大语言模型（LLM），实现对话功能…😄</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Q6zpYpEgv/?spm_id_from=333.1007.top_right_bar_window_history.content.click&vd_source=075a061948e76c87e2ee8754e264056e">https://www.bilibili.com/video/BV1Q6zpYpEgv/?spm_id_from=333.1007.top_right_bar_window_history.content.click&amp;vd_source=075a061948e76c87e2ee8754e264056e</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/funasr/" rel="tag"># funasr</a>
+              <a href="/tags/Speaker-Verification/" rel="tag"># Speaker Verification</a>
+              <a href="/tags/SV/" rel="tag"># SV</a>
+              <a href="/tags/CAM/" rel="tag"># CAM++</a>
+              <a href="/tags/fastapi/" rel="tag"># fastapi</a>
+              <a href="/tags/senseVoice/" rel="tag"># senseVoice</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/02/18/LLamaFactory%E5%BE%AE%E8%B0%83Qwen2-5VL/" rel="prev" title="LLamaFactory微调Qwen2.5VL">
+                  <i class="fa fa-angle-left"></i> LLamaFactory微调Qwen2.5VL
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/02/25/Langgraph%E6%B5%81%E5%BC%8F%E8%BE%93%E5%87%BA%E7%AF%87/" rel="next" title="Langgraph流式输出篇">
+                  Langgraph流式输出篇 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">40k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:26</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
