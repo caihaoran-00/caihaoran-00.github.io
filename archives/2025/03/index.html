@@ -19,34 +19,25 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="前言前段时间通过sensevoice + Qwen2.5 7b + GSV做了个智能语音对话机器人，现在公司想将其做成个产品，原先的方案不太适用，本文记录方案选择、实现过程和最终结果。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="ASR+LLM+TTS构建智能语音对话机器人">
-<meta property="og:url" content="https://caihaoran-00.github.io/2025/02/08/ASR-LLM-TTS%E6%9E%84%E5%BB%BA%E6%99%BA%E8%83%BD%E8%AF%AD%E9%9F%B3%E5%AF%B9%E8%AF%9D%E6%9C%BA%E5%99%A8%E4%BA%BA/index.html">
+    <meta name="description" content="Welcome to my little world">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Chr&#39;s Blog">
+<meta property="og:url" content="https://caihaoran-00.github.io/archives/2025/03/index.html">
 <meta property="og:site_name" content="Chr&#39;s Blog">
-<meta property="og:description" content="前言前段时间通过sensevoice + Qwen2.5 7b + GSV做了个智能语音对话机器人，现在公司想将其做成个产品，原先的方案不太适用，本文记录方案选择、实现过程和最终结果。">
+<meta property="og:description" content="Welcome to my little world">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-02-08T09:33:40.000Z">
-<meta property="article:modified_time" content="2025-02-10T02:06:27.764Z">
 <meta property="article:author" content="Chr">
-<meta property="article:tag" content="ASR">
-<meta property="article:tag" content="LLM">
-<meta property="article:tag" content="TTS">
-<meta property="article:tag" content="funasr">
-<meta property="article:tag" content="Qwen2.5">
-<meta property="article:tag" content="GSV">
-<meta property="article:tag" content="GPT SOVITS">
-<meta property="article:tag" content="Sensevoice">
+<meta property="article:tag" content="Hexo,langgraph,ASR,LLM,TTS">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://caihaoran-00.github.io/2025/02/08/ASR-LLM-TTS%E6%9E%84%E5%BB%BA%E6%99%BA%E8%83%BD%E8%AF%AD%E9%9F%B3%E5%AF%B9%E8%AF%9D%E6%9C%BA%E5%99%A8%E4%BA%BA/">
+<link rel="canonical" href="https://caihaoran-00.github.io/archives/2025/03/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/02/08/ASR-LLM-TTS%E6%9E%84%E5%BB%BA%E6%99%BA%E8%83%BD%E8%AF%AD%E9%9F%B3%E5%AF%B9%E8%AF%9D%E6%9C%BA%E5%99%A8%E4%BA%BA/","path":"2025/02/08/ASR-LLM-TTS构建智能语音对话机器人/","title":"ASR+LLM+TTS构建智能语音对话机器人"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"archives/2025/03/index.html","title":""}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>ASR+LLM+TTS构建智能语音对话机器人 | Chr's Blog</title>
+<title>归档 | Chr's Blog</title>
   
 
 
@@ -79,7 +70,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <p class="site-title">Chr's Blog</p>
+      <h1 class="site-title">Chr's Blog</h1>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">Record and Share</p>
@@ -133,7 +124,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+    <div class="sidebar-inner sidebar-overview-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -146,7 +137,6 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">方案选择</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -195,142 +185,49 @@
 
     </div>
 
-    <div class="main-inner post posts-expand">
+    <div class="main-inner archive posts-collapse">
 
 
   
-
-
-<div class="post-block">
   
   
+  <div class="post-block">
+    <div class="post-content">
+      <div class="collection-title">
+        <span class="collection-header">嗯..! 目前共计 19 篇日志。 继续努力。</span>
+      </div>
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/08/ASR-LLM-TTS%E6%9E%84%E5%BB%BA%E6%99%BA%E8%83%BD%E8%AF%AD%E9%9F%B3%E5%AF%B9%E8%AF%9D%E6%9C%BA%E5%99%A8%E4%BA%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="ASR+LLM+TTS构建智能语音对话机器人 | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          ASR+LLM+TTS构建智能语音对话机器人
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-08 17:33:40" itemprop="dateCreated datePublished" datetime="2025-02-08T17:33:40+08:00">2025-02-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-10 10:06:27" itemprop="dateModified" datetime="2025-02-10T10:06:27+08:00">2025-02-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span id="busuanzi_value_page_pv"></span>
-    </span>
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>109</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前段时间通过<strong>sensevoice + Qwen2.5 7b + GSV</strong>做了个智能语音对话机器人，现在公司想将其做成个产品，原先的方案不太适用，本文记录方案选择、实现过程和最终结果。</p>
-<span id="more"></span>
-
-<hr>
-<h2 id="方案选择"><a href="#方案选择" class="headerlink" title="方案选择"></a>方案选择</h2><p>首先，我打算的是vad要运行在客户端，发送语音段到服务端，这里的方案选择指的是<strong>sensevoice + Qwen2.5 7b + GSV</strong>之间程序</p>
-
+      
+    <div class="collection-year">
+      <span class="collection-header">2025<span class="collection-year-count">19</span></span>
     </div>
 
-    
-    
-    
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+      <div class="post-meta-container">
+        <time itemprop="dateCreated"
+              datetime="2025-03-04T10:57:40+08:00"
+              content="2025-03-04">
+          03-04
+        </time>
+      </div>
 
-    <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/ASR/" rel="tag"># ASR</a>
-              <a href="/tags/LLM/" rel="tag"># LLM</a>
-              <a href="/tags/TTS/" rel="tag"># TTS</a>
-              <a href="/tags/funasr/" rel="tag"># funasr</a>
-              <a href="/tags/Qwen2-5/" rel="tag"># Qwen2.5</a>
-              <a href="/tags/GSV/" rel="tag"># GSV</a>
-              <a href="/tags/GPT-SOVITS/" rel="tag"># GPT SOVITS</a>
-              <a href="/tags/Sensevoice/" rel="tag"># Sensevoice</a>
-          </div>
+      <div class="post-title">
+          <a class="post-title-link" href="/2025/03/04/ASR-LLM-TTS%E6%9E%84%E5%BB%BA%E6%99%BA%E8%83%BD%E8%AF%AD%E9%9F%B3%E5%AF%B9%E8%AF%9D%E6%9C%BA%E5%99%A8%E4%BA%BA/" itemprop="url">
+            <span itemprop="name">ASR+LLM+TTS构建智能语音对话机器人</span>
+          </a>
+      </div>
 
-        
-
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2025/02/07/silerovadonnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/" rel="prev" title="silero_vad onnx方式使用示例">
-                  <i class="fa fa-angle-left"></i> silero_vad onnx方式使用示例
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2025/02/10/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D/" rel="next" title="大模型应用开发之agent介绍">
-                  大模型应用开发之agent介绍 <i class="fa fa-angle-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
+      
+    </header>
   </article>
-</div>
 
 
-
-
-
+    </div>
+  </div>
+  
+  
+  
 
 </div>
   </main>
@@ -351,13 +248,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">40k</span>
+    <span title="站点总字数">47k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:26</span>
+    <span title="站点阅读时长">2:49</span>
   </span>
 </div>
 <div class="busuanzi-count">
