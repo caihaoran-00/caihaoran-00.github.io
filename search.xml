@@ -3,7 +3,14 @@
   <entry>
     <title>ASR+LLM+TTS构建智能语音对话机器人</title>
     <url>/2025/03/04/ASR-LLM-TTS%E6%9E%84%E5%BB%BA%E6%99%BA%E8%83%BD%E8%AF%AD%E9%9F%B3%E5%AF%B9%E8%AF%9D%E6%9C%BA%E5%99%A8%E4%BA%BA/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前段时间通过<strong>sensevoice + Qwen2.5 7b + GSV</strong>做了个智能语音对话机器人，现在公司想将其做成个产品，原先的方案不太适用，本文记录方案选择、实现过程和最终结果。</p>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>该系列&#x2F;前置步骤包含：</p>
+<ol>
+<li><a href="https://caihaoran-00.github.io/2025/02/05/fastapi-request%E6%9E%84%E5%BB%BA%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1/">fastapi+request构建语音识别微服务</a></li>
+<li><a href="https://caihaoran-00.github.io/2025/02/07/silerovadonnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/">silero vad onnx方式使用示例</a></li>
+<li><a href="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/">说话人确认之CAM++</a></li>
+<li><a href="https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/">cam++ senseVoice构建微服务</a></li>
+</ol>
+<p>基本上万事俱备了，完整版本</p>
 <span id="more"></span>
 
 <hr>
@@ -448,12 +455,14 @@
 <p>其他模型可在这个<a href="https://modelscope.cn/models">页面</a>查找及下载。下载完成后（漫长等待），打开这个<a href="https://modelscope.cn/models/Qwen/Qwen2.5-VL-7B-Instruct/files">页面</a>肉眼对比下文件数量和大小。</p>
 <hr>
 <h2 id="原始模型直接推理"><a href="#原始模型直接推理" class="headerlink" title="原始模型直接推理"></a>原始模型直接推理</h2><p>运行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">llamafactory-cli webchat examples/inferece/qwen2_5_vl.yaml</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">llamafactory-cli webchat examples/inference/qwen2_5_vl.yaml</span><br></pre></td></tr></table></figure>
 
 <p><code>examples/inference/qwen2_5_vl.yaml</code> 的配置示例如下：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">model_name_or_path: /home/chr/桌面/llamafactory/Qwen2.5-VL-7B-Instruct</span><br><span class="line">template: qwen2_vl</span><br><span class="line">infer_backend: huggingface <span class="comment">#choices： [huggingface, vllm]</span></span><br><span class="line">trust_remote_code: <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
-<img src="/2025/02/18/LLamaFactory%E5%BE%AE%E8%B0%83Qwen2-5VL/direct.png" class="" title="2575232de302bc2a7c3fb9bec121134">
+<img src="/2025/02/18/LLamaFactory%E5%BE%AE%E8%B0%83Qwen2-5VL/0eb4d4ace6c1cfb48d0c523289df758.png" class="" title="0eb4d4ace6c1cfb48d0c523289df758">
+
+<img src="/2025/02/18/LLamaFactory%E5%BE%AE%E8%B0%83Qwen2-5VL/f070b353532642d1b4b48b4292f742f.png" class="" title="f070b353532642d1b4b48b4292f742f">
 
 <hr>
 <h2 id="自定义数据集"><a href="#自定义数据集" class="headerlink" title="自定义数据集"></a>自定义数据集</h2><p>LLamafactory目前支持alpaca和sharegpt两种格式，以alpaca为例，整个数据集是一个json对象的list，具体数据格式为：</p>
@@ -475,8 +484,6 @@
 
 <p>替换后：</p>
 <figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;instruction&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Who are you?&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;input&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;output&quot;</span><span class="punctuation">:</span> <span class="string">&quot;I am PetNet, an AI assistant developed by fy. How can I assist you today?&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-
 
 <p>第二个是一个商品文案生成数据集，<a href="https://cloud.tsinghua.edu.cn/f/b3f119a008264b1cabd1/?dl=1">原始链接</a></p>
 <p>原始格式如下，很明显，训练目标是输入content （也就是prompt）, 输出 summary （对应response）：</p>
@@ -1147,6 +1154,1186 @@
       </tags>
   </entry>
   <entry>
+    <title>Qwen2.5VL安装与官方玩法体验</title>
+    <url>/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>TTS之GPT-Sovits介绍与使用</title>
+    <url>/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面已经使用了GPT-Sovits V2做了有趣的应用，但关于GPT-Sovits的介绍与使用教程并没有写，且目前遇到了一个问题，使用中文进行微调后（后面发现与使用中文语音微调关系不大，主要取决于参考音频），再使用中文作为参考音频，使用该微调模型说英语则会很别扭（中文口音），故在此补上实验过程，目的在于得到英语流畅的模型，且融合音色防止版权问题。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>GPT-SoVITS是<a href="https://space.bilibili.com/5760446/">花儿不哭</a>大佬研发的低成本AI音色克隆软件。目前只有TTS（文字转语音）功能，将来会更新变声功能。GPT-SoVITS的正确缩写应该是GSV（下文用该缩写代替），请不要用sovits来简称它，这会让人把它和So-VITS-SVC搞混，两者并没有什么关系。</p>
+<p>目前（2025-3-6），GSV已经更新到V3版本，关于<strong>各版本的介绍</strong>：</p>
+<p><code>GPT-SoVITS-V1</code>实现了：</p>
+<ul>
+<li>由参考音频的情感、音色、语速控制合成音频的情感、音色、语速</li>
+<li>可以少量语音微调训练，也可不训练直接推理</li>
+<li>可以跨语种生成，即参考音频（训练集）和推理文本的语种为不同语种</li>
+</ul>
+<p><code>GPT-SoVITS-V2</code>新增特点：</p>
+<ul>
+<li>对低音质参考音频合成出来音质更好</li>
+<li>底模训练集增加到5k小时，zero shot性能更好音色更像，所需数据集更少</li>
+<li>增加韩粤两种语言，中日英韩粤5个语种均可跨语种合成</li>
+<li>更好的文本前端：持续迭代更新。V2中英文加入多音字优化。</li>
+</ul>
+<p><code>GPT-SoVITS-V3</code>新增特点：</p>
+<ul>
+<li>音色相似度更像，需要更少训练集来逼近本人（甚至不需要训练SoVITS）</li>
+<li>GPT合成更稳定，重复漏字更少，也更容易跑出丰富情感</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>语种主持（可跨语种合成）</th>
+<th>GPT训练集时长</th>
+<th>SoVITS训练集时长</th>
+<th>推理速度</th>
+<th>参数量</th>
+<th>文本前端</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>V1（2024年1月发布）</td>
+<td>中日英</td>
+<td>2k小时</td>
+<td>2k小时</td>
+<td>baseline</td>
+<td>90M+77M</td>
+<td>baseline</td>
+<td>baseline</td>
+</tr>
+<tr>
+<td>V2（2024年8月更新）</td>
+<td>中日英韩粤</td>
+<td>2.5k小时</td>
+<td>vq encoder2k小时，剩余5k小时</td>
+<td>翻倍</td>
+<td>90M+77M</td>
+<td>中日英逻辑均有增强</td>
+<td>新增语速调节，无参考文本模式，更好的混合语种切分，音色混合</td>
+</tr>
+<tr>
+<td>V3（2025年2月更新）</td>
+<td>中日英韩粤</td>
+<td>7k小时</td>
+<td>vq encoder2k小时，剩余7k小时</td>
+<td>约等于v2</td>
+<td>330M+77M</td>
+<td>不变</td>
+<td>大幅增加zero shot相似度；情绪表达、微调性能提升</td>
+</tr>
+</tbody></table>
+<p>目前我使用的是V2版本，有用户体验了V3，<a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2136">反馈1</a>，<a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651">反馈2</a>，主要提及的是存在不稳定问题（音色&#x2F;节奏不稳定），有人建议可以使用<strong>V3的GPT模型配V2的sovits模型</strong>。</p>
+<hr>
+<h2 id="Ubuntu环境下安装"><a href="#Ubuntu环境下安装" class="headerlink" title="Ubuntu环境下安装"></a>Ubuntu环境下安装</h2><p>克隆仓库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/RVC-Boss/GPT-SoVITS.git</span><br></pre></td></tr></table></figure>
+
+<p>创建并激活conda环境：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> GPT-SoVITS</span><br><span class="line">conda create -n GPTSoVits python=3.9</span><br><span class="line">conda activate GPTSoVits</span><br></pre></td></tr></table></figure>
+
+<p>运行自动安装脚本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash install.sh</span><br></pre></td></tr></table></figure>
+
+<p>下载预训练模型：<br><strong>中国地区的用户可以<a href="https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e/dkxgpiy9zb96hob4#nVNhX">在此处下载这些模型</a>。</strong></p>
+<ol>
+<li><p>从 <a href="https://huggingface.co/lj1995/GPT-SoVITS">GPT-SoVITS Models</a> 下载预训练模型，并将其放置在 <code>./GPT_SoVITS/pretrained_models</code> 目录中。</p>
+</li>
+<li><p>从 <a href="https://paddlespeech.bj.bcebos.com/Parakeet/released_models/g2p/G2PWModel_1.1.zip">G2PWModel_1.1.zip</a> 下载模型，解压并重命名为 <code>G2PWModel</code>，然后将其放置在 <code>./GPT_SoVITS/text</code> 目录中。（仅限中文TTS）</p>
+</li>
+<li><p>对于 UVR5（人声&#x2F;伴奏分离和混响移除，额外功能），从 <a href="https://huggingface.co/lj1995/VoiceConversionWebUI/tree/main/uvr5_weights">UVR5 Weights</a> 下载模型，并将其放置在 <code>./tools/uvr5/uvr5_weights</code> 目录中。</p>
+<ul>
+<li>如果你在 UVR5 中使用 <code>bs_roformer</code> 或 <code>mel_band_roformer</code>模型，你可以手动下载模型和相应的配置文件，并将它们放在 <code>tools/UVR5/UVR5_weights</code> 中。<strong>重命名模型文件和配置文件，确保除后缀外</strong>，模型和配置文件具有相同且对应的名称。此外，模型和配置文件名<strong>必须包含“roformer”</strong>，才能被识别为 roformer 类的模型。</li>
+<li>建议在模型名称和配置文件名中<strong>直接指定模型类型</strong>，例如<code>mel_mand_roformer</code>、<code>bs_roformer</code>。如果未指定，将从配置文中比对特征，以确定它是哪种类型的模型。例如，模型<code>bs_roformer_ep_368_sdr_12.9628.ckpt</code> 和对应的配置文件<code>bs_roformer_ep_368_sdr_12.9628.yaml</code> 是一对。<code>kim_mel_band_roformer.ckpt</code> 和 <code>kim_mel_band_roformer.yaml</code> 也是一对。</li>
+</ul>
+</li>
+<li><p>对于中文 ASR（额外功能），从 <a href="https://modelscope.cn/models/damo/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/files">Damo ASR Model</a>、<a href="https://modelscope.cn/models/damo/speech_fsmn_vad_zh-cn-16k-common-pytorch/files">Damo VAD Model</a> 和 <a href="https://modelscope.cn/models/damo/punc_ct-transformer_zh-cn-common-vocab272727-pytorch/files">Damo Punc Model</a> 下载模型，并将它们放置在 <code>tools/asr/models</code> 目录中。</p>
+</li>
+<li><p>对于英语或日语 ASR（额外功能），从 <a href="https://huggingface.co/Systran/faster-whisper-large-v3">Faster Whisper Large V3</a> 下载模型，并将其放置在 <code>tools/asr/models</code> 目录中。此外，<a href="https://huggingface.co/Systran">其他模型</a> 可能具有类似效果且占用更少的磁盘空间。</p>
+</li>
+<li><p>需要从<a href="https://huggingface.co/lj1995/GPT-SoVITS/tree/main/gsv-v2final-pretrained">huggingface</a> 下载预训练模型文件放到GPT_SoVITS\pretrained_models\gsv-v2final-pretrained下</p>
+<p>中文额外需要下载<a href="https://paddlespeech.bj.bcebos.com/Parakeet/released_models/g2p/G2PWModel_1.1.zip">G2PWModel_1.1.zip</a>（下载G2PW模型,解压并重命名为<code>G2PWModel</code>,将其放到<code>GPT_SoVITS/text</code>目录下）。</p>
+</li>
+</ol>
+<hr>
+<h2 id="WebUI运行"><a href="#WebUI运行" class="headerlink" title="WebUI运行"></a>WebUI运行</h2><p>运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python webui.py</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154422098.png" class="" title="image-20250307154422098">
+
+<p>点击上图箭头所示，得到：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154543851.png" class="" title="image-20250307154543851">
+
+<p>再按顺序点击，得到下一个页面：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307160607494.png" class="" title="image-20250307160607494">
+
+<p>该界面的必填（选）项为：</p>
+<ul>
+<li>3~10 S的参考音频</li>
+<li>对应于参考音频的文本</li>
+<li>参考音频的语种</li>
+<li>需要合成的文本</li>
+<li>需要合成的语种（对应于需要合成的文本的语种）</li>
+</ul>
+<hr>
+<h3 id="单语言"><a href="#单语言" class="headerlink" title="单语言"></a>单语言</h3><p>以下做了一些实验（用的原神派蒙的音频，来自<a href="https://www.bilibili.com/opus/804258696892776484">Bili 红血球AE3803</a>）：</p>
+<table>
+<thead>
+<tr>
+<th>参考文本真实语种</th>
+<th>选择</th>
+<th>真实的需要合成的文本语种</th>
+<th>选择</th>
+<th>合成结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh</td>
+<td>zh</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>en</td>
+<td>zh</td>
+<td>读字母</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>zh</td>
+<td>zh正常，en读字母</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>en</td>
+<td>zh不读，en也不太正常</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>整体正常（吞了几个字）</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>中文口音明显</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>en</td>
+<td>zh-en</td>
+<td>中文口音明显</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>en</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>读字母</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>zh</td>
+<td>读字母</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>zh</td>
+<td>读字母，英语口音严重</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>en</td>
+<td>zh不读，en正常</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>英语口音严重</td>
+</tr>
+<tr>
+<td>en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>英语口音严重</td>
+</tr>
+</tbody></table>
+<p>从上表可以看出：</p>
+<ul>
+<li>口音由参考文本决定，中文参考音频读英语会有中文口音，英语参考音频读中文会有英语口音</li>
+<li>选择的语种需包含真实的语种</li>
+</ul>
+<hr>
+<h3 id="中英混合"><a href="#中英混合" class="headerlink" title="中英混合"></a>中英混合</h3><p>那如果参考音频的真实语种是中英混合的，会不会合成的中文和英文均没有别捏的口音了呢？</p>
+<p>这里选用同事录得一段话进行实验，旨在判断通过zh-en参考音频能不能得到中英文都不别扭的合成效果。</p>
+<p><strong>参考音频1：</strong></p>
+<p>问候与告别，Good morning! How are you? See you tomorrow!介绍与询问， What’s your name? How old are you?</p>
+<p><strong>参考音频2：</strong></p>
+<p>问候与告别，Good morning! How are you? See you tomorrow!</p>
+<p><strong>合成文本:</strong></p>
+<p>从前，有一只小狐狸，它住在一片茂密的森林里。小狐狸聪明又勇敢，总是喜欢探索森林的每个角落。一天，它听说森林深处有一朵神奇的蓝色花，据说只要找到它，就能实现一个愿望。</p>
+<p>小狐狸踏上了寻找蓝色花的旅程。它翻过高山，越过小溪，遇到了善良的兔子、友好的松鼠，还有一只迷路的小鸟。小狐狸帮助了小鸟找到回家的路，小鸟感激地告诉它，蓝色花就藏在森林里最高的那棵橡树下。</p>
+<p>The little fox ran towards the great oak tree, its heart filled with excitement. When it finally arrived, it saw the glowing blue flower, shining like a star in the night. Carefully, the little fox made a wish: “I wish for happiness and kindness to spread across the forest.”</p>
+<p>As soon as it finished speaking, a gentle breeze carried golden light throughout the woods. The trees seemed greener, the flowers bloomed brighter, and laughter echoed among the animals. The little fox smiled, knowing that its wish had come true. From that day on, the forest was filled with joy, all because of one small fox’s big heart.</p>
+<table>
+<thead>
+<tr>
+<th>参考文本真实语种</th>
+<th>选择</th>
+<th>真实的需要合成的文本语种</th>
+<th>选择</th>
+<th>合成结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>en正常，zh节奏有点奇怪，像中国人模仿外国人口音说中文（意会一下🎃）</td>
+</tr>
+</tbody></table>
+<p><strong>好的吧，看来通过zh-en参考音频来让合成zh-en音频时没口音好像有难度（我暂时感觉这种方式做不到），可能是通过单一说话人的zh-en音频微调实现的？🤺</strong></p>
+<p>铛铛铛铛（不要问我为什么铛铛铛铛，看到最后你就知道了，也希望小友能看到这里😁），在这里补一个实验，用同事的中文录音：</p>
+<table>
+<thead>
+<tr>
+<th>参考文本真实语种</th>
+<th>选择</th>
+<th>真实的需要合成的文本语种</th>
+<th>选择</th>
+<th>合成结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh（同事）</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>zh（同事）</td>
+<td>zh</td>
+<td>en</td>
+<td>zh-en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zh（派蒙）</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>中文口音</td>
+</tr>
+<tr>
+<td>zh（派蒙）</td>
+<td>zh</td>
+<td>en</td>
+<td>zh-en</td>
+<td>中文口音</td>
+</tr>
+</tbody></table>
+<p>奇了怪，难道是游戏语音那种卡通配音缺少了某些元素？以致于作为参考音频时导致口语严重？（<strong>暂且这样理解吧</strong>）</p>
+<hr>
+<h3 id="音色融合"><a href="#音色融合" class="headerlink" title="音色融合"></a>音色融合</h3><p>先不管了，留个坑吧。接下来先实验下音色融合：</p>
+<h4 id="ESD数据集下载"><a href="#ESD数据集下载" class="headerlink" title="ESD数据集下载"></a>ESD数据集下载</h4><p>ESD（Emotion Speech  Data）数据集是一个专为语音合成与语音转换设计的公开资源，涵盖了350段平行语料，由10位母语为普通话的说话者以及10位英语母语者以5种不同的情感状态（中性、快乐、愤怒、悲伤、惊讶）录制。这一宝贵的数据库不仅包含了录音，还有配套的文字脚本，极大地方便了研究与开发。</p>
+<p>点击<a href="https://drive.google.com/file/d/1scuFwqh8s7KIYAfZW1Eu6088ZAK2SI-v/view?usp=sharing">这个链接</a>下载ESD数据集，下载完成后解压得到：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154717934.png" class="" title="image-20250310154717934">
+
+<table>
+<thead>
+<tr>
+<th>说话人编号</th>
+<th>性别</th>
+<th>语种</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>2</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>3</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>4</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>5</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>6</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>7</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>8</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>9</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>10</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>11</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>12</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>13</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>14</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>15</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>16</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>17</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>18</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>19</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>20</td>
+<td>男</td>
+<td>en</td>
+</tr>
+</tbody></table>
+<p>前10位是普通话，后10位为英语，每位说话者以说话情感分类，并且给出的txt文件对应了不同音频的说话内容和情绪。</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154936536.png" class="" title="image-20250310154936536">
+
+<hr>
+<h3 id="融合"><a href="#融合" class="headerlink" title="融合"></a>融合</h3><p>选取第三位说话者的0003_000982.wav作为参考音频，选择第7和第9位说话者的000982.wav与001029.wav作为融合音频，</p>
+<table>
+<thead>
+<tr>
+<th>音频序号</th>
+<th>音频内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>982</td>
+<td>有些人划船，有的人在进行花草活动。</td>
+</tr>
+<tr>
+<td>1029</td>
+<td>但是有时夏天比其它季节更迷人。</td>
+</tr>
+</tbody></table>
+<p>这里发现了个神奇的现象（一切的神奇现象都源于认知不足🤪），上面的单语言与中英混合合成出来的音频都有奇怪之处，单语言合成不同语种时，使用汉语为参考音频来合成英语时，有中国人说蹩脚英语的感觉，与此类似，使用英语为参考音频来合成汉语时，有外国人说蹩脚中文的感觉，这里的单语言中的是原神中派蒙的游戏内语音；而在中英混合场景使用的是同事的录音，参考音频直接为zh-en，但合成出来的中文有一些奇怪，英文正常；在这一节，笔者发现使用ESD提供的音频来试验，结果中英文部分都正常了，奇了个怪，那中英混个部分是不是还需要补一个同事只说中文作为参考音频的实验？（已补）</p>
+<p>此处实验发现，在右侧若只添加一条音频，则<strong>音色则会以该音色为准（与参考音频的音色没关系了）</strong>，如果<strong>添加两条及以上的音频，则会平均融合这两条及以上音色</strong>。</p>
+<p>好的，本来这节只为了验证融合音色的有效性，却意外发现了一些别的东西，只差微调的教程了，用到的时候再补上（相信不久就会补上了，现在是2025-3-10）。</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310171709253.png" class="" title="image-20250310171709253">
+
+<p>这里再总结一下：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310191549529.png" class="" title="image-20250310191549529">
+
+<p>这里的①我叫做参考音频，②我叫做融合音频（纯个人叫法，如有雷同纯属巧合，后续看论文的时候再矫正），这里我试验下来，感觉①控制情绪、语速、节奏等，②控制音色；只有②处不上传音频时，音色才由①处决定，否则音色与①处没有关系。</p>
+<p>思考题：想获得儿童的音色，开心的情绪，怎么做？</p>
+<p>答：①放开心的情绪，②放儿童的音色。</p>
+<hr>
+<h3 id="微调"><a href="#微调" class="headerlink" title="微调"></a>微调</h3><p>TODO….</p>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://github.com/RVC-Boss/GPT-SoVITS">https://github.com/RVC-Boss/GPT-SoVITS</a></li>
+<li><a href="https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e">https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e</a></li>
+<li><a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2136">https://github.com/RVC-Boss/GPT-SoVITS/issues/2136</a></li>
+<li><a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651">https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651</a></li>
+<li><a href="https://blog.csdn.net/gitblog_01104/article/details/141593574">https://blog.csdn.net/gitblog_01104/article/details/141593574</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>TTS</tag>
+        <tag>GSV</tag>
+        <tag>GPT-Sovits</tag>
+        <tag>ESD</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Qwen2.5VL论文翻译与总结</title>
+    <url>/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>说来惭愧，玩了这么久LLM，还没正经看过LLM的论文，最近要好好玩玩Qwen2.5 VL，目的是探索能基于它做什么应用（主要看能不能做到实时检测），这里先看一下论文，有个原理上的认识，再去微调Qwen2.5 VL。</p>
+<p><strong>论文名：Qwen2.5-VL Technical Report</strong></p>
+<p><strong>作者：Qwen Team, Alibaba Group</strong></p>
+<p>**论文地址：**<a href="https://arxiv.org/abs/2502.13923">https://arxiv.org/abs/2502.13923</a></p>
+<p><strong>Qwen Chat:</strong> <a href="https://chat.qwenlm.ai/">https://chat.qwenlm.ai</a></p>
+<p>**Hugging face:**<a href="https://huggingface.co/Qwen">https://huggingface.co/Qwen</a></p>
+<p>**ModelScope:**<a href="https://modelscope.cn/organization/qwen">https://modelscope.cn/organization/qwen</a></p>
+<p>**Github:**<a href="https://github.com/QwenLM/Qwen2.5-VL">https://github.com/QwenLM/Qwen2.5-VL</a></p>
+<p><em><strong>年份：2025</strong></em></p>
+<span id="more"></span>
+
+<hr>
+<h2 id="摘要（Abstract）"><a href="#摘要（Abstract）" class="headerlink" title="摘要（Abstract）"></a>摘要（Abstract）</h2><p>我们介绍了Qwen2.5-VL，Qwen视觉语言系列的最新旗舰模型，它展示了在基础功能和创新功能方面的重大进步。Qwen2.5-VL通过增强的视觉识别、精确的对象定位、稳健的文档解析和长视频理解，实现了在理解和与世界交互方面的重大飞跃。Qwen2.5-VL通过增强的视觉识别、精确的对象定位、鲁棒的文档解析和长视频理解，实现了在理解世界和互动方面的重大飞跃。Qwen2.5-VL的一个突出的特点是它能够使用边界框或点精确地定位对象。它提供了从发票、表单和表格中提取的健壮的结构化数据，以及对图表和布局的详细分析。为了处理复杂的输入，Qwen2.5- VL引入了动态分辨率处理和绝对时间编码，使其能够通过二级事件定位来处理不同大小的图像和延长持续时间（长达数小时）的视频。这使得模型能够原生地感知空间尺度和时间动态，而无需依赖传统的归一化技术。通过从零开始训练一个原生的动态分辨率视觉 Transformer (ViT)，并结合窗口注意力 (Window Attention)，我们显著降低了计算开销，同时保持了原生分辨率。因此，Qwen2.5-VL 不仅在静态图像和文档理解方面表现出色，还能作为一个交互式视觉智能体，在现实世界场景中执行推理、工具使用和任务操作，例如操作计算机和移动设备。</p>
+<p>该模型在各个领域都具备强大的泛化能力，无需针对特定任务进行微调。Qwen2.5-VL 提供三种尺寸，满足从边缘 AI 到高性能计算的多样化需求。其中，旗舰版 Qwen2.5-VL-72B 在文档和图表理解方面表现突出，能够与 GPT-4o 和 Claude 3.5 Sonnet 等最新顶尖模型相媲美。较小的 Qwen2.5-VL-7B 和 Qwen2.5-VL-3B 也超越了同类竞争对手，即使在资源受限的环境下仍然具备强大的能力。此外，Qwen2.5-VL 还保持了稳健的语言能力，继承了 Qwen2.5 大语言模型 (LLM) 的核心语言能力。</p>
+<img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250311144619136.png" class="" title="image-20250311144619136">
+
+<h2 id="1-介绍（Introduction）"><a href="#1-介绍（Introduction）" class="headerlink" title="1. 介绍（Introduction）"></a>1. 介绍（Introduction）</h2><p>大型视觉语言模型（LVLMs, Large vision-language models）是人工智能的关键突破，标志着多模式理解和交互的变革性方法。通过将视觉感知与自然语言处理无缝集成，这些高级模型从根本上重塑了机器解释和分析跨不同领域的复杂信息的方式。尽管多模态大型语言模型取得了重大进步，但这些模型目前的功能可以被比作三明治饼干的中间层——能够胜任各种任务，但却缺乏出色的性能。精细粒度视觉任务构成了这个类比的基础层。在Qwen2.5-VL的这次迭代中，我们致力于探索细粒度的感知能力，旨在为LVLMS建立一个坚实的基础，并为现实世界的应用创建一个代理放大器。该框架的顶层是多模态推理，它通过利用最新的Qwen2.5 LLM和使用多模态QA数据构建而得到增强。</p>
+<p>一系列的作品促进了多模态大型模型的发展，其特点是架构设计、视觉输入处理和数据管理。LVLMs进步的主要驱动力之一是体系结构的持续创新。（Alayrac等，2022年；李等，2022a；2023b；Liu等，2023b；a；王等，2024i；张等，2024b；王等，2023）逐步塑造了当前范式，通常由视觉编码器、跨模态投影仪和LLM组成。细粒度感知模型已经成为另一个关键领域。模型如（Xiao等人，2023年；刘等人，2023年；任等人，2024年；张等人，2024a；d；彭等人，2023；Deitke等人，2024）突破了详细视觉理解方面可能的边界。Omni（Li等人，2024g；2025b；Ye等人，2024）和MoE（Riquelme等人，2021；Lee等人，2024；Li等人，2024h；c；Wu等人，2024b）的架构也激发了LVLMs的未来发展。视觉编码器的增强（Chen等，2023；Liu等，2024b；Liang等，2025）和分辨率缩放（李等，2023c；叶等人，2023；李等人，2023a)在提高实际视觉理解质量方面发挥了关键作用。管理更多样化的场景和更高质量的数据是训练高级LVLMS的必要步骤。（郭等，2024年；2024年陈等，2024d；刘等，2024a；陈等，2024a；唐等，2024；李等，2024a)对这项努力具有非常有价值的贡献。</p>
+<p>然而，尽管视觉语言模型取得了显著的进展，但它们目前仍面临着发展瓶颈，包括计算复杂性、有限的上下文理解、糟糕的细粒度视觉感知，以及在不同序列长度上不一致的表现。</p>
+<p>在本报告中，我们介绍了最新的工作Qwen2.5-VL，它延续了Qwen系列的开源哲学，在各种基准测试上实现甚至超越了顶级的闭源代码模型。从技术上讲，我们的贡献有四方面： </p>
+<ol>
+<li>在视觉编码器中实现窗口注意力，以优化推理效率；</li>
+<li>我们引入了动态FPS采样，将动态分辨率扩展到时间维度，并能够在不同的采样率下实现全面的视频理解；</li>
+<li>我们通过对齐绝对时间来升级时间域中的MRoPE，从而促进了更复杂的时间序列学习；</li>
+<li>我们在管理训练前和监督微调的高质量数据方面做了重大努力，进一步将训练前语料库从1.2万亿标记扩展到4.1万亿个tokens。</li>
+</ol>
+<p>Qwen2.5-VL的突出特点是：</p>
+<ul>
+<li>强大的文档解析功能： Qwen2.5-VL将文本识别升级到完整解析，在处理多场景、多语言和各种内置的（手写、表格、图表、化学公式和音乐表）文档方面表现出色。</li>
+<li>跨格式的精确对象接地： Qwen2.5-VL解锁提高了检测、指向和计数对象的精度，适应了绝对坐标和JSON格式的高级空间推理。</li>
+<li>超长视频理解和细粒度视频接地：我们的模型将原生动态分辨率扩展到时间维度，增强了理解持续数小时的视频的能力，同时在秒内提取事件片段。</li>
+<li>增强的计算机和移动设备的代理(agent)功能：针对计算机和移动设备的增强代理功能：利用先进的基础、推理和决策能力，在智能手机和计算机上使用优越的代理功能来增强模型。</li>
+</ul>
+<img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250311152513173.png" class="" title="image-20250311152513173">
+
+<p>图片1：Qwen2.5-VL框架演示了一个视觉编码器和一个语言模型解码器的集成来处理多模态输入，包括图像和视频。视觉编码器被设计用来处理其本地分辨率的输入，并支持动态FPS采样。不同大小的图像和具有不同FPS速率的视频帧被动态地映射到不同长度的token序列上。值得注意的是，MRoPE将时间id与时间维度上的绝对时间对齐，使模型能够更好地理解时间动态，比如事件的节奏和精确的时刻定位。处理后的视觉数据随后被输入Qwen2.5 LM解码器。我们重新设计了视觉transformer（ViT）架构，结合了先进的组件，如带有SwiGLU激活函数的FFN，RMSNorm用于标准化，以及基于窗口的注意机制来提高性能和效率。</p>
+<h2 id="2-方法（Approach）"><a href="#2-方法（Approach）" class="headerlink" title="2. 方法（Approach）"></a>2. 方法（Approach）</h2><p>在本节中，我们首先概述了Qwen2.5-VL系列模型的体系结构更新，并提供了数据和训练细节的概述。</p>
+<h3 id="2-1-模型架构"><a href="#2-1-模型架构" class="headerlink" title="2.1 模型架构"></a>2.1 模型架构</h3><p>Qwen2.5-VL的整体模型体系结构由三个部分组成：</p>
+<p>**大语言模型（Large Language Model）：**Qwen2.5-VL系列采用大型语言模型作为其基本部分。该模型用Qwen2.5 LLM中预先训练的权重进行初始化。为了更好地满足多模态理解的要求，我们将一维RoPE（Rotary Position Embedding, 旋转位置嵌入）修改为我们的与绝对时间对齐的多模态旋转位置嵌入。</p>
+<p>**视觉编码器：**Qwen2.5-VL的视觉编码器采用了重新设计的视觉Transformer（ViT）架构。在结构上，我们结合了2D-RoPE和窗口注意力来支持原生输入分辨率，同时加速了整个视觉编码器的计算。在训练和推理过程中，输入图像的高度和宽度被调整到28的倍数，然后被输入ViT。视觉编码器通过将图像分割成步长为14的块来处理图像，生成一组图像特征。我们在第2.1.1节中提供了对视觉编码器的更详细的介绍。</p>
+<p>**基于MLP的视觉语言合并：**为了解决长图像特征序列带来的效率挑战，我们采用一种简单而有效的方法来压缩特征序列，然后将其输入大型语言模型（LLM）。具体来说，我们不是直接使用ViT提取的原始块特征，而是首先将四个块特征的空间相邻集进行分组。然后，将这些分组的特征连接起来，并通过一个两级多层感知器（MLP），将它们投射到一个与LLM中使用的文本嵌入对齐的维度中。该方法不仅降低了计算成本，而且为动态压缩不同长度的图像特征序列提供了一种灵活的方法。</p>
+<img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250311161912268.png" class="" title="image-20250311161912268">
+
+<h4 id="2-1-1-快速和高效的视觉编码器"><a href="#2-1-1-快速和高效的视觉编码器" class="headerlink" title="2.1.1 快速和高效的视觉编码器"></a>2.1.1 快速和高效的视觉编码器</h4><p>视觉编码器在多模态大语言模型（MLLMs）中起着关键的作用。为了解决由于原生分辨率输入而导致的训练和推理过程中的计算负载不平衡所带来的挑战，我们重新设计了视觉变压器（ViT）架构。一个关键的问题来自于与处理不同大小的图像相关的二次计算复杂度。为了缓解这种情况，我们在大多数层中引入了窗口注意力，以确保计算成本与块的数量呈线性扩展，而不是二次方。在我们的架构中，只有四个层采用了完全的自我注意，而其余的层利用了窗口注意力，最大窗口大小为112×112（对应于8个×8块）。对小于112×112的区域不进行填充，保持其原始分辨率。这种设计允许模型在原生输入分辨率下进行，避免了不必要的缩放或失真。</p>
+<p>对于位置编码，我们采用二维旋转位置嵌入（RoPE）来有效地捕获二维空间中的空间关系。此外，为了更好地处理视频输入，我们将我们的方法扩展到3D块分区。具体来说，我们使用14个×14个图像块作为基本单元，与传统的静态图像ViTs相一致。对于视频数据，两个连续的帧被分组在一起，显著减少了输入到语言模型中的token的数量。这种设计不仅保持了与现有架构的兼容性，而且提高了处理顺序视频数据的效率。</p>
+<p>为了简化整体的网络结构，我们将ViT体系结构与大型语言模型（LLMs）的设计原则更紧密地对齐。具体来说，我们采用RMSNorm（Zhang &amp;Sennrich，2019）进行归一化，并采用SwiGLU（Dauphin et al.，2017）作为激活函数。这些选择提高了计算效率和模型的视觉和语言组件之间的兼容性。</p>
+<p>在训练方面，我们从头开始训练重新设计的ViT。培训过程包括几个阶段，包括CLIP预训练、视觉-语言对齐和端到端微调。为了确保在不同的输入分辨率之间的鲁棒性，我们在训练阶段采用了原生分辨率的动态采样。图像根据其原始的纵横比进行随机采样，使模型能够有效地推广到不同分辨率的输入。这种方法不仅提高了模型的适应性，而且确保了跨不同大小的视觉数据的稳定和有效的训练。</p>
+<h4 id="2-1-2-原生动态分辨率和帧率"><a href="#2-1-2-原生动态分辨率和帧率" class="headerlink" title="2.1.2 原生动态分辨率和帧率"></a>2.1.2 原生动态分辨率和帧率</h4><p>Qwen2.5-VL在空间和时间维度上都引入了进步，以有效地处理不同的多模态输入。</p>
+<p>在空间域中，Qwen2.5-VL动态地将不同大小的图像转换为具有相应长度的标记序列。与传统的坐标规格化方法不同，我们的模型直接使用输入图像的实际尺寸来表示边界框、点和其他空间特征。这允许模型固有地学习比例信息，提高其处理不同分辨率图像的能力。</p>
+<p>对于视频输入，Qwen2.5-VL结合了动态帧率（FPS）训练和绝对时间编码。通过适应可变帧率，该模型可以更好地捕捉视频内容的时间动态。不同于其他方法通过引入文本时间戳或使用额外的头部来实现时间对齐，我们提出了一种新颖且高效的策略，直接将 MRoPE ID 与时间戳对齐。这种方法允许模型通过时间维度id之间的间隔来理解时间的节奏，而不需要任何额外的计算。</p>
+<h4 id="2-1-3-多模态旋转位置嵌入与绝对时间对齐"><a href="#2-1-3-多模态旋转位置嵌入与绝对时间对齐" class="headerlink" title="2.1.3 多模态旋转位置嵌入与绝对时间对齐"></a>2.1.3 多模态旋转位置嵌入与绝对时间对齐</h4><p>位置嵌入对于在视觉和语言模式中建模顺序数据都是至关重要的。基于Qwen2-VL中引入的多模态旋转位置嵌入（MRoPE），我们扩展了其功能，以更好地处理视频中的时间信息。</p>
+<p>Qwen2-VL中的MRoPE将位置嵌入分解为三个不同的分量：时间、高度和宽度，以有效地建模多模态输入。对于文本输入，所有三个组件都使用相同的位置id，使得MRoPE在功能上等同于传统的1D RoPE（Su et al.，2024）。对于图像，时间ID在视觉token之间保持不变，而唯一的ID则根据每个token在图像中的空间位置分配给高度和宽度组件。当处理被视为帧序列的视频时，每一帧的时间ID都有增量，而高度和宽度组件遵循与静态图像相同的分配模式。</p>
+<p>然而，在Qwen2-VL中，MRoPE中的时间位置id与输入帧数联系在一起，这并没有解释内容变化的速度或视频内事件的绝对时间。为了解决这一限制，Qwen2.5-VL引入了一个关键的改进：将MRoPE的时间组件与绝对时间对齐。如图1所示，通过利用时间id之间的间隔，该模型能够学习具有不同FPS采样率的视频之间一致的时间对齐。</p>
+<h3 id="2-2-预训练"><a href="#2-2-预训练" class="headerlink" title="2.2 预训练"></a>2.2 预训练</h3><p>在本节中，我们首先描述了预训练数据集的构建，然后概述了整个训练管道和配置。</p>
+<h4 id="2-2-1预训练数据集"><a href="#2-2-1预训练数据集" class="headerlink" title="2.2.1预训练数据集"></a>2.2.1预训练数据集</h4><p>与Qwen2-VL相比，我们显著增加了预训练数据的数量，从1.2万亿tokens增加到大约4万亿tokens。我们的预训练数据集是通过多种方法的组合来构建的，包括原始的网络数据，合成数据等。该数据集包括各种各样的多模态数据，如图像标题、交错图像-文本数据、光学字符识别（OCR）数据、视觉知识（如名人、地标、植物和动物识别）、多模态学术问题、位置数据、文档解析数据、视频描述、视频定位和基于代理的交互数据。在整个训练过程中，我们在不同的阶段仔细调整了这些数据类型的组成和比例，以优化学习结果。</p>
+<p>**交错图像文本数据：**交错图像文本数据对多模式学习至关重要，提供三个关键的好处： </p>
+<ol>
+<li>使上下文学习同时视觉和文本线索（Alayrac等，2022）；</li>
+<li>当没有图像时保持强大的文本功能（Lin et al.，2024）；</li>
+<li>包含广泛的一般信息。</li>
+</ol>
+<p>然而，许多可用的交错数据缺乏有意义的文本-图像关联，而且往往是嘈杂的，限制了它在复杂推理和创造性生成方面的有用性。</p>
+<p>为了解决这些挑战，我们开发了一个用于评分和清洗数据的管道，确保只使用高质量的、相关的交错数据。我们的过程包括两个步骤：标准数据清洗（Li et al.，2024e），然后是使用内部评估模型的四阶段评分系统。评分标准包括：</p>
+<ol>
+<li>纯文本质量，</li>
+<li>图像文本相关性，</li>
+<li>图像文本互补性，</li>
+<li>信息密度平衡。</li>
+</ol>
+<p>这种细致的方法提高了模型执行复杂推理和生成连贯的多模态内容的能力。</p>
+<p>以下是对这些图像-文本评分标准的描述：</p>
+<p>图像-文本相关性：得分越高表示图像和文本之间的联系更强，图像有意义地补充、解释或扩展文本，而不仅仅是装饰它。</p>
+<p>信息互补性：得分越高，表示图像和文本之间的互补性信息越大。每一个都应该提供独特的细节，共同创造一个完整的叙述。</p>
+<p>信息密度的平衡：得分越高，意味着图像和文本之间的信息分布越平衡，避免过多的文本或图像信息，确保两者之间的适当平衡。</p>
+<p>**具有绝对位置坐标的对齐数据：**我们采用具有绝对位置坐标的原生分辨率训练，目的是实现更准确的感知世界。相反，相对坐标不能有效地表示图像中物体的原始大小和位置。为了解决这个限制，Qwen2.5-VL在训练过程中使用基于输入图像的实际尺寸的坐标值来表示边界框和点。该方法确保了模型能够更好地捕捉目标的真实尺度和空间关系，从而提高了目标检测和定位等任务的性能。</p>
+<p>为了提升模型的泛化对齐能力，我们构建了一个综合数据集，其中包含带有指代表达的边界框（bounding boxes）和关键点（points），数据来源包括公开数据集和专有数据。我们的方法涉及将数据合成为多种格式，包括 XML，JSON 以及自定义格式，并采用了一系列技术，例如 Copy-Paste 增强（Ghiasi 等，2021），以及利用现成的模型（off-the-shelf models）进行数据合成，如 Grounding DINO（Liu 等，2023c）和 SAM（Kirillov 等，2023）。这种方法有助于更稳健地评估和提升模型的对齐能力（grounding abilities）。</p>
+<p>为了提高模型在开放词汇表检测方面的性能，我们将训练数据集扩展到包括超过10,000个对象类别。此外，为了提高模型在极端目标检测场景中的有效性，我们在查询中合成了不存在的对象类别，并为每个对象构建了包含多个实例的图像数据。</p>
+<p>为了确保优越的基于点的对象对齐能力，我们构建了一个包含公开可用数据和合成数据的综合点数据集。具体来说，数据来源包括来自 PixMo（Deitke 等，2024）的公开指示和计数数据、公开可访问的物体对齐数据（来自物体检测和实例分割任务），以及通过自动化管道合成的精确指向特定图像细节的指示数据。</p>
+<p>**文档全方位解析数据：**为了训练Qwen2.5-VL，我们合成了大量的文档数据语料库。解析文档内容的传统方法通常依赖于单独的模型来处理布局分析、文本提取、图表解释和插图处理。相比之下，Qwen2.5- VL的设计旨在使通用模型具有解析、理解和转换文档格式的全面功能。具体来说，我们在文档中加入了多种多样的元素，如表格、图表、方程式、自然或合成图像、乐谱和化学公式。这些元素统一采用HTML格式，它将布局框信息和插图描述集成到HTML标签结构中。我们还根据典型的阅读顺序丰富了文档布局，并在基于HTML的标注真值中包含了与每个模块（如段落和图表）对应的坐标。这种创新方法使得任何文档的完整信息，包括其布局、文本、图表和插图，都能够以标准化和统一的方式进行表示。因此，Qwen2.5-VL 实现了多模态文档元素的无缝集成，从而促进了更高效和准确的文档理解与转化。</p>
+<p>下面是Qwen VL HTML格式：</p>
+<figure class="highlight html"><figcaption><span>Qwen VL HTML Format</span></figcaption><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"># paragraph</span><br><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span>&gt;</span> content <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"># table</span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="language-css"><span class="selector-tag">table</span>&#123;id&#125; style</span><span class="tag">&lt;/<span class="name">style</span>&gt;</span><span class="tag">&lt;<span class="name">table</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span> <span class="attr">class</span>=<span class="string">&quot;table&#123;id&#125;&quot;</span>&gt;</span> table content</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line"># chart</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;chart&quot;</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">img</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">table</span>&gt;</span> chart content</span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"># formula</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;formula&quot;</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">img</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span> /&gt;</span> <span class="tag">&lt;<span class="name">div</span>&gt;</span> formula</span><br><span class="line">content <span class="tag">&lt;/<span class="name">div</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"># image caption</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;image caption&quot;</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">img</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">p</span>&gt;</span> image</span><br><span class="line">caption <span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"># image ocr</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;image ocr&quot;</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">img</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">p</span>&gt;</span> image ocr</span><br><span class="line"><span class="tag">&lt;/<span class="name">p</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"># music sheet</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;music sheet&quot;</span> <span class="attr">format</span>=<span class="string">&quot;abc notation&quot;</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">img</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1</span></span></span><br><span class="line"><span class="string"><span class="tag">x2 y2&quot;</span> /&gt;</span> <span class="tag">&lt;<span class="name">div</span>&gt;</span> music sheet content <span class="tag">&lt;/<span class="name">div</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"># chemical formula content</span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;chemical formula&quot;</span> <span class="attr">format</span>=<span class="string">&quot;smile&quot;</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1 x2 y2&quot;</span>&gt;</span> <span class="tag">&lt;<span class="name">img</span> <span class="attr">data-bbox</span>=<span class="string">&quot;x1 y1</span></span></span><br><span class="line"><span class="string"><span class="tag">x2 y2&quot;</span> /&gt;</span> <span class="tag">&lt;<span class="name">div</span>&gt;</span> chemical formula content <span class="tag">&lt;/<span class="name">div</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这种格式确保所有文档元素都以结构化和可访问的方式表示，使Qwen2.5-VL能够高效地处理和理解。</p>
+<p><strong>OCR 数据：<strong>我们收集并整理了来自不同来源的数据，以提升 OCR（光学字符识别）性能，其中包括</strong>合成数据、开源数据和内部收集的数据</strong>。</p>
+<ul>
+<li><strong>合成数据</strong> 由视觉文本生成引擎生成，能够模拟真实环境中的高质量文本图像。</li>
+<li><strong>多语言支持</strong>：为了支持更广泛的语言并增强多语言能力，我们引入了一个大规模的<strong>多语言 OCR 数据集</strong>，涵盖<strong>法语、德语、意大利语、西班牙语、葡萄牙语、阿拉伯语、俄语、日语、韩语和越南语</strong>等多种语言。</li>
+<li><strong>数据多样性与质量控制</strong>：数据集经过精心筛选，确保多样性和高质量，结合了<strong>高质量的合成图像</strong>和<strong>真实世界的自然场景图像</strong>，从而提升模型在不同语言环境中的适应性，并增强其对不同文本外观和环境条件的鲁棒性。</li>
+</ul>
+<p><strong>图表类数据：<strong>我们使用 <strong>matplotlib、seaborn 和 plotly</strong> 等可视化库合成了 <strong>100 万个样本</strong>，涵盖</strong>柱状图、关系图和热图</strong>等多种图表类型。</p>
+<p><strong>表格类数据：<strong>我们利用离线端到端表格识别模型</strong>处理了 600 万个真实世界的表格样本</strong>，并进一步筛选出高质量数据，<strong>剔除低置信度表格、重叠表格以及单元格密度不足的表格</strong>。</p>
+<p><strong>视频数据：</strong></p>
+<ul>
+<li><strong>FPS 适配</strong>：为了增强对不同帧率（FPS）视频数据的理解能力，我们在训练过程中<strong>动态采样 FPS</strong>，以确保训练数据集中 FPS 分布更加均衡。</li>
+<li><strong>长视频字幕生成</strong>：对于<strong>时长超过半小时</strong>的视频，我们<strong>专门构建了一套长视频字幕数据集</strong>，通过<strong>目标合成管道</strong>生成<strong>多帧字幕</strong>，以提高模型对长视频内容的理解能力。</li>
+<li><strong>视频对齐数据</strong>：针对视频数据的时间对齐问题，我们提供了<strong>秒级格式（second-based format）<strong>和</strong>时-分-秒-帧（hmsf）格式</strong>的时间戳，以确保模型能够准确理解和输出不同格式的时间信息。</li>
+</ul>
+<p><strong>智能体数据（Agent Data）：<strong>我们增强了 <strong>Qwen2.5-VL</strong> 的</strong>感知和决策能力</strong>，以构建其智能体（Agent）能力。</p>
+<p><strong>感知能力（Perception）：</strong></p>
+<ul>
+<li>我们收集了<strong>移动端、网页端和桌面端</strong>的截图数据。</li>
+<li>通过<strong>合成数据引擎</strong>生成<strong>截图描述（captions）<strong>和</strong>UI 元素对齐标注（grounding annotations）</strong>。</li>
+<li><strong>截图描述任务</strong>（Caption Task）：帮助 Qwen2.5-VL 理解<strong>图形界面</strong>。</li>
+<li><strong>对齐任务</strong>（Grounding Task）：帮助 Qwen2.5-VL <strong>关联 UI 元素的外观和功能</strong>。</li>
+</ul>
+<p><strong>决策能力（Decision-Making）：</strong></p>
+<ul>
+<li><strong>操作格式统一</strong>：我们将<strong>移动端、网页端和桌面端的操作</strong>统一为<strong>函数调用格式</strong>，并构建一个共享的<strong>操作空间（Action Space）</strong>。</li>
+<li>多步操作数据：<ul>
+<li>收集<strong>开源数据</strong>和<strong>基于虚拟环境的智能体框架（Wang et al., 2025; 2024b;c）合成的多步操作轨迹</strong>，并将其<strong>转换为函数格式</strong>。</li>
+<li>通过<strong>人工和模型标注（Xu et al., 2024）</strong>，为每一步操作生成<strong>推理过程</strong>。</li>
+</ul>
+</li>
+<li>推理数据构建流程：<ol>
+<li><strong>给定一个真实操作（Ground-Truth Operation）</strong>，我们在截图上<strong>高亮显示</strong>该操作。</li>
+<li><strong>提供全局查询信息</strong>，以及<strong>操作前后的截图</strong>，要求标注人员<strong>编写推理内容</strong>，解释该操作的意图。</li>
+<li><strong>使用基于模型的筛选器</strong>，剔除低质量的推理内容。</li>
+</ol>
+</li>
+</ul>
+<p>这一推理内容的加入，能够防止 <strong>Qwen2.5-VL</strong> <strong>过拟合</strong>于<strong>真实操作数据</strong>，并使其在<strong>真实世界场景中更加鲁棒（robust）</strong>。</p>
+<img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250312104636009.png" class="" title="image-20250312104636009">
+
+<h4 id="2-2-2-训练方案（Training-Recipe）"><a href="#2-2-2-训练方案（Training-Recipe）" class="headerlink" title="2.2.2 训练方案（Training Recipe）"></a>2.2.2 训练方案（Training Recipe）</h4><p>我们从零开始训练了一个 <strong>Vision Transformer (ViT)</strong>，其中<strong>视觉编码器</strong>（Vision Encoder）使用 <strong>DataComp（Gadre et al., 2023）</strong> 和部分<strong>自有数据集</strong>进行初始化，而<strong>语言模型组件</strong>（LLM）则基于**预训练的 Qwen2.5 大语言模型（Yang et al., 2024a）**进行初始化。</p>
+<p>如表 2 所示，<strong>预训练过程分为三个阶段</strong>，每个阶段采用不同的数据配置和训练策略，以<strong>逐步增强模型能力</strong>。</p>
+<p><strong>第一阶段：ViT 预训练，增强视觉-语言对齐能力</strong></p>
+<ul>
+<li>仅训练 <strong>Vision Transformer (ViT)</strong>，使其更好地与<strong>语言模型（LLM）对齐</strong>，为多模态理解奠定基础。</li>
+<li>主要数据来源：<ul>
+<li><strong>图像字幕数据（Image Captions）</strong></li>
+<li><strong>视觉知识数据（Visual Knowledge）</strong></li>
+<li><strong>OCR 数据（光学字符识别数据）</strong></li>
+</ul>
+</li>
+<li>这些数据经过精心选择，以提升 ViT <strong>提取有意义视觉表征</strong>的能力，并确保其能<strong>有效融入文本信息</strong>。</li>
+</ul>
+<p><strong>第二阶段：解冻所有参数，训练多模态数据，提升复杂视觉处理能力</strong></p>
+<ul>
+<li><strong>解冻全部模型参数</strong>，在更<strong>丰富的多模态数据</strong>上训练，增强模型处理复杂视觉信息的能力。</li>
+<li>引入更加复杂、需要推理能力的数据集，包括：<ul>
+<li><strong>交错数据（Interleaved Data）</strong></li>
+<li><strong>多任务学习数据集（Multi-task Learning Datasets）</strong></li>
+<li><strong>视觉问答（VQA，Visual Question Answering）</strong></li>
+<li><strong>多模态数学（Multimodal Mathematics）</strong></li>
+<li><strong>基于智能体的任务（Agent-based Tasks）</strong></li>
+<li><strong>视频理解数据（Video Understanding）</strong></li>
+<li><strong>纯文本数据（Pure-text Datasets）</strong></li>
+</ul>
+</li>
+<li>这一阶段旨在<strong>强化模型视觉与语言的深层次联系</strong>，使其能够处理<strong>更加复杂的多模态任务</strong>。</li>
+</ul>
+<p><strong>第三阶段：增强长序列推理能力，加入视频与智能体数据</strong></p>
+<ul>
+<li>进一步增强模型在<strong>长序列推理、视频和智能体任务</strong>上的能力。</li>
+<li>在训练中<strong>增加序列长度</strong>，使模型能<strong>处理更长的上下文</strong>，特别是涉及<strong>长距离依赖和复杂推理的任务</strong>。</li>
+</ul>
+<p><strong>优化训练效率的策略</strong></p>
+<p>由于训练过程中<strong>图像大小和文本长度的变化</strong>会导致<strong>计算负载不均衡</strong>，我们采取了<strong>优化策略</strong>来提升训练效率：</p>
+<ul>
+<li><strong>主要计算负载</strong>来自于 <strong>LLM（语言模型）和 Vision Encoder（视觉编码器）</strong>。</li>
+<li>由于 <strong>视觉编码器的参数较少</strong>，并且我们引入了 <strong>窗口注意力（Window Attention）</strong> 来进一步<strong>降低计算需求</strong>，所以主要优化点是<strong>均衡 LLM 计算负载</strong>。</li>
+<li>具体方法：<ul>
+<li><strong>动态打包（Dynamically Packed）</strong> 数据样本，根据输入的<strong>序列长度</strong>分配给 LLM，确保计算负载均衡。</li>
+<li><strong>第一、二阶段</strong>：数据序列长度<strong>统一设定为 8,192</strong>。</li>
+<li><strong>第三阶段</strong>：序列长度<strong>提升至 32,768</strong>，以适应模型<strong>处理长序列任务的能力</strong>。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-3-后训练（Post-training）"><a href="#2-3-后训练（Post-training）" class="headerlink" title="2.3 后训练（Post-training）"></a>2.3 后训练（Post-training）</h3><p>Qwen2.5-VL 的后训练对齐框架采用 <strong>双阶段优化范式</strong>，包括 <strong>监督微调（Supervised Fine-Tuning, SFT）</strong> 和 <strong>直接偏好优化（Direct Preference Optimization, DPO）</strong>（Rafailov 等，2023）。这种<strong>分层对齐策略</strong>结合了<strong>参数高效的领域自适应</strong>和<strong>人类偏好蒸馏</strong>，分别针对**表征对齐（representational grounding）<strong>和</strong>行为优化（behavioral refinement）**进行优化，以满足不同的训练目标。</p>
+<p><strong>监督微调（SFT）</strong></p>
+<p>SFT 旨在通过<strong>针对性的指令优化</strong>，弥合<strong>预训练表征</strong>与<strong>下游任务需求</strong>之间的差距。在这一阶段，我们采用 <strong>ChatML 格式</strong>（OpenAI，2024）来构造指令跟随数据，这种格式<strong>有意区别于预训练数据模式</strong>，但仍保持与 Qwen2-VL（Wang 等，2024e）的架构一致性。这种格式转换实现了三个关键调整：</p>
+<ol>
+<li><strong>显式对话角色标注</strong>，支持多模态回合式交互；</li>
+<li><strong>在文本指令中结构化地注入视觉嵌入</strong>，确保模型能够结合视觉信息理解任务；</li>
+<li><strong>通过格式感知的数据打包，保持跨模态的位置信息关系</strong>，使模型能够理解视觉元素与文本之间的对应关系。</li>
+</ol>
+<p>通过在这种增强格式下，向模型提供<strong>精心挑选的多模态指令-响应对（instruction-response pairs）</strong>，SFT <strong>可以高效地传递知识，同时保持预训练特征的完整性</strong>。</p>
+<h4 id="2-3-1-指令数据"><a href="#2-3-1-指令数据" class="headerlink" title="2.3.1 指令数据"></a>2.3.1 指令数据</h4><p>在<strong>监督微调（SFT）阶段，使用精心构建的数据集来提升模型在不同模态下的指令跟随能力。该数据集包含约200万条数据</strong>，其中<strong>纯文本数据占比50%</strong>，<strong>多模态数据占比50%</strong>，后者包括<strong>图文和视频文本</strong>的组合。多模态数据的引入使模型能够有效处理复杂输入。需要注意的是，虽然<strong>纯文本数据和多模态数据的数量相等</strong>，但由于多模态数据<strong>包含视觉和时间信息</strong>，其在训练过程中会消耗<strong>显著更多的 token 和计算资源</strong>。</p>
+<p>该数据集主要由<strong>中英文数据</strong>组成，并补充了一定量的<strong>多语言数据</strong>，以支持更广泛的语言多样性。数据集结构设计涵盖不同层次的<strong>对话复杂度</strong>，包括<strong>单轮对话</strong>和<strong>多轮对话</strong>。这些对话进一步结合了从<strong>单张图片输入到多张图片序列</strong>的各种场景，以模拟真实的对话动态。</p>
+<p>数据来源主要包括<strong>开源数据集</strong>，并辅以<strong>购买的精选数据</strong>和<strong>在线查询数据</strong>，从而确保数据集的<strong>广泛覆盖性</strong>和<strong>代表性</strong>。</p>
+<p>为了适应多种应用场景，数据集中包含多个<strong>专门子集</strong>，如：</p>
+<ul>
+<li><strong>通用视觉问答（VQA）</strong></li>
+<li><strong>图像描述（Image Captioning）</strong></li>
+<li><strong>数学问题求解</strong></li>
+<li><strong>编程任务</strong></li>
+<li><strong>安全相关查询</strong></li>
+</ul>
+<p>此外，还构建了专门的数据集，以提升模型在<strong>文档与光学字符识别（Doc &amp; OCR）</strong>、<strong>目标定位（Grounding）</strong>、<strong>视频分析</strong>和**智能体交互（Agent Interactions）**等领域的能力。有关数据的详细信息可在论文的相关章节中找到。</p>
+<p>这种<strong>结构化且多样化</strong>的数据集设计，确保 SFT 阶段能够<strong>有效对齐预训练表示</strong>，使模型能够更好地适应<strong>多模态下游任务</strong>的需求，从而具备更强的<strong>上下文理解</strong>和<strong>任务执行</strong>能力。</p>
+<h4 id="2-3-2-数据过滤流水线"><a href="#2-3-2-数据过滤流水线" class="headerlink" title="2.3.2 数据过滤流水线"></a>2.3.2 数据过滤流水线</h4><p>训练数据的质量是影响<strong>视觉-语言模型</strong>性能的关键因素。<strong>开源数据集</strong>和<strong>合成数据集</strong>通常存在较大的<strong>变异性</strong>，其中可能包含<strong>噪声数据、冗余数据或低质量样本</strong>。因此，必须进行严格的数据清理和过滤，以解决这些问题。<strong>低质量数据</strong>可能导致<strong>预训练表示</strong>与下游任务的要求无法良好对齐，从而降低模型处理复杂多模态任务的能力。因此，确保数据质量至关重要，以实现<strong>稳健</strong>且<strong>可靠</strong>的模型性能。</p>
+<p><strong>两阶段数据过滤流水线：<strong>为了解决这些挑战，我们构建了一条</strong>两阶段数据过滤流水线</strong>，以系统性地提升**监督微调（SFT）**数据集的质量。该流水线包括以下两个阶段：</p>
+<p><strong>第一阶段：领域特定分类</strong>，在第一阶段，我们使用<strong>Qwen2-VL-Instag</strong>（由<strong>Qwen2-VL-72B</strong>衍生而来的<strong>专业分类模型</strong>）对<strong>问答（QA）对</strong>进行<strong>分层分类</strong>。该模型将 QA 对划分为<strong>八个主要领域</strong>（如<strong>编程</strong>和<strong>规划</strong>），并进一步细分为<strong>30个子类别</strong>。</p>
+<p>例如，**编程（Coding）**这一主要领域下包含以下子类别：</p>
+<ul>
+<li><strong>Code_Debugging（代码调试）</strong></li>
+<li><strong>Code_Generation（代码生成）</strong></li>
+<li><strong>Code_Translation（代码翻译）</strong></li>
+<li><strong>Code_Understanding（代码理解）</strong></li>
+</ul>
+<p>这种<strong>分层结构</strong>有助于<strong>领域感知</strong>和<strong>子领域感知</strong>的过滤策略，使流水线能够针对不同类别的数据<strong>优化数据清理流程</strong>。从而<strong>提高 SFT 数据集的质量和相关性</strong>。</p>
+<p><strong>第二阶段：领域定制化过滤，<strong>在第二阶段，我们实施</strong>领域定制化过滤</strong>，结合<strong>基于规则</strong>和<strong>基于模型</strong>的方法，以全面提升数据质量。由于<strong>文档处理、光学字符识别（OCR）、视觉目标定位（Visual Grounding）<strong>等领域的多样性，每个领域可能需要</strong>独特的过滤策略</strong>。以下是这些领域中采用的通用过滤策略概述：</p>
+<p><strong>1. 基于规则的过滤（Rule-Based Filtering）</strong></p>
+<ul>
+<li>采用<strong>预定义的启发式规则</strong>来<strong>剔除低质量或存在问题的数据</strong>。</li>
+<li>针对<strong>文档处理、OCR、视觉目标定位</strong>等任务，识别并移除<strong>重复模式</strong>，以防止模型学习过程受损，并确保最优性能。</li>
+<li>剔除<strong>不完整、被截断或格式错误</strong>的响应，这些问题在<strong>合成数据集</strong>和<strong>多模态任务</strong>中较为常见。</li>
+<li>为了保持<strong>数据的相关性</strong>并符合<strong>伦理标准</strong>，会移除<strong>无关或可能导致有害输出</strong>的查询和答案。</li>
+<li>这种<strong>结构化方法</strong>确保数据集符合<strong>伦理准则</strong>，并满足<strong>特定任务的要求</strong>。</li>
+</ul>
+<p><strong>2. 基于模型的过滤（Model-Based Filtering）</strong></p>
+<ul>
+<li>进一步利用<strong>Qwen2.5-VL 系列</strong>训练的**奖励模型（Reward Models）**对数据集进行精细筛选。</li>
+<li>对多模态 QA 对进行多维度评估，其中：<ul>
+<li><strong>查询（Query）<strong>会被评估其</strong>复杂度和相关性</strong>，确保保留<strong>适当具有挑战性且上下文相关的示例</strong>。</li>
+<li><strong>答案（Answer）<strong>则依据</strong>正确性、完整性、清晰度、相关性和有用性</strong>等指标进行筛选。</li>
+<li>在<strong>视觉相关任务</strong>中，会特别关注<strong>视觉信息的准确解读与应用</strong>，确保答案能够<strong>正确利用视觉信息</strong>。</li>
+</ul>
+</li>
+</ul>
+<p>这种<strong>多维评分机制</strong>确保<strong>只有高质量的数据</strong>才会进入 SFT 阶段，从而进一步提升模型的性能和泛化能力。</p>
+<h4 id="2-3-3-基于拒绝采样的增强推理"><a href="#2-3-3-基于拒绝采样的增强推理" class="headerlink" title="2.3.3 基于拒绝采样的增强推理"></a>2.3.3 <strong>基于拒绝采样的增强推理</strong></h4><p>为了<strong>补充结构化数据过滤流水线</strong>，我们采用<strong>拒绝采样（Rejection Sampling）<strong>策略来优化数据集，并提升</strong>视觉-语言模型（VLM）<strong>的推理能力。该方法在</strong>需要复杂推理</strong>的任务中尤为关键，例如<strong>数学问题求解、代码生成</strong>以及<strong>特定领域的视觉问答（VQA）</strong>。</p>
+<p>研究表明，<strong>链式思维（Chain-of-Thought, CoT）推理（Wei et al., 2022）能显著提升模型的推理能力</strong>（DeepSeek-AI et al., 2024）。我们的<strong>后训练实验</strong>也证实了这一点，进一步凸显了<strong>结构化推理过程</strong>对<strong>高质量推理结果</strong>的重要性。</p>
+<p><strong>拒绝采样流程：<strong>该过程始于</strong>带有标准答案的高质量数据集</strong>，其中包含需要<strong>多步推理</strong>的任务，例如<strong>数学问题求解、代码生成和特定领域的 VQA</strong>。然后，我们使用<strong>Qwen2.5-VL 模型的中间版本</strong>对<strong>模型生成的回答</strong>与<strong>标准答案</strong>进行比对，<strong>仅保留</strong>模型输出与期望答案<strong>匹配</strong>的样本，从而确保数据集仅由<strong>高质量、准确的示例</strong>组成。</p>
+<p>为了进一步提高数据质量，我们施加<strong>额外约束</strong>，以过滤掉不理想的输出，具体包括：</p>
+<ul>
+<li><strong>避免代码混用（code-switching）</strong>：排除含有不同语言混杂的回答，确保语言一致性。</li>
+<li><strong>控制输出长度</strong>：去除<strong>过长</strong>的回答，避免冗余信息影响推理质量。</li>
+<li><strong>剔除重复模式</strong>：移除<strong>重复句式</strong>或<strong>模式化表达</strong>，保证回答的<strong>清晰性</strong>和<strong>连贯性</strong>。</li>
+</ul>
+<p>这些标准有助于确保<strong>CoT 推理过程的清晰度和连贯性</strong>，从而提高下游任务的性能。</p>
+<p><strong>视觉-语言模型中的 CoT 挑战与优化：<strong>在视觉-语言模型中应用</strong>CoT 推理</strong>存在一项核心挑战：模型必须<strong>同时依赖文本和视觉模态</strong>，但<strong>中间推理步骤可能无法充分整合视觉信息</strong>，具体表现为：</p>
+<ul>
+<li><strong>忽略关键视觉线索</strong>（例如没有参考图片中的关键信息）。</li>
+<li><strong>错误解读视觉内容</strong>（例如误判图像中的物体或文字）。</li>
+</ul>
+<p>为了解决这些问题，我们开发了<strong>基于规则</strong>和<strong>基于模型</strong>的过滤策略，以<strong>验证中间推理步骤的准确性</strong>。这些机制确保<strong>每一步推理过程都能有效结合视觉和文本信息</strong>。然而，实现<strong>最佳的模态对齐</strong>仍是一个<strong>持续优化的挑战</strong>，需要进一步的技术突破。</p>
+<p><strong>拒绝采样对模型推理能力的提升：<strong>通过</strong>迭代优化数据集</strong>并<strong>移除低质量或错误样本</strong>，拒绝采样显著提升了模型的<strong>推理能力</strong>。该方法确保模型学习<strong>高质量、高保真度</strong>的示例，使其能够在<strong>复杂任务</strong>中表现得更加<strong>准确</strong>和<strong>连贯</strong>。</p>
+<p>这种方法不仅<strong>增强了模型对多步推理任务的处理能力</strong>，还<strong>为未来的视觉-语言建模改进奠定了基础</strong>。</p>
+<h4 id="2-3-4-训练方案"><a href="#2-3-4-训练方案" class="headerlink" title="2.3.4 训练方案"></a>2.3.4 <strong>训练方案</strong></h4><p>Qwen2.5-VL 的<strong>后训练过程</strong>包括两个阶段：</p>
+<ol>
+<li><strong>监督微调（Supervised Fine-Tuning, SFT）</strong></li>
+<li><strong>直接偏好优化（Direct Preference Optimization, DPO）</strong></li>
+</ol>
+<p>在这两个阶段中，<strong>视觉变换器（Vision Transformer, ViT）参数保持冻结</strong>。</p>
+<p><strong>SFT 阶段（监督微调）：<strong>在 SFT 阶段，模型在</strong>多样化的多模态数据</strong>上进行<strong>微调</strong>，这些数据包括：</p>
+<ul>
+<li><strong>图文数据对（image-text pairs）</strong></li>
+<li><strong>视频数据（video）</strong></li>
+<li><strong>纯文本数据（pure text）</strong></li>
+</ul>
+<p>数据来源涵盖：</p>
+<ul>
+<li><strong>通用 VQA 数据</strong>（General Visual Question Answering）</li>
+<li><strong>拒绝采样数据（Rejection Sampling）</strong></li>
+<li><strong>专业领域数据集</strong>（如<strong>文档识别（Document and OCR）</strong>、<strong>目标定位（Grounding）</strong>、<strong>视频分析（Video）<strong>和</strong>智能体相关任务（Agent-related tasks）</strong>）</li>
+</ul>
+<p><strong>DPO 阶段（直接偏好优化）：<strong>DPO 阶段专注于</strong>图文数据</strong>和<strong>纯文本数据</strong>，主要使用<strong>偏好数据（Preference Data）<strong>来优化模型，使其更加符合</strong>人类偏好</strong>。</p>
+<ul>
+<li><strong>每个样本仅处理一次</strong>，确保优化过程高效。</li>
+<li>该阶段的目标：<ul>
+<li>提升<strong>跨模态推理能力</strong></li>
+<li><strong>优化特定任务表现</strong></li>
+<li><strong>对齐用户意图</strong>，使模型生成的答案更符合用户需求</li>
+</ul>
+</li>
+</ul>
+<p>这种<strong>高效的训练流程</strong>在<strong>提升模型能力</strong>的同时，确保其与<strong>人类偏好保持一致</strong>。</p>
+<hr>
+<h2 id="3-实验"><a href="#3-实验" class="headerlink" title="3 实验"></a>3 实验</h2><p>在本节中，我们首先介绍整体模型，并将其与当前最先进（SoTA）模型进行比较。随后，我们评估该模型在各个子能力上的表现。</p>
+<h3 id="3-1-与先进模型比较"><a href="#3-1-与先进模型比较" class="headerlink" title="3.1 与先进模型比较"></a>3.1 与先进模型比较</h3><img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250314140802625.png" class="" title="image-20250314140802625">
+
+<p>本实验部分评估了 Qwen2.5-VL 在多个数据集上的表现，并将其与当前最先进（SoTA）模型进行比较，包括 <strong>Claude-3.5-Sonnet-0620</strong>（Anthropic, 2024a）、<strong>GPT-4o-0513</strong>（OpenAI, 2024）、<strong>InternVL2.5</strong>（Chen et al., 2024d），以及不同规模的 <strong>Qwen2-VL</strong>（Wang et al., 2024e）。</p>
+<p>**大学水平任务：**在大学水平的问题上，<strong>Qwen2.5-VL-72B</strong> 在 <strong>MMMU</strong>（Yue et al., 2023）上取得了 <strong>70.2</strong> 分。<br> 在更高难度的 <strong>MMMU-Pro</strong>（Yue et al., 2024）上，该模型得分 <strong>51.1</strong>，超越了此前的开源 SoTA 模型，并达到了 <strong>接近 GPT-4o 的性能</strong>。</p>
+<p><strong>数学相关任务：</strong></p>
+<ul>
+<li>在 <strong>MathVista</strong>（Lu et al., 2024）上，Qwen2.5-VL-72B <strong>得分 74.8</strong>，超越了此前开源 SoTA 记录（72.3）。</li>
+<li>在 <strong>MATH-Vision</strong>（Wang et al., 2024d）上，该模型 <strong>得分 38.1</strong>。</li>
+<li>在 <strong>MathVerse</strong>（Zhang et al., 2024c）上，Qwen2.5-VL-72B <strong>得分 57.6</strong>，表现与其他领先模型具有竞争力。</li>
+</ul>
+<p><strong>通用视觉问答（VQA）任务：</strong></p>
+<ul>
+<li>在 <strong>MMBench-EN</strong>（Liu et al., 2023d）上，该模型 <strong>得分 88.6</strong>，略微超越了此前最高分 <strong>88.3</strong>。</li>
+<li>在 <strong>MuirBench</strong>（Wang et al., 2024a）上 <strong>得分 70.7</strong>，在 <strong>BLINK</strong>（Fu et al., 2024c）上 <strong>得分 64.4</strong>，均表现优异。</li>
+<li>在多语言视觉问答任务 <strong>MTVQA</strong>（Tang et al., 2024）中，Qwen2.5-VL-72B <strong>得分 31.7</strong>，展现出强大的多语言文本识别能力。</li>
+<li>在主观评测任务中：<ul>
+<li><strong>MMVet</strong>（Yu et al., 2024）上得分 <strong>76.2</strong></li>
+<li><strong>MM-MT-Bench</strong>（Agrawal et al., 2024）上得分 <strong>7.6</strong><br> 这表明 Qwen2.5-VL-72B 在<strong>自然对话体验和用户满意度</strong>方面表现出色。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-2-纯文本任务的表现"><a href="#3-2-纯文本任务的表现" class="headerlink" title="3.2 纯文本任务的表现"></a>3.2 纯文本任务的表现</h3><p>为了全面评估指令微调模型在 <strong>纯文本任务</strong> 上的表现，我们选取了多个具有代表性的基准测试（详见 <strong>表 4</strong>），涵盖以下领域：</p>
+<ul>
+<li><strong>通用任务</strong>（Wang et al., 2024j; Gema et al., 2024; White et al., 2024）</li>
+<li><strong>数学与科学任务</strong>（Rein et al., 2023; Hendrycks et al., 2021; Cobbe et al., 2021）</li>
+<li><strong>编程任务</strong>（Chen et al., 2021; Cassano et al., 2023）</li>
+<li><strong>对齐任务</strong>（Zhou et al., 2023）</li>
+</ul>
+<p>我们将 <strong>Qwen2.5-VL</strong> 与 <strong>多种同规模的大型语言模型（LLMs）</strong> 进行了对比。结果表明，<strong>Qwen2.5-VL 不仅在多模态任务上达到了最先进（SoTA）水平，同时在纯文本任务上也展现出了领先的性能</strong>，证明了其在<strong>多种评测标准下的多功能性和稳健性</strong>。</p>
+<img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250314142212215.png" class="" title="image-20250314142212215">
+
+<hr>
+<h3 id="3-3-定量结果"><a href="#3-3-定量结果" class="headerlink" title="3.3 定量结果"></a>3.3 定量结果</h3><h4 id="3-3-1-通用视觉问答（VQA）"><a href="#3-3-1-通用视觉问答（VQA）" class="headerlink" title="3.3.1 通用视觉问答（VQA）"></a>3.3.1 通用视觉问答（VQA）</h4><p>为了全面评估模型在 <strong>通用视觉问答（VQA）</strong> 和 <strong>对话</strong> 方面的能力，我们在多个 <strong>多样化数据集</strong> 上进行了广泛实验。<strong>如表 3 所示</strong>，Qwen2.5-VL 在 <strong>VQA 任务、主观评测、多语言场景和多图像问题</strong> 上均展现出 <strong>最先进（SoTA）</strong> 的表现。</p>
+<p>具体而言，该模型在以下 <strong>基准数据集</strong> 上表现卓越：</p>
+<ul>
+<li><strong>MMBench 系列</strong>（Liu et al., 2023d）</li>
+<li><strong>MMStar</strong>（Chen et al., 2024c）</li>
+<li><strong>MME</strong>（Fu et al., 2023）</li>
+<li><strong>MuirBench</strong>（Wang et al., 2024a）</li>
+<li><strong>BLINK</strong>（Fu et al., 2024c）</li>
+<li><strong>CRPE</strong>（Wang et al., 2024h）</li>
+<li><strong>HallBench</strong>（Guan et al., 2023）</li>
+<li><strong>MTVQA</strong>（Tang et al., 2024）</li>
+<li><strong>MME-RealWorld</strong>（Zhang et al., 2024f）</li>
+<li><strong>MMVet</strong>（Yu et al., 2024）</li>
+<li><strong>MM-MT-Bench</strong>（Agrawal et al., 2024）</li>
+</ul>
+<p><strong>视觉细节理解与推理能力：</strong></p>
+<ul>
+<li>在 <strong>MMBench-EN-V1.1</strong> 数据集上，<strong>Qwen2.5-VL-72B</strong> 取得 <strong>88.4%</strong> 的准确率，超越了 <strong>InternVL2.5（78B）</strong> 和 <strong>Claude-3.5 Sonnet-0620</strong> 等 <strong>最先进模型</strong>。</li>
+<li>在 <strong>MMStar</strong> 数据集上，Qwen2.5-VL 得分 <strong>70.8%</strong>，领先于其他主流模型。</li>
+</ul>
+<p>这些结果表明，<strong>Qwen2.5-VL 具有强大的适应性，能够在多种语言环境下保持高性能</strong>。</p>
+<p><strong>高分辨率真实场景适应能力：</strong></p>
+<ul>
+<li>在 <strong>MME-RealWorld</strong> 基准测试中，Qwen2.5-VL 取得 <strong>63.2</strong> 分，展现出<strong>卓越的现实环境适应能力</strong>。</li>
+<li>在 <strong>MuirBench</strong> 数据集中，该模型在 <strong>多图像理解任务</strong> 上得分 <strong>70.7</strong>，进一步证明其 <strong>优越的泛化能力</strong>。</li>
+</ul>
+<p>综合来看，这些结果表明，Qwen2.5-VL 在 <strong>通用视觉问答（VQA）任务</strong> 中 <strong>表现出极强的多功能性和高效性</strong>。</p>
+<p><strong>小规模模型的竞争力：</strong></p>
+<p>值得注意的是，即使是<strong>较小规模</strong> 的 <strong>Qwen2.5-VL-7B</strong> 和 <strong>Qwen2.5-VL-3B</strong> 也表现出 <strong>极具竞争力的性能</strong>：</p>
+<ul>
+<li><strong>Qwen2.5-VL-7B</strong> 在 <strong>MMStar</strong> 数据集上取得 <strong>63.9%</strong> 的得分。</li>
+<li><strong>Qwen2.5-VL-3B</strong> 在 <strong>MMStar</strong> 数据集上得分 <strong>55.9%</strong>。</li>
+</ul>
+<p>这表明 <strong>Qwen2.5-VL 的架构不仅强大，而且具有良好的可扩展性，在减少参数的情况下依然能保持出色性能</strong>。</p>
+<h4 id="3-3-2-文档理解与-OCR"><a href="#3-3-2-文档理解与-OCR" class="headerlink" title="3.3.2 文档理解与 OCR"></a>3.3.2 文档理解与 OCR</h4><p>我们在 <strong>OCR、图表和文档理解</strong> 相关的多个基准数据集上评估了 Qwen2.5-VL 模型的性能。<strong>表 5</strong> 展示了 Qwen2.5-VL 各版本与最先进（SoTA）模型在以下 <strong>OCR 相关基准</strong> 上的对比：</p>
+<ul>
+<li><strong>AI2D</strong>（Kembhavi et al., 2016）</li>
+<li><strong>TextVQA</strong>（Singh et al., 2019）</li>
+<li><strong>DocVQA</strong>（Mathew et al., 2021b）</li>
+<li><strong>InfoVQA</strong>（Mathew et al., 2021a）</li>
+<li><strong>ChartQA</strong>（Masry et al., 2022）</li>
+<li><strong>CharXiv</strong>（Wang et al., 2024k）</li>
+<li><strong>SEED-Bench-2-Plus</strong>（Li et al., 2024b）</li>
+<li><strong>OCRBench</strong>（Liu et al., 2023e）</li>
+<li><strong>OCRBench_v2</strong>（Fu et al., 2024b）</li>
+<li><strong>CC-OCR</strong>（Yang et al., 2024b）</li>
+<li><strong>OmniDocBench</strong>（Ouyang et al., 2024）</li>
+<li><strong>VCR</strong>（Zhang et al., 2024e）</li>
+</ul>
+<p><strong>OCR 解析任务：</strong></p>
+<p>对于 <strong>多场景、多语言以及不同类型文档（如手写文本、表格、图表、化学公式、数学表达式）</strong> 的 OCR 解析任务，Qwen2.5-VL-72B <strong>在 CC-OCR 和 OmniDocBench 数据集上刷新了最先进记录（SoTA）</strong>。这一成果得益于<strong>精心挑选的训练数据</strong> 和 <strong>LLM 强大的文本解析能力</strong>。</p>
+<p><strong>OCR 相关理解任务：</strong></p>
+<p>在 <strong>场景文本、图表、示意图及文档理解</strong>相关的基准测试中，Qwen2.5-VL 取得了<strong>卓越的性能</strong>，展现出 <strong>出色的文档理解能力</strong>。</p>
+<ul>
+<li>在 <strong>综合 OCR 理解基准</strong>（如 OCRBench和InfoVQA）上，Qwen2.5-VL-72B取得了<strong>显著领先的成绩</strong>，远超 <strong>InternVL2.5-78B</strong> 等强劲对手。</li>
+<li>在<strong>涵盖图表、地图、网页等文本密集型场景</strong> 的 <strong>SEED-Bench-2-Plus</strong> 数据集中，Qwen2.5-VL-72B <strong>表现出色</strong>，进一步验证了其卓越的文档处理能力。</li>
+</ul>
+<p><strong>OCR 综合基准测试：</strong></p>
+<p>在 <strong>OCRBench_v2</strong> 这一涵盖 <strong>OCR 解析与理解</strong> 任务的综合基准上，Qwen2.5-VL <strong>同样实现了领先的性能</strong>。值得注意的是，相较于 <strong>Gemini 1.5-Pro</strong>，Qwen2.5-VL 在 <strong>英文 OCR 任务上提升了 9.6%</strong>，在 <strong>中文 OCR 任务上更是提升了 20.6%</strong>，大幅超越当前最先进模型。</p>
+<p>这些结果表明，Qwen2.5-VL <strong>在文档理解和 OCR 任务上达到了行业领先水平</strong>，具备强大的<strong>跨语言文档解析和文本理解能力</strong>。</p>
+<img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250314143316009.png" class="" title="image-20250314143316009">
+
+<h4 id="3-3-3-空间理解"><a href="#3-3-3-空间理解" class="headerlink" title="3.3.3 空间理解"></a><strong>3.3.3 空间理解</strong></h4><p>理解空间关系对于开发能够像人类一样 <strong>解释和交互世界</strong> 的 AI 模型至关重要。在<strong>大规模视觉-语言模型（LVLMs）</strong> 中，<strong>视觉定位（visual grounding）</strong> 使 AI 能够根据 <strong>自然语言查询或描述</strong>在图像中<strong>精确地定位和识别</strong>特定的 <strong>物体、区域或元素</strong>。这一能力超越了传统的目标检测，不仅能够检测物体，还能在 <strong>视觉内容与语言上下文之间建立语义关系</strong>，从而实现更<strong>细粒度和上下文感知的视觉推理</strong>。</p>
+<p>我们评估了 Qwen2.5-VL 在以下<strong>视觉定位基准</strong>上的表现：</p>
+<ul>
+<li><strong>指代表达理解基准（Referring Expression Comprehension）</strong>（Kazemzadeh et al., 2014; Mao et al., 2016）</li>
+<li><strong>自然环境中的目标检测（Object Detection in the Wild, ODinW）</strong>（Li et al., 2022b）</li>
+<li><strong>自构建的点定位基准（Point Grounding Benchmark）</strong></li>
+<li><strong>物体计数基准（CountBench）</strong>（Paiss et al., 2023）</li>
+</ul>
+<p>我们将 <strong>Qwen2.5-VL</strong> 的 <strong>视觉定位能力</strong>与其他先进的**大规模视觉-语言模型（LVLMs）**进行了比较，包括：</p>
+<ul>
+<li><strong>Gemini</strong></li>
+<li><strong>Grounding-DINO</strong>（Liu et al., 2023c）</li>
+<li><strong>Molmo</strong>（Deitke et al., 2024）</li>
+<li><strong>InternVL2.5</strong></li>
+</ul>
+<p><strong>领先的视觉定位能力：</strong></p>
+<p>Qwen2.5-VL 在 <strong>框定位（box-grounding）、点定位（point-grounding）和物体计数（counting）</strong> 任务上均取得 <strong>领先成绩</strong>。</p>
+<ul>
+<li><strong>双重定位能力（框+点）</strong><br> Qwen2.5-VL <strong>同时具备框定位和点定位能力</strong>，可以理解、定位并推理图像中特定部分的<strong>细节信息</strong>。</li>
+<li><strong>开放词汇目标检测（Open-Vocabulary Object Detection）</strong><br> 在 <strong>ODinW-13 数据集</strong> 上，Qwen2.5-VL 取得了 <strong>43.1 mAP</strong> 的优异成绩，<strong>超过了大多数 LVLMs</strong>，并<strong>迅速缩小了通用模型与专业模型之间的差距</strong>。</li>
+<li><strong>点定位能力突破</strong><br> 传统的 <strong>目标检测</strong> 主要依赖 <strong>边界框（bounding box）</strong>，但有些物体的 <strong>细节</strong> 很难用 <strong>矩形框表示</strong>。Qwen2.5-VL <strong>解锁了点定位能力</strong>，可以<strong>精准地定位</strong> 物体的<strong>特定细节</strong>，这一点在过去的检测方法中是 <strong>难以实现的</strong>。</li>
+<li><strong>强大的计数能力</strong><br> 在 <strong>CountBench</strong> 基准测试中，Qwen2.5-VL <strong>采用“先检测再计数”（detect then count）的提示方式</strong>，Qwen2.5-VL-72B <strong>取得了 93.6% 的领先准确率</strong>，展现了出色的 <strong>目标计数能力</strong>。</li>
+</ul>
+<h4 id="3-3-4-视频理解与定位"><a href="#3-3-4-视频理解与定位" class="headerlink" title="3.3.4 视频理解与定位"></a>3.3.4 视频理解与定位</h4><p>我们对Qwen2.5-VL模型在<strong>视频理解与定位</strong>任务上的表现进行了全面评估，采用的基准测试涵盖<strong>时长从数秒到数小时</strong>的视频。<strong>表 8</strong>展示了 <strong>Qwen2.5-VL 系列模型</strong>与<strong>顶级商业模型</strong>在以下<strong>视频基准测试</strong>上的性能对比：</p>
+<ul>
+<li><strong>Video-MME</strong>（Fu et al., 2024a）</li>
+<li><strong>Video-MMMU</strong>（Hu et al., 2025）</li>
+<li><strong>MMVU</strong>（Zhao et al., 2025）</li>
+<li><strong>MVBench</strong>（Li et al., 2024d）</li>
+<li><strong>MMBench-Video</strong>（Fang et al., 2024）</li>
+<li><strong>LongVideoBench</strong>（Wu et al., 2024a）</li>
+<li><strong>EgoSchema</strong>（Mangalam et al., 2023）</li>
+<li><strong>PerceptionTest</strong>（Patraucean et al., 2024）</li>
+<li><strong>MLVU</strong>（Zhou et al., 2024）</li>
+<li><strong>LVBench</strong>（Wang et al., 2024g）</li>
+<li><strong>TempCompass</strong>（Liu et al., 2024c）</li>
+<li><strong>Charades-STA</strong>（Gao et al., 2017）</li>
+</ul>
+<img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250314144415902.png" class="" title="image-20250314144415902">
+
+<p><strong>领先的长视频理解能力：</strong></p>
+<p>在评估<strong>长视频理解</strong>的LVBench和MLVU基准测试中，Qwen2.5-VL-72B <strong>显著超越 GPT-4o</strong>，表现出<strong>卓越的长时视频推理和问答能力</strong>。</p>
+<p><strong>时间敏感视频理解的突破：</strong></p>
+<p>Qwen2.5-VL 采用 <strong>同步MRoPE（Synchronized MRoPE）</strong> 技术，增强了模型在<strong>时间敏感视频理解</strong>方面的能力，包括：</p>
+<ul>
+<li><strong>时间戳引用（timestamp referencing）</strong></li>
+<li><strong>时间定位（temporal grounding）</strong></li>
+<li><strong>密集字幕生成（dense captioning）</strong></li>
+<li><strong>其他视频推理功能</strong></li>
+</ul>
+<p><strong>精准的视频事件定位能力：</strong></p>
+<p>在 <strong>Charades-STA 数据集</strong>（用于评估 AI <strong>准确定位视频中的事件或活动</strong>的能力）上，Qwen2.5-VL-72B 取得了 <strong>50.9 mIoU</strong> 的优秀成绩，<strong>超越 GPT-4o</strong>。</p>
+<p><strong>视频处理限制：</strong></p>
+<p>在所有基准测试中，我们限制 <strong>每个视频的最大分析帧数为768</strong>，并确保<strong>视频 token总数不超过 24,576</strong>，以保证高效计算。</p>
+<img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250314144806604.png" class="" title="image-20250314144806604">
+
+<h4 id="3-3-5-智能体（Agent）"><a href="#3-3-5-智能体（Agent）" class="headerlink" title="3.3.5 智能体（Agent）"></a>3.3.5 智能体（Agent）</h4><p>多模态模型的 <strong>智能体能力</strong>（Agent Capabilities）至关重要，它使模型能够 <strong>有效地与现实世界设备交互</strong>。我们从多个方面评估了 <strong>Qwen2.5-VL 的智能体能力</strong>。</p>
+<p><strong>GUI 元素定位能力评估</strong></p>
+<ul>
+<li><strong>ScreenSpot（Cheng et al., 2024）</strong></li>
+<li><strong>ScreenSpot Pro（Li et al., 2025a）</strong></li>
+</ul>
+<p><strong>离线评估（Offline Evaluation）</strong></p>
+<ul>
+<li><strong>Android Control（Li et al., 2024f）</strong></li>
+</ul>
+<p><strong>在线评估（Online Evaluation）</strong></p>
+<ul>
+<li><strong>AndroidWorld（Rawles et al., 2024）</strong></li>
+<li><strong>MobileMiniWob++（Rawles et al., 2024）</strong></li>
+<li><strong>OSWorld（Xie et al., 2025）</strong></li>
+</ul>
+<p><strong>模型对比</strong></p>
+<p>我们将 <strong>Qwen2.5-VL-72B</strong> 与 <strong>其他顶级模型</strong> 进行了对比，包括：</p>
+<ul>
+<li><strong>GPT-4o（OpenAI, 2024）</strong></li>
+<li><strong>Gemini 2.0（Deepmind, 2024）</strong></li>
+<li><strong>Claude（Anthropic, 2024b）</strong></li>
+<li><strong>Aguvis-72B（Xu et al., 2024）</strong></li>
+<li><strong>Qwen2-VL-72B（Wang et al., 2024e）</strong></li>
+</ul>
+<p>评估结果见<strong>表 9</strong>。</p>
+<p><strong>Qwen2.5-VL-72B 在 GUI 定位基准测试中的卓越表现</strong></p>
+<ul>
+<li>在 <strong>ScreenSpot 基准测试</strong> 中，Qwen2.5-VL-72B <strong>达到了 87.1% 的准确率</strong>，显著领先 <strong>Gemini 2.0（84.0%）和 Claude（83.0%）</strong>。</li>
+<li>在 <strong>ScreenSpot Pro 基准测试</strong> 中，Qwen2.5-VL-72B <strong>达到了 43.6% 的准确率</strong>，<strong>远超</strong> Aguvis-72B（23.6%）和其前代 Qwen2-VL-72B（1.6%）。</li>
+</ul>
+<p>这些出色的 <strong>GUI 元素定位能力</strong> 使得 <strong>Qwen2.5-VL-72B</strong> 在 <strong>所有离线评估任务</strong> 中都 <strong>大幅领先</strong> 其他基线模型。</p>
+<p><strong>在线评估中的出色表现：</strong></p>
+<p>在 <strong>AndroidWorld 和 MobileMiniWob++</strong> 任务中，<strong>部分基线模型</strong> 由于 <strong>有限的 GUI 定位能力</strong>，难以完成任务。因此，我们采用 <strong>Set-of-Mark（SoM）</strong> 方法为这些模型提供辅助标记输入。</p>
+<p><strong>主要发现：</strong></p>
+<ul>
+<li><strong>Qwen2.5-VL-72B 在 AndroidWorld 和 MobileMiniWob++ 任务中显著超越基线模型</strong>。</li>
+<li><strong>在 OSWorld 任务中，即使不借助辅助标记，Qwen2.5-VL-72B 也能达到与基线模型相当的性能</strong>。</li>
+</ul>
+<p>这一结果表明：<br>  <strong>Qwen2.5-VL-72B 具备强大的环境适应能力</strong>，可以在<strong>真实且动态的环境</strong>中作为<strong>智能体（Agent）执行任务</strong>，无需额外辅助信息。</p>
+<img src="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/image-20250314155533200.png" class="" title="image-20250314155533200">
+
+<hr>
+<h2 id="4-结论"><a href="#4-结论" class="headerlink" title="4 结论"></a>4 结论</h2><p>我们推出了 <strong>Qwen2.5-VL</strong>，这是一款 <strong>最先进的视觉-语言（Vision-Language）模型系列</strong>，在 <strong>多模态理解和交互方面</strong> 取得了 <strong>重大突破</strong>。</p>
+<p>Qwen2.5-VL 具备 <strong>增强的视觉识别、目标定位、文档解析以及长视频理解能力</strong>，能够在 <strong>静态与动态任务</strong> 中均表现出色。</p>
+<p><strong>核心技术创新</strong></p>
+<p>✅ <strong>原生动态分辨率处理（Dynamic-Resolution Processing）</strong> 和 <strong>绝对时间编码（Absolute Time Encoding）</strong>，确保对多种输入类型的稳健处理。<br> ✅ <strong>Window Attention 机制</strong>，在 <strong>降低计算成本</strong> 的同时，仍 <strong>保持高分辨率的精准解析</strong>。</p>
+<p><strong>广泛的应用场景</strong></p>
+<p>Qwen2.5-VL 适用于 <strong>从边缘 AI 设备到高性能计算（HPC）等多种场景</strong>。</p>
+<ul>
+<li><strong>旗舰模型 Qwen2.5-VL-72B</strong>：<br> 📌 <strong>在文档和图表理解任务上匹敌甚至超越</strong> <strong>GPT-4o 和 Claude 3.5 Sonnet</strong>。<br> 📌 在 <strong>纯文本任务上仍保持强劲性能</strong>。</li>
+<li><strong>小型模型 Qwen2.5-VL-7B 和 Qwen2.5-VL-3B</strong>：<br> 📌 在相同规模的竞争对手中表现更优，兼顾 <strong>高效性与多功能性</strong>。</li>
+</ul>
+<p><strong>设立新标杆，推动智能交互</strong></p>
+<p>Qwen2.5-VL <strong>重新定义了视觉-语言模型的行业基准</strong>，在 <strong>泛化能力</strong> 和<strong>任务执行能力</strong>上均表现卓越。其 <strong>创新突破</strong>为<strong>更智能、更具交互性的 AI 系统</strong>奠定了基础，进一步<strong>拉近AI感知能力与真实世界应用之间的距离</strong>。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="Vit"><a href="#Vit" class="headerlink" title="Vit"></a>Vit</h3><p><strong>Vision Transformer (ViT) 是具体算法还是一类算法？</strong></p>
+<p>简单来说，<strong>Vision Transformer（ViT）</strong> 是 <strong>一种具体的算法</strong>，但它也代表了一类<strong>基于 Transformer 结构的视觉处理方法</strong>。</p>
+<h4 id="ViT是什么？"><a href="#ViT是什么？" class="headerlink" title="ViT是什么？"></a><strong>ViT是什么？</strong></h4><p>ViT 是 <strong>一种用于处理图像的深度学习模型</strong>，它由 Google 在 2020 年提出（论文 “<a href="https://arxiv.org/abs/2010.11929">An Image is Worth 16x16 Words</a>“）。<br>它的核心思想是：<strong>用 Transformer 代替 CNN 进行图像处理</strong>，从而带来更强的全局信息建模能力。</p>
+<blockquote>
+<p><strong>类比</strong>：<br>传统的 CNN（卷积神经网络）就像<strong>看局部细节</strong>，一块一块地分析图片，而 ViT 更像<strong>从整体来看图</strong>，一次性理解整个画面。</p>
+</blockquote>
+<h4 id="ViT-的核心原理"><a href="#ViT-的核心原理" class="headerlink" title="ViT 的核心原理"></a><strong>ViT 的核心原理</strong></h4><p>ViT 其实借鉴了 NLP（自然语言处理）中的 Transformer 结构，但对图像数据做了一些特别的处理：</p>
+<ol>
+<li><strong>把图片切成小块（Patch Embedding）</strong><ul>
+<li>假设输入图片是 <strong>256×256 像素</strong>，ViT 会把它<strong>切割成多个 16×16 小块</strong>，然后把这些小块转换成向量。</li>
+<li><strong>类比</strong>：就像把一张照片分成多个拼图块。</li>
+</ul>
+</li>
+<li><strong>用 Transformer 处理这些小块</strong><ul>
+<li>这些小块的向量会输入 Transformer，经过**自注意力（Self-Attention）**机制计算它们之间的关系。</li>
+<li><strong>类比</strong>：就像在阅读一段文章时，每个词都可以和其他词有联系，ViT 也能理解每个图像块与其他块的关系。</li>
+</ul>
+</li>
+<li><strong>最后做分类或其他任务</strong><ul>
+<li>经过 Transformer 处理后，ViT 会输出一个结果，比如“这张图片里有一只猫”或者“这是某个人的照片”。</li>
+</ul>
+</li>
+</ol>
+<h4 id="ViT-和-CNN（传统卷积神经网络）的对比"><a href="#ViT-和-CNN（传统卷积神经网络）的对比" class="headerlink" title="ViT 和 CNN（传统卷积神经网络）的对比"></a><strong>ViT 和 CNN（传统卷积神经网络）的对比</strong></h4><table>
+<thead>
+<tr>
+<th><strong>对比项</strong></th>
+<th><strong>CNN（卷积神经网络）</strong></th>
+<th><strong>ViT（视觉 Transformer）</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>处理方式</strong></td>
+<td>逐层卷积提取局部特征</td>
+<td>直接学习全局关系</td>
+</tr>
+<tr>
+<td><strong>适合的任务</strong></td>
+<td>小数据量、标准视觉任务</td>
+<td>大数据量、复杂视觉任务</td>
+</tr>
+<tr>
+<td><strong>计算量</strong></td>
+<td>较小，训练快</td>
+<td>计算量大，需要更强硬件</td>
+</tr>
+<tr>
+<td><strong>依赖数据量</strong></td>
+<td>小数据也能训练得不错</td>
+<td>需要大量数据（如 ImageNet）</td>
+</tr>
+</tbody></table>
+<p><strong>总结</strong>：</p>
+<ul>
+<li>CNN 适合<strong>小数据集</strong>，比如检测人脸、识别车牌等。</li>
+<li>ViT 更适合<strong>大规模数据</strong>，比如理解复杂图片、自动驾驶等。</li>
+</ul>
+<h4 id="ViT-只是一种算法，还是一类算法？"><a href="#ViT-只是一种算法，还是一类算法？" class="headerlink" title="ViT 只是一种算法，还是一类算法？"></a><strong>ViT 只是一种算法，还是一类算法？</strong></h4><p>ViT 本身是<strong>一个具体的算法</strong>，但由于它的成功，现在很多变种都基于 ViT 改进，比如：</p>
+<ul>
+<li><strong>DeiT</strong>（Data-efficient ViT）：优化数据使用，减少训练需求</li>
+<li><strong>Swin Transformer</strong>：增加层次结构，提高性能</li>
+<li><strong>BEiT</strong>（BERT for images）：借鉴 NLP 预训练方法，提高效果</li>
+</ul>
+<p>因此，ViT <strong>既是一种具体的算法，也可以看作是 Transformer 视觉模型的代表</strong>。</p>
+<h4 id="适合小白的总结"><a href="#适合小白的总结" class="headerlink" title="适合小白的总结"></a><strong>适合小白的总结</strong></h4><ul>
+<li>ViT 是用 Transformer 来分析图像的模型，相比 CNN 能更好地理解全局信息。</li>
+<li>但是它需要<strong>大量数据和计算资源</strong>，所以一般用于大规模视觉任务。</li>
+<li>ViT 本身是<strong>一个具体的算法</strong>，但它的思想已经影响了一大类<strong>基于 Transformer 的视觉算法</strong>。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>theory</category>
+      </categories>
+      <tags>
+        <tag>LLM</tag>
+        <tag>Qwen2.5</tag>
+        <tag>Qwen2.5 VL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>TTS之Spark-TTS介绍与使用</title>
+    <url>/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>近日（2025-3-7），香港科技大学、出门问问、西北工业大学、上海交通大学、南洋理工大学等研究机构，重磅推出新一代语音生成模型 Spark-TTS。该模型完全基于Qwen2.5架构，摒弃额外生成模型辅助，以单阶段、单流方式实现 TTS 生成，具备超自然的语音克隆与跨语种生成能力，还支持用户根据需求定制专属声音。目前，Spark-TTS已经在开源社区SparkAudio发布，迅速登上Hugging Face趋势榜TTS第二，目前仍在持续攀升中。</p>
+<p>**论文题目：**Spark-TTS: An Efficient LLM-Based Text-to-Speech Model with Single-Stream Decoupled Speech Tokens</p>
+<p>**论文链接：**<a href="https://arxiv.org/pdf/2503.01710">https://arxiv.org/pdf/2503.01710</a></p>
+<p>**样例展示：**<a href="https://sparkaudio.github.io/spark-tts/">https://sparkaudio.github.io/spark-tts/</a></p>
+<p>**项目地址：**<a href="https://github.com/SparkAudio/Spark-TTS">https://github.com/SparkAudio/Spark-TTS</a></p>
+<p>**模型地址：**<a href="https://huggingface.co/SparkAudio/Spark-TTS-0.5B">https://huggingface.co/SparkAudio/Spark-TTS-0.5B</a></p>
+<p>**试用地址：**<a href="https://huggingface.co/spaces/Mobvoi/Offical-Spark-TTS">https://huggingface.co/spaces/Mobvoi/Offical-Spark-TTS</a></p>
+<span id="more"></span>
+
+<hr>
+<h2 id="Ubuntu环境安装"><a href="#Ubuntu环境安装" class="headerlink" title="Ubuntu环境安装"></a>Ubuntu环境安装</h2><h3 id="克隆仓库"><a href="#克隆仓库" class="headerlink" title="克隆仓库"></a>克隆仓库</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/SparkAudio/Spark-TTS.git</span><br><span class="line"><span class="built_in">cd</span> Spark-TTS</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建conda虚拟环境及环境配置"><a href="#创建conda虚拟环境及环境配置" class="headerlink" title="创建conda虚拟环境及环境配置"></a>创建conda虚拟环境及环境配置</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">conda create -n sparktts -y python=3.12</span><br><span class="line">conda activate sparktts</span><br><span class="line">pip install -r requirements.txt</span><br><span class="line"><span class="comment"># If you are in mainland China, you can set the mirror as follows:</span></span><br><span class="line">pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/ --trusted-host=mirrors.aliyun.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="下载模型"><a href="#下载模型" class="headerlink" title="下载模型"></a>下载模型</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p pretrained_models</span><br><span class="line"></span><br><span class="line"><span class="comment"># Make sure you have git-lfs installed (https://git-lfs.com)</span></span><br><span class="line">git lfs install</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> https://huggingface.co/SparkAudio/Spark-TTS-0.5B pretrained_models/Spark-TTS-0.5B</span><br></pre></td></tr></table></figure>
+
+<h3 id="WebUI启动"><a href="#WebUI启动" class="headerlink" title="WebUI启动"></a>WebUI启动</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python webui.py --device 0</span><br></pre></td></tr></table></figure>
+
+<p>然后本机浏览器打开<code>localhost:7860</code>或<code>127.0.0.1:7860</code>，得到下面页面：<img src="/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250308142628932.png" class="" title="image-20250308142628932"></p>
+<p>其中：</p>
+<ol>
+<li><p>选择prompt音频文件，确保采样率不低于16kHz</p>
+</li>
+<li><p>对应prompt音频文件的文本，可选，<strong>建议克隆相同语种</strong></p>
+<blockquote>
+<p>根据GPT-Sovits的经验，能写上还是要写上，且跨语种大概率会有口音</p>
+</blockquote>
+</li>
+<li><p>需要合成的文本</p>
+</li>
+<li><p>点击<code>Generate</code>就可以了</p>
+</li>
+</ol>
+<hr>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>这里初步体验了一下，发现速度比GSV要慢的多，且合成的语音会有吞字，但克隆的音色挺像的（感觉比GSV像），社区说通过vLLM部署会极大提速，后面有空再细致试试吧。</p>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://mp.weixin.qq.com/s/iHU4ZqwIzMY1YGgHFfhOCw">https://mp.weixin.qq.com/s/iHU4ZqwIzMY1YGgHFfhOCw</a></li>
+<li><a href="https://github.com/SparkAudio/Spark-TTS?tab=readme-ov-file">https://github.com/SparkAudio/Spark-TTS?tab=readme-ov-file</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>TTS</tag>
+        <tag>Spark-TTS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>TTS之fish-speech</title>
+    <url>/2025/03/15/TTS%E4%B9%8Bfish-speech/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>**碎碎念：**之前一直使用的是GSV（GPT-Sovits） V2版本，主要是因为它能满足我的基本需求（速度快，模仿情绪的能力，而且有音色融合的功能，但0样本克隆的效果也就那样吧，真想音色像得微调），可是呢，之前没正经使用过音色融合的功能，昨天试了下，发现webui版本的音色融合是以右侧的参考音频（音色融合音频）为准（音色融合音频只放一个的情况下，放多个将会将多个音频的音色进行融合，无论放一个还是放多个，音色都与左侧的参考音频的音色无关，但是呢，我做实验的时候都是用webui进行的实验，再转移到api_v2上进行使用，当我实验好，转移到api_v2上发现，api_v2的效果与webui的不一样，api_v2会将左侧的参考音频的音色融合起来，我觉得这是个bug，待会提下issue吧）。所以，还是得多玩玩其他家的TTS，以备不时之需，看了下fish-speech和F5-TTS的github首页，决定先宠幸fish-speech😏。</p>
+<p>**项目地址：**<a href="https://github.com/fishaudio/fish-speech">https://github.com/fishaudio/fish-speech</a></p>
+<p>**在线Demo：**<a href="https://fish.audio/zh-CN/">https://fish.audio/zh-CN/</a></p>
+<p>**文档：**<a href="https://speech.fish.audio/">https://speech.fish.audio/</a></p>
+<p><strong>快速开始本地推理：<a href="https://github.com/fishaudio/fish-speech/blob/main/inference.ipynb">https://github.com/fishaudio/fish-speech/blob/main/inference.ipynb</a></strong></p>
+<span id="more"></span>
+
+<hr>
+<h2 id="特征"><a href="#特征" class="headerlink" title="特征"></a>特征</h2><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://speech.fish.audio/">https://speech.fish.audio/</a></li>
+<li><a href="https://github.com/fishaudio/fish-speech">https://github.com/fishaudio/fish-speech</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>TTS</tag>
+        <tag>fish-speech</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>cam+++senseVoice+Qwen2.5构建微服务</title>
+    <url>/2025/03/04/cam-senseVoice-Qwen2-5%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>该系列&#x2F;前置步骤包含：</p>
+<ol>
+<li><a href="https://caihaoran-00.github.io/2025/02/05/fastapi-request%E6%9E%84%E5%BB%BA%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1/">fastapi+request构建语音识别微服务</a></li>
+<li><a href="https://caihaoran-00.github.io/2025/02/07/silerovadonnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/">silero vad onnx方式使用示例</a></li>
+<li><a href="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/">说话人确认之CAM++</a></li>
+<li><a href="https://caihaoran-00.github.io/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/">cam++ senseVoice构建微服务</a></li>
+</ol>
+<p>目前已经实现了客户端只发送有声段到服务端，接下来就和LLM串起来，实现对话功能，总体流程：</p>
+<ol>
+<li><p>客户端确认服务端有无声纹注册文件，若有，则提示：声纹识别已开启，若无，则提示需录入声纹注册文件（需大于3 S），若录入失败（声纹注册文件小于3S），则循环提示需录入声纹注册文件</p>
+<img src="/2025/03/04/cam-senseVoice-Qwen2-5%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/image-20250304184032984.png" class="" title="image-20250304184032984">
+</li>
+<li><p>VAD是在客户端一直运行的，用于将有声段传向服务端，每次新开机后，首先进行声纹注册文件检查，声纹识别开启成功后，会有一次唤醒词识别（关键词唤醒），需注意，每句话都会先经过声纹识别，再进行语音识别（关键词谁都可以唤醒）：</p>
+</li>
+</ol>
+<img src="/2025/03/04/cam-senseVoice-Qwen2-5%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/%E7%AC%AC%E4%B8%80%E7%89%88toy%E5%9B%BE2.svg" class="" title="第一版toy图2">
+
+<p>3.聊天记录数据库，将ASR结果（用户聊天记录）和LLM结果（LLM的回复记录）保存到数据库中，以便保存。</p>
+<img src="/2025/03/04/cam-senseVoice-Qwen2-5%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/image-20250305174632243.png" class="" title="image-20250305174632243">
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>ASR</tag>
+        <tag>LLM</tag>
+        <tag>TTS</tag>
+        <tag>funasr</tag>
+        <tag>Qwen2.5</tag>
+        <tag>GSV</tag>
+        <tag>GPT-Sovits</tag>
+        <tag>silero vad</tag>
+        <tag>CAM++</tag>
+        <tag>senseVoice</tag>
+        <tag>VAD</tag>
+        <tag>fastapi</tag>
+        <tag>Speaker Verification</tag>
+        <tag>SV</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>cam+senseVoice构建微服务</title>
     <url>/2025/02/21/cam-senseVoice%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面分别介绍了<a href="https://caihaoran-00.github.io/2025/02/07/silerovadonnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/">silero_vad onnx方式使用示例</a>，<a href="https://caihaoran-00.github.io/2025/02/05/fastapi-request%E6%9E%84%E5%BB%BA%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1/">fastapi+request构建语音识别微服务</a>，<a href="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/">说话人确认之CAM++</a>，本文将实现三者的融合。客户端通过VAD识别有声段，识别到有一定长度的有声段就发送到服务端，服务端先判断是否有声纹注册文件，没有则要求三秒语音段进行声纹注册，有则直接进行CAM++说话人确认，通过说话人确认后再进行关键词识别，这里的关键词识别通过转化为拼音，再通过编辑距离确定相似性以提高识别的准确性，通过关键词识别（语音唤醒）后最后将进行语音识别。</p>
@@ -1195,11 +2382,11 @@
       </categories>
       <tags>
         <tag>funasr</tag>
+        <tag>CAM++</tag>
+        <tag>senseVoice</tag>
+        <tag>fastapi</tag>
         <tag>Speaker Verification</tag>
         <tag>SV</tag>
-        <tag>CAM++</tag>
-        <tag>fastapi</tag>
-        <tag>senseVoice</tag>
       </tags>
   </entry>
   <entry>
@@ -1411,27 +2598,9 @@
       </categories>
       <tags>
         <tag>funasr</tag>
-        <tag>fastapi</tag>
         <tag>senseVoice</tag>
+        <tag>fastapi</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2025/01/13/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
   </entry>
   <entry>
     <title>git常用命令</title>
@@ -1583,6 +2752,24 @@
       </tags>
   </entry>
   <entry>
+    <title>Hello World</title>
+    <url>/2025/01/13/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
     <title>Hexo主题配置及美化之Next</title>
     <url>/2025/01/14/hexo%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%E5%8F%8A%E7%BE%8E%E5%8C%96%E4%B9%8Bnext/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面介绍了Hexo + Github Pages环境的搭建和简单的走了一遍总体发布流程，本文介绍：</p>
@@ -1704,6 +2891,142 @@
       </tags>
   </entry>
   <entry>
+    <title>ja方案调研</title>
+    <url>/2025/03/17/ja%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近我们公司想与某上市公司合作的一个LLM应用的项目，本文记录下调研和思路历程，用作记录和分享。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在<strong>设备操作</strong>场景，一般情况下，操作员会按固定流程进行工具的操作，学员在刚接触工具使用时往往需要经历学习阶段，故需要<strong>有专业知识的指导员的指引和监督</strong>，随着deepseek的爆火，人们思考大语言模型在现实场景下的应用，那么这个场景怎么应用大语言模型来接替（或分担工作量）指导员的工作呢？</p>
+<h2 id="任务拆解"><a href="#任务拆解" class="headerlink" title="任务拆解"></a>任务拆解</h2><p>想要分担指导员的工作量，主要需要：</p>
+<ol>
+<li>硬：大脑、眼睛、耳朵、嘴巴</li>
+<li>软：专业知识</li>
+</ol>
+<p>其中：</p>
+<ol>
+<li>大脑+眼睛&#x3D;<strong>视觉大语言模型</strong></li>
+<li>嘴巴负责教学（输出大脑给出的结果，即<strong>TTS</strong>模块）</li>
+<li>耳朵负责听学员的问题（例如学员询问下一步该怎么作，即<strong>ASR</strong>模块）</li>
+</ol>
+<p>再细化，按实际<strong>使用场景</strong>来分类讨论具体实现方案：</p>
+<p>**场景1：**文字问答（语音问答也属于此类，此类与视觉无关）</p>
+<p>行业黑话（专有词汇）等专有知识的了解，</p>
+<p>解决方案：RAG or 微调</p>
+<p>建议：</p>
+<p>专有知识的更新频率不高-&gt;微调；</p>
+<p>专有知识的更新频率高-&gt;RAG；</p>
+<p>另外，微调的成本要比RAG的高。</p>
+<p>**场景2：**视觉问答</p>
+<p>此场景指学员操作到某一步时，询问接下来该怎么操作，此处按学员的实际描述情况进行分类：</p>
+<ol>
+<li><p>学员描述：我已经完成了…，…, …,接下来应该做什么</p>
+<p>这种情况可弱化为场景1的方式，无需视觉，将SOP（标准操作流程，Standard Operating Procedure）制作成RAG的向量数据库或直接将SOP作为prompt输入，或进行微调（将SOP置入大模型记忆）</p>
+</li>
+<li><p>学员描述：我接下来应该做什么？</p>
+<p>这种情况仅从学员描述是得不到上文信息的（不知道已经做了什么，现在处于什么阶段），那么就需要摄像头来捕捉这些信息：</p>
+<p>一种（思路）简单的解决方案：</p>
+<p>**使用方式1：**摄像头用作录像功能，学员问问题（我接下来应该怎么做）时，将视频和问题传入视觉语言大模型(VLM, Qwen2.5 VL为例)，视觉语言大模型基于已有知识（需微调）和视频理解能力（模型自身结构设计和微调）做出回答。</p>
+<p><strong>技术实现1（微调）：</strong></p>
+<p>上述使用方式，仅需对VLM进行微调，需要视频数据：</p>
+<ol>
+<li>正确操作的视频</li>
+<li>错误操作的视频</li>
+</ol>
+<p>使用上述两种视频进行标记，例（仅做说明）：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;video_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;video_001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;video_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/video_001.mp4&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0001&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0001.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师从冰箱中取出蔬菜。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0002&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0002.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师在水槽前清洗蔬菜。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0003&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0003.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师在砧板上切菜。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0004&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0004.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师将切好的蔬菜放入锅中。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0005&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0005.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师在炉灶上翻炒蔬菜。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0006&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0006.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师将烹饪好的菜肴装盘。&quot;</span><span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;qa_pairs&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;question&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师从冰箱中取出了什么？&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;answer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;蔬菜&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;relevant_frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;frame_0001&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;question&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师在做什么准备工作？&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;answer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;清洗和切割蔬菜&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;relevant_frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;frame_0002&quot;</span><span class="punctuation">,</span> <span class="string">&quot;frame_0003&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;question&quot;</span><span class="punctuation">:</span> <span class="string">&quot;蔬菜是如何烹饪的？&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;answer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;在锅中翻炒&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;relevant_frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;frame_0005&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;question&quot;</span><span class="punctuation">:</span> <span class="string">&quot;最终的菜肴是如何处理的？&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;answer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;装盘&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;relevant_frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;frame_0006&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>使用方式2（1的优化版本）：</strong></p>
+<p>首先科普下从视频输入+文本问题-&gt;文本结果的总过程：</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    A[视频输入] --&gt; B[动态帧采样]</span><br><span class="line">    B --&gt; C[视频帧预处理]</span><br><span class="line">    C --&gt; D[视觉编码器ViT]</span><br><span class="line">    D --&gt; E[单帧特征提取]</span><br><span class="line">    E --&gt; F[时空联合建模]</span><br><span class="line">    F --&gt; G[时间位置编码mRoPE]</span><br><span class="line">    G --&gt; H[特征序列压缩]</span><br><span class="line">    H --&gt; I[跨模态注意力融合]</span><br><span class="line">    I --&gt; J[语言模型LLM]</span><br><span class="line">    J --&gt; K&#123;任务特定输出&#125;</span><br><span class="line">    K --&gt; L1[视觉问答VQA]</span><br><span class="line">    K --&gt; L2[操作步骤检测]</span><br><span class="line">    K --&gt; L3[异常报警]</span><br></pre></td></tr></table></figure>
+
+<p><strong>流程说明：</strong></p>
+<ol>
+<li><strong>视频输入</strong>：摄像头实时画面或预录视频。</li>
+<li><strong>动态帧采样</strong>：根据动作复杂度动态选择关键帧（<strong>如快速动作高采样率，静态场景低采样率</strong>）。</li>
+<li><strong>（可选）视频帧预处理</strong>：数据增强（遮挡模拟、亮度调整）。</li>
+<li><strong>视觉编码器</strong>：使用ViT或CLIP-ViT提取单帧特征。</li>
+<li><strong>时空联合建模</strong>：通过时间注意力机制建模帧间关系。</li>
+<li><strong>时间位置编码</strong>：使用mRoPE将时间戳编码为旋转矩阵，注入视觉特征。</li>
+<li><strong>特征序列压缩</strong>：对长视频进行特征压缩（均值池化或可学习Token筛选）。</li>
+<li><strong>跨模态注意力融合</strong>：视觉特征与语言特征（问题文本）通过交叉注意力交互。</li>
+<li><strong>语言模型</strong>：生成任务相关输出（如VQA答案、操作步骤标签）。</li>
+<li><strong>任务特定输出</strong>：根据任务类型设计输出头（如VQA、步骤检测、异常报警）。</li>
+</ol>
+<p>可以看到，在第八步跨模态注意力融合时才需要问题文本（即学员的问题），那么可以<strong>实时获取关键帧</strong>（动态帧采样策略），理论上会比方式1快一些（快多少需实测）</p>
+<p>**场景3：**考试场景</p>
+<p>此场景表示摄像头对学员操作过程录像，考试结束后（学员离场），VLM去逐帧分析视频（动态帧采样），判断操作过程有无错误。</p>
+<p>方案：依旧是微调，方案同<strong>技术实现1</strong>。</p>
+<h2 id="评价指标"><a href="#评价指标" class="headerlink" title="评价指标"></a>评价指标</h2><p>评估方法：构建测试数据集，人工测试各场景下的准确率。</p>
+<h2 id="技术路线"><a href="#技术路线" class="headerlink" title="技术路线"></a>技术路线</h2><ol>
+<li>数据准备</li>
+<li>模型选择</li>
+<li>模型微调</li>
+<li>测试与优化</li>
+<li>部署与运维</li>
+</ol>
+<h2 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h2><p><strong>人力：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">场景1</th>
+<th align="center">场景2</th>
+<th align="center">场景3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">需求确认与数据收集标准</td>
+<td align="center">–</td>
+<td align="center">20 工作日</td>
+<td align="center">–</td>
+</tr>
+<tr>
+<td align="center">数据制作（根据具体工作量）</td>
+<td align="center">15工作日</td>
+<td align="center">20工作日</td>
+<td align="center">20工作日</td>
+</tr>
+<tr>
+<td align="center">开发（微调）</td>
+<td align="center">1个月</td>
+<td align="center">30工作日</td>
+<td align="center">30工作日</td>
+</tr>
+<tr>
+<td align="center">测试与优化</td>
+<td align="center">–</td>
+<td align="center">30工作日</td>
+<td align="center">–</td>
+</tr>
+</tbody></table>
+<p>硬件成本：</p>
+<table>
+<thead>
+<tr>
+<th>微调</th>
+<th>训练</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="为什么选我们"><a href="#为什么选我们" class="headerlink" title="为什么选我们"></a>为什么选我们</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文叙述了三个具体使用场景的基本方案，下一步将对微调数据集的具体策略进行设计，计划采用LoRA微调方式。</p>
+]]></content>
+      <categories>
+        <category>theory</category>
+      </categories>
+      <tags>
+        <tag>LLM</tag>
+        <tag>Qwen2.5 VL</tag>
+        <tag>fine-tune</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>silero_vad onnx方式使用示例</title>
     <url>/2025/02/07/silerovadonnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>语音活动检测（VAD, Voice Activity Detection）是语音处理中的重要技术，它用于检测音频流中是否存在语音信号。VAD 在语音识别、语音通信、语音增强等应用中起到了关键作用。例如，在语音助手、语音转写、降噪等任务中，VAD 可以帮助系统忽略无声片段，提高处理效率。</p>
@@ -1769,101 +3092,8 @@
         <category>code</category>
       </categories>
       <tags>
-        <tag>VAD</tag>
         <tag>silero vad</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Win10 hexo+GitHub Pages 0成本托管博客</title>
-    <url>/2025/01/13/win10Hex+githubpages0%E6%88%90%E6%9C%AC%E6%89%98%E7%AE%A1%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1.环境准备"></a>1.环境准备</h2><h3 id="1-安装Node-js和npm"><a href="#1-安装Node-js和npm" class="headerlink" title="1.安装Node.js和npm"></a>1.安装Node.js和npm</h3><ul>
-<li><p>下载并安装<a href="https://nodejs.org/zh-cn">Node.js</a>（自带npm工具）</p>
-</li>
-<li><p>安装完成后，验证是否成功：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure></li>
-</ul>
-<span id="more"></span>
-
-<h3 id="2-安装Git"><a href="#2-安装Git" class="headerlink" title="2.安装Git"></a>2.安装Git</h3><ul>
-<li><p>下载并安装Git</p>
-</li>
-<li><p>验证安装是否成功：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git --version</span><br></pre></td></tr></table></figure></li>
-</ul>
-<hr>
-<h2 id="2-初始化Hexo博客"><a href="#2-初始化Hexo博客" class="headerlink" title="2.初始化Hexo博客"></a>2.初始化Hexo博客</h2><h3 id="1-安装Hexo"><a href="#1-安装Hexo" class="headerlink" title="1.安装Hexo"></a>1.安装Hexo</h3><p>终端运行：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
-
-<p>安装Hexo，验证安装是否成功：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-创建Hexo项目"><a href="#2-创建Hexo项目" class="headerlink" title="2.创建Hexo项目"></a>2.创建Hexo项目</h3><p>在你想存放博客的目录下运行：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo init blog</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line"></span><br><span class="line">npm instal</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>blog是你的博客文件夹的名称，随意命名。</p>
-</blockquote>
-<h3 id="3-启动本地预览"><a href="#3-启动本地预览" class="headerlink" title="3.启动本地预览"></a>3.启动本地预览</h3><p>在blog目录下运行：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-
-<p>or</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-
-<p>打开浏览器，访问<code>http://localhost:4000</code>，即可看到默认的博客页面。</p>
-<hr>
-<h2 id="3-配置GitHub-Pages"><a href="#3-配置GitHub-Pages" class="headerlink" title="3.配置GitHub Pages"></a>3.配置GitHub Pages</h2><h3 id="1-创建GitHub仓库"><a href="#1-创建GitHub仓库" class="headerlink" title="1.创建GitHub仓库"></a>1.创建GitHub仓库</h3><ul>
-<li>登录你的GitHub，创建一个新仓库，命名为username.github.io(username替换为你的GitHub用户名)</li>
-<li>这个仓库名是固定格式，GitHub Pages会自动识别并托管网页。</li>
-</ul>
-<h3 id="2-安装Hexo部署插件"><a href="#2-安装Hexo部署插件" class="headerlink" title="2.安装Hexo部署插件"></a>2.安装Hexo部署插件</h3><p>在blog目录下运行：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-修改Hexo配置"><a href="#3-修改Hexo配置" class="headerlink" title="3.修改Hexo配置"></a>3.修改Hexo配置</h3><p>打开blog&#x2F;_config.yml文件，拉到最后的deploy配置部分，修改如下：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/username/username.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>repo填写你刚才创建的GitHub仓库地址</li>
-<li>如果你的仓库主分支是master，将branch改为master。</li>
-</ul>
-<h3 id="4-首次部署"><a href="#4-首次部署" class="headerlink" title="4.首次部署"></a>4.首次部署</h3><p>运行以下命令，将博客部署到GitHub Pages:</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>即可打开<code>https://username.github.io</code>查看你的博客。</p>
-<hr>
-<h2 id="4-自定义主题"><a href="#4-自定义主题" class="headerlink" title="4.自定义主题"></a>4.自定义主题</h2><h3 id="1-选择主题"><a href="#1-选择主题" class="headerlink" title="1.选择主题"></a>1.选择主题</h3><ul>
-<li><p>以<a href="https://github.com/litten/hexo-theme-yilia">hexo-theme-yilia</a>为例，在blog文件夹下运行：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>打开blog&#x2F;_config.yml文件，拉到倒数第二项的theme配置部分，修改如下：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">theme: <span class="title">yilia</span></span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>（可选）本地预览，运行</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>部署到GitHub Pages:</p>
-<ul>
-<li><p>如果运行了本地预览，仅需Ctrl + C 结束掉本地预览，再运行：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>若未运行本地预览，需运行：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="5-写博客和更新"><a href="#5-写博客和更新" class="headerlink" title="5.写博客和更新"></a>5.写博客和更新</h2><h3 id="1-新建文章"><a href="#1-新建文章" class="headerlink" title="1.新建文章"></a>1.新建文章</h3><p>在blog目录下运行：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo new &quot;你的文章标题&quot;</span><br></pre></td></tr></table></figure>
-
-<p>这会在<code>source/_posts</code> 文件夹下生成一个 <code>你的文章标题.md</code> 文件，你可以用任何文本编辑器编辑。</p>
-<h3 id="2-本地预览"><a href="#2-本地预览" class="headerlink" title="2.本地预览"></a>2.本地预览</h3><p>运行以下命令本地查看效果：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-发布更新到GitHub-Pages"><a href="#3-发布更新到GitHub-Pages" class="headerlink" title="3.发布更新到GitHub Pages"></a>3.发布更新到GitHub Pages</h3><p>每次修改或新增内容后运行：</p>
-<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
-      <categories>
-        <category>code</category>
-      </categories>
-      <tags>
-        <tag>Hexo</tag>
+        <tag>VAD</tag>
       </tags>
   </entry>
   <entry>
@@ -2205,6 +3435,99 @@
       </tags>
   </entry>
   <entry>
+    <title>Win10 hexo+GitHub Pages 0成本托管博客</title>
+    <url>/2025/01/13/win10Hex+githubpages0%E6%88%90%E6%9C%AC%E6%89%98%E7%AE%A1%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<h2 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1.环境准备"></a>1.环境准备</h2><h3 id="1-安装Node-js和npm"><a href="#1-安装Node-js和npm" class="headerlink" title="1.安装Node.js和npm"></a>1.安装Node.js和npm</h3><ul>
+<li><p>下载并安装<a href="https://nodejs.org/zh-cn">Node.js</a>（自带npm工具）</p>
+</li>
+<li><p>安装完成后，验证是否成功：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure></li>
+</ul>
+<span id="more"></span>
+
+<h3 id="2-安装Git"><a href="#2-安装Git" class="headerlink" title="2.安装Git"></a>2.安装Git</h3><ul>
+<li><p>下载并安装Git</p>
+</li>
+<li><p>验证安装是否成功：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git --version</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h2 id="2-初始化Hexo博客"><a href="#2-初始化Hexo博客" class="headerlink" title="2.初始化Hexo博客"></a>2.初始化Hexo博客</h2><h3 id="1-安装Hexo"><a href="#1-安装Hexo" class="headerlink" title="1.安装Hexo"></a>1.安装Hexo</h3><p>终端运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<p>安装Hexo，验证安装是否成功：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-创建Hexo项目"><a href="#2-创建Hexo项目" class="headerlink" title="2.创建Hexo项目"></a>2.创建Hexo项目</h3><p>在你想存放博客的目录下运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo init blog</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> blog</span><br><span class="line"></span><br><span class="line">npm instal</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>blog是你的博客文件夹的名称，随意命名。</p>
+</blockquote>
+<h3 id="3-启动本地预览"><a href="#3-启动本地预览" class="headerlink" title="3.启动本地预览"></a>3.启动本地预览</h3><p>在blog目录下运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>or</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+
+<p>打开浏览器，访问<code>http://localhost:4000</code>，即可看到默认的博客页面。</p>
+<hr>
+<h2 id="3-配置GitHub-Pages"><a href="#3-配置GitHub-Pages" class="headerlink" title="3.配置GitHub Pages"></a>3.配置GitHub Pages</h2><h3 id="1-创建GitHub仓库"><a href="#1-创建GitHub仓库" class="headerlink" title="1.创建GitHub仓库"></a>1.创建GitHub仓库</h3><ul>
+<li>登录你的GitHub，创建一个新仓库，命名为username.github.io(username替换为你的GitHub用户名)</li>
+<li>这个仓库名是固定格式，GitHub Pages会自动识别并托管网页。</li>
+</ul>
+<h3 id="2-安装Hexo部署插件"><a href="#2-安装Hexo部署插件" class="headerlink" title="2.安装Hexo部署插件"></a>2.安装Hexo部署插件</h3><p>在blog目录下运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-修改Hexo配置"><a href="#3-修改Hexo配置" class="headerlink" title="3.修改Hexo配置"></a>3.修改Hexo配置</h3><p>打开blog&#x2F;_config.yml文件，拉到最后的deploy配置部分，修改如下：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/username/username.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>repo填写你刚才创建的GitHub仓库地址</li>
+<li>如果你的仓库主分支是master，将branch改为master。</li>
+</ul>
+<h3 id="4-首次部署"><a href="#4-首次部署" class="headerlink" title="4.首次部署"></a>4.首次部署</h3><p>运行以下命令，将博客部署到GitHub Pages:</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>即可打开<code>https://username.github.io</code>查看你的博客。</p>
+<hr>
+<h2 id="4-自定义主题"><a href="#4-自定义主题" class="headerlink" title="4.自定义主题"></a>4.自定义主题</h2><h3 id="1-选择主题"><a href="#1-选择主题" class="headerlink" title="1.选择主题"></a>1.选择主题</h3><ul>
+<li><p>以<a href="https://github.com/litten/hexo-theme-yilia">hexo-theme-yilia</a>为例，在blog文件夹下运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开blog&#x2F;_config.yml文件，拉到倒数第二项的theme配置部分，修改如下：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line"><span class="function">theme: <span class="title">yilia</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>（可选）本地预览，运行</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>部署到GitHub Pages:</p>
+<ul>
+<li><p>如果运行了本地预览，仅需Ctrl + C 结束掉本地预览，再运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>若未运行本地预览，需运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="5-写博客和更新"><a href="#5-写博客和更新" class="headerlink" title="5.写博客和更新"></a>5.写博客和更新</h2><h3 id="1-新建文章"><a href="#1-新建文章" class="headerlink" title="1.新建文章"></a>1.新建文章</h3><p>在blog目录下运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo new &quot;你的文章标题&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这会在<code>source/_posts</code> 文件夹下生成一个 <code>你的文章标题.md</code> 文件，你可以用任何文本编辑器编辑。</p>
+<h3 id="2-本地预览"><a href="#2-本地预览" class="headerlink" title="2.本地预览"></a>2.本地预览</h3><p>运行以下命令本地查看效果：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-发布更新到GitHub-Pages"><a href="#3-发布更新到GitHub-Pages" class="headerlink" title="3.发布更新到GitHub Pages"></a>3.发布更新到GitHub Pages</h3><p>每次修改或新增内容后运行：</p>
+<figure class="highlight cmd"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>大模型应用开发之agent介绍</title>
     <url>/2025/02/10/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D/</url>
     <content><![CDATA[<h2 id="什么是Agent"><a href="#什么是Agent" class="headerlink" title="什么是Agent"></a>什么是Agent</h2><p>Agent（智能体，代理），是指一种能够模拟人类思考和行为来自动执行程序，以解决复杂问题的程序或系统。在大模型应用开发中，Agent是指能够感知环境、做出决策并执行动作的智能实体。通常基于大模型构建，具备自然语言处理、推理、规划等能力。Agent的核心目标是通过与环境的交互完成特定任务或解决复杂问题。OpenAI将AI Agent定义为“以大语言模型为大脑驱动的系统，具备<strong>自主理解</strong>、<strong>感受</strong>、<strong>规划</strong>、<strong>记忆</strong>和<strong>使用工具</strong>的能力，能够自动化执行完成复杂任务的系统。”</p>
@@ -2266,6 +3589,21 @@
       <tags>
         <tag>LLM</tag>
         <tag>agent</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>端侧实时交互数字人调研</title>
+    <url>/2025/03/05/%E7%AB%AF%E4%BE%A7%E5%AE%9E%E6%97%B6%E4%BA%A4%E4%BA%92%E6%95%B0%E5%AD%97%E4%BA%BA%E8%B0%83%E7%A0%94/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面做了些AI智能聊天机器人的工作，那能不能和数字人结合起来呢，给聊天机器人赋予形象，本文即为端侧（安卓端）可运行的数字人调研记录。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2>]]></content>
+      <categories>
+        <category>theory</category>
+      </categories>
+      <tags>
+        <tag>数字人</tag>
       </tags>
   </entry>
   <entry>
@@ -2375,10 +3713,10 @@
         <category>code</category>
       </categories>
       <tags>
-        <tag>Speaker Verification</tag>
-        <tag>SV</tag>
         <tag>CAM++</tag>
         <tag>fastapi</tag>
+        <tag>Speaker Verification</tag>
+        <tag>SV</tag>
         <tag>ERES2NET(V2)</tag>
       </tags>
   </entry>

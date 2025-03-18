@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言前面已经使用了GPT-Sovits V2做了有趣的应用，但关于GPT-Sovits的介绍与使用教程并没有写，且目前遇到了一个问题，使用中文进行微调后（后面发现与使用中文语音微调关系不大，主要取决于参考音频），再使用中文作为参考音频，使用该微调模型说英语则会很别扭（中文口音），故在此补上实验过程，目的在于得到英语流畅的模型，且融合音色防止版权问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TTS之GPT-Sovits介绍与使用">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言前面已经使用了GPT-Sovits V2做了有趣的应用，但关于GPT-Sovits的介绍与使用教程并没有写，且目前遇到了一个问题，使用中文进行微调后（后面发现与使用中文语音微调关系不大，主要取决于参考音频），再使用中文作为参考音频，使用该微调模型说英语则会很别扭（中文口音），故在此补上实验过程，目的在于得到英语流畅的模型，且融合音色防止版权问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154422098.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154543851.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307160607494.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154717934.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154936536.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310171709253.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310191549529.png">
+<meta property="article:published_time" content="2025-03-06T01:38:40.000Z">
+<meta property="article:modified_time" content="2025-03-14T01:24:35.472Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="TTS">
+<meta property="article:tag" content="GSV">
+<meta property="article:tag" content="GPT-Sovits">
+<meta property="article:tag" content="ESD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154422098.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/","path":"2025/03/06/TTS之GPT-Sovits介绍与使用/","title":"TTS之GPT-Sovits介绍与使用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>TTS之GPT-Sovits介绍与使用 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ubuntu%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%AE%89%E8%A3%85"><span class="nav-number">3.</span> <span class="nav-text">Ubuntu环境下安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebUI%E8%BF%90%E8%A1%8C"><span class="nav-number">4.</span> <span class="nav-text">WebUI运行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E8%AF%AD%E8%A8%80"><span class="nav-number">4.1.</span> <span class="nav-text">单语言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E8%8B%B1%E6%B7%B7%E5%90%88"><span class="nav-number">4.2.</span> <span class="nav-text">中英混合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9F%B3%E8%89%B2%E8%9E%8D%E5%90%88"><span class="nav-number">4.3.</span> <span class="nav-text">音色融合</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ESD%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8B%E8%BD%BD"><span class="nav-number">4.3.1.</span> <span class="nav-text">ESD数据集下载</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%9E%8D%E5%90%88"><span class="nav-number">4.4.</span> <span class="nav-text">融合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E8%B0%83"><span class="nav-number">4.5.</span> <span class="nav-text">微调</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="TTS之GPT-Sovits介绍与使用 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TTS之GPT-Sovits介绍与使用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-06 09:38:40" itemprop="dateCreated datePublished" datetime="2025-03-06T09:38:40+08:00">2025-03-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-14 09:24:35" itemprop="dateModified" datetime="2025-03-14T09:24:35+08:00">2025-03-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>12 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面已经使用了GPT-Sovits V2做了有趣的应用，但关于GPT-Sovits的介绍与使用教程并没有写，且目前遇到了一个问题，使用中文进行微调后（后面发现与使用中文语音微调关系不大，主要取决于参考音频），再使用中文作为参考音频，使用该微调模型说英语则会很别扭（中文口音），故在此补上实验过程，目的在于得到英语流畅的模型，且融合音色防止版权问题。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>GPT-SoVITS是<a target="_blank" rel="noopener" href="https://space.bilibili.com/5760446/">花儿不哭</a>大佬研发的低成本AI音色克隆软件。目前只有TTS（文字转语音）功能，将来会更新变声功能。GPT-SoVITS的正确缩写应该是GSV（下文用该缩写代替），请不要用sovits来简称它，这会让人把它和So-VITS-SVC搞混，两者并没有什么关系。</p>
+<p>目前（2025-3-6），GSV已经更新到V3版本，关于<strong>各版本的介绍</strong>：</p>
+<p><code>GPT-SoVITS-V1</code>实现了：</p>
+<ul>
+<li>由参考音频的情感、音色、语速控制合成音频的情感、音色、语速</li>
+<li>可以少量语音微调训练，也可不训练直接推理</li>
+<li>可以跨语种生成，即参考音频（训练集）和推理文本的语种为不同语种</li>
+</ul>
+<p><code>GPT-SoVITS-V2</code>新增特点：</p>
+<ul>
+<li>对低音质参考音频合成出来音质更好</li>
+<li>底模训练集增加到5k小时，zero shot性能更好音色更像，所需数据集更少</li>
+<li>增加韩粤两种语言，中日英韩粤5个语种均可跨语种合成</li>
+<li>更好的文本前端：持续迭代更新。V2中英文加入多音字优化。</li>
+</ul>
+<p><code>GPT-SoVITS-V3</code>新增特点：</p>
+<ul>
+<li>音色相似度更像，需要更少训练集来逼近本人（甚至不需要训练SoVITS）</li>
+<li>GPT合成更稳定，重复漏字更少，也更容易跑出丰富情感</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>语种主持（可跨语种合成）</th>
+<th>GPT训练集时长</th>
+<th>SoVITS训练集时长</th>
+<th>推理速度</th>
+<th>参数量</th>
+<th>文本前端</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>V1（2024年1月发布）</td>
+<td>中日英</td>
+<td>2k小时</td>
+<td>2k小时</td>
+<td>baseline</td>
+<td>90M+77M</td>
+<td>baseline</td>
+<td>baseline</td>
+</tr>
+<tr>
+<td>V2（2024年8月更新）</td>
+<td>中日英韩粤</td>
+<td>2.5k小时</td>
+<td>vq encoder2k小时，剩余5k小时</td>
+<td>翻倍</td>
+<td>90M+77M</td>
+<td>中日英逻辑均有增强</td>
+<td>新增语速调节，无参考文本模式，更好的混合语种切分，音色混合</td>
+</tr>
+<tr>
+<td>V3（2025年2月更新）</td>
+<td>中日英韩粤</td>
+<td>7k小时</td>
+<td>vq encoder2k小时，剩余7k小时</td>
+<td>约等于v2</td>
+<td>330M+77M</td>
+<td>不变</td>
+<td>大幅增加zero shot相似度；情绪表达、微调性能提升</td>
+</tr>
+</tbody></table>
+<p>目前我使用的是V2版本，有用户体验了V3，<a target="_blank" rel="noopener" href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2136">反馈1</a>，<a target="_blank" rel="noopener" href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651">反馈2</a>，主要提及的是存在不稳定问题（音色&#x2F;节奏不稳定），有人建议可以使用<strong>V3的GPT模型配V2的sovits模型</strong>。</p>
+<hr>
+<h2 id="Ubuntu环境下安装"><a href="#Ubuntu环境下安装" class="headerlink" title="Ubuntu环境下安装"></a>Ubuntu环境下安装</h2><p>克隆仓库：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/RVC-Boss/GPT-SoVITS.git</span><br></pre></td></tr></table></figure>
+
+<p>创建并激活conda环境：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> GPT-SoVITS</span><br><span class="line">conda create -n GPTSoVits python=3.9</span><br><span class="line">conda activate GPTSoVits</span><br></pre></td></tr></table></figure>
+
+<p>运行自动安装脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash install.sh</span><br></pre></td></tr></table></figure>
+
+<p>下载预训练模型：<br><strong>中国地区的用户可以<a target="_blank" rel="noopener" href="https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e/dkxgpiy9zb96hob4#nVNhX">在此处下载这些模型</a>。</strong></p>
+<ol>
+<li><p>从 <a target="_blank" rel="noopener" href="https://huggingface.co/lj1995/GPT-SoVITS">GPT-SoVITS Models</a> 下载预训练模型，并将其放置在 <code>./GPT_SoVITS/pretrained_models</code> 目录中。</p>
+</li>
+<li><p>从 <a target="_blank" rel="noopener" href="https://paddlespeech.bj.bcebos.com/Parakeet/released_models/g2p/G2PWModel_1.1.zip">G2PWModel_1.1.zip</a> 下载模型，解压并重命名为 <code>G2PWModel</code>，然后将其放置在 <code>./GPT_SoVITS/text</code> 目录中。（仅限中文TTS）</p>
+</li>
+<li><p>对于 UVR5（人声&#x2F;伴奏分离和混响移除，额外功能），从 <a target="_blank" rel="noopener" href="https://huggingface.co/lj1995/VoiceConversionWebUI/tree/main/uvr5_weights">UVR5 Weights</a> 下载模型，并将其放置在 <code>./tools/uvr5/uvr5_weights</code> 目录中。</p>
+<ul>
+<li>如果你在 UVR5 中使用 <code>bs_roformer</code> 或 <code>mel_band_roformer</code>模型，你可以手动下载模型和相应的配置文件，并将它们放在 <code>tools/UVR5/UVR5_weights</code> 中。<strong>重命名模型文件和配置文件，确保除后缀外</strong>，模型和配置文件具有相同且对应的名称。此外，模型和配置文件名<strong>必须包含“roformer”</strong>，才能被识别为 roformer 类的模型。</li>
+<li>建议在模型名称和配置文件名中<strong>直接指定模型类型</strong>，例如<code>mel_mand_roformer</code>、<code>bs_roformer</code>。如果未指定，将从配置文中比对特征，以确定它是哪种类型的模型。例如，模型<code>bs_roformer_ep_368_sdr_12.9628.ckpt</code> 和对应的配置文件<code>bs_roformer_ep_368_sdr_12.9628.yaml</code> 是一对。<code>kim_mel_band_roformer.ckpt</code> 和 <code>kim_mel_band_roformer.yaml</code> 也是一对。</li>
+</ul>
+</li>
+<li><p>对于中文 ASR（额外功能），从 <a target="_blank" rel="noopener" href="https://modelscope.cn/models/damo/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/files">Damo ASR Model</a>、<a target="_blank" rel="noopener" href="https://modelscope.cn/models/damo/speech_fsmn_vad_zh-cn-16k-common-pytorch/files">Damo VAD Model</a> 和 <a target="_blank" rel="noopener" href="https://modelscope.cn/models/damo/punc_ct-transformer_zh-cn-common-vocab272727-pytorch/files">Damo Punc Model</a> 下载模型，并将它们放置在 <code>tools/asr/models</code> 目录中。</p>
+</li>
+<li><p>对于英语或日语 ASR（额外功能），从 <a target="_blank" rel="noopener" href="https://huggingface.co/Systran/faster-whisper-large-v3">Faster Whisper Large V3</a> 下载模型，并将其放置在 <code>tools/asr/models</code> 目录中。此外，<a target="_blank" rel="noopener" href="https://huggingface.co/Systran">其他模型</a> 可能具有类似效果且占用更少的磁盘空间。</p>
+</li>
+<li><p>需要从<a target="_blank" rel="noopener" href="https://huggingface.co/lj1995/GPT-SoVITS/tree/main/gsv-v2final-pretrained">huggingface</a> 下载预训练模型文件放到GPT_SoVITS\pretrained_models\gsv-v2final-pretrained下</p>
+<p>中文额外需要下载<a target="_blank" rel="noopener" href="https://paddlespeech.bj.bcebos.com/Parakeet/released_models/g2p/G2PWModel_1.1.zip">G2PWModel_1.1.zip</a>（下载G2PW模型,解压并重命名为<code>G2PWModel</code>,将其放到<code>GPT_SoVITS/text</code>目录下）。</p>
+</li>
+</ol>
+<hr>
+<h2 id="WebUI运行"><a href="#WebUI运行" class="headerlink" title="WebUI运行"></a>WebUI运行</h2><p>运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python webui.py</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154422098.png" class="" title="image-20250307154422098">
+
+<p>点击上图箭头所示，得到：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154543851.png" class="" title="image-20250307154543851">
+
+<p>再按顺序点击，得到下一个页面：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307160607494.png" class="" title="image-20250307160607494">
+
+<p>该界面的必填（选）项为：</p>
+<ul>
+<li>3~10 S的参考音频</li>
+<li>对应于参考音频的文本</li>
+<li>参考音频的语种</li>
+<li>需要合成的文本</li>
+<li>需要合成的语种（对应于需要合成的文本的语种）</li>
+</ul>
+<hr>
+<h3 id="单语言"><a href="#单语言" class="headerlink" title="单语言"></a>单语言</h3><p>以下做了一些实验（用的原神派蒙的音频，来自<a target="_blank" rel="noopener" href="https://www.bilibili.com/opus/804258696892776484">Bili 红血球AE3803</a>）：</p>
+<table>
+<thead>
+<tr>
+<th>参考文本真实语种</th>
+<th>选择</th>
+<th>真实的需要合成的文本语种</th>
+<th>选择</th>
+<th>合成结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh</td>
+<td>zh</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>en</td>
+<td>zh</td>
+<td>读字母</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>zh</td>
+<td>zh正常，en读字母</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>en</td>
+<td>zh不读，en也不太正常</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>整体正常（吞了几个字）</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>中文口音明显</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>en</td>
+<td>zh-en</td>
+<td>中文口音明显</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>en</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>读字母</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>zh</td>
+<td>读字母</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>zh</td>
+<td>读字母，英语口音严重</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>en</td>
+<td>zh不读，en正常</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>英语口音严重</td>
+</tr>
+<tr>
+<td>en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>英语口音严重</td>
+</tr>
+</tbody></table>
+<p>从上表可以看出：</p>
+<ul>
+<li>口音由参考文本决定，中文参考音频读英语会有中文口音，英语参考音频读中文会有英语口音</li>
+<li>选择的语种需包含真实的语种</li>
+</ul>
+<hr>
+<h3 id="中英混合"><a href="#中英混合" class="headerlink" title="中英混合"></a>中英混合</h3><p>那如果参考音频的真实语种是中英混合的，会不会合成的中文和英文均没有别捏的口音了呢？</p>
+<p>这里选用同事录得一段话进行实验，旨在判断通过zh-en参考音频能不能得到中英文都不别扭的合成效果。</p>
+<p><strong>参考音频1：</strong></p>
+<p>问候与告别，Good morning! How are you? See you tomorrow!介绍与询问， What’s your name? How old are you?</p>
+<p><strong>参考音频2：</strong></p>
+<p>问候与告别，Good morning! How are you? See you tomorrow!</p>
+<p><strong>合成文本:</strong></p>
+<p>从前，有一只小狐狸，它住在一片茂密的森林里。小狐狸聪明又勇敢，总是喜欢探索森林的每个角落。一天，它听说森林深处有一朵神奇的蓝色花，据说只要找到它，就能实现一个愿望。</p>
+<p>小狐狸踏上了寻找蓝色花的旅程。它翻过高山，越过小溪，遇到了善良的兔子、友好的松鼠，还有一只迷路的小鸟。小狐狸帮助了小鸟找到回家的路，小鸟感激地告诉它，蓝色花就藏在森林里最高的那棵橡树下。</p>
+<p>The little fox ran towards the great oak tree, its heart filled with excitement. When it finally arrived, it saw the glowing blue flower, shining like a star in the night. Carefully, the little fox made a wish: “I wish for happiness and kindness to spread across the forest.”</p>
+<p>As soon as it finished speaking, a gentle breeze carried golden light throughout the woods. The trees seemed greener, the flowers bloomed brighter, and laughter echoed among the animals. The little fox smiled, knowing that its wish had come true. From that day on, the forest was filled with joy, all because of one small fox’s big heart.</p>
+<table>
+<thead>
+<tr>
+<th>参考文本真实语种</th>
+<th>选择</th>
+<th>真实的需要合成的文本语种</th>
+<th>选择</th>
+<th>合成结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>en正常，zh节奏有点奇怪，像中国人模仿外国人口音说中文（意会一下🎃）</td>
+</tr>
+</tbody></table>
+<p><strong>好的吧，看来通过zh-en参考音频来让合成zh-en音频时没口音好像有难度（我暂时感觉这种方式做不到），可能是通过单一说话人的zh-en音频微调实现的？🤺</strong></p>
+<p>铛铛铛铛（不要问我为什么铛铛铛铛，看到最后你就知道了，也希望小友能看到这里😁），在这里补一个实验，用同事的中文录音：</p>
+<table>
+<thead>
+<tr>
+<th>参考文本真实语种</th>
+<th>选择</th>
+<th>真实的需要合成的文本语种</th>
+<th>选择</th>
+<th>合成结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh（同事）</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>zh（同事）</td>
+<td>zh</td>
+<td>en</td>
+<td>zh-en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zh（派蒙）</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>中文口音</td>
+</tr>
+<tr>
+<td>zh（派蒙）</td>
+<td>zh</td>
+<td>en</td>
+<td>zh-en</td>
+<td>中文口音</td>
+</tr>
+</tbody></table>
+<p>奇了怪，难道是游戏语音那种卡通配音缺少了某些元素？以致于作为参考音频时导致口语严重？（<strong>暂且这样理解吧</strong>）</p>
+<hr>
+<h3 id="音色融合"><a href="#音色融合" class="headerlink" title="音色融合"></a>音色融合</h3><p>先不管了，留个坑吧。接下来先实验下音色融合：</p>
+<h4 id="ESD数据集下载"><a href="#ESD数据集下载" class="headerlink" title="ESD数据集下载"></a>ESD数据集下载</h4><p>ESD（Emotion Speech  Data）数据集是一个专为语音合成与语音转换设计的公开资源，涵盖了350段平行语料，由10位母语为普通话的说话者以及10位英语母语者以5种不同的情感状态（中性、快乐、愤怒、悲伤、惊讶）录制。这一宝贵的数据库不仅包含了录音，还有配套的文字脚本，极大地方便了研究与开发。</p>
+<p>点击<a target="_blank" rel="noopener" href="https://drive.google.com/file/d/1scuFwqh8s7KIYAfZW1Eu6088ZAK2SI-v/view?usp=sharing">这个链接</a>下载ESD数据集，下载完成后解压得到：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154717934.png" class="" title="image-20250310154717934">
+
+<table>
+<thead>
+<tr>
+<th>说话人编号</th>
+<th>性别</th>
+<th>语种</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>2</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>3</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>4</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>5</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>6</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>7</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>8</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>9</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>10</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>11</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>12</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>13</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>14</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>15</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>16</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>17</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>18</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>19</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>20</td>
+<td>男</td>
+<td>en</td>
+</tr>
+</tbody></table>
+<p>前10位是普通话，后10位为英语，每位说话者以说话情感分类，并且给出的txt文件对应了不同音频的说话内容和情绪。</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154936536.png" class="" title="image-20250310154936536">
+
+<hr>
+<h3 id="融合"><a href="#融合" class="headerlink" title="融合"></a>融合</h3><p>选取第三位说话者的0003_000982.wav作为参考音频，选择第7和第9位说话者的000982.wav与001029.wav作为融合音频，</p>
+<table>
+<thead>
+<tr>
+<th>音频序号</th>
+<th>音频内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>982</td>
+<td>有些人划船，有的人在进行花草活动。</td>
+</tr>
+<tr>
+<td>1029</td>
+<td>但是有时夏天比其它季节更迷人。</td>
+</tr>
+</tbody></table>
+<p>这里发现了个神奇的现象（一切的神奇现象都源于认知不足🤪），上面的单语言与中英混合合成出来的音频都有奇怪之处，单语言合成不同语种时，使用汉语为参考音频来合成英语时，有中国人说蹩脚英语的感觉，与此类似，使用英语为参考音频来合成汉语时，有外国人说蹩脚中文的感觉，这里的单语言中的是原神中派蒙的游戏内语音；而在中英混合场景使用的是同事的录音，参考音频直接为zh-en，但合成出来的中文有一些奇怪，英文正常；在这一节，笔者发现使用ESD提供的音频来试验，结果中英文部分都正常了，奇了个怪，那中英混个部分是不是还需要补一个同事只说中文作为参考音频的实验？（已补）</p>
+<p>此处实验发现，在右侧若只添加一条音频，则<strong>音色则会以该音色为准（与参考音频的音色没关系了）</strong>，如果<strong>添加两条及以上的音频，则会平均融合这两条及以上音色</strong>。</p>
+<p>好的，本来这节只为了验证融合音色的有效性，却意外发现了一些别的东西，只差微调的教程了，用到的时候再补上（相信不久就会补上了，现在是2025-3-10）。</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310171709253.png" class="" title="image-20250310171709253">
+
+<p>这里再总结一下：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310191549529.png" class="" title="image-20250310191549529">
+
+<p>这里的①我叫做参考音频，②我叫做融合音频（纯个人叫法，如有雷同纯属巧合，后续看论文的时候再矫正），这里我试验下来，感觉①控制情绪、语速、节奏等，②控制音色；只有②处不上传音频时，音色才由①处决定，否则音色与①处没有关系。</p>
+<p>思考题：想获得儿童的音色，开心的情绪，怎么做？</p>
+<p>答：①放开心的情绪，②放儿童的音色。</p>
+<hr>
+<h3 id="微调"><a href="#微调" class="headerlink" title="微调"></a>微调</h3><p>TODO….</p>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/RVC-Boss/GPT-SoVITS">https://github.com/RVC-Boss/GPT-SoVITS</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e">https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2136">https://github.com/RVC-Boss/GPT-SoVITS/issues/2136</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651">https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/gitblog_01104/article/details/141593574">https://blog.csdn.net/gitblog_01104/article/details/141593574</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/TTS/" rel="tag"># TTS</a>
+              <a href="/tags/GSV/" rel="tag"># GSV</a>
+              <a href="/tags/GPT-Sovits/" rel="tag"># GPT-Sovits</a>
+              <a href="/tags/ESD/" rel="tag"># ESD</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/05/%E7%AB%AF%E4%BE%A7%E5%AE%9E%E6%97%B6%E4%BA%A4%E4%BA%92%E6%95%B0%E5%AD%97%E4%BA%BA%E8%B0%83%E7%A0%94/" rel="prev" title="端侧实时交互数字人调研">
+                  <i class="fa fa-angle-left"></i> 端侧实时交互数字人调研
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/" rel="next" title="TTS之Spark-TTS介绍与使用">
+                  TTS之Spark-TTS介绍与使用 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">67k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:04</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

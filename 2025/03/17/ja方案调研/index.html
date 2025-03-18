@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言最近我们公司想与某上市公司合作的一个LLM应用的项目，本文记录下调研和思路历程，用作记录和分享。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ja方案调研">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/03/17/ja%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言最近我们公司想与某上市公司合作的一个LLM应用的项目，本文记录下调研和思路历程，用作记录和分享。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-03-17T03:41:09.000Z">
+<meta property="article:modified_time" content="2025-03-18T06:40:34.623Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Qwen2.5 VL">
+<meta property="article:tag" content="fine-tune">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/03/17/ja%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/03/17/ja%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/","path":"2025/03/17/ja方案调研/","title":"ja方案调研"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ja方案调研 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">2.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%BB%E5%8A%A1%E6%8B%86%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">任务拆解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87"><span class="nav-number">4.</span> <span class="nav-text">评价指标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E8%B7%AF%E7%BA%BF"><span class="nav-number">5.</span> <span class="nav-text">技术路线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%90%E6%9C%AC"><span class="nav-number">6.</span> <span class="nav-text">成本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%88%91%E4%BB%AC"><span class="nav-number">7.</span> <span class="nav-text">为什么选我们</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/17/ja%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ja方案调研 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ja方案调研
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-17 11:41:09" itemprop="dateCreated datePublished" datetime="2025-03-17T11:41:09+08:00">2025-03-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-18 14:40:34" itemprop="dateModified" datetime="2025-03-18T14:40:34+08:00">2025-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近我们公司想与某上市公司合作的一个LLM应用的项目，本文记录下调研和思路历程，用作记录和分享。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在<strong>设备操作</strong>场景，一般情况下，操作员会按固定流程进行工具的操作，学员在刚接触工具使用时往往需要经历学习阶段，故需要<strong>有专业知识的指导员的指引和监督</strong>，随着deepseek的爆火，人们思考大语言模型在现实场景下的应用，那么这个场景怎么应用大语言模型来接替（或分担工作量）指导员的工作呢？</p>
+<h2 id="任务拆解"><a href="#任务拆解" class="headerlink" title="任务拆解"></a>任务拆解</h2><p>想要分担指导员的工作量，主要需要：</p>
+<ol>
+<li>硬：大脑、眼睛、耳朵、嘴巴</li>
+<li>软：专业知识</li>
+</ol>
+<p>其中：</p>
+<ol>
+<li>大脑+眼睛&#x3D;<strong>视觉大语言模型</strong></li>
+<li>嘴巴负责教学（输出大脑给出的结果，即<strong>TTS</strong>模块）</li>
+<li>耳朵负责听学员的问题（例如学员询问下一步该怎么作，即<strong>ASR</strong>模块）</li>
+</ol>
+<p>再细化，按实际<strong>使用场景</strong>来分类讨论具体实现方案：</p>
+<p>**场景1：**文字问答（语音问答也属于此类，此类与视觉无关）</p>
+<p>行业黑话（专有词汇）等专有知识的了解，</p>
+<p>解决方案：RAG or 微调</p>
+<p>建议：</p>
+<p>专有知识的更新频率不高-&gt;微调；</p>
+<p>专有知识的更新频率高-&gt;RAG；</p>
+<p>另外，微调的成本要比RAG的高。</p>
+<p>**场景2：**视觉问答</p>
+<p>此场景指学员操作到某一步时，询问接下来该怎么操作，此处按学员的实际描述情况进行分类：</p>
+<ol>
+<li><p>学员描述：我已经完成了…，…, …,接下来应该做什么</p>
+<p>这种情况可弱化为场景1的方式，无需视觉，将SOP（标准操作流程，Standard Operating Procedure）制作成RAG的向量数据库或直接将SOP作为prompt输入，或进行微调（将SOP置入大模型记忆）</p>
+</li>
+<li><p>学员描述：我接下来应该做什么？</p>
+<p>这种情况仅从学员描述是得不到上文信息的（不知道已经做了什么，现在处于什么阶段），那么就需要摄像头来捕捉这些信息：</p>
+<p>一种（思路）简单的解决方案：</p>
+<p>**使用方式1：**摄像头用作录像功能，学员问问题（我接下来应该怎么做）时，将视频和问题传入视觉语言大模型(VLM, Qwen2.5 VL为例)，视觉语言大模型基于已有知识（需微调）和视频理解能力（模型自身结构设计和微调）做出回答。</p>
+<p><strong>技术实现1（微调）：</strong></p>
+<p>上述使用方式，仅需对VLM进行微调，需要视频数据：</p>
+<ol>
+<li>正确操作的视频</li>
+<li>错误操作的视频</li>
+</ol>
+<p>使用上述两种视频进行标记，例（仅做说明）：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;video_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;video_001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;video_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/video_001.mp4&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0001&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0001.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师从冰箱中取出蔬菜。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0002&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0002.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师在水槽前清洗蔬菜。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0003&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0003.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师在砧板上切菜。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0004&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0004.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师将切好的蔬菜放入锅中。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0005&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0005.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师在炉灶上翻炒蔬菜。&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;frame_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;frame_0006&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;image_path&quot;</span><span class="punctuation">:</span> <span class="string">&quot;path/to/frame_0006.jpg&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师将烹饪好的菜肴装盘。&quot;</span><span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;qa_pairs&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;question&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师从冰箱中取出了什么？&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;answer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;蔬菜&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;relevant_frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;frame_0001&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;question&quot;</span><span class="punctuation">:</span> <span class="string">&quot;厨师在做什么准备工作？&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;answer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;清洗和切割蔬菜&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;relevant_frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;frame_0002&quot;</span><span class="punctuation">,</span> <span class="string">&quot;frame_0003&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;question&quot;</span><span class="punctuation">:</span> <span class="string">&quot;蔬菜是如何烹饪的？&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;answer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;在锅中翻炒&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;relevant_frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;frame_0005&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;question&quot;</span><span class="punctuation">:</span> <span class="string">&quot;最终的菜肴是如何处理的？&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;answer&quot;</span><span class="punctuation">:</span> <span class="string">&quot;装盘&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;relevant_frames&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;frame_0006&quot;</span><span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>使用方式2（1的优化版本）：</strong></p>
+<p>首先科普下从视频输入+文本问题-&gt;文本结果的总过程：</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    A[视频输入] --&gt; B[动态帧采样]</span><br><span class="line">    B --&gt; C[视频帧预处理]</span><br><span class="line">    C --&gt; D[视觉编码器ViT]</span><br><span class="line">    D --&gt; E[单帧特征提取]</span><br><span class="line">    E --&gt; F[时空联合建模]</span><br><span class="line">    F --&gt; G[时间位置编码mRoPE]</span><br><span class="line">    G --&gt; H[特征序列压缩]</span><br><span class="line">    H --&gt; I[跨模态注意力融合]</span><br><span class="line">    I --&gt; J[语言模型LLM]</span><br><span class="line">    J --&gt; K&#123;任务特定输出&#125;</span><br><span class="line">    K --&gt; L1[视觉问答VQA]</span><br><span class="line">    K --&gt; L2[操作步骤检测]</span><br><span class="line">    K --&gt; L3[异常报警]</span><br></pre></td></tr></table></figure>
+
+<p><strong>流程说明：</strong></p>
+<ol>
+<li><strong>视频输入</strong>：摄像头实时画面或预录视频。</li>
+<li><strong>动态帧采样</strong>：根据动作复杂度动态选择关键帧（<strong>如快速动作高采样率，静态场景低采样率</strong>）。</li>
+<li><strong>（可选）视频帧预处理</strong>：数据增强（遮挡模拟、亮度调整）。</li>
+<li><strong>视觉编码器</strong>：使用ViT或CLIP-ViT提取单帧特征。</li>
+<li><strong>时空联合建模</strong>：通过时间注意力机制建模帧间关系。</li>
+<li><strong>时间位置编码</strong>：使用mRoPE将时间戳编码为旋转矩阵，注入视觉特征。</li>
+<li><strong>特征序列压缩</strong>：对长视频进行特征压缩（均值池化或可学习Token筛选）。</li>
+<li><strong>跨模态注意力融合</strong>：视觉特征与语言特征（问题文本）通过交叉注意力交互。</li>
+<li><strong>语言模型</strong>：生成任务相关输出（如VQA答案、操作步骤标签）。</li>
+<li><strong>任务特定输出</strong>：根据任务类型设计输出头（如VQA、步骤检测、异常报警）。</li>
+</ol>
+<p>可以看到，在第八步跨模态注意力融合时才需要问题文本（即学员的问题），那么可以<strong>实时获取关键帧</strong>（动态帧采样策略），理论上会比方式1快一些（快多少需实测）</p>
+<p>**场景3：**考试场景</p>
+<p>此场景表示摄像头对学员操作过程录像，考试结束后（学员离场），VLM去逐帧分析视频（动态帧采样），判断操作过程有无错误。</p>
+<p>方案：依旧是微调，方案同<strong>技术实现1</strong>。</p>
+<h2 id="评价指标"><a href="#评价指标" class="headerlink" title="评价指标"></a>评价指标</h2><p>评估方法：构建测试数据集，人工测试各场景下的准确率。</p>
+<h2 id="技术路线"><a href="#技术路线" class="headerlink" title="技术路线"></a>技术路线</h2><ol>
+<li>数据准备</li>
+<li>模型选择</li>
+<li>模型微调</li>
+<li>测试与优化</li>
+<li>部署与运维</li>
+</ol>
+<h2 id="成本"><a href="#成本" class="headerlink" title="成本"></a>成本</h2><p><strong>人力：</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">场景1</th>
+<th align="center">场景2</th>
+<th align="center">场景3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">需求确认与数据收集标准</td>
+<td align="center">–</td>
+<td align="center">20 工作日</td>
+<td align="center">–</td>
+</tr>
+<tr>
+<td align="center">数据制作（根据具体工作量）</td>
+<td align="center">15工作日</td>
+<td align="center">20工作日</td>
+<td align="center">20工作日</td>
+</tr>
+<tr>
+<td align="center">开发（微调）</td>
+<td align="center">1个月</td>
+<td align="center">30工作日</td>
+<td align="center">30工作日</td>
+</tr>
+<tr>
+<td align="center">测试与优化</td>
+<td align="center">–</td>
+<td align="center">30工作日</td>
+<td align="center">–</td>
+</tr>
+</tbody></table>
+<p>硬件成本：</p>
+<table>
+<thead>
+<tr>
+<th>微调</th>
+<th>训练</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="为什么选我们"><a href="#为什么选我们" class="headerlink" title="为什么选我们"></a>为什么选我们</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文叙述了三个具体使用场景的基本方案，下一步将对微调数据集的具体策略进行设计，计划采用LoRA微调方式。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LLM/" rel="tag"># LLM</a>
+              <a href="/tags/Qwen2-5-VL/" rel="tag"># Qwen2.5 VL</a>
+              <a href="/tags/fine-tune/" rel="tag"># fine-tune</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/15/TTS%E4%B9%8Bfish-speech/" rel="prev" title="TTS之fish-speech">
+                  <i class="fa fa-angle-left"></i> TTS之fish-speech
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/" rel="next" title="Qwen2.5VL安装与官方玩法体验">
+                  Qwen2.5VL安装与官方玩法体验 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">67k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:04</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
