@@ -1,6 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>AI系列课程：导论and数学基础1</title>
+    <url>/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>老大（老板）25年开始就打算开个AI导学系列，也是以身作则进行了第一期的讲解，从小学到大学的数学知识都进行了讲解（留了一部分微积分、导数和偏导等第二次课讲解），重点讲解了线性代数相关的东西，这次课反复提及的一句话：矩阵计算就是线性变换。同时也留了几题课后作业，本文记录下作业，小友们有兴趣也可以看看。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="课后作业"><a href="#课后作业" class="headerlink" title="课后作业"></a>课后作业</h2><img src="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/b4fbd56d4e648d20a8e98d3c6e1d3b5.png" class="" title="b4fbd56d4e648d20a8e98d3c6e1d3b5">
+
+<h3 id="第一题（旋转，拉伸，xy互换的矩阵形式）"><a href="#第一题（旋转，拉伸，xy互换的矩阵形式）" class="headerlink" title="第一题（旋转，拉伸，xy互换的矩阵形式）"></a>第一题（旋转，拉伸，xy互换的矩阵形式）</h3><img src="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/image-20250322112537235.png" class="" title="image-20250322112537235">
+
+<img src="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/image-20250322112602224.png" class="" title="image-20250322112602224">
+
+<img src="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/image-20250322110806938.png" class="" title="image-20250322110806938">
+
+<img src="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/image-20250322111657936.png" class="" title="image-20250322111657936">
+
+<p>使用的是<a href="https://excalidraw.com/">excalidraw</a>进行的画图。</p>
+<hr>
+<h3 id="第二题（代码实现1）"><a href="#第二题（代码实现1）" class="headerlink" title="第二题（代码实现1）"></a>第二题（代码实现1）</h3><p>同事们都在做带界面展示的😅，我还是先做输出数字的吧，做完了要是有时间再回头做界面展示，这里需要注意的是顺时针旋转和逆时针旋转的旋转矩阵不一样，本质上是参考不同，那么我们就需要定一个参考，这里定逆时针为基准，顺时针旋转<code>θ</code>即为逆时针旋转了<code>-θ</code>角:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> matplotlib.patches <span class="keyword">import</span> FancyArrow</span><br><span class="line"></span><br><span class="line">plt.rcParams[<span class="string">&#x27;font.sans-serif&#x27;</span>] = [<span class="string">&#x27;SimHei&#x27;</span>]  <span class="comment"># 黑体</span></span><br><span class="line"></span><br><span class="line">plt.rcParams[<span class="string">&#x27;axes.unicode_minus&#x27;</span>] = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">逆时针旋转30°：</span></span><br><span class="line"><span class="string">python transform.py --rotate 30</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">顺时针45°：</span></span><br><span class="line"><span class="string">python transform.py --rotate 45 --clockwise</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">放大3倍：</span></span><br><span class="line"><span class="string">python transform.py --scale 3</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">坐标交换：</span></span><br><span class="line"><span class="string">python transform.py --swap</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">指定自定义向量：</span></span><br><span class="line"><span class="string">   # 使用向量(2, 1)进行顺时针旋转30度</span></span><br><span class="line"><span class="string">python transform.py --rotate 30 --clockwise --vector 2 1</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">   # 缩放向量(0, 3)</span></span><br><span class="line"><span class="string">python transform.py --scale 1.5 --vector 0 3</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">调整显示范围</span></span><br><span class="line"><span class="string">python transform.py --swap --size 10</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 变换矩阵生成函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rotation_matrix</span>(<span class="params">theta, clockwise=<span class="literal">False</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;生成旋转矩阵（默认逆时针）&quot;&quot;&quot;</span></span><br><span class="line">    theta = np.radians(theta)</span><br><span class="line">    <span class="keyword">if</span> clockwise:</span><br><span class="line">        theta = -theta</span><br><span class="line">    <span class="keyword">return</span> np.array([</span><br><span class="line">        [np.cos(theta), -np.sin(theta)],</span><br><span class="line">        [np.sin(theta),  np.cos(theta)]</span><br><span class="line">    ])</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">scaling_matrix</span>(<span class="params">lambda_</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;生成缩放矩阵&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> np.array([</span><br><span class="line">        [lambda_, <span class="number">0</span>],</span><br><span class="line">        [<span class="number">0</span>, lambda_]</span><br><span class="line">    ])</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">swap_matrix</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;生成坐标交换矩阵&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> np.array([</span><br><span class="line">        [<span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">        [<span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">    ])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 命令行参数配置</span></span><br><span class="line">parser = argparse.ArgumentParser(description=<span class="string">&#x27;2D向量线性变换演示&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 互斥变换参数</span></span><br><span class="line">group = parser.add_mutually_exclusive_group(required=<span class="literal">True</span>)</span><br><span class="line">group.add_argument(<span class="string">&#x27;--rotate&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">float</span>,</span><br><span class="line">                  <span class="built_in">help</span>=<span class="string">&#x27;旋转角度（正值为逆时针）&#x27;</span>)</span><br><span class="line">group.add_argument(<span class="string">&#x27;--scale&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">float</span>,</span><br><span class="line">                  <span class="built_in">help</span>=<span class="string">&#x27;缩放倍数&#x27;</span>)</span><br><span class="line">group.add_argument(<span class="string">&#x27;--swap&#x27;</span>, action=<span class="string">&#x27;store_true&#x27;</span>,</span><br><span class="line">                  <span class="built_in">help</span>=<span class="string">&#x27;交换XY坐标&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 向量参数</span></span><br><span class="line">parser.add_argument(<span class="string">&#x27;--vector&#x27;</span>, nargs=<span class="number">2</span>, <span class="built_in">type</span>=<span class="built_in">float</span>, metavar=(<span class="string">&#x27;X&#x27;</span>, <span class="string">&#x27;Y&#x27;</span>),</span><br><span class="line">                   default=[<span class="number">1.0</span>, <span class="number">0.0</span>],</span><br><span class="line">                   <span class="built_in">help</span>=<span class="string">&#x27;原始向量坐标 (默认: 1.0 0.0)&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 旋转选项</span></span><br><span class="line">parser.add_argument(<span class="string">&#x27;--clockwise&#x27;</span>, action=<span class="string">&#x27;store_true&#x27;</span>,</span><br><span class="line">                   <span class="built_in">help</span>=<span class="string">&#x27;与--rotate一起使用表示顺时针旋转&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示参数</span></span><br><span class="line">parser.add_argument(<span class="string">&#x27;--size&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">float</span>, default=<span class="number">5.0</span>,</span><br><span class="line">                   <span class="built_in">help</span>=<span class="string">&#x27;图形显示范围（默认±5）&#x27;</span>)</span><br><span class="line"></span><br><span class="line">args = parser.parse_args()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输入验证</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    original = np.array(args.vector, dtype=np.float64)</span><br><span class="line"><span class="keyword">except</span> ValueError:</span><br><span class="line">    <span class="keyword">raise</span> ValueError(<span class="string">&quot;向量坐标必须为数字&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 生成变换矩阵和标题</span></span><br><span class="line"><span class="keyword">if</span> args.rotate <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">    matrix = rotation_matrix(args.rotate, args.clockwise)</span><br><span class="line">    direction = <span class="string">&quot;顺时针&quot;</span> <span class="keyword">if</span> args.clockwise <span class="keyword">else</span> <span class="string">&quot;逆时针&quot;</span></span><br><span class="line">    title = <span class="string">f&quot;旋转 <span class="subst">&#123;args.rotate&#125;</span>° (<span class="subst">&#123;direction&#125;</span>)&quot;</span></span><br><span class="line"><span class="keyword">elif</span> args.scale <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">    matrix = scaling_matrix(args.scale)</span><br><span class="line">    title = <span class="string">f&quot;缩放 <span class="subst">&#123;args.scale&#125;</span> 倍&quot;</span></span><br><span class="line"><span class="keyword">elif</span> args.swap:</span><br><span class="line">    matrix = swap_matrix()</span><br><span class="line">    title = <span class="string">&quot;XY坐标交换&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 应用变换</span></span><br><span class="line">transformed = matrix @ original</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建画布</span></span><br><span class="line">fig, (ax1, ax2) = plt.subplots(<span class="number">1</span>, <span class="number">2</span>, figsize=(<span class="number">10</span>, <span class="number">5</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制原始向量</span></span><br><span class="line">ax1.add_patch(FancyArrow(<span class="number">0</span>, <span class="number">0</span>, original[<span class="number">0</span>], original[<span class="number">1</span>],</span><br><span class="line">             width=<span class="number">0.05</span>, length_includes_head=<span class="literal">True</span>,</span><br><span class="line">             color=<span class="string">&#x27;blue&#x27;</span>, label=<span class="string">f&#x27;原始向量 (<span class="subst">&#123;original[<span class="number">0</span>]:<span class="number">.1</span>f&#125;</span>, <span class="subst">&#123;original[<span class="number">1</span>]:<span class="number">.1</span>f&#125;</span>)&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制变换后向量</span></span><br><span class="line">ax2.add_patch(FancyArrow(<span class="number">0</span>, <span class="number">0</span>, transformed[<span class="number">0</span>], transformed[<span class="number">1</span>],</span><br><span class="line">             width=<span class="number">0.05</span>, length_includes_head=<span class="literal">True</span>,</span><br><span class="line">             color=<span class="string">&#x27;red&#x27;</span>, label=<span class="string">f&#x27;变换后 (<span class="subst">&#123;transformed[<span class="number">0</span>]:<span class="number">.2</span>f&#125;</span>, <span class="subst">&#123;transformed[<span class="number">1</span>]:<span class="number">.2</span>f&#125;</span>)&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 图形设置</span></span><br><span class="line"><span class="keyword">for</span> ax <span class="keyword">in</span> [ax1, ax2]:</span><br><span class="line">    ax.set_xlim(-args.size, args.size)</span><br><span class="line">    ax.set_ylim(-args.size, args.size)</span><br><span class="line">    ax.grid(<span class="literal">True</span>)</span><br><span class="line">    ax.set_aspect(<span class="string">&#x27;equal&#x27;</span>)</span><br><span class="line">    ax.axhline(<span class="number">0</span>, color=<span class="string">&#x27;black&#x27;</span>, linewidth=<span class="number">0.5</span>)</span><br><span class="line">    ax.axvline(<span class="number">0</span>, color=<span class="string">&#x27;black&#x27;</span>, linewidth=<span class="number">0.5</span>)</span><br><span class="line">    ax.legend(loc=<span class="string">&#x27;upper right&#x27;</span>)</span><br><span class="line"></span><br><span class="line">ax1.set_title(<span class="string">&quot;原始向量&quot;</span>)</span><br><span class="line">ax2.set_title(title + <span class="string">&quot;\n&quot;</span> + <span class="string">f&quot;变换矩阵:\n<span class="subst">&#123;matrix&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">plt.tight_layout()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="第三题（矩阵乘法函数）"><a href="#第三题（矩阵乘法函数）" class="headerlink" title="第三题（矩阵乘法函数）"></a>第三题（矩阵乘法函数）</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">matrix_mult</span>(<span class="params">A, B</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(A[<span class="number">0</span>]) != <span class="built_in">len</span>(B):</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">&quot;矩阵A的列数必须等于矩阵B的行数&quot;</span>)</span><br><span class="line">    result = [[<span class="number">0</span>]*<span class="built_in">len</span>(B[<span class="number">0</span>]) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(A))]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(A)):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(B[<span class="number">0</span>])):</span><br><span class="line">            <span class="keyword">for</span> k <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(B)):</span><br><span class="line">                result[i][j] += A[i][k] * B[k][j]</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line">A = [[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>]]</span><br><span class="line">B = [[<span class="number">5</span>, <span class="number">6</span>], [<span class="number">7</span>, <span class="number">8</span>]]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;矩阵乘积:&quot;</span>, matrix_mult(A, B))  <span class="comment"># 输出 [[19, 22], [43, 50]]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">A = np.array([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>]])</span><br><span class="line">B = np.array([[<span class="number">5</span>, <span class="number">6</span>], [<span class="number">7</span>, <span class="number">8</span>]])</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(A @ B)</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">矩阵乘积: [[<span class="number">19</span>, <span class="number">22</span>], [<span class="number">43</span>, <span class="number">50</span>]]</span><br><span class="line">[[<span class="number">19</span> <span class="number">22</span>]</span><br><span class="line"> [<span class="number">43</span> <span class="number">50</span>]]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="第四题（计算矩阵的秩）"><a href="#第四题（计算矩阵的秩）" class="headerlink" title="第四题（计算矩阵的秩）"></a>第四题（计算矩阵的秩）</h3><img src="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/image-20250322125203606.png" class="" title="image-20250322125203606">
+
+<hr>
+<h3 id="第五题（计算特征值和特征向量）"><a href="#第五题（计算特征值和特征向量）" class="headerlink" title="第五题（计算特征值和特征向量）"></a>第五题（计算特征值和特征向量）</h3><img src="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/image-20250322134518499.png" class="" title="image-20250322134518499">
+
+<blockquote>
+<p>方阵A的秩 &lt; n，则至少有一个特征值是0。方阵A的秩&#x3D;n，则0不是特征值。</p>
+</blockquote>
+<hr>
+<h3 id="第六题（特征值、特征向量的实际用途-现实意义）"><a href="#第六题（特征值、特征向量的实际用途-现实意义）" class="headerlink" title="第六题（特征值、特征向量的实际用途&#x2F;现实意义）"></a>第六题（特征值、特征向量的实际用途&#x2F;现实意义）</h3><h4 id="1-核心思想"><a href="#1-核心思想" class="headerlink" title="(1) 核心思想"></a><strong>(1) 核心思想</strong></h4><ul>
+<li><strong>特征值</strong>：线性变换中的“缩放因子”。</li>
+<li><strong>特征向量</strong>：变换中保持方向不变的“主轴方向”。</li>
+</ul>
+<h4 id="2-实际应用领域"><a href="#2-实际应用领域" class="headerlink" title="(2) 实际应用领域"></a><strong>(2) 实际应用领域</strong></h4><table>
+<thead>
+<tr>
+<th align="left">领域</th>
+<th align="left">应用场景</th>
+<th align="left">特征值意义</th>
+<th align="left">特征向量意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>振动分析</strong></td>
+<td align="left">机械系统&#x2F;桥梁振动</td>
+<td align="left">系统固有频率</td>
+<td align="left">振动模式形状</td>
+</tr>
+<tr>
+<td align="left"><strong>数据科学</strong></td>
+<td align="left">主成分分析（PCA）</td>
+<td align="left">数据方差大小</td>
+<td align="left">数据主成分方向</td>
+</tr>
+<tr>
+<td align="left"><strong>量子力学</strong></td>
+<td align="left">波函数分析</td>
+<td align="left">物理量观测值（如能量）</td>
+<td align="left">量子态（本征态）</td>
+</tr>
+<tr>
+<td align="left"><strong>图像压缩</strong></td>
+<td align="left">奇异值分解（SVD）</td>
+<td align="left">数据重要性权重</td>
+<td align="left">基向量方向</td>
+</tr>
+<tr>
+<td align="left"><strong>稳定性分析</strong></td>
+<td align="left">微分方程系统</td>
+<td align="left">系统稳定性（正负实部）</td>
+<td align="left">扰动演化方向</td>
+</tr>
+<tr>
+<td align="left"><strong>搜索引擎</strong></td>
+<td align="left">PageRank算法</td>
+<td align="left">网页重要性排名</td>
+<td align="left">网页权重分布</td>
+</tr>
+</tbody></table>
+<h4 id="3-典型示例"><a href="#3-典型示例" class="headerlink" title="(3) 典型示例"></a>(3) 典型示例</h4><ul>
+<li><strong>桥梁振动分析</strong>：<br>特征值 <code>λ</code> 的平方根给出桥梁的固有频率，特征向量显示桥梁如何摆动（如横向或纵向振动）。</li>
+<li><strong>人脸识别（PCA）</strong>：<br>协方差矩阵的特征向量称为“特征脸”，对应人脸的主要变化模式；特征值越大，该模式对数据差异的贡献越大。</li>
+<li><strong>金融市场</strong>：<br>资产协方差矩阵的特征向量代表投资组合的风险方向，特征值表示风险大小。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>AI内部导学系列</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>ASR+LLM+TTS构建智能语音对话机器人</title>
     <url>/2025/03/04/ASR-LLM-TTS%E6%9E%84%E5%BB%BA%E6%99%BA%E8%83%BD%E8%AF%AD%E9%9F%B3%E5%AF%B9%E8%AF%9D%E6%9C%BA%E5%99%A8%E4%BA%BA/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>该系列&#x2F;前置步骤包含：</p>
@@ -320,114 +421,6 @@
       </categories>
       <tags>
         <tag>classification</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MobaXterm连接公司服务器部署ASR环境</title>
-    <url>/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>由于目前ASR服务是部署在我的ubuntu主机上的，我司的测试人员已完成基本的功能测试，接下来要进行压力测试，故需要在压测环境（与线上正式环境配置一致）上部署该服务，很多年前用的是Xshell，搜了下SSH工具，现在貌似<strong>MobaXterm</strong>较为主流，看看这个工具怎么样吧。本文介绍使用MobaXterm连接公司服务器部署FunASR环境。</p>
-<span id="more"></span>
-
-<hr>
-<h2 id="MobaXterm安装"><a href="#MobaXterm安装" class="headerlink" title="MobaXterm安装"></a><strong>MobaXterm</strong>安装</h2><ol>
-<li><p>打开<a href="https://github.com/RipplePiam/MobaXterm-Chinese-Simplified/releases">这个页面</a></p>
-</li>
-<li><p>下拉到这个位置，点击如图箭头所示</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250217191454432.png" class="" title="image-20250217191454432">
-</li>
-<li><p>下载完成后，解压，点击解压后的文件夹中的.exe</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250217191613244.png" class="" title="image-20250217191613244">
-</li>
-<li><p>你将会看到这个页面</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250217191716869.png" class="" title="image-20250217191716869"></li>
-</ol>
-<hr>
-<h2 id="MobaXterm使用"><a href="#MobaXterm使用" class="headerlink" title="MobaXterm使用"></a>MobaXterm使用</h2><ol>
-<li><p>双击箭头所示<strong>User sessions</strong></p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250217194559990.png" class="" title="image-20250217194559990">
-</li>
-<li><p>点击<strong>SSH</strong>，输入你的<strong>远程主机IP</strong>和<strong>用户名（可选）</strong>,点击<strong>OK</strong></p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218100113480.png" class="" title="image-20250218100113480">
-</li>
-<li><p>会提示你是第一次连接这个服务器，勾选<strong>不再显示此消息</strong>，再点击<strong>Accept</strong></p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218100317993.png" class="" title="image-20250218100317993">
-</li>
-<li><p>输入密码</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/1739844404437.jpg" class="" width="1739844404437">
-</li>
-<li><p>保存密码</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/1739844573632.png" class="" width="1739844573632">
-</li>
-<li><p>保存存储的密码，暂时不知道什么地方会用到，先设置上吧</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218112948823.png" class="" title="image-20250218112948823">
-</li>
-<li><p>现在就进去服务器了，可按你的自身需求操作了</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218113108960.png" class="" title="image-20250218113108960"></li>
-</ol>
-<hr>
-<h2 id="安装FunASR"><a href="#安装FunASR" class="headerlink" title="安装FunASR"></a>安装FunASR</h2><p><a href="https://github.com/modelscope/FunASR/blob/main/runtime/docs/SDK_advanced_guide_online_zh.md">参考</a></p>
-<ul>
-<li><p>进入服务器的&#x2F;opt，运行<code>docker --version</code>查看有没有安装docker</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218113940922.png" class="" title="image-20250218113940922">
-</li>
-<li><p>先通过<code>docker --version</code>确认服务器上有没有安装docker（一般都有），（如果没有就安装下）再运行</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker pull \</span><br><span class="line">  registry.cn-hangzhou.aliyuncs.com/funasr_repo/funasr:funasr-runtime-sdk-online-cpu-0.1.12</span><br></pre></td></tr></table></figure>
-
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218115349721.png" class="" title="image-20250218115349721">
-</li>
-<li><p>运行<code>sudo docker images</code>查看是否有这个镜像</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218115509797.png" class="" title="image-20250218115509797">
-</li>
-<li><p>依次运行下面两条命令进入docker内部：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./funasr-runtime-resources/models</span><br><span class="line"><span class="built_in">sudo</span> docker run -p 10096:10095 -it --privileged=<span class="literal">true</span> \</span><br><span class="line">  -v <span class="variable">$PWD</span>/funasr-runtime-resources/models:/workspace/models \</span><br><span class="line">  registry.cn-hangzhou.aliyuncs.com/funasr_repo/funasr:funasr-runtime-sdk-online-cpu-0.1.12 </span><br></pre></td></tr></table></figure>
-
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218120001291-1739851203375-3.png" class="" title="image-20250218120001291">
-</li>
-<li><p>依次运行下面两条命令启动<code>funasr-wss-server-2pass</code>服务程序：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> FunASR/runtime</span><br><span class="line"></span><br><span class="line"><span class="built_in">nohup</span> bash run_server_2pass.sh \</span><br><span class="line">  --certfile 0 \</span><br><span class="line">  --download-model-dir /workspace/models \</span><br><span class="line">  --vad-dir damo/speech_fsmn_vad_zh-cn-16k-common-onnx \</span><br><span class="line">  --model-dir damo/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-onnx  \</span><br><span class="line">  --online-model-dir damo/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-online-onnx  \</span><br><span class="line">  --punc-dir damo/punc_ct-transformer_zh-cn-common-vad_realtime-vocab272727-onnx \</span><br><span class="line">  --lm-dir damo/speech_ngram_lm_zh-cn-ai-wesp-fst \</span><br><span class="line">  --itn-dir thuduj12/fst_itn_zh \</span><br><span class="line">  --hotword /workspace/models/hotwords.txt &gt; log.txt 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
-
-<p>想实时查看<code>log.txt</code>可运行<code>tail -f log.txt</code>实时查看日志信息。</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218141211559.png" class="" title="image-20250218141211559">
-
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218142324573.png" class="" title="image-20250218142324573">
-
-<p>到这里FunASR服务端就启动好了，下面用官方提供的客户端连接看下效果。</p>
-</li>
-</ul>
-<hr>
-<h2 id="FunASR客户端连接"><a href="#FunASR客户端连接" class="headerlink" title="FunASR客户端连接"></a>FunASR客户端连接</h2><p>点击<a href="https://github.com/modelscope/FunASR/blob/main/runtime/docs/SDK_tutorial_online_zh.md#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3">这里</a>下载示例客户端，下面以html网页版为例：</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218142549399.png" class="" title="image-20250218142549399">
-
-<p>注意事项：</p>
-<ul>
-<li><p>nohup启动FunASR服务时如果指定了<code>--certfile 0</code>，即关闭ssl，那么asr服务器地址就以ws开头，否则以wss开头</p>
-</li>
-<li><p>端口（10096）是<code>docker run -p</code>启动docker镜像时指定的端口</p>
-</li>
-<li><p>2pass是指先进行实时语音识别，VAD检测到一小段结束后，就用非实时语音识别再做一次语音识别，用该结果替换掉原实时语音识别的结果，以兼顾实时性和准确性</p>
-</li>
-<li><p>ITN旨在将识别到的文本转换成一个更加标准化、可读的形式，特别是在处理数字、日期、时间、货币等信息时。</p>
-</li>
-<li><p>设置完之后点击连接，再点击开始，即可通过麦克风实时语音识别，结果在服务器端也有显示</p>
-<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218143446847.png" class="" title="image-20250218143446847">
-</li>
-<li><p>这种方式启动的docker容器，无论是关掉SSH连接还是exit退出容器，都会停止掉docker容器，即会停掉服务，想关掉SSH连接或exit退出容器，但容器不停止怎么做，有个其他事，先忙好再来更：</p>
-<p>TODO…</p>
-</li>
-</ul>
-<p>OK，完毕，建议搭配参考链接食用。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
-<li><a href="https://github.com/modelscope/FunASR/blob/main/runtime/docs/SDK_advanced_guide_online_zh.md">https://github.com/modelscope/FunASR/blob/main/runtime/docs/SDK_advanced_guide_online_zh.md</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>code</category>
-      </categories>
-      <tags>
-        <tag>ASR</tag>
-        <tag>MobaXterm</tag>
-        <tag>FunASR</tag>
-        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -1154,507 +1147,186 @@
       </tags>
   </entry>
   <entry>
-    <title>Qwen2.5VL安装与官方玩法体验</title>
-    <url>/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>TTS之GPT-Sovits介绍与使用</title>
-    <url>/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面已经使用了GPT-Sovits V2做了有趣的应用，但关于GPT-Sovits的介绍与使用教程并没有写，且目前遇到了一个问题，使用中文进行微调后（后面发现与使用中文语音微调关系不大，主要取决于参考音频），再使用中文作为参考音频，使用该微调模型说英语则会很别扭（中文口音），故在此补上实验过程，目的在于得到英语流畅的模型，且融合音色防止版权问题。</p>
+    <title>MobaXterm连接公司服务器部署ASR环境</title>
+    <url>/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>由于目前ASR服务是部署在我的ubuntu主机上的，我司的测试人员已完成基本的功能测试，接下来要进行压力测试，故需要在压测环境（与线上正式环境配置一致）上部署该服务，很多年前用的是Xshell，搜了下SSH工具，现在貌似<strong>MobaXterm</strong>较为主流，看看这个工具怎么样吧。本文介绍使用MobaXterm连接公司服务器部署FunASR环境。</p>
 <span id="more"></span>
 
 <hr>
-<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>GPT-SoVITS是<a href="https://space.bilibili.com/5760446/">花儿不哭</a>大佬研发的低成本AI音色克隆软件。目前只有TTS（文字转语音）功能，将来会更新变声功能。GPT-SoVITS的正确缩写应该是GSV（下文用该缩写代替），请不要用sovits来简称它，这会让人把它和So-VITS-SVC搞混，两者并没有什么关系。</p>
-<p>目前（2025-3-6），GSV已经更新到V3版本，关于<strong>各版本的介绍</strong>：</p>
-<p><code>GPT-SoVITS-V1</code>实现了：</p>
-<ul>
-<li>由参考音频的情感、音色、语速控制合成音频的情感、音色、语速</li>
-<li>可以少量语音微调训练，也可不训练直接推理</li>
-<li>可以跨语种生成，即参考音频（训练集）和推理文本的语种为不同语种</li>
-</ul>
-<p><code>GPT-SoVITS-V2</code>新增特点：</p>
-<ul>
-<li>对低音质参考音频合成出来音质更好</li>
-<li>底模训练集增加到5k小时，zero shot性能更好音色更像，所需数据集更少</li>
-<li>增加韩粤两种语言，中日英韩粤5个语种均可跨语种合成</li>
-<li>更好的文本前端：持续迭代更新。V2中英文加入多音字优化。</li>
-</ul>
-<p><code>GPT-SoVITS-V3</code>新增特点：</p>
-<ul>
-<li>音色相似度更像，需要更少训练集来逼近本人（甚至不需要训练SoVITS）</li>
-<li>GPT合成更稳定，重复漏字更少，也更容易跑出丰富情感</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>语种主持（可跨语种合成）</th>
-<th>GPT训练集时长</th>
-<th>SoVITS训练集时长</th>
-<th>推理速度</th>
-<th>参数量</th>
-<th>文本前端</th>
-<th>功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>V1（2024年1月发布）</td>
-<td>中日英</td>
-<td>2k小时</td>
-<td>2k小时</td>
-<td>baseline</td>
-<td>90M+77M</td>
-<td>baseline</td>
-<td>baseline</td>
-</tr>
-<tr>
-<td>V2（2024年8月更新）</td>
-<td>中日英韩粤</td>
-<td>2.5k小时</td>
-<td>vq encoder2k小时，剩余5k小时</td>
-<td>翻倍</td>
-<td>90M+77M</td>
-<td>中日英逻辑均有增强</td>
-<td>新增语速调节，无参考文本模式，更好的混合语种切分，音色混合</td>
-</tr>
-<tr>
-<td>V3（2025年2月更新）</td>
-<td>中日英韩粤</td>
-<td>7k小时</td>
-<td>vq encoder2k小时，剩余7k小时</td>
-<td>约等于v2</td>
-<td>330M+77M</td>
-<td>不变</td>
-<td>大幅增加zero shot相似度；情绪表达、微调性能提升</td>
-</tr>
-</tbody></table>
-<p>目前我使用的是V2版本，有用户体验了V3，<a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2136">反馈1</a>，<a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651">反馈2</a>，主要提及的是存在不稳定问题（音色&#x2F;节奏不稳定），有人建议可以使用<strong>V3的GPT模型配V2的sovits模型</strong>。</p>
-<hr>
-<h2 id="Ubuntu环境下安装"><a href="#Ubuntu环境下安装" class="headerlink" title="Ubuntu环境下安装"></a>Ubuntu环境下安装</h2><p>克隆仓库：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/RVC-Boss/GPT-SoVITS.git</span><br></pre></td></tr></table></figure>
-
-<p>创建并激活conda环境：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> GPT-SoVITS</span><br><span class="line">conda create -n GPTSoVits python=3.9</span><br><span class="line">conda activate GPTSoVits</span><br></pre></td></tr></table></figure>
-
-<p>运行自动安装脚本：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash install.sh</span><br></pre></td></tr></table></figure>
-
-<p>下载预训练模型：<br><strong>中国地区的用户可以<a href="https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e/dkxgpiy9zb96hob4#nVNhX">在此处下载这些模型</a>。</strong></p>
-<ol>
-<li><p>从 <a href="https://huggingface.co/lj1995/GPT-SoVITS">GPT-SoVITS Models</a> 下载预训练模型，并将其放置在 <code>./GPT_SoVITS/pretrained_models</code> 目录中。</p>
+<h2 id="MobaXterm安装"><a href="#MobaXterm安装" class="headerlink" title="MobaXterm安装"></a><strong>MobaXterm</strong>安装</h2><ol>
+<li><p>打开<a href="https://github.com/RipplePiam/MobaXterm-Chinese-Simplified/releases">这个页面</a></p>
 </li>
-<li><p>从 <a href="https://paddlespeech.bj.bcebos.com/Parakeet/released_models/g2p/G2PWModel_1.1.zip">G2PWModel_1.1.zip</a> 下载模型，解压并重命名为 <code>G2PWModel</code>，然后将其放置在 <code>./GPT_SoVITS/text</code> 目录中。（仅限中文TTS）</p>
+<li><p>下拉到这个位置，点击如图箭头所示</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250217191454432.png" class="" title="image-20250217191454432">
 </li>
-<li><p>对于 UVR5（人声&#x2F;伴奏分离和混响移除，额外功能），从 <a href="https://huggingface.co/lj1995/VoiceConversionWebUI/tree/main/uvr5_weights">UVR5 Weights</a> 下载模型，并将其放置在 <code>./tools/uvr5/uvr5_weights</code> 目录中。</p>
-<ul>
-<li>如果你在 UVR5 中使用 <code>bs_roformer</code> 或 <code>mel_band_roformer</code>模型，你可以手动下载模型和相应的配置文件，并将它们放在 <code>tools/UVR5/UVR5_weights</code> 中。<strong>重命名模型文件和配置文件，确保除后缀外</strong>，模型和配置文件具有相同且对应的名称。此外，模型和配置文件名<strong>必须包含“roformer”</strong>，才能被识别为 roformer 类的模型。</li>
-<li>建议在模型名称和配置文件名中<strong>直接指定模型类型</strong>，例如<code>mel_mand_roformer</code>、<code>bs_roformer</code>。如果未指定，将从配置文中比对特征，以确定它是哪种类型的模型。例如，模型<code>bs_roformer_ep_368_sdr_12.9628.ckpt</code> 和对应的配置文件<code>bs_roformer_ep_368_sdr_12.9628.yaml</code> 是一对。<code>kim_mel_band_roformer.ckpt</code> 和 <code>kim_mel_band_roformer.yaml</code> 也是一对。</li>
-</ul>
+<li><p>下载完成后，解压，点击解压后的文件夹中的.exe</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250217191613244.png" class="" title="image-20250217191613244">
 </li>
-<li><p>对于中文 ASR（额外功能），从 <a href="https://modelscope.cn/models/damo/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/files">Damo ASR Model</a>、<a href="https://modelscope.cn/models/damo/speech_fsmn_vad_zh-cn-16k-common-pytorch/files">Damo VAD Model</a> 和 <a href="https://modelscope.cn/models/damo/punc_ct-transformer_zh-cn-common-vocab272727-pytorch/files">Damo Punc Model</a> 下载模型，并将它们放置在 <code>tools/asr/models</code> 目录中。</p>
-</li>
-<li><p>对于英语或日语 ASR（额外功能），从 <a href="https://huggingface.co/Systran/faster-whisper-large-v3">Faster Whisper Large V3</a> 下载模型，并将其放置在 <code>tools/asr/models</code> 目录中。此外，<a href="https://huggingface.co/Systran">其他模型</a> 可能具有类似效果且占用更少的磁盘空间。</p>
-</li>
-<li><p>需要从<a href="https://huggingface.co/lj1995/GPT-SoVITS/tree/main/gsv-v2final-pretrained">huggingface</a> 下载预训练模型文件放到GPT_SoVITS\pretrained_models\gsv-v2final-pretrained下</p>
-<p>中文额外需要下载<a href="https://paddlespeech.bj.bcebos.com/Parakeet/released_models/g2p/G2PWModel_1.1.zip">G2PWModel_1.1.zip</a>（下载G2PW模型,解压并重命名为<code>G2PWModel</code>,将其放到<code>GPT_SoVITS/text</code>目录下）。</p>
-</li>
+<li><p>你将会看到这个页面</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250217191716869.png" class="" title="image-20250217191716869"></li>
 </ol>
 <hr>
-<h2 id="WebUI运行"><a href="#WebUI运行" class="headerlink" title="WebUI运行"></a>WebUI运行</h2><p>运行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python webui.py</span><br></pre></td></tr></table></figure>
-
-<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154422098.png" class="" title="image-20250307154422098">
-
-<p>点击上图箭头所示，得到：</p>
-<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154543851.png" class="" title="image-20250307154543851">
-
-<p>再按顺序点击，得到下一个页面：</p>
-<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307160607494.png" class="" title="image-20250307160607494">
-
-<p>该界面的必填（选）项为：</p>
+<h2 id="MobaXterm使用"><a href="#MobaXterm使用" class="headerlink" title="MobaXterm使用"></a>MobaXterm使用</h2><ol>
+<li><p>双击箭头所示<strong>User sessions</strong></p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250217194559990.png" class="" title="image-20250217194559990">
+</li>
+<li><p>点击<strong>SSH</strong>，输入你的<strong>远程主机IP</strong>和<strong>用户名（可选）</strong>,点击<strong>OK</strong></p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218100113480.png" class="" title="image-20250218100113480">
+</li>
+<li><p>会提示你是第一次连接这个服务器，勾选<strong>不再显示此消息</strong>，再点击<strong>Accept</strong></p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218100317993.png" class="" title="image-20250218100317993">
+</li>
+<li><p>输入密码</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/1739844404437.jpg" class="" width="1739844404437">
+</li>
+<li><p>保存密码</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/1739844573632.png" class="" width="1739844573632">
+</li>
+<li><p>保存存储的密码，暂时不知道什么地方会用到，先设置上吧</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218112948823.png" class="" title="image-20250218112948823">
+</li>
+<li><p>现在就进去服务器了，可按你的自身需求操作了</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218113108960.png" class="" title="image-20250218113108960"></li>
+</ol>
+<hr>
+<h2 id="安装FunASR"><a href="#安装FunASR" class="headerlink" title="安装FunASR"></a>安装FunASR</h2><p><a href="https://github.com/modelscope/FunASR/blob/main/runtime/docs/SDK_advanced_guide_online_zh.md">参考</a></p>
 <ul>
-<li>3~10 S的参考音频</li>
-<li>对应于参考音频的文本</li>
-<li>参考音频的语种</li>
-<li>需要合成的文本</li>
-<li>需要合成的语种（对应于需要合成的文本的语种）</li>
+<li><p>进入服务器的&#x2F;opt，运行<code>docker --version</code>查看有没有安装docker</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218113940922.png" class="" title="image-20250218113940922">
+</li>
+<li><p>先通过<code>docker --version</code>确认服务器上有没有安装docker（一般都有），（如果没有就安装下）再运行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker pull \</span><br><span class="line">  registry.cn-hangzhou.aliyuncs.com/funasr_repo/funasr:funasr-runtime-sdk-online-cpu-0.1.12</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218115349721.png" class="" title="image-20250218115349721">
+</li>
+<li><p>运行<code>sudo docker images</code>查看是否有这个镜像</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218115509797.png" class="" title="image-20250218115509797">
+</li>
+<li><p>依次运行下面两条命令进入docker内部：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p ./funasr-runtime-resources/models</span><br><span class="line"><span class="built_in">sudo</span> docker run -p 10096:10095 -it --privileged=<span class="literal">true</span> \</span><br><span class="line">  -v <span class="variable">$PWD</span>/funasr-runtime-resources/models:/workspace/models \</span><br><span class="line">  registry.cn-hangzhou.aliyuncs.com/funasr_repo/funasr:funasr-runtime-sdk-online-cpu-0.1.12 </span><br></pre></td></tr></table></figure>
+
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218120001291-1739851203375-3.png" class="" title="image-20250218120001291">
+</li>
+<li><p>依次运行下面两条命令启动<code>funasr-wss-server-2pass</code>服务程序：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> FunASR/runtime</span><br><span class="line"></span><br><span class="line"><span class="built_in">nohup</span> bash run_server_2pass.sh \</span><br><span class="line">  --certfile 0 \</span><br><span class="line">  --download-model-dir /workspace/models \</span><br><span class="line">  --vad-dir damo/speech_fsmn_vad_zh-cn-16k-common-onnx \</span><br><span class="line">  --model-dir damo/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-onnx  \</span><br><span class="line">  --online-model-dir damo/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-online-onnx  \</span><br><span class="line">  --punc-dir damo/punc_ct-transformer_zh-cn-common-vad_realtime-vocab272727-onnx \</span><br><span class="line">  --lm-dir damo/speech_ngram_lm_zh-cn-ai-wesp-fst \</span><br><span class="line">  --itn-dir thuduj12/fst_itn_zh \</span><br><span class="line">  --hotword /workspace/models/hotwords.txt &gt; log.txt 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<p>想实时查看<code>log.txt</code>可运行<code>tail -f log.txt</code>实时查看日志信息。</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218141211559.png" class="" title="image-20250218141211559">
+
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218142324573.png" class="" title="image-20250218142324573">
+
+<p>到这里FunASR服务端就启动好了，下面用官方提供的客户端连接看下效果。</p>
+</li>
 </ul>
 <hr>
-<h3 id="单语言"><a href="#单语言" class="headerlink" title="单语言"></a>单语言</h3><p>以下做了一些实验（用的原神派蒙的音频，来自<a href="https://www.bilibili.com/opus/804258696892776484">Bili 红血球AE3803</a>）：</p>
-<table>
-<thead>
-<tr>
-<th>参考文本真实语种</th>
-<th>选择</th>
-<th>真实的需要合成的文本语种</th>
-<th>选择</th>
-<th>合成结果</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>zh</td>
-<td>zh</td>
-<td>zh</td>
-<td>zh</td>
-<td>正常</td>
-</tr>
-<tr>
-<td>zh</td>
-<td>zh</td>
-<td>zh</td>
-<td>zh-en</td>
-<td>正常</td>
-</tr>
-<tr>
-<td>zh</td>
-<td>zh</td>
-<td>en</td>
-<td>zh</td>
-<td>读字母</td>
-</tr>
-<tr>
-<td>zh</td>
-<td>zh</td>
-<td>zh-en</td>
-<td>zh</td>
-<td>zh正常，en读字母</td>
-</tr>
-<tr>
-<td>zh</td>
-<td>zh</td>
-<td>zh-en</td>
-<td>en</td>
-<td>zh不读，en也不太正常</td>
-</tr>
-<tr>
-<td>zh</td>
-<td>zh</td>
-<td>zh-en</td>
-<td>zh-en</td>
-<td>整体正常（吞了几个字）</td>
-</tr>
-<tr>
-<td>zh</td>
-<td>zh</td>
-<td>en</td>
-<td>en</td>
-<td>中文口音明显</td>
-</tr>
-<tr>
-<td>zh</td>
-<td>zh</td>
-<td>en</td>
-<td>zh-en</td>
-<td>中文口音明显</td>
-</tr>
-<tr>
-<td>en</td>
-<td>en</td>
-<td>en</td>
-<td>en</td>
-<td>正常</td>
-</tr>
-<tr>
-<td>en</td>
-<td>zh</td>
-<td>en</td>
-<td>en</td>
-<td>读字母</td>
-</tr>
-<tr>
-<td>en</td>
-<td>en</td>
-<td>en</td>
-<td>zh-en</td>
-<td>正常</td>
-</tr>
-<tr>
-<td>en</td>
-<td>en</td>
-<td>en</td>
-<td>zh</td>
-<td>读字母</td>
-</tr>
-<tr>
-<td>en</td>
-<td>en</td>
-<td>zh-en</td>
-<td>zh</td>
-<td>读字母，英语口音严重</td>
-</tr>
-<tr>
-<td>en</td>
-<td>en</td>
-<td>zh-en</td>
-<td>en</td>
-<td>zh不读，en正常</td>
-</tr>
-<tr>
-<td>en</td>
-<td>en</td>
-<td>zh-en</td>
-<td>zh-en</td>
-<td>英语口音严重</td>
-</tr>
-<tr>
-<td>en</td>
-<td>zh-en</td>
-<td>zh-en</td>
-<td>zh-en</td>
-<td>英语口音严重</td>
-</tr>
-</tbody></table>
-<p>从上表可以看出：</p>
+<h2 id="FunASR客户端连接"><a href="#FunASR客户端连接" class="headerlink" title="FunASR客户端连接"></a>FunASR客户端连接</h2><p>点击<a href="https://github.com/modelscope/FunASR/blob/main/runtime/docs/SDK_tutorial_online_zh.md#%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3">这里</a>下载示例客户端，下面以html网页版为例：</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218142549399.png" class="" title="image-20250218142549399">
+
+<p>注意事项：</p>
 <ul>
-<li>口音由参考文本决定，中文参考音频读英语会有中文口音，英语参考音频读中文会有英语口音</li>
-<li>选择的语种需包含真实的语种</li>
+<li><p>nohup启动FunASR服务时如果指定了<code>--certfile 0</code>，即关闭ssl，那么asr服务器地址就以ws开头，否则以wss开头</p>
+</li>
+<li><p>端口（10096）是<code>docker run -p</code>启动docker镜像时指定的端口</p>
+</li>
+<li><p>2pass是指先进行实时语音识别，VAD检测到一小段结束后，就用非实时语音识别再做一次语音识别，用该结果替换掉原实时语音识别的结果，以兼顾实时性和准确性</p>
+</li>
+<li><p>ITN旨在将识别到的文本转换成一个更加标准化、可读的形式，特别是在处理数字、日期、时间、货币等信息时。</p>
+</li>
+<li><p>设置完之后点击连接，再点击开始，即可通过麦克风实时语音识别，结果在服务器端也有显示</p>
+<img src="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/image-20250218143446847.png" class="" title="image-20250218143446847">
+</li>
+<li><p>这种方式启动的docker容器，无论是关掉SSH连接还是exit退出容器，都会停止掉docker容器，即会停掉服务，想关掉SSH连接或exit退出容器，但容器不停止怎么做，有个其他事，先忙好再来更：</p>
+<p>TODO…</p>
+</li>
 </ul>
-<hr>
-<h3 id="中英混合"><a href="#中英混合" class="headerlink" title="中英混合"></a>中英混合</h3><p>那如果参考音频的真实语种是中英混合的，会不会合成的中文和英文均没有别捏的口音了呢？</p>
-<p>这里选用同事录得一段话进行实验，旨在判断通过zh-en参考音频能不能得到中英文都不别扭的合成效果。</p>
-<p><strong>参考音频1：</strong></p>
-<p>问候与告别，Good morning! How are you? See you tomorrow!介绍与询问， What’s your name? How old are you?</p>
-<p><strong>参考音频2：</strong></p>
-<p>问候与告别，Good morning! How are you? See you tomorrow!</p>
-<p><strong>合成文本:</strong></p>
-<p>从前，有一只小狐狸，它住在一片茂密的森林里。小狐狸聪明又勇敢，总是喜欢探索森林的每个角落。一天，它听说森林深处有一朵神奇的蓝色花，据说只要找到它，就能实现一个愿望。</p>
-<p>小狐狸踏上了寻找蓝色花的旅程。它翻过高山，越过小溪，遇到了善良的兔子、友好的松鼠，还有一只迷路的小鸟。小狐狸帮助了小鸟找到回家的路，小鸟感激地告诉它，蓝色花就藏在森林里最高的那棵橡树下。</p>
-<p>The little fox ran towards the great oak tree, its heart filled with excitement. When it finally arrived, it saw the glowing blue flower, shining like a star in the night. Carefully, the little fox made a wish: “I wish for happiness and kindness to spread across the forest.”</p>
-<p>As soon as it finished speaking, a gentle breeze carried golden light throughout the woods. The trees seemed greener, the flowers bloomed brighter, and laughter echoed among the animals. The little fox smiled, knowing that its wish had come true. From that day on, the forest was filled with joy, all because of one small fox’s big heart.</p>
-<table>
-<thead>
-<tr>
-<th>参考文本真实语种</th>
-<th>选择</th>
-<th>真实的需要合成的文本语种</th>
-<th>选择</th>
-<th>合成结果</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>zh-en</td>
-<td>zh-en</td>
-<td>zh-en</td>
-<td>zh-en</td>
-<td>en正常，zh节奏有点奇怪，像中国人模仿外国人口音说中文（意会一下🎃）</td>
-</tr>
-</tbody></table>
-<p><strong>好的吧，看来通过zh-en参考音频来让合成zh-en音频时没口音好像有难度（我暂时感觉这种方式做不到），可能是通过单一说话人的zh-en音频微调实现的？🤺</strong></p>
-<p>铛铛铛铛（不要问我为什么铛铛铛铛，看到最后你就知道了，也希望小友能看到这里😁），在这里补一个实验，用同事的中文录音：</p>
-<table>
-<thead>
-<tr>
-<th>参考文本真实语种</th>
-<th>选择</th>
-<th>真实的需要合成的文本语种</th>
-<th>选择</th>
-<th>合成结果</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>zh（同事）</td>
-<td>zh</td>
-<td>en</td>
-<td>en</td>
-<td>正常</td>
-</tr>
-<tr>
-<td>zh（同事）</td>
-<td>zh</td>
-<td>en</td>
-<td>zh-en</td>
-<td>正常</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>zh（派蒙）</td>
-<td>zh</td>
-<td>en</td>
-<td>en</td>
-<td>中文口音</td>
-</tr>
-<tr>
-<td>zh（派蒙）</td>
-<td>zh</td>
-<td>en</td>
-<td>zh-en</td>
-<td>中文口音</td>
-</tr>
-</tbody></table>
-<p>奇了怪，难道是游戏语音那种卡通配音缺少了某些元素？以致于作为参考音频时导致口语严重？（<strong>暂且这样理解吧</strong>）</p>
-<hr>
-<h3 id="音色融合"><a href="#音色融合" class="headerlink" title="音色融合"></a>音色融合</h3><p>先不管了，留个坑吧。接下来先实验下音色融合：</p>
-<h4 id="ESD数据集下载"><a href="#ESD数据集下载" class="headerlink" title="ESD数据集下载"></a>ESD数据集下载</h4><p>ESD（Emotion Speech  Data）数据集是一个专为语音合成与语音转换设计的公开资源，涵盖了350段平行语料，由10位母语为普通话的说话者以及10位英语母语者以5种不同的情感状态（中性、快乐、愤怒、悲伤、惊讶）录制。这一宝贵的数据库不仅包含了录音，还有配套的文字脚本，极大地方便了研究与开发。</p>
-<p>点击<a href="https://drive.google.com/file/d/1scuFwqh8s7KIYAfZW1Eu6088ZAK2SI-v/view?usp=sharing">这个链接</a>下载ESD数据集，下载完成后解压得到：</p>
-<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154717934.png" class="" title="image-20250310154717934">
-
-<table>
-<thead>
-<tr>
-<th>说话人编号</th>
-<th>性别</th>
-<th>语种</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>女</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>2</td>
-<td>女</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>3</td>
-<td>女</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>4</td>
-<td>男</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>5</td>
-<td>男</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>6</td>
-<td>男</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>7</td>
-<td>女</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>8</td>
-<td>男</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>9</td>
-<td>女</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>10</td>
-<td>男</td>
-<td>zh</td>
-</tr>
-<tr>
-<td>11</td>
-<td>男</td>
-<td>en</td>
-</tr>
-<tr>
-<td>12</td>
-<td>男</td>
-<td>en</td>
-</tr>
-<tr>
-<td>13</td>
-<td>男</td>
-<td>en</td>
-</tr>
-<tr>
-<td>14</td>
-<td>男</td>
-<td>en</td>
-</tr>
-<tr>
-<td>15</td>
-<td>女</td>
-<td>en</td>
-</tr>
-<tr>
-<td>16</td>
-<td>女</td>
-<td>en</td>
-</tr>
-<tr>
-<td>17</td>
-<td>女</td>
-<td>en</td>
-</tr>
-<tr>
-<td>18</td>
-<td>女</td>
-<td>en</td>
-</tr>
-<tr>
-<td>19</td>
-<td>女</td>
-<td>en</td>
-</tr>
-<tr>
-<td>20</td>
-<td>男</td>
-<td>en</td>
-</tr>
-</tbody></table>
-<p>前10位是普通话，后10位为英语，每位说话者以说话情感分类，并且给出的txt文件对应了不同音频的说话内容和情绪。</p>
-<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154936536.png" class="" title="image-20250310154936536">
-
-<hr>
-<h3 id="融合"><a href="#融合" class="headerlink" title="融合"></a>融合</h3><p>选取第三位说话者的0003_000982.wav作为参考音频，选择第7和第9位说话者的000982.wav与001029.wav作为融合音频，</p>
-<table>
-<thead>
-<tr>
-<th>音频序号</th>
-<th>音频内容</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>982</td>
-<td>有些人划船，有的人在进行花草活动。</td>
-</tr>
-<tr>
-<td>1029</td>
-<td>但是有时夏天比其它季节更迷人。</td>
-</tr>
-</tbody></table>
-<p>这里发现了个神奇的现象（一切的神奇现象都源于认知不足🤪），上面的单语言与中英混合合成出来的音频都有奇怪之处，单语言合成不同语种时，使用汉语为参考音频来合成英语时，有中国人说蹩脚英语的感觉，与此类似，使用英语为参考音频来合成汉语时，有外国人说蹩脚中文的感觉，这里的单语言中的是原神中派蒙的游戏内语音；而在中英混合场景使用的是同事的录音，参考音频直接为zh-en，但合成出来的中文有一些奇怪，英文正常；在这一节，笔者发现使用ESD提供的音频来试验，结果中英文部分都正常了，奇了个怪，那中英混个部分是不是还需要补一个同事只说中文作为参考音频的实验？（已补）</p>
-<p>此处实验发现，在右侧若只添加一条音频，则<strong>音色则会以该音色为准（与参考音频的音色没关系了）</strong>，如果<strong>添加两条及以上的音频，则会平均融合这两条及以上音色</strong>。</p>
-<p>好的，本来这节只为了验证融合音色的有效性，却意外发现了一些别的东西，只差微调的教程了，用到的时候再补上（相信不久就会补上了，现在是2025-3-10）。</p>
-<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310171709253.png" class="" title="image-20250310171709253">
-
-<p>这里再总结一下：</p>
-<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310191549529.png" class="" title="image-20250310191549529">
-
-<p>这里的①我叫做参考音频，②我叫做融合音频（纯个人叫法，如有雷同纯属巧合，后续看论文的时候再矫正），这里我试验下来，感觉①控制情绪、语速、节奏等，②控制音色；只有②处不上传音频时，音色才由①处决定，否则音色与①处没有关系。</p>
-<p>思考题：想获得儿童的音色，开心的情绪，怎么做？</p>
-<p>答：①放开心的情绪，②放儿童的音色。</p>
-<hr>
-<h3 id="微调"><a href="#微调" class="headerlink" title="微调"></a>微调</h3><p>TODO….</p>
-<hr>
+<p>OK，完毕，建议搭配参考链接食用。</p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
-<li><a href="https://github.com/RVC-Boss/GPT-SoVITS">https://github.com/RVC-Boss/GPT-SoVITS</a></li>
-<li><a href="https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e">https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e</a></li>
-<li><a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2136">https://github.com/RVC-Boss/GPT-SoVITS/issues/2136</a></li>
-<li><a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651">https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651</a></li>
-<li><a href="https://blog.csdn.net/gitblog_01104/article/details/141593574">https://blog.csdn.net/gitblog_01104/article/details/141593574</a></li>
+<li><a href="https://github.com/modelscope/FunASR/blob/main/runtime/docs/SDK_advanced_guide_online_zh.md">https://github.com/modelscope/FunASR/blob/main/runtime/docs/SDK_advanced_guide_online_zh.md</a></li>
 </ol>
 ]]></content>
       <categories>
         <category>code</category>
       </categories>
       <tags>
-        <tag>TTS</tag>
-        <tag>GSV</tag>
-        <tag>GPT-Sovits</tag>
-        <tag>ESD</tag>
+        <tag>ASR</tag>
+        <tag>MobaXterm</tag>
+        <tag>FunASR</tag>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Qwen2.5VL 7B安装与官方玩法体验</title>
+    <url>/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面直接简单的使用LLamaFactory微调了Qwen2.5 VL 7B（其实和视觉能力没关系，只简单微调了文本），但转念一想，还没体验过Qwen2.5 VL的官方玩法，本文即记录下官方玩法以及记录一下占用情况。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="安装与使用"><a href="#安装与使用" class="headerlink" title="安装与使用"></a>安装与使用</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 克隆项目</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/QwenLM/Qwen2.5-VL</span><br><span class="line"></span><br><span class="line"><span class="comment"># 切换到项目工作目录</span></span><br><span class="line"><span class="built_in">cd</span> /Qwen2.5-VL</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建一个名为 Qwen2_5_VL 的新虚拟环境，并指定 Python 版本为 3.12</span></span><br><span class="line">conda create --name Qwen2_5_VL python=3.12 -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 激活虚拟环境</span></span><br><span class="line">conda activate Qwen2_5_VL</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line">pip install git+https://github.com/huggingface/transformers accelerate</span><br><span class="line">pip install -U flash-attn --no-build-isolation</span><br><span class="line">pip install -r requirements_web_demo.txt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载预训练权重</span></span><br><span class="line">git lfs install</span><br><span class="line">git <span class="built_in">clone</span> https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> https://www.modelscope.cn/Qwen/Qwen2.5-VL-7B-Instruct.git</span><br></pre></td></tr></table></figure>
+
+<p>然后打开<code>web_demo_mm.py</code>，看下<code>DEFAULT_CKPT_PATH</code>的路径：<code>Qwen/Qwen2.5-VL-7B-Instruct</code>，那么我们需要把下载的<code>Qwen2.5-VL-7B-Instruct</code>放在<code>Qwen</code>文件夹下，运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python web_demo_mm.py --flash-attn2</span><br></pre></td></tr></table></figure>
+
+<p>吼，报错了，那再试试：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python web_demo_mm.py</span><br></pre></td></tr></table></figure>
+
+<p>还是报错：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">RuntimeError: Failed to import transformers.models.qwen2_5_vl.modeling_qwen2_5_vl because of the following error (look up to see its traceback):</span><br><span class="line">/home/chr/anaconda3/envs/Qwen2_5_VL/lib/python3.12/site-packages/flash_attn_2_cuda.cpython-312-x86_64-linux-gnu.so: undefined symbol: _ZNK3c1011StorageImpl27throw_data_ptr_access_errorEv</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/17bf15268ec70aa64a1f7d2fddbfb9a.png" class="" title="17bf15268ec70aa64a1f7d2fddbfb9a">
+
+<hr>
+<h3 id="Web-UI方式使用"><a href="#Web-UI方式使用" class="headerlink" title="Web UI方式使用"></a>Web UI方式使用</h3><p>参考<a href="https://blog.csdn.net/a61022706/article/details/141570792">链接2</a>的步骤，然后继续运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python web_demo_mm.py --flash-attn2</span><br></pre></td></tr></table></figure>
+
+<p>好的，运行起来了！！！</p>
+<img src="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/b8024758c9d0ab160260fd9d80d8b6b.png" class="" title="b8024758c9d0ab160260fd9d80d8b6b">
+
+<p>但是吧，目前发现两类主要问题：</p>
+<ol>
+<li>让模型框出某个位置，得到的回答有点奇怪（见上图）</li>
+<li>4s的720P视频都爆显存</li>
+</ol>
+<p>还是用3B的模型玩玩吧，将<code>DEFAULT_CKPT_PATH</code>的路径改为<code>Qwen/Qwen2.5-VL-3B-Instruct</code>，运行：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python web_demo_mm.py --flash-attn2</span><br></pre></td></tr></table></figure>
+
+<p>漫长的等待….，铛铛铛铛：</p>
+<img src="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/0ce74c805c2f3a274ca8996b29cc88a.png" class="" title="0ce74c805c2f3a274ca8996b29cc88a">
+
+<p>翻译：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">视频显示了一个户外游乐场的嬉戏场景。一个人坐在一把黄色腿的彩色圆形橙色椅子上。他们穿着紫色无檐便帽、深色夹克和浅色裤子。另一个看起来像孩子的人站在附近，与坐着的人互动。这孩子穿着黑色夹克和红色鞋子。</span><br><span class="line">坐着的人正在进行一项有趣的活动，可能会假装成一个角色或表演一个舞蹈动作。他们有力地移动着胳膊和腿，营造出一种活泼的氛围。孩子似乎很享受这种互动，为场景增添了欢乐的气氛。</span><br><span class="line">在背景中，还有其他游乐场设备和结构，包括一个大型的彩色滑梯。地面覆盖着典型的游乐场橡胶表面，确保了孩子们玩耍的安全。整体环境明亮晴朗，表明可能是白天。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">十分我能打几分：<span class="number">5</span>分</span><br><span class="line"></span><br><span class="line">背景：<span class="number">3</span>B模型部署在<span class="number">4090</span>单卡上，ubuntu系统；</span><br><span class="line">速度方面：<span class="number">49</span> S的<span class="number">1080</span>P视频（用我手机之前在游乐场录得）用时<span class="number">10</span> S；</span><br><span class="line">占用：</span><br><span class="line">不部署模型，仅正常开了几个网页：显存占用<span class="number">1275</span> MB</span><br><span class="line">仅部署，不使用模型回答任何问题：显存占用<span class="number">10370</span> MB</span><br><span class="line">使用模型回答视频问题：显存占用<span class="number">23007</span> MB</span><br><span class="line"></span><br><span class="line">开两个网页使用模型回答相同的视频问题：后发送问题的那个网页会爆显存，然后待会又回答了（看服务后台像是串行回答的，即第一个网页的问题回复完毕才去问第二个网页的问题）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="vLLM方式运行"><a href="#vLLM方式运行" class="headerlink" title="vLLM方式运行"></a>vLLM方式运行</h3><p>由于我上面已经缓存了3B模型，所以只需要：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pip install <span class="string">&#x27;vllm&gt;0.7.2&#x27;</span></span><br><span class="line"></span><br><span class="line">vllm serve Qwen/Qwen2.5-VL-3B-Instruct --port 8000 --host 0.0.0.0 --dtype bfloat16 --limit-mm-per-prompt image=5,video=5</span><br></pre></td></tr></table></figure>
+
+<p>但是，一个3B大模型把我现存占满了？</p>
+<img src="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/image-20250319101903786.png" class="" title="image-20250319101903786">
+
+
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://zhuanlan.zhihu.com/p/23296553864">https://zhuanlan.zhihu.com/p/23296553864</a></li>
+<li><a href="https://blog.csdn.net/a61022706/article/details/141570792">https://blog.csdn.net/a61022706/article/details/141570792</a></li>
+</ol>
+<p><strong>AI视觉认知引擎升级方案</strong><br> <em>基于Qwen2.5-VL-72B的多模态领域专精化训练</em></p>
+<p>▍技术架构<br> <code>72B参数视觉语言基座</code> × <code>垂直领域知识注入</code><br> • <strong>基座模型</strong>: Qwen2.5-VL-72B多模态大模型（视觉-语言跨模态预训练架构）​<br> • <strong>微调策略</strong>: 双模态联合训练范式（文本语料+视频帧序列）​<br> • <strong>增强组件</strong>: 动态梯度裁剪 + 混合精度训练引擎​<br> • <strong>优化策略</strong>: 渐进式解冻 + 层级学习率调度（非全参数训练)</p>
+<p>▍领域适应技术<br> <code>结构化知识蒸馏</code> | <code>时序特征对齐</code> | <code>跨模态语义桥接</code><br> • <strong>文本增强</strong>: 专业术语向量空间重构​<br> • <strong>视频解析</strong>: ViT时空特征提取 + 关键帧语义标注​<br> • <strong>对齐机制</strong>: CLIP风格的跨模态对比学习损失函数​<br> • <strong>加速方案</strong>: FlashAttention优化 + 动态计算图编译</p>
+<p>▍实测性能优势</p>
+<p> • <strong>跨模态检索</strong>: 图像-文本匹配准确率提升28.6%（相较于原始版本）</p>
+<p> • <strong>细粒度解析</strong>: 图像区域语义识别准确率达到91.2%</p>
+<p> • <strong>推理加速</strong>: 高分辨率图像处理速度提升3.1倍</p>
+<p> • <strong>训练效率</strong>: 微调成本降低67%（参数冻结策略）</p>
+<p>▍商业价值锚点 </p>
+<p> ✓ 构建图像-语言联动的领域认知系统<br> ✓ 实现像素级视觉理解与业务知识融合​<br> ✓ 支持复杂场景的即时推理与决策闭环</p>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>LLM</tag>
+        <tag>Qwen2.5 VL</tag>
       </tags>
   </entry>
   <entry>
@@ -2212,6 +1884,505 @@
         <tag>LLM</tag>
         <tag>Qwen2.5</tag>
         <tag>Qwen2.5 VL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>TTS之GPT-Sovits介绍与使用</title>
+    <url>/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面已经使用了GPT-Sovits V2做了有趣的应用，但关于GPT-Sovits的介绍与使用教程并没有写，且目前遇到了一个问题，使用中文进行微调后（后面发现与使用中文语音微调关系不大，主要取决于参考音频），再使用中文作为参考音频，使用该微调模型说英语则会很别扭（中文口音），故在此补上实验过程，目的在于得到英语流畅的模型，且融合音色防止版权问题。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>GPT-SoVITS是<a href="https://space.bilibili.com/5760446/">花儿不哭</a>大佬研发的低成本AI音色克隆软件。目前只有TTS（文字转语音）功能，将来会更新变声功能。GPT-SoVITS的正确缩写应该是GSV（下文用该缩写代替），请不要用sovits来简称它，这会让人把它和So-VITS-SVC搞混，两者并没有什么关系。</p>
+<p>目前（2025-3-6），GSV已经更新到V3版本，关于<strong>各版本的介绍</strong>：</p>
+<p><code>GPT-SoVITS-V1</code>实现了：</p>
+<ul>
+<li>由参考音频的情感、音色、语速控制合成音频的情感、音色、语速</li>
+<li>可以少量语音微调训练，也可不训练直接推理</li>
+<li>可以跨语种生成，即参考音频（训练集）和推理文本的语种为不同语种</li>
+</ul>
+<p><code>GPT-SoVITS-V2</code>新增特点：</p>
+<ul>
+<li>对低音质参考音频合成出来音质更好</li>
+<li>底模训练集增加到5k小时，zero shot性能更好音色更像，所需数据集更少</li>
+<li>增加韩粤两种语言，中日英韩粤5个语种均可跨语种合成</li>
+<li>更好的文本前端：持续迭代更新。V2中英文加入多音字优化。</li>
+</ul>
+<p><code>GPT-SoVITS-V3</code>新增特点：</p>
+<ul>
+<li>音色相似度更像，需要更少训练集来逼近本人（甚至不需要训练SoVITS）</li>
+<li>GPT合成更稳定，重复漏字更少，也更容易跑出丰富情感</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>语种主持（可跨语种合成）</th>
+<th>GPT训练集时长</th>
+<th>SoVITS训练集时长</th>
+<th>推理速度</th>
+<th>参数量</th>
+<th>文本前端</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>V1（2024年1月发布）</td>
+<td>中日英</td>
+<td>2k小时</td>
+<td>2k小时</td>
+<td>baseline</td>
+<td>90M+77M</td>
+<td>baseline</td>
+<td>baseline</td>
+</tr>
+<tr>
+<td>V2（2024年8月更新）</td>
+<td>中日英韩粤</td>
+<td>2.5k小时</td>
+<td>vq encoder2k小时，剩余5k小时</td>
+<td>翻倍</td>
+<td>90M+77M</td>
+<td>中日英逻辑均有增强</td>
+<td>新增语速调节，无参考文本模式，更好的混合语种切分，音色混合</td>
+</tr>
+<tr>
+<td>V3（2025年2月更新）</td>
+<td>中日英韩粤</td>
+<td>7k小时</td>
+<td>vq encoder2k小时，剩余7k小时</td>
+<td>约等于v2</td>
+<td>330M+77M</td>
+<td>不变</td>
+<td>大幅增加zero shot相似度；情绪表达、微调性能提升</td>
+</tr>
+</tbody></table>
+<p>目前我使用的是V2版本，有用户体验了V3，<a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2136">反馈1</a>，<a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651">反馈2</a>，主要提及的是存在不稳定问题（音色&#x2F;节奏不稳定），有人建议可以使用<strong>V3的GPT模型配V2的sovits模型</strong>。</p>
+<hr>
+<h2 id="Ubuntu环境下安装"><a href="#Ubuntu环境下安装" class="headerlink" title="Ubuntu环境下安装"></a>Ubuntu环境下安装</h2><p>克隆仓库：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/RVC-Boss/GPT-SoVITS.git</span><br></pre></td></tr></table></figure>
+
+<p>创建并激活conda环境：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> GPT-SoVITS</span><br><span class="line">conda create -n GPTSoVits python=3.9</span><br><span class="line">conda activate GPTSoVits</span><br></pre></td></tr></table></figure>
+
+<p>运行自动安装脚本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash install.sh</span><br></pre></td></tr></table></figure>
+
+<p>下载预训练模型：<br><strong>中国地区的用户可以<a href="https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e/dkxgpiy9zb96hob4#nVNhX">在此处下载这些模型</a>。</strong></p>
+<ol>
+<li><p>从 <a href="https://huggingface.co/lj1995/GPT-SoVITS">GPT-SoVITS Models</a> 下载预训练模型，并将其放置在 <code>./GPT_SoVITS/pretrained_models</code> 目录中。</p>
+</li>
+<li><p>从 <a href="https://paddlespeech.bj.bcebos.com/Parakeet/released_models/g2p/G2PWModel_1.1.zip">G2PWModel_1.1.zip</a> 下载模型，解压并重命名为 <code>G2PWModel</code>，然后将其放置在 <code>./GPT_SoVITS/text</code> 目录中。（仅限中文TTS）</p>
+</li>
+<li><p>对于 UVR5（人声&#x2F;伴奏分离和混响移除，额外功能），从 <a href="https://huggingface.co/lj1995/VoiceConversionWebUI/tree/main/uvr5_weights">UVR5 Weights</a> 下载模型，并将其放置在 <code>./tools/uvr5/uvr5_weights</code> 目录中。</p>
+<ul>
+<li>如果你在 UVR5 中使用 <code>bs_roformer</code> 或 <code>mel_band_roformer</code>模型，你可以手动下载模型和相应的配置文件，并将它们放在 <code>tools/UVR5/UVR5_weights</code> 中。<strong>重命名模型文件和配置文件，确保除后缀外</strong>，模型和配置文件具有相同且对应的名称。此外，模型和配置文件名<strong>必须包含“roformer”</strong>，才能被识别为 roformer 类的模型。</li>
+<li>建议在模型名称和配置文件名中<strong>直接指定模型类型</strong>，例如<code>mel_mand_roformer</code>、<code>bs_roformer</code>。如果未指定，将从配置文中比对特征，以确定它是哪种类型的模型。例如，模型<code>bs_roformer_ep_368_sdr_12.9628.ckpt</code> 和对应的配置文件<code>bs_roformer_ep_368_sdr_12.9628.yaml</code> 是一对。<code>kim_mel_band_roformer.ckpt</code> 和 <code>kim_mel_band_roformer.yaml</code> 也是一对。</li>
+</ul>
+</li>
+<li><p>对于中文 ASR（额外功能），从 <a href="https://modelscope.cn/models/damo/speech_paraformer-large_asr_nat-zh-cn-16k-common-vocab8404-pytorch/files">Damo ASR Model</a>、<a href="https://modelscope.cn/models/damo/speech_fsmn_vad_zh-cn-16k-common-pytorch/files">Damo VAD Model</a> 和 <a href="https://modelscope.cn/models/damo/punc_ct-transformer_zh-cn-common-vocab272727-pytorch/files">Damo Punc Model</a> 下载模型，并将它们放置在 <code>tools/asr/models</code> 目录中。</p>
+</li>
+<li><p>对于英语或日语 ASR（额外功能），从 <a href="https://huggingface.co/Systran/faster-whisper-large-v3">Faster Whisper Large V3</a> 下载模型，并将其放置在 <code>tools/asr/models</code> 目录中。此外，<a href="https://huggingface.co/Systran">其他模型</a> 可能具有类似效果且占用更少的磁盘空间。</p>
+</li>
+<li><p>需要从<a href="https://huggingface.co/lj1995/GPT-SoVITS/tree/main/gsv-v2final-pretrained">huggingface</a> 下载预训练模型文件放到GPT_SoVITS\pretrained_models\gsv-v2final-pretrained下</p>
+<p>中文额外需要下载<a href="https://paddlespeech.bj.bcebos.com/Parakeet/released_models/g2p/G2PWModel_1.1.zip">G2PWModel_1.1.zip</a>（下载G2PW模型,解压并重命名为<code>G2PWModel</code>,将其放到<code>GPT_SoVITS/text</code>目录下）。</p>
+</li>
+</ol>
+<hr>
+<h2 id="WebUI运行"><a href="#WebUI运行" class="headerlink" title="WebUI运行"></a>WebUI运行</h2><p>运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python webui.py</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154422098.png" class="" title="image-20250307154422098">
+
+<p>点击上图箭头所示，得到：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307154543851.png" class="" title="image-20250307154543851">
+
+<p>再按顺序点击，得到下一个页面：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250307160607494.png" class="" title="image-20250307160607494">
+
+<p>该界面的必填（选）项为：</p>
+<ul>
+<li>3~10 S的参考音频</li>
+<li>对应于参考音频的文本</li>
+<li>参考音频的语种</li>
+<li>需要合成的文本</li>
+<li>需要合成的语种（对应于需要合成的文本的语种）</li>
+</ul>
+<hr>
+<h3 id="单语言"><a href="#单语言" class="headerlink" title="单语言"></a>单语言</h3><p>以下做了一些实验（用的原神派蒙的音频，来自<a href="https://www.bilibili.com/opus/804258696892776484">Bili 红血球AE3803</a>）：</p>
+<table>
+<thead>
+<tr>
+<th>参考文本真实语种</th>
+<th>选择</th>
+<th>真实的需要合成的文本语种</th>
+<th>选择</th>
+<th>合成结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh</td>
+<td>zh</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>en</td>
+<td>zh</td>
+<td>读字母</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>zh</td>
+<td>zh正常，en读字母</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>en</td>
+<td>zh不读，en也不太正常</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>整体正常（吞了几个字）</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>中文口音明显</td>
+</tr>
+<tr>
+<td>zh</td>
+<td>zh</td>
+<td>en</td>
+<td>zh-en</td>
+<td>中文口音明显</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>en</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>读字母</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>en</td>
+<td>zh</td>
+<td>读字母</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>zh</td>
+<td>读字母，英语口音严重</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>en</td>
+<td>zh不读，en正常</td>
+</tr>
+<tr>
+<td>en</td>
+<td>en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>英语口音严重</td>
+</tr>
+<tr>
+<td>en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>英语口音严重</td>
+</tr>
+</tbody></table>
+<p>从上表可以看出：</p>
+<ul>
+<li>口音由参考文本决定，中文参考音频读英语会有中文口音，英语参考音频读中文会有英语口音</li>
+<li>选择的语种需包含真实的语种</li>
+</ul>
+<hr>
+<h3 id="中英混合"><a href="#中英混合" class="headerlink" title="中英混合"></a>中英混合</h3><p>那如果参考音频的真实语种是中英混合的，会不会合成的中文和英文均没有别捏的口音了呢？</p>
+<p>这里选用同事录得一段话进行实验，旨在判断通过zh-en参考音频能不能得到中英文都不别扭的合成效果。</p>
+<p><strong>参考音频1：</strong></p>
+<p>问候与告别，Good morning! How are you? See you tomorrow!介绍与询问， What’s your name? How old are you?</p>
+<p><strong>参考音频2：</strong></p>
+<p>问候与告别，Good morning! How are you? See you tomorrow!</p>
+<p><strong>合成文本:</strong></p>
+<p>从前，有一只小狐狸，它住在一片茂密的森林里。小狐狸聪明又勇敢，总是喜欢探索森林的每个角落。一天，它听说森林深处有一朵神奇的蓝色花，据说只要找到它，就能实现一个愿望。</p>
+<p>小狐狸踏上了寻找蓝色花的旅程。它翻过高山，越过小溪，遇到了善良的兔子、友好的松鼠，还有一只迷路的小鸟。小狐狸帮助了小鸟找到回家的路，小鸟感激地告诉它，蓝色花就藏在森林里最高的那棵橡树下。</p>
+<p>The little fox ran towards the great oak tree, its heart filled with excitement. When it finally arrived, it saw the glowing blue flower, shining like a star in the night. Carefully, the little fox made a wish: “I wish for happiness and kindness to spread across the forest.”</p>
+<p>As soon as it finished speaking, a gentle breeze carried golden light throughout the woods. The trees seemed greener, the flowers bloomed brighter, and laughter echoed among the animals. The little fox smiled, knowing that its wish had come true. From that day on, the forest was filled with joy, all because of one small fox’s big heart.</p>
+<table>
+<thead>
+<tr>
+<th>参考文本真实语种</th>
+<th>选择</th>
+<th>真实的需要合成的文本语种</th>
+<th>选择</th>
+<th>合成结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>zh-en</td>
+<td>en正常，zh节奏有点奇怪，像中国人模仿外国人口音说中文（意会一下🎃）</td>
+</tr>
+</tbody></table>
+<p><strong>好的吧，看来通过zh-en参考音频来让合成zh-en音频时没口音好像有难度（我暂时感觉这种方式做不到），可能是通过单一说话人的zh-en音频微调实现的？🤺</strong></p>
+<p>铛铛铛铛（不要问我为什么铛铛铛铛，看到最后你就知道了，也希望小友能看到这里😁），在这里补一个实验，用同事的中文录音：</p>
+<table>
+<thead>
+<tr>
+<th>参考文本真实语种</th>
+<th>选择</th>
+<th>真实的需要合成的文本语种</th>
+<th>选择</th>
+<th>合成结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>zh（同事）</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td>zh（同事）</td>
+<td>zh</td>
+<td>en</td>
+<td>zh-en</td>
+<td>正常</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>zh（派蒙）</td>
+<td>zh</td>
+<td>en</td>
+<td>en</td>
+<td>中文口音</td>
+</tr>
+<tr>
+<td>zh（派蒙）</td>
+<td>zh</td>
+<td>en</td>
+<td>zh-en</td>
+<td>中文口音</td>
+</tr>
+</tbody></table>
+<p>奇了怪，难道是游戏语音那种卡通配音缺少了某些元素？以致于作为参考音频时导致口语严重？（<strong>暂且这样理解吧</strong>）</p>
+<hr>
+<h3 id="音色融合"><a href="#音色融合" class="headerlink" title="音色融合"></a>音色融合</h3><p>先不管了，留个坑吧。接下来先实验下音色融合：</p>
+<h4 id="ESD数据集下载"><a href="#ESD数据集下载" class="headerlink" title="ESD数据集下载"></a>ESD数据集下载</h4><p>ESD（Emotion Speech  Data）数据集是一个专为语音合成与语音转换设计的公开资源，涵盖了350段平行语料，由10位母语为普通话的说话者以及10位英语母语者以5种不同的情感状态（中性、快乐、愤怒、悲伤、惊讶）录制。这一宝贵的数据库不仅包含了录音，还有配套的文字脚本，极大地方便了研究与开发。</p>
+<p>点击<a href="https://drive.google.com/file/d/1scuFwqh8s7KIYAfZW1Eu6088ZAK2SI-v/view?usp=sharing">这个链接</a>下载ESD数据集，下载完成后解压得到：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154717934.png" class="" title="image-20250310154717934">
+
+<table>
+<thead>
+<tr>
+<th>说话人编号</th>
+<th>性别</th>
+<th>语种</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>2</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>3</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>4</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>5</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>6</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>7</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>8</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>9</td>
+<td>女</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>10</td>
+<td>男</td>
+<td>zh</td>
+</tr>
+<tr>
+<td>11</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>12</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>13</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>14</td>
+<td>男</td>
+<td>en</td>
+</tr>
+<tr>
+<td>15</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>16</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>17</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>18</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>19</td>
+<td>女</td>
+<td>en</td>
+</tr>
+<tr>
+<td>20</td>
+<td>男</td>
+<td>en</td>
+</tr>
+</tbody></table>
+<p>前10位是普通话，后10位为英语，每位说话者以说话情感分类，并且给出的txt文件对应了不同音频的说话内容和情绪。</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310154936536.png" class="" title="image-20250310154936536">
+
+<hr>
+<h3 id="融合"><a href="#融合" class="headerlink" title="融合"></a>融合</h3><p>选取第三位说话者的0003_000982.wav作为参考音频，选择第7和第9位说话者的000982.wav与001029.wav作为融合音频，</p>
+<table>
+<thead>
+<tr>
+<th>音频序号</th>
+<th>音频内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>982</td>
+<td>有些人划船，有的人在进行花草活动。</td>
+</tr>
+<tr>
+<td>1029</td>
+<td>但是有时夏天比其它季节更迷人。</td>
+</tr>
+</tbody></table>
+<p>这里发现了个神奇的现象（一切的神奇现象都源于认知不足🤪），上面的单语言与中英混合合成出来的音频都有奇怪之处，单语言合成不同语种时，使用汉语为参考音频来合成英语时，有中国人说蹩脚英语的感觉，与此类似，使用英语为参考音频来合成汉语时，有外国人说蹩脚中文的感觉，这里的单语言中的是原神中派蒙的游戏内语音；而在中英混合场景使用的是同事的录音，参考音频直接为zh-en，但合成出来的中文有一些奇怪，英文正常；在这一节，笔者发现使用ESD提供的音频来试验，结果中英文部分都正常了，奇了个怪，那中英混个部分是不是还需要补一个同事只说中文作为参考音频的实验？（已补）</p>
+<p>此处实验发现，在右侧若只添加一条音频，则<strong>音色则会以该音色为准（与参考音频的音色没关系了）</strong>，如果<strong>添加两条及以上的音频，则会平均融合这两条及以上音色</strong>。</p>
+<p>好的，本来这节只为了验证融合音色的有效性，却意外发现了一些别的东西，只差微调的教程了，用到的时候再补上（相信不久就会补上了，现在是2025-3-10）。</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310171709253.png" class="" title="image-20250310171709253">
+
+<p>这里再总结一下：</p>
+<img src="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250310191549529.png" class="" title="image-20250310191549529">
+
+<p>这里的①我叫做参考音频，②我叫做融合音频（纯个人叫法，如有雷同纯属巧合，后续看论文的时候再矫正），这里我试验下来，感觉①控制情绪、语速、节奏等，②控制音色；只有②处不上传音频时，音色才由①处决定，否则音色与①处没有关系。</p>
+<p>思考题：想获得儿童的音色，开心的情绪，怎么做？</p>
+<p>答：①放开心的情绪，②放儿童的音色。</p>
+<hr>
+<h3 id="微调"><a href="#微调" class="headerlink" title="微调"></a>微调</h3><p>TODO….</p>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://github.com/RVC-Boss/GPT-SoVITS">https://github.com/RVC-Boss/GPT-SoVITS</a></li>
+<li><a href="https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e">https://www.yuque.com/baicaigongchang1145haoyuangong/ib3g1e</a></li>
+<li><a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2136">https://github.com/RVC-Boss/GPT-SoVITS/issues/2136</a></li>
+<li><a href="https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651">https://github.com/RVC-Boss/GPT-SoVITS/issues/2053#issue-2852950651</a></li>
+<li><a href="https://blog.csdn.net/gitblog_01104/article/details/141593574">https://blog.csdn.net/gitblog_01104/article/details/141593574</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>TTS</tag>
+        <tag>GSV</tag>
+        <tag>GPT-Sovits</tag>
+        <tag>ESD</tag>
       </tags>
   </entry>
   <entry>
@@ -3432,6 +3603,334 @@
         <tag>agent</tag>
         <tag>ReAct</tag>
         <tag>CoT</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从零训练大模型系统之ChatLM-mini-Chinese</title>
+    <url>/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面看了Qwen2.5 VL的技术报告，但感觉还是没有个具象的认识，遂打算从零训练个大模型，一般认为1B及以上参数量才是大模型，由于我只有一张4090，而且仅是为了对全流程有一个具象的认识，遂选择ChatLM-mini-Chinese模型，该模型仅有0.2 B参数量，本文记录我的实操过程，尽量记录详细并给出自己的思考。</p>
+<p>**项目地址：**<a href="https://github.com/charent/ChatLM-mini-Chinese">https://github.com/charent/ChatLM-mini-Chinese</a></p>
+<span id="more"></span>
+
+<hr>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>运行：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">git clone --depth <span class="number">1</span> https://github.com/charent/ChatLM-mini-Chinese.git</span><br><span class="line"></span><br><span class="line">cd ChatLM-mini-Chinese</span><br><span class="line"></span><br><span class="line">conda create -n chatlm_mini_chinese -y python=<span class="number">3.10</span></span><br><span class="line"></span><br><span class="line">conda activate chatlm_mini_chinese</span><br><span class="line"></span><br><span class="line">pip install -r ./requirements.txt</span><br><span class="line"></span><br><span class="line">(可选，查看torch是否支持cuda, 我的输出是<span class="number">2.11</span>+cu121就是支持cuda)：</span><br><span class="line">python -c <span class="string">&quot;import torch;print(torch.__version__)&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Tokenizer训练"><a href="#Tokenizer训练" class="headerlink" title="Tokenizer训练"></a>Tokenizer训练</h2><h3 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h3><p><a href="https://dumps.wikimedia.org/zhwiki/latest/zhwiki-latest-pages-articles-multistream.xml.bz2">点击这里</a>下载维基百科中文语料（3.2G），下载完成后，回到桌面（去你管理程序库的地方）打开个终端，运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/attardi/wikiextractor</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> wikiextractor</span><br></pre></td></tr></table></figure>
+
+<p>将下载的维基百科数据<code>zhwiki-latest-pages-articles-multistream.xml.bz2</code>放在该文件夹下，运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python -m wikiextractor.WikiExtractor -b 1000M -o zhwik zhwiki-latest-pages-articles-multistream.xml.bz2 </span><br></pre></td></tr></table></figure>
+
+<p>耗时：14:28~15:18</p>
+<p>或者：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python -m wikiextractor.WikiExtractor -b 1000M -o zhwik1 zhwiki-latest-pages-articles-multistream.xml.bz2 --no-templates</span><br></pre></td></tr></table></figure>
+
+<p>耗时：15:20~15:26</p>
+<p><strong>不同点：</strong></p>
+<p>不加<code>--no-templates</code></p>
+<p>&lt;doc id&#x3D;”13” url&#x3D;”<a href="https://zh.wikipedia.org/wiki?curid=13">https://zh.wikipedia.org/wiki?curid=13</a>“ title&#x3D;”数学”&gt;<br>数学</p>
+<p>&amp;lt;templatestyles src&#x3D;”Ambox&#x2F;style.css” &#x2F;&amp;gt;<br>&amp;lt;templatestyles src&#x3D;”Ambox&#x2F;style.css” &#x2F;&amp;gt;<br>数学是研究數量、结构…</p>
+<p>参考书目.<br>&amp;lt;templatestyles src&#x3D;”Template:ReflistH&#x2F;styles.css” &#x2F;&amp;gt;</p>
+<p>&lt;&#x2F;doc&gt;</p>
+<p>加<code>--no-templates</code></p>
+<p>&lt;doc id&#x3D;”13” url&#x3D;”<a href="https://zh.wikipedia.org/wiki?curid=13">https://zh.wikipedia.org/wiki?curid=13</a>“ title&#x3D;”数学”&gt;<br>数学</p>
+<p>数学是研究數量、结构…</p>
+<p>&lt;&#x2F;doc&gt;</p>
+<p>进入到你的提取好的wiki文件的文件夹，这些文件<code>wiki_00、wiki_01、wiki_02</code>内容是繁体的，要先转化为繁体，使用opencc，终端运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install opencc</span><br><span class="line"></span><br><span class="line">opencc -i wiki_00 -o wiki0.txt -c t2s.json</span><br></pre></td></tr></table></figure>
+
+<p>等待片刻完成后，将<code>wiki0.txt</code>复制到<code>ChatLM-mini-Chinese/data</code>文件夹下，打开<code>train_tokenizer.py</code>，将151行改成：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cropus_file = PROJECT_ROOT + <span class="string">&#x27;/data/wiki0.txt&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>这是我未运行训练命令时的内存占用：</p>
+<p>![2a06d299a89475b93bed10e77a714db](..&#x2F;..&#x2F;..&#x2F;..&#x2F;WeChat Files&#x2F;wxid_noknx8x7zbmf22&#x2F;FileStorage&#x2F;Temp&#x2F;2a06d299a89475b93bed10e77a714db.png)</p>
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><p>好的，在你的conda环境下开炮试下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python train_tokenizer.py</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/fa7def4c95ae9b52114c9913be5af16.png" class="" title="fa7def4c95ae9b52114c9913be5af16">
+
+<p>不行，运行不起来，把能关的都关上，只留三个终端（此时显存占用3.2G左右）：</p>
+<ul>
+<li>显存<code>watch -n 1 gpustat</code></li>
+<li>内存<code>htop</code></li>
+<li>运行训练代码<code>python train_tokenizer.py</code></li>
+</ul>
+<p>好的，运行起来了，但是也卡住了😅，口头描述一下吧：</p>
+<ul>
+<li>显存占用未增加</li>
+<li>内存占用30 G</li>
+<li>运行五分钟后还是被强制停止了</li>
+</ul>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/33f81f22284ae303577bc3f96d8f8ce.png" class="" title="33f81f22284ae303577bc3f96d8f8ce">
+
+<p>再想想办法，把Swp缓冲区释放了试试（但是发现虽然Swp清零了，但是这部分转移到Mem了）：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> swapoff -a</span><br><span class="line"><span class="built_in">sudo</span> swapon -a</span><br></pre></td></tr></table></figure>
+
+<p>开炮！好的，Mem从<code>5.20G</code>一直升高，升高到<code>28G</code>的样子升高<code>Swp</code>，<code>Swp</code>升满后，<code>Mem</code>升高至30.4G，就又卡住了(16:42)，等一会吧，(17:07)又被嘎了，耗时25分钟，没法了，得改下代码咯（不！就不改！），我要扩充Swp的容量：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">free -m  <span class="comment"># 查看当前系统的swap大小</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> swapoff -a <span class="comment"># 关闭swap</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=/swapfile bs=1G count=32  <span class="comment"># 创建新的swap文件，bs*count=swap大小，这里直接设置32G</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> 600 /swapfile <span class="comment"># 设置权限</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> mkswap /swapfile  <span class="comment"># 设置swap</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> swapon /swapfile  <span class="comment"># 启用swap</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;/swapfile none swap sw 0 0&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/fstab  <span class="comment"># 使Swap文件永久生效（重启试了，确实有效）</span></span><br></pre></td></tr></table></figure>
+
+<p>然后，再：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python train_tokenizer.py</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/9f1e7ddf11ec364329f95d8a4946541.png" class="" title="9f1e7ddf11ec364329f95d8a4946541">
+
+<h3 id="简单测试"><a href="#简单测试" class="headerlink" title="简单测试"></a>简单测试</h3><p>成了！并且也很快，反正不要半小时，简单的体验下这是个什么：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoTokenizer</span><br><span class="line"></span><br><span class="line"><span class="comment"># 你的 tokenizer 存放路径</span></span><br><span class="line">tokenizer_path = <span class="string">&quot;/home/chr/桌面/ChatLM-mini-Chinese/model_save/hf_tokenizer&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载 tokenizer</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.直接加载测试Tokenizer</span></span><br><span class="line"><span class="comment"># 测试分词效果</span></span><br><span class="line">text = <span class="string">&quot;你好，欢迎使用 Tokenizer！&quot;</span></span><br><span class="line">tokens = tokenizer.tokenize(text)</span><br><span class="line">ids = tokenizer.convert_tokens_to_ids(tokens)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;原始文本:&quot;</span>, text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;分词结果:&quot;</span>, tokens)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Token ID:&quot;</span>, ids)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.使用tokenizer.encoder()和tokenizer.decoder()</span></span><br><span class="line">encoded = tokenizer.encode(text)</span><br><span class="line">decoded = tokenizer.decode(encoded)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;编码结果:&quot;</span>, encoded)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;解码结果:&quot;</span>, decoded)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.批量测试不同类型文本</span></span><br><span class="line">test_cases = [</span><br><span class="line">    <span class="string">&quot;你好，我叫小明。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;AI 发展迅猛。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;今天的天气怎么样？&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ChatGPT 是一个大型语言模型。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;BERT, GPT-3 和 LLaMA 是 NLP 领域的重要模型。&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> text <span class="keyword">in</span> test_cases:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;原始文本: <span class="subst">&#123;text&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;分词结果: <span class="subst">&#123;tokenizer.tokenize(text)&#125;</span>\n&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4.统计词表大小</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;词表大小:&quot;</span>, tokenizer.vocab_size)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5.统计不同文本的平均Token长度</span></span><br><span class="line">texts = [<span class="string">&quot;今天天气很好，我们去公园玩吧！&quot;</span>,</span><br><span class="line">         <span class="string">&quot;Transformer 是一种基于自注意力机制的神经网络模型。&quot;</span>,</span><br><span class="line">         <span class="string">&quot;BERT 和 GPT 是 NLP 领域的重要突破。&quot;</span>,</span><br><span class="line">         <span class="string">&quot;自然语言处理（NLP）是人工智能的一个分支。&quot;</span>,</span><br><span class="line">         <span class="string">&quot;这是一条很短的句子。&quot;</span>]</span><br><span class="line"></span><br><span class="line">lengths = [<span class="built_in">len</span>(tokenizer.tokenize(text)) <span class="keyword">for</span> text <span class="keyword">in</span> texts]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;平均 Token 长度:&quot;</span>, <span class="built_in">sum</span>(lengths) / <span class="built_in">len</span>(lengths))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;单个文本 Token 数:&quot;</span>, lengths)</span><br></pre></td></tr></table></figure>
+
+<p><strong>输出：</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">/home/<span class="built_in">chr</span>/anaconda3/envs/chatlm_mini_chinese/<span class="built_in">bin</span>/python /home/<span class="built_in">chr</span>/桌面/ChatLM-mini-Chinese/val_tokenizer.py </span><br><span class="line">原始文本: 你好，欢迎使用 Tokenizer！</span><br><span class="line">分词结果: [<span class="string">&#x27;▁你&#x27;</span>, <span class="string">&#x27;好&#x27;</span>, <span class="string">&#x27;▁,&#x27;</span>, <span class="string">&#x27;▁&#x27;</span>, <span class="string">&#x27;欢迎&#x27;</span>, <span class="string">&#x27;使用&#x27;</span>, <span class="string">&#x27;▁T&#x27;</span>, <span class="string">&#x27;ok&#x27;</span>, <span class="string">&#x27;en&#x27;</span>, <span class="string">&#x27;iz&#x27;</span>, <span class="string">&#x27;er&#x27;</span>, <span class="string">&#x27;▁!&#x27;</span>]</span><br><span class="line">Token ID: [<span class="number">21418</span>, <span class="number">6386</span>, <span class="number">19161</span>, <span class="number">2986</span>, <span class="number">20848</span>, <span class="number">19253</span>, <span class="number">19318</span>, <span class="number">21700</span>, <span class="number">19311</span>, <span class="number">24092</span>, <span class="number">19248</span>, <span class="number">19703</span>]</span><br><span class="line">编码结果: [<span class="number">21418</span>, <span class="number">6386</span>, <span class="number">19161</span>, <span class="number">2986</span>, <span class="number">20848</span>, <span class="number">19253</span>, <span class="number">19318</span>, <span class="number">21700</span>, <span class="number">19311</span>, <span class="number">24092</span>, <span class="number">19248</span>, <span class="number">19703</span>]</span><br><span class="line">解码结果: 你好, 欢迎使用 Tokenizer!</span><br><span class="line">原始文本: 你好，我叫小明。</span><br><span class="line">分词结果: [<span class="string">&#x27;▁你&#x27;</span>, <span class="string">&#x27;好&#x27;</span>, <span class="string">&#x27;▁,&#x27;</span>, <span class="string">&#x27;▁我&#x27;</span>, <span class="string">&#x27;叫&#x27;</span>, <span class="string">&#x27;小&#x27;</span>, <span class="string">&#x27;明&#x27;</span>, <span class="string">&#x27;▁。&#x27;</span>]</span><br><span class="line"></span><br><span class="line">原始文本: AI 发展迅猛。</span><br><span class="line">分词结果: [<span class="string">&#x27;▁A&#x27;</span>, <span class="string">&#x27;I&#x27;</span>, <span class="string">&#x27;▁发展&#x27;</span>, <span class="string">&#x27;迅&#x27;</span>, <span class="string">&#x27;猛&#x27;</span>, <span class="string">&#x27;▁。&#x27;</span>]</span><br><span class="line"></span><br><span class="line">原始文本: 今天的天气怎么样？</span><br><span class="line">分词结果: [<span class="string">&#x27;▁今天&#x27;</span>, <span class="string">&#x27;的天&#x27;</span>, <span class="string">&#x27;气&#x27;</span>, <span class="string">&#x27;怎么&#x27;</span>, <span class="string">&#x27;样&#x27;</span>, <span class="string">&#x27;▁?&#x27;</span>]</span><br><span class="line"></span><br><span class="line">原始文本: ChatGPT 是一个大型语言模型。</span><br><span class="line">分词结果: [<span class="string">&#x27;▁Ch&#x27;</span>, <span class="string">&#x27;at&#x27;</span>, <span class="string">&#x27;GP&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;▁是一个&#x27;</span>, <span class="string">&#x27;大型&#x27;</span>, <span class="string">&#x27;语言&#x27;</span>, <span class="string">&#x27;模型&#x27;</span>, <span class="string">&#x27;▁。&#x27;</span>]</span><br><span class="line"></span><br><span class="line">原始文本: BERT, GPT-<span class="number">3</span> 和 LLaMA 是 NLP 领域的重要模型。</span><br><span class="line">分词结果: [<span class="string">&#x27;▁B&#x27;</span>, <span class="string">&#x27;ER&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;▁,&#x27;</span>, <span class="string">&#x27;▁G&#x27;</span>, <span class="string">&#x27;P&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;▁-&#x27;</span>, <span class="string">&#x27;▁3&#x27;</span>, <span class="string">&#x27;▁和&#x27;</span>, <span class="string">&#x27;▁L&#x27;</span>, <span class="string">&#x27;L&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;MA&#x27;</span>, <span class="string">&#x27;▁是&#x27;</span>, <span class="string">&#x27;▁N&#x27;</span>, <span class="string">&#x27;L&#x27;</span>, <span class="string">&#x27;P&#x27;</span>, <span class="string">&#x27;▁&#x27;</span>, <span class="string">&#x27;领域&#x27;</span>, <span class="string">&#x27;的重要&#x27;</span>, <span class="string">&#x27;模型&#x27;</span>, <span class="string">&#x27;▁。&#x27;</span>]</span><br><span class="line"></span><br><span class="line">词表大小: <span class="number">40960</span></span><br><span class="line">平均 Token 长度: <span class="number">11.8</span></span><br><span class="line">单个文本 Token 数: [<span class="number">10</span>, <span class="number">13</span>, <span class="number">16</span>, <span class="number">14</span>, <span class="number">6</span>]</span><br><span class="line"></span><br><span class="line">Process finished <span class="keyword">with</span> exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="预训练"><a href="#预训练" class="headerlink" title="预训练"></a>预训练</h2><h3 id="预训练数据集下载"><a href="#预训练数据集下载" class="headerlink" title="预训练数据集下载"></a>预训练数据集下载</h3><ol>
+<li><p><a href="https://drive.google.com/open?id=1u2yW_XohbYL2YAK6Bzc5XrngHstQTf0v">社区问答json版(webtext2019zh) 大规模高质量数据集</a></p>
+<p>将下载完成的<code>webtext2019zh.zip</code>放到<code>data/raw_data</code>下（没有就创建），并运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">unzip webtext2019zh.zip</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意，解压得到三个文件<code>web_text_zh_testa.json</code>（我没写错）、<code>web_text_zh_train.json</code>和<code>web_text_zh_valid.json</code>，需要把<code>web_text_zh_testa.json</code>改为<code>web_text_zh_test.json</code>。</p>
+</blockquote>
+</li>
+<li><p><a href="https://www.kaggle.com/datasets/terrychanorg/baike-qa2019?resource=download&amp;select=baike_qa_train.json">baike_qa2019百科问答类</a></p>
+<p>操作与1类似，不再赘述</p>
+</li>
+<li><p>中国医药领域问答数据集</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 进入data/raw_data目录</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/Toyhom/Chinese-medical-dialogue-data.git</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>克隆完成后，将文件夹名称改为chinese_medical_dialogue_datasets</p>
+</blockquote>
+</li>
+<li><p>知乎问答数据</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 也是在data/raw_data目录</span></span><br><span class="line">git <span class="built_in">clone</span> https://huggingface.co/datasets/wangrui6/Zhihu-KOL</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>克隆完成后，将文件夹名称改为zhihu-kol。</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="清洗数据"><a href="#清洗数据" class="headerlink" title="清洗数据"></a>清洗数据</h3><p>清洗数据的脚本位于<code>utils/raw_data_process.py</code>，在运行之前先略微配置下代码，将<code>process_web_text</code>下面的代码全注释掉：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/02936efbc49baa2164c16c2041a6482.png" class="" title="02936efbc49baa2164c16c2041a6482">
+
+<p>conda环境下运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python raw_data_process.py</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/581aa414b4e49cd72090ca0f8047842.png" class="" title="581aa414b4e49cd72090ca0f8047842">
+
+<p>而且<code>logs/raw_data_process.log</code>中也会有调试信息：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/56990b8a32e9c9d383bd24529cbb991.png" class="" title="56990b8a32e9c9d383bd24529cbb991">
+
+<p>好的，继续，注释掉<code>process_web_text</code>，打开<code>process_bake_qa</code>，<code>process_chinese_medical_datasets</code>，<code>process_zhihu_kol_dataset</code>：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/5adfc70a140c401c06ac7fa4f7aa95f.png" class="" title="5adfc70a140c401c06ac7fa4f7aa95f">
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/79528face960a3e59d52c9934c5caf3.png" class="" title="79528face960a3e59d52c9934c5caf3">
+
+<p>还差一些步骤（先把原来步骤注释掉），如图：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/018ade7a8ad04e38063ce00ac67844a.png" class="" title="018ade7a8ad04e38063ce00ac67844a">
+
+<p>然后继续：<code>python raw_data_process.py</code>，经过漫长的等待：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">(chatlm_mini_chinese) chr@chr:~/桌面/ChatLM-mini-Chinese/utils$ python raw_data_process.py </span><br><span class="line">process file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_data/my_web_text_zh.parquet</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:58</span><br><span class="line">process file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_data/my_baike_qa.parquet</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:32</span><br><span class="line">process file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_data/zhihu_kol.parquet</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:34</span><br><span class="line">process file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_data/my_chinese_medical_dialogue.parquet</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:15</span><br><span class="line">[2025-03-21 16:08:24.638] [INFO]: merge into file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_dataset.parquet, 全部数据共5718789行，清洗后剩余5718644行</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 2:34:53</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:02:30</span><br><span class="line">[2025-03-21 18:45:51.019] [INFO]: merge into file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_dataset_no_dulpticates.parquet, 全部数据共5718644行，文档去重后剩余5519322行</span><br><span class="line">start shuffle...</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:02:34</span><br><span class="line">[2025-03-21 18:50:53.355] [INFO]: [[<span class="string">&#x27;file_name&#x27;</span>, <span class="string">&#x27;count&#x27;</span>], [<span class="string">&#x27;my_dataset.parquet&#x27;</span>, 5718644], [<span class="string">&#x27;汇总&#x27;</span>, 5718644]]</span><br><span class="line">┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┓</span><br><span class="line">┃ file_name          ┃ count┃</span><br><span class="line">┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━┩</span><br><span class="line">│ my_dataset.parquet │ 5718644 │</span><br><span class="line">├────────────────────┼─────────┤</span><br><span class="line">│ 汇总               │ 5718644 │</span><br><span class="line">└────────────────────┴─────────┘</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:08</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/96ec2e98b0f075e87284581846a2a11.png" class="" title="96ec2e98b0f075e87284581846a2a11">
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/ff07f320532d665cb0891e865eb005a.png" class="" title="ff07f320532d665cb0891e865eb005a">
+
+<p>但是呢，进度在这里不动了，而且图已经画出来了（画图是最后一步），</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/aa9445b8e38fdec2f0f2167921cb7f3.png" class="" title="aa9445b8e38fdec2f0f2167921cb7f3">
+
+<p>而且内存占用也没释放，点回车也没用😅，怎么办怎么办，不管了，应该是运行完了，直接ctrl+c给关掉。</p>
+<h3 id="预训练（单机单卡）"><a href="#预训练（单机单卡）" class="headerlink" title="预训练（单机单卡）"></a>预训练（单机单卡）</h3><p>好的，开炮！</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/758a746fde78ede686731711c97f781.png" class="" title="758a746fde78ede686731711c97f781">
+
+<p>哦，说在<code>model_save</code>文件夹下找不到训练好的<code>Tokenizer</code>，前面明明是保存到<code>model_save/hf_tokenizer</code>下了，在<code>model_save</code>下哪能找到，打开<code>config.py</code>，箭头位置改一下：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/image-20250321202529850.png" class="" title="image-20250321202529850">
+
+<p>开炮！</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/b47fb1d38c4863fbb8fbf699b330640.png" class="" title="b47fb1d38c4863fbb8fbf699b330640">
+
+<p>显存、内存占用：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/6a6bcabed9b7bb65acae8b98a741880.png" class="" title="6a6bcabed9b7bb65acae8b98a741880">
+
+<p>好的，等待着吧，现在是25-3-21（20:28）。</p>
+<p>TODO…</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="token-type"><a href="#token-type" class="headerlink" title="token_type"></a>token_type</h3><p><code>token_type=&#39;char&#39;</code>（字符级）和 <code>token_type=&#39;byte&#39;</code>（字节级）的主要区别在于 <strong>分词粒度、可扩展性和适用场景</strong>，下面详细分析它们的优缺点：</p>
+<p><strong>1. <code>char</code>（字符级 BPE）</strong></p>
+<p><strong>📌 原理</strong>：</p>
+<ul>
+<li>按照<strong>字符</strong>（Character）单位进行分词，不会拆分字符。</li>
+<li>例如 <code>&quot;中国&quot;</code> 会作为两个独立字符 <code>&quot;中&quot;</code> 和 <code>&quot;国&quot;</code>。</li>
+</ul>
+<p><strong>✅ 优势</strong></p>
+<ol>
+<li><strong>更直观易理解</strong><ul>
+<li>训练出来的 Tokenizer 结果更接近人类的直觉，比如 <code>&quot;你好&quot;</code> 会分成 <code>&quot;你&quot;</code> 和 <code>&quot;好&quot;</code>，而不会拆分成更小的部分。</li>
+</ul>
+</li>
+<li><strong>适用于汉语、日语等非空格分隔语言</strong><ul>
+<li>适用于中文、日文等 <strong>没有空格分词的语言</strong>，可以保留完整字符，提高可读性。</li>
+</ul>
+</li>
+<li><strong>更少的 OOV（Out of Vocabulary，未登录词）</strong><ul>
+<li>只要训练语料足够大，基本不会有 OOV，因为所有常见字符都会出现在词表里。</li>
+</ul>
+</li>
+<li><strong>适用于字符粒度的 NLP 任务</strong><ul>
+<li>适用于 <strong>拼写错误检测、文本纠错、光学字符识别（OCR）</strong>，因为能处理每个字符。</li>
+</ul>
+</li>
+</ol>
+<p><strong>❌ 缺点</strong></p>
+<ol>
+<li><strong>词表较大</strong><ul>
+<li>每个字符都是一个 Token，导致 Token 总数较多（尤其是 Unicode 语言）。</li>
+</ul>
+</li>
+<li><strong>序列长度较长</strong><ul>
+<li>例如 <code>[&#39;你&#39;, &#39;好&#39;, &#39;世&#39;, &#39;界&#39;]</code> 这样拆分时，<strong>一个单词可能会被拆成多个字符</strong>，导致序列变长，增加 Transformer 计算量。</li>
+</ul>
+</li>
+</ol>
+<p><strong>2. <code>byte</code>（字节级 BPE）</strong></p>
+<p><strong>📌 原理</strong>：</p>
+<ul>
+<li>按照<strong>字节</strong>（Byte）进行分词，而不是按照字符。</li>
+<li>例如 <code>&quot;你好&quot;</code> 在 UTF-8 编码下会被拆分成多个字节 <code>\xe4\xbd\xa0</code> 和 <code>\xe5\xa5\xbd</code>。</li>
+</ul>
+<p><strong>✅ 优势</strong></p>
+<ol>
+<li><strong>通用性更强</strong><ul>
+<li>能够处理 <strong>任何语言、特殊符号、表情符号</strong>，甚至可以用于 <strong>代码（编程语言）</strong>。</li>
+</ul>
+</li>
+<li><strong>词表更小</strong><ul>
+<li>只需学习 <strong>256 个字节（Byte-Level）</strong>，就能覆盖所有 Unicode 字符，不会有 OOV。</li>
+</ul>
+</li>
+<li><strong>数据压缩效果好</strong><ul>
+<li>由于 BPE 在字节级别运作，它可以动态学习子词，从而压缩文本（减少 Token 数量）。</li>
+</ul>
+</li>
+<li><strong>适用于多语言场景</strong><ul>
+<li>比如 GPT-2 选择 Byte-level BPE 就是为了支持<strong>多种语言</strong>。</li>
+</ul>
+</li>
+</ol>
+<p><strong>❌ 缺点</strong></p>
+<ol>
+<li><strong>可读性差</strong><ul>
+<li><code>byte</code> 级别的分词不可读，例如 <code>&quot;你好&quot;</code> 可能变成 <code>[&#39;\xe4\xbd\xa0&#39;, &#39;\xe5\xa5\xbd&#39;]</code>，对于人类来说完全看不懂。</li>
+</ul>
+</li>
+<li><strong>分词不自然</strong><ul>
+<li>例如 <code>&quot;apple&quot;</code> 可能变成 <code>[&quot;ap&quot;, &quot;ple&quot;]</code>，会拆分奇怪的部分。</li>
+</ul>
+</li>
+<li><strong>中文、日文、韩文（CJK 语言）分词效果不如 <code>char</code></strong><ul>
+<li>由于 <code>byte</code> 级别是基于 <strong>Unicode 字节流</strong>，<strong>对于 CJK 语言会拆得很碎</strong>，导致上下文丢失。</li>
+</ul>
+</li>
+</ol>
+<p><strong>3. <code>char</code> vs <code>byte</code> 选择建议</strong></p>
+<table>
+<thead>
+<tr>
+<th>选择场景</th>
+<th><code>char</code>（字符级 BPE）</th>
+<th><code>byte</code>（字节级 BPE）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>适用语言</strong></td>
+<td>中文、日文、韩文（CJK）</td>
+<td>多语言（特别是含代码、符号）</td>
+</tr>
+<tr>
+<td><strong>可读性</strong></td>
+<td>好，人能直接理解</td>
+<td>差，分词结果不可读</td>
+</tr>
+<tr>
+<td><strong>OOV（未登录词）</strong></td>
+<td>低，基本不会有</td>
+<td>永远没有 OOV</td>
+</tr>
+<tr>
+<td><strong>模型适配</strong></td>
+<td>更适合 NLP 任务</td>
+<td>适合 GPT-2、编程语言</td>
+</tr>
+<tr>
+<td><strong>词表大小</strong></td>
+<td>较大</td>
+<td>非常小（256 tokens）</td>
+</tr>
+<tr>
+<td><strong>序列长度</strong></td>
+<td>较长</td>
+<td>较短（更适合 Transformer）</td>
+</tr>
+<tr>
+<td><strong>特殊字符处理</strong></td>
+<td>需要额外处理符号</td>
+<td>直接支持任何符号</td>
+</tr>
+</tbody></table>
+<p><strong>👉 推荐选择</strong></p>
+<ul>
+<li><strong>中文 NLP（ASR、翻译、摘要） → <code>char</code></strong></li>
+<li><strong>多语言 NLP（GPT-2, LLaMA） → <code>byte</code></strong></li>
+<li><strong>代码&#x2F;表情符号&#x2F;特殊符号 NLP → <code>byte</code></strong></li>
+<li><strong>光学字符识别（OCR） → <code>char</code></strong></li>
+<li><strong>数据量小，担心 OOV → <code>byte</code></strong></li>
+</ul>
+<p><strong>4. 总结</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>char</code>（字符级 BPE）</th>
+<th><code>byte</code>（字节级 BPE）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ 适合 <strong>中文、日语等非空格分隔语言</strong></td>
+<td>✅ 适合 <strong>多语言（GPT-2&#x2F;LLaMA）</strong></td>
+</tr>
+<tr>
+<td>✅ <strong>可读性高</strong>，易理解</td>
+<td>❌ <strong>不可读</strong>，难以分析</td>
+</tr>
+<tr>
+<td>❌ <strong>词表较大</strong>，占内存</td>
+<td>✅ <strong>词表小</strong>，节省显存</td>
+</tr>
+<tr>
+<td>❌ <strong>序列长度长</strong>，增加计算量</td>
+<td>✅ <strong>序列短</strong>，更适合 Transformer</td>
+</tr>
+<tr>
+<td>✅ 适合 <strong>OCR、文本生成</strong></td>
+<td>✅ 适合 <strong>代码&#x2F;NLP&#x2F;通用 AI</strong></td>
+</tr>
+</tbody></table>
+<p><strong>最终建议</strong>：</p>
+<ul>
+<li><strong>处理单一语言（如中文 NLP）</strong> → <strong><code>char</code> 更合适</strong></li>
+<li><strong>多语言处理（如 GPT-2）</strong> → <strong><code>byte</code> 更合适</strong></li>
+<li><strong>如果不确定，默认 <code>char</code> 即可</strong> 🚀</li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://blog.csdn.net/gmaaa123/article/details/140319691">https://blog.csdn.net/gmaaa123/article/details/140319691</a></li>
+<li><a href="https://github.com/charent/ChatLM-mini-Chinese">https://github.com/charent/ChatLM-mini-Chinese</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>code</category>
+      </categories>
+      <tags>
+        <tag>LLM</tag>
+        <tag>ChatLM-mini-Chinese</tag>
+        <tag>Pre-train</tag>
+        <tag>SFT</tag>
+        <tag>DPO</tag>
       </tags>
   </entry>
   <entry>

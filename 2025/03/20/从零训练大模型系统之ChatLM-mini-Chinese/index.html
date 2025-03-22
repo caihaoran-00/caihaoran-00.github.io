@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言前面看了Qwen2.5 VL的技术报告，但感觉还是没有个具象的认识，遂打算从零训练个大模型，一般认为1B及以上参数量才是大模型，由于我只有一张4090，而且仅是为了对全流程有一个具象的认识，遂选择ChatLM-mini-Chinese模型，该模型仅有0.2 B参数量，本文记录我的实操过程，尽量记录详细并给出自己的思考。 **项目地址：**https:&#x2F;&#x2F;github.com&#x2F;charent&#x2F;C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零训练大模型系统之ChatLM-mini-Chinese">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言前面看了Qwen2.5 VL的技术报告，但感觉还是没有个具象的认识，遂打算从零训练个大模型，一般认为1B及以上参数量才是大模型，由于我只有一张4090，而且仅是为了对全流程有一个具象的认识，遂选择ChatLM-mini-Chinese模型，该模型仅有0.2 B参数量，本文记录我的实操过程，尽量记录详细并给出自己的思考。 **项目地址：**https:&#x2F;&#x2F;github.com&#x2F;charent&#x2F;C">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/fa7def4c95ae9b52114c9913be5af16.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/33f81f22284ae303577bc3f96d8f8ce.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/9f1e7ddf11ec364329f95d8a4946541.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/02936efbc49baa2164c16c2041a6482.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/581aa414b4e49cd72090ca0f8047842.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/56990b8a32e9c9d383bd24529cbb991.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/5adfc70a140c401c06ac7fa4f7aa95f.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/79528face960a3e59d52c9934c5caf3.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/018ade7a8ad04e38063ce00ac67844a.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/96ec2e98b0f075e87284581846a2a11.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/ff07f320532d665cb0891e865eb005a.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/aa9445b8e38fdec2f0f2167921cb7f3.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/758a746fde78ede686731711c97f781.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/image-20250321202529850.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/b47fb1d38c4863fbb8fbf699b330640.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/6a6bcabed9b7bb65acae8b98a741880.png">
+<meta property="article:published_time" content="2025-03-20T02:37:10.000Z">
+<meta property="article:modified_time" content="2025-03-21T12:29:15.396Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="ChatLM-mini-Chinese">
+<meta property="article:tag" content="Pre-train">
+<meta property="article:tag" content="SFT">
+<meta property="article:tag" content="DPO">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/fa7def4c95ae9b52114c9913be5af16.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/","path":"2025/03/20/从零训练大模型系统之ChatLM-mini-Chinese/","title":"从零训练大模型系统之ChatLM-mini-Chinese"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>从零训练大模型系统之ChatLM-mini-Chinese | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tokenizer%E8%AE%AD%E7%BB%83"><span class="nav-number">3.</span> <span class="nav-text">Tokenizer训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="nav-number">3.1.</span> <span class="nav-text">数据准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83"><span class="nav-number">3.2.</span> <span class="nav-text">训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E6%B5%8B%E8%AF%95"><span class="nav-number">3.3.</span> <span class="nav-text">简单测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-number">4.</span> <span class="nav-text">预训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8B%E8%BD%BD"><span class="nav-number">4.1.</span> <span class="nav-text">预训练数据集下载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%85%E6%B4%97%E6%95%B0%E6%8D%AE"><span class="nav-number">4.2.</span> <span class="nav-text">清洗数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E8%AE%AD%E7%BB%83%EF%BC%88%E5%8D%95%E6%9C%BA%E5%8D%95%E5%8D%A1%EF%BC%89"><span class="nav-number">4.3.</span> <span class="nav-text">预训练（单机单卡）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">5.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#token-type"><span class="nav-number">5.1.</span> <span class="nav-text">token_type</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="从零训练大模型系统之ChatLM-mini-Chinese | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从零训练大模型系统之ChatLM-mini-Chinese
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-20 10:37:10" itemprop="dateCreated datePublished" datetime="2025-03-20T10:37:10+08:00">2025-03-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-21 20:29:15" itemprop="dateModified" datetime="2025-03-21T20:29:15+08:00">2025-03-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>11 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面看了Qwen2.5 VL的技术报告，但感觉还是没有个具象的认识，遂打算从零训练个大模型，一般认为1B及以上参数量才是大模型，由于我只有一张4090，而且仅是为了对全流程有一个具象的认识，遂选择ChatLM-mini-Chinese模型，该模型仅有0.2 B参数量，本文记录我的实操过程，尽量记录详细并给出自己的思考。</p>
+<p>**项目地址：**<a target="_blank" rel="noopener" href="https://github.com/charent/ChatLM-mini-Chinese">https://github.com/charent/ChatLM-mini-Chinese</a></p>
+<span id="more"></span>
+
+<hr>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>运行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">git clone --depth <span class="number">1</span> https://github.com/charent/ChatLM-mini-Chinese.git</span><br><span class="line"></span><br><span class="line">cd ChatLM-mini-Chinese</span><br><span class="line"></span><br><span class="line">conda create -n chatlm_mini_chinese -y python=<span class="number">3.10</span></span><br><span class="line"></span><br><span class="line">conda activate chatlm_mini_chinese</span><br><span class="line"></span><br><span class="line">pip install -r ./requirements.txt</span><br><span class="line"></span><br><span class="line">(可选，查看torch是否支持cuda, 我的输出是<span class="number">2.11</span>+cu121就是支持cuda)：</span><br><span class="line">python -c <span class="string">&quot;import torch;print(torch.__version__)&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Tokenizer训练"><a href="#Tokenizer训练" class="headerlink" title="Tokenizer训练"></a>Tokenizer训练</h2><h3 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h3><p><a target="_blank" rel="noopener" href="https://dumps.wikimedia.org/zhwiki/latest/zhwiki-latest-pages-articles-multistream.xml.bz2">点击这里</a>下载维基百科中文语料（3.2G），下载完成后，回到桌面（去你管理程序库的地方）打开个终端，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/attardi/wikiextractor</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> wikiextractor</span><br></pre></td></tr></table></figure>
+
+<p>将下载的维基百科数据<code>zhwiki-latest-pages-articles-multistream.xml.bz2</code>放在该文件夹下，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m wikiextractor.WikiExtractor -b 1000M -o zhwik zhwiki-latest-pages-articles-multistream.xml.bz2 </span><br></pre></td></tr></table></figure>
+
+<p>耗时：14:28~15:18</p>
+<p>或者：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m wikiextractor.WikiExtractor -b 1000M -o zhwik1 zhwiki-latest-pages-articles-multistream.xml.bz2 --no-templates</span><br></pre></td></tr></table></figure>
+
+<p>耗时：15:20~15:26</p>
+<p><strong>不同点：</strong></p>
+<p>不加<code>--no-templates</code></p>
+<p>&lt;doc id&#x3D;”13” url&#x3D;”<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki?curid=13">https://zh.wikipedia.org/wiki?curid=13</a>“ title&#x3D;”数学”&gt;<br>数学</p>
+<p>&amp;lt;templatestyles src&#x3D;”Ambox&#x2F;style.css” &#x2F;&amp;gt;<br>&amp;lt;templatestyles src&#x3D;”Ambox&#x2F;style.css” &#x2F;&amp;gt;<br>数学是研究數量、结构…</p>
+<p>参考书目.<br>&amp;lt;templatestyles src&#x3D;”Template:ReflistH&#x2F;styles.css” &#x2F;&amp;gt;</p>
+<p>&lt;&#x2F;doc&gt;</p>
+<p>加<code>--no-templates</code></p>
+<p>&lt;doc id&#x3D;”13” url&#x3D;”<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki?curid=13">https://zh.wikipedia.org/wiki?curid=13</a>“ title&#x3D;”数学”&gt;<br>数学</p>
+<p>数学是研究數量、结构…</p>
+<p>&lt;&#x2F;doc&gt;</p>
+<p>进入到你的提取好的wiki文件的文件夹，这些文件<code>wiki_00、wiki_01、wiki_02</code>内容是繁体的，要先转化为繁体，使用opencc，终端运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install opencc</span><br><span class="line"></span><br><span class="line">opencc -i wiki_00 -o wiki0.txt -c t2s.json</span><br></pre></td></tr></table></figure>
+
+<p>等待片刻完成后，将<code>wiki0.txt</code>复制到<code>ChatLM-mini-Chinese/data</code>文件夹下，打开<code>train_tokenizer.py</code>，将151行改成：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cropus_file = PROJECT_ROOT + <span class="string">&#x27;/data/wiki0.txt&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>这是我未运行训练命令时的内存占用：</p>
+<p>![2a06d299a89475b93bed10e77a714db](..&#x2F;..&#x2F;..&#x2F;..&#x2F;WeChat Files&#x2F;wxid_noknx8x7zbmf22&#x2F;FileStorage&#x2F;Temp&#x2F;2a06d299a89475b93bed10e77a714db.png)</p>
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><p>好的，在你的conda环境下开炮试下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python train_tokenizer.py</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/fa7def4c95ae9b52114c9913be5af16.png" class="" title="fa7def4c95ae9b52114c9913be5af16">
+
+<p>不行，运行不起来，把能关的都关上，只留三个终端（此时显存占用3.2G左右）：</p>
+<ul>
+<li>显存<code>watch -n 1 gpustat</code></li>
+<li>内存<code>htop</code></li>
+<li>运行训练代码<code>python train_tokenizer.py</code></li>
+</ul>
+<p>好的，运行起来了，但是也卡住了😅，口头描述一下吧：</p>
+<ul>
+<li>显存占用未增加</li>
+<li>内存占用30 G</li>
+<li>运行五分钟后还是被强制停止了</li>
+</ul>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/33f81f22284ae303577bc3f96d8f8ce.png" class="" title="33f81f22284ae303577bc3f96d8f8ce">
+
+<p>再想想办法，把Swp缓冲区释放了试试（但是发现虽然Swp清零了，但是这部分转移到Mem了）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> swapoff -a</span><br><span class="line"><span class="built_in">sudo</span> swapon -a</span><br></pre></td></tr></table></figure>
+
+<p>开炮！好的，Mem从<code>5.20G</code>一直升高，升高到<code>28G</code>的样子升高<code>Swp</code>，<code>Swp</code>升满后，<code>Mem</code>升高至30.4G，就又卡住了(16:42)，等一会吧，(17:07)又被嘎了，耗时25分钟，没法了，得改下代码咯（不！就不改！），我要扩充Swp的容量：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">free -m  <span class="comment"># 查看当前系统的swap大小</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> swapoff -a <span class="comment"># 关闭swap</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">dd</span> <span class="keyword">if</span>=/dev/zero of=/swapfile bs=1G count=32  <span class="comment"># 创建新的swap文件，bs*count=swap大小，这里直接设置32G</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> 600 /swapfile <span class="comment"># 设置权限</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> mkswap /swapfile  <span class="comment"># 设置swap</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> swapon /swapfile  <span class="comment"># 启用swap</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;/swapfile none swap sw 0 0&quot;</span> | <span class="built_in">sudo</span> <span class="built_in">tee</span> -a /etc/fstab  <span class="comment"># 使Swap文件永久生效（重启试了，确实有效）</span></span><br></pre></td></tr></table></figure>
+
+<p>然后，再：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python train_tokenizer.py</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/9f1e7ddf11ec364329f95d8a4946541.png" class="" title="9f1e7ddf11ec364329f95d8a4946541">
+
+<h3 id="简单测试"><a href="#简单测试" class="headerlink" title="简单测试"></a>简单测试</h3><p>成了！并且也很快，反正不要半小时，简单的体验下这是个什么：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoTokenizer</span><br><span class="line"></span><br><span class="line"><span class="comment"># 你的 tokenizer 存放路径</span></span><br><span class="line">tokenizer_path = <span class="string">&quot;/home/chr/桌面/ChatLM-mini-Chinese/model_save/hf_tokenizer&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载 tokenizer</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.直接加载测试Tokenizer</span></span><br><span class="line"><span class="comment"># 测试分词效果</span></span><br><span class="line">text = <span class="string">&quot;你好，欢迎使用 Tokenizer！&quot;</span></span><br><span class="line">tokens = tokenizer.tokenize(text)</span><br><span class="line">ids = tokenizer.convert_tokens_to_ids(tokens)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;原始文本:&quot;</span>, text)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;分词结果:&quot;</span>, tokens)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Token ID:&quot;</span>, ids)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.使用tokenizer.encoder()和tokenizer.decoder()</span></span><br><span class="line">encoded = tokenizer.encode(text)</span><br><span class="line">decoded = tokenizer.decode(encoded)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;编码结果:&quot;</span>, encoded)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;解码结果:&quot;</span>, decoded)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.批量测试不同类型文本</span></span><br><span class="line">test_cases = [</span><br><span class="line">    <span class="string">&quot;你好，我叫小明。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;AI 发展迅猛。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;今天的天气怎么样？&quot;</span>,</span><br><span class="line">    <span class="string">&quot;ChatGPT 是一个大型语言模型。&quot;</span>,</span><br><span class="line">    <span class="string">&quot;BERT, GPT-3 和 LLaMA 是 NLP 领域的重要模型。&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> text <span class="keyword">in</span> test_cases:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;原始文本: <span class="subst">&#123;text&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;分词结果: <span class="subst">&#123;tokenizer.tokenize(text)&#125;</span>\n&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4.统计词表大小</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;词表大小:&quot;</span>, tokenizer.vocab_size)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5.统计不同文本的平均Token长度</span></span><br><span class="line">texts = [<span class="string">&quot;今天天气很好，我们去公园玩吧！&quot;</span>,</span><br><span class="line">         <span class="string">&quot;Transformer 是一种基于自注意力机制的神经网络模型。&quot;</span>,</span><br><span class="line">         <span class="string">&quot;BERT 和 GPT 是 NLP 领域的重要突破。&quot;</span>,</span><br><span class="line">         <span class="string">&quot;自然语言处理（NLP）是人工智能的一个分支。&quot;</span>,</span><br><span class="line">         <span class="string">&quot;这是一条很短的句子。&quot;</span>]</span><br><span class="line"></span><br><span class="line">lengths = [<span class="built_in">len</span>(tokenizer.tokenize(text)) <span class="keyword">for</span> text <span class="keyword">in</span> texts]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;平均 Token 长度:&quot;</span>, <span class="built_in">sum</span>(lengths) / <span class="built_in">len</span>(lengths))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;单个文本 Token 数:&quot;</span>, lengths)</span><br></pre></td></tr></table></figure>
+
+<p><strong>输出：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">/home/<span class="built_in">chr</span>/anaconda3/envs/chatlm_mini_chinese/<span class="built_in">bin</span>/python /home/<span class="built_in">chr</span>/桌面/ChatLM-mini-Chinese/val_tokenizer.py </span><br><span class="line">原始文本: 你好，欢迎使用 Tokenizer！</span><br><span class="line">分词结果: [<span class="string">&#x27;▁你&#x27;</span>, <span class="string">&#x27;好&#x27;</span>, <span class="string">&#x27;▁,&#x27;</span>, <span class="string">&#x27;▁&#x27;</span>, <span class="string">&#x27;欢迎&#x27;</span>, <span class="string">&#x27;使用&#x27;</span>, <span class="string">&#x27;▁T&#x27;</span>, <span class="string">&#x27;ok&#x27;</span>, <span class="string">&#x27;en&#x27;</span>, <span class="string">&#x27;iz&#x27;</span>, <span class="string">&#x27;er&#x27;</span>, <span class="string">&#x27;▁!&#x27;</span>]</span><br><span class="line">Token ID: [<span class="number">21418</span>, <span class="number">6386</span>, <span class="number">19161</span>, <span class="number">2986</span>, <span class="number">20848</span>, <span class="number">19253</span>, <span class="number">19318</span>, <span class="number">21700</span>, <span class="number">19311</span>, <span class="number">24092</span>, <span class="number">19248</span>, <span class="number">19703</span>]</span><br><span class="line">编码结果: [<span class="number">21418</span>, <span class="number">6386</span>, <span class="number">19161</span>, <span class="number">2986</span>, <span class="number">20848</span>, <span class="number">19253</span>, <span class="number">19318</span>, <span class="number">21700</span>, <span class="number">19311</span>, <span class="number">24092</span>, <span class="number">19248</span>, <span class="number">19703</span>]</span><br><span class="line">解码结果: 你好, 欢迎使用 Tokenizer!</span><br><span class="line">原始文本: 你好，我叫小明。</span><br><span class="line">分词结果: [<span class="string">&#x27;▁你&#x27;</span>, <span class="string">&#x27;好&#x27;</span>, <span class="string">&#x27;▁,&#x27;</span>, <span class="string">&#x27;▁我&#x27;</span>, <span class="string">&#x27;叫&#x27;</span>, <span class="string">&#x27;小&#x27;</span>, <span class="string">&#x27;明&#x27;</span>, <span class="string">&#x27;▁。&#x27;</span>]</span><br><span class="line"></span><br><span class="line">原始文本: AI 发展迅猛。</span><br><span class="line">分词结果: [<span class="string">&#x27;▁A&#x27;</span>, <span class="string">&#x27;I&#x27;</span>, <span class="string">&#x27;▁发展&#x27;</span>, <span class="string">&#x27;迅&#x27;</span>, <span class="string">&#x27;猛&#x27;</span>, <span class="string">&#x27;▁。&#x27;</span>]</span><br><span class="line"></span><br><span class="line">原始文本: 今天的天气怎么样？</span><br><span class="line">分词结果: [<span class="string">&#x27;▁今天&#x27;</span>, <span class="string">&#x27;的天&#x27;</span>, <span class="string">&#x27;气&#x27;</span>, <span class="string">&#x27;怎么&#x27;</span>, <span class="string">&#x27;样&#x27;</span>, <span class="string">&#x27;▁?&#x27;</span>]</span><br><span class="line"></span><br><span class="line">原始文本: ChatGPT 是一个大型语言模型。</span><br><span class="line">分词结果: [<span class="string">&#x27;▁Ch&#x27;</span>, <span class="string">&#x27;at&#x27;</span>, <span class="string">&#x27;GP&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;▁是一个&#x27;</span>, <span class="string">&#x27;大型&#x27;</span>, <span class="string">&#x27;语言&#x27;</span>, <span class="string">&#x27;模型&#x27;</span>, <span class="string">&#x27;▁。&#x27;</span>]</span><br><span class="line"></span><br><span class="line">原始文本: BERT, GPT-<span class="number">3</span> 和 LLaMA 是 NLP 领域的重要模型。</span><br><span class="line">分词结果: [<span class="string">&#x27;▁B&#x27;</span>, <span class="string">&#x27;ER&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;▁,&#x27;</span>, <span class="string">&#x27;▁G&#x27;</span>, <span class="string">&#x27;P&#x27;</span>, <span class="string">&#x27;T&#x27;</span>, <span class="string">&#x27;▁-&#x27;</span>, <span class="string">&#x27;▁3&#x27;</span>, <span class="string">&#x27;▁和&#x27;</span>, <span class="string">&#x27;▁L&#x27;</span>, <span class="string">&#x27;L&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;MA&#x27;</span>, <span class="string">&#x27;▁是&#x27;</span>, <span class="string">&#x27;▁N&#x27;</span>, <span class="string">&#x27;L&#x27;</span>, <span class="string">&#x27;P&#x27;</span>, <span class="string">&#x27;▁&#x27;</span>, <span class="string">&#x27;领域&#x27;</span>, <span class="string">&#x27;的重要&#x27;</span>, <span class="string">&#x27;模型&#x27;</span>, <span class="string">&#x27;▁。&#x27;</span>]</span><br><span class="line"></span><br><span class="line">词表大小: <span class="number">40960</span></span><br><span class="line">平均 Token 长度: <span class="number">11.8</span></span><br><span class="line">单个文本 Token 数: [<span class="number">10</span>, <span class="number">13</span>, <span class="number">16</span>, <span class="number">14</span>, <span class="number">6</span>]</span><br><span class="line"></span><br><span class="line">Process finished <span class="keyword">with</span> exit code <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="预训练"><a href="#预训练" class="headerlink" title="预训练"></a>预训练</h2><h3 id="预训练数据集下载"><a href="#预训练数据集下载" class="headerlink" title="预训练数据集下载"></a>预训练数据集下载</h3><ol>
+<li><p><a target="_blank" rel="noopener" href="https://drive.google.com/open?id=1u2yW_XohbYL2YAK6Bzc5XrngHstQTf0v">社区问答json版(webtext2019zh) 大规模高质量数据集</a></p>
+<p>将下载完成的<code>webtext2019zh.zip</code>放到<code>data/raw_data</code>下（没有就创建），并运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unzip webtext2019zh.zip</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意，解压得到三个文件<code>web_text_zh_testa.json</code>（我没写错）、<code>web_text_zh_train.json</code>和<code>web_text_zh_valid.json</code>，需要把<code>web_text_zh_testa.json</code>改为<code>web_text_zh_test.json</code>。</p>
+</blockquote>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.kaggle.com/datasets/terrychanorg/baike-qa2019?resource=download&amp;select=baike_qa_train.json">baike_qa2019百科问答类</a></p>
+<p>操作与1类似，不再赘述</p>
+</li>
+<li><p>中国医药领域问答数据集</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入data/raw_data目录</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/Toyhom/Chinese-medical-dialogue-data.git</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>克隆完成后，将文件夹名称改为chinese_medical_dialogue_datasets</p>
+</blockquote>
+</li>
+<li><p>知乎问答数据</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 也是在data/raw_data目录</span></span><br><span class="line">git <span class="built_in">clone</span> https://huggingface.co/datasets/wangrui6/Zhihu-KOL</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>克隆完成后，将文件夹名称改为zhihu-kol。</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="清洗数据"><a href="#清洗数据" class="headerlink" title="清洗数据"></a>清洗数据</h3><p>清洗数据的脚本位于<code>utils/raw_data_process.py</code>，在运行之前先略微配置下代码，将<code>process_web_text</code>下面的代码全注释掉：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/02936efbc49baa2164c16c2041a6482.png" class="" title="02936efbc49baa2164c16c2041a6482">
+
+<p>conda环境下运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python raw_data_process.py</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/581aa414b4e49cd72090ca0f8047842.png" class="" title="581aa414b4e49cd72090ca0f8047842">
+
+<p>而且<code>logs/raw_data_process.log</code>中也会有调试信息：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/56990b8a32e9c9d383bd24529cbb991.png" class="" title="56990b8a32e9c9d383bd24529cbb991">
+
+<p>好的，继续，注释掉<code>process_web_text</code>，打开<code>process_bake_qa</code>，<code>process_chinese_medical_datasets</code>，<code>process_zhihu_kol_dataset</code>：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/5adfc70a140c401c06ac7fa4f7aa95f.png" class="" title="5adfc70a140c401c06ac7fa4f7aa95f">
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/79528face960a3e59d52c9934c5caf3.png" class="" title="79528face960a3e59d52c9934c5caf3">
+
+<p>还差一些步骤（先把原来步骤注释掉），如图：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/018ade7a8ad04e38063ce00ac67844a.png" class="" title="018ade7a8ad04e38063ce00ac67844a">
+
+<p>然后继续：<code>python raw_data_process.py</code>，经过漫长的等待：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">(chatlm_mini_chinese) chr@chr:~/桌面/ChatLM-mini-Chinese/utils$ python raw_data_process.py </span><br><span class="line">process file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_data/my_web_text_zh.parquet</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:58</span><br><span class="line">process file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_data/my_baike_qa.parquet</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:32</span><br><span class="line">process file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_data/zhihu_kol.parquet</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:34</span><br><span class="line">process file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_data/my_chinese_medical_dialogue.parquet</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:15</span><br><span class="line">[2025-03-21 16:08:24.638] [INFO]: merge into file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_dataset.parquet, 全部数据共5718789行，清洗后剩余5718644行</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 2:34:53</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:02:30</span><br><span class="line">[2025-03-21 18:45:51.019] [INFO]: merge into file: /home/chr/桌面/ChatLM-mini-Chinese/data/my_dataset_no_dulpticates.parquet, 全部数据共5718644行，文档去重后剩余5519322行</span><br><span class="line">start shuffle...</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:02:34</span><br><span class="line">[2025-03-21 18:50:53.355] [INFO]: [[<span class="string">&#x27;file_name&#x27;</span>, <span class="string">&#x27;count&#x27;</span>], [<span class="string">&#x27;my_dataset.parquet&#x27;</span>, 5718644], [<span class="string">&#x27;汇总&#x27;</span>, 5718644]]</span><br><span class="line">┏━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┓</span><br><span class="line">┃ file_name          ┃ count┃</span><br><span class="line">┡━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━┩</span><br><span class="line">│ my_dataset.parquet │ 5718644 │</span><br><span class="line">├────────────────────┼─────────┤</span><br><span class="line">│ 汇总               │ 5718644 │</span><br><span class="line">└────────────────────┴─────────┘</span><br><span class="line">Working... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:08</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/96ec2e98b0f075e87284581846a2a11.png" class="" title="96ec2e98b0f075e87284581846a2a11">
+
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/ff07f320532d665cb0891e865eb005a.png" class="" title="ff07f320532d665cb0891e865eb005a">
+
+<p>但是呢，进度在这里不动了，而且图已经画出来了（画图是最后一步），</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/aa9445b8e38fdec2f0f2167921cb7f3.png" class="" title="aa9445b8e38fdec2f0f2167921cb7f3">
+
+<p>而且内存占用也没释放，点回车也没用😅，怎么办怎么办，不管了，应该是运行完了，直接ctrl+c给关掉。</p>
+<h3 id="预训练（单机单卡）"><a href="#预训练（单机单卡）" class="headerlink" title="预训练（单机单卡）"></a>预训练（单机单卡）</h3><p>好的，开炮！</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/758a746fde78ede686731711c97f781.png" class="" title="758a746fde78ede686731711c97f781">
+
+<p>哦，说在<code>model_save</code>文件夹下找不到训练好的<code>Tokenizer</code>，前面明明是保存到<code>model_save/hf_tokenizer</code>下了，在<code>model_save</code>下哪能找到，打开<code>config.py</code>，箭头位置改一下：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/image-20250321202529850.png" class="" title="image-20250321202529850">
+
+<p>开炮！</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/b47fb1d38c4863fbb8fbf699b330640.png" class="" title="b47fb1d38c4863fbb8fbf699b330640">
+
+<p>显存、内存占用：</p>
+<img src="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/6a6bcabed9b7bb65acae8b98a741880.png" class="" title="6a6bcabed9b7bb65acae8b98a741880">
+
+<p>好的，等待着吧，现在是25-3-21（20:28）。</p>
+<p>TODO…</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="token-type"><a href="#token-type" class="headerlink" title="token_type"></a>token_type</h3><p><code>token_type=&#39;char&#39;</code>（字符级）和 <code>token_type=&#39;byte&#39;</code>（字节级）的主要区别在于 <strong>分词粒度、可扩展性和适用场景</strong>，下面详细分析它们的优缺点：</p>
+<p><strong>1. <code>char</code>（字符级 BPE）</strong></p>
+<p><strong>📌 原理</strong>：</p>
+<ul>
+<li>按照<strong>字符</strong>（Character）单位进行分词，不会拆分字符。</li>
+<li>例如 <code>&quot;中国&quot;</code> 会作为两个独立字符 <code>&quot;中&quot;</code> 和 <code>&quot;国&quot;</code>。</li>
+</ul>
+<p><strong>✅ 优势</strong></p>
+<ol>
+<li><strong>更直观易理解</strong><ul>
+<li>训练出来的 Tokenizer 结果更接近人类的直觉，比如 <code>&quot;你好&quot;</code> 会分成 <code>&quot;你&quot;</code> 和 <code>&quot;好&quot;</code>，而不会拆分成更小的部分。</li>
+</ul>
+</li>
+<li><strong>适用于汉语、日语等非空格分隔语言</strong><ul>
+<li>适用于中文、日文等 <strong>没有空格分词的语言</strong>，可以保留完整字符，提高可读性。</li>
+</ul>
+</li>
+<li><strong>更少的 OOV（Out of Vocabulary，未登录词）</strong><ul>
+<li>只要训练语料足够大，基本不会有 OOV，因为所有常见字符都会出现在词表里。</li>
+</ul>
+</li>
+<li><strong>适用于字符粒度的 NLP 任务</strong><ul>
+<li>适用于 <strong>拼写错误检测、文本纠错、光学字符识别（OCR）</strong>，因为能处理每个字符。</li>
+</ul>
+</li>
+</ol>
+<p><strong>❌ 缺点</strong></p>
+<ol>
+<li><strong>词表较大</strong><ul>
+<li>每个字符都是一个 Token，导致 Token 总数较多（尤其是 Unicode 语言）。</li>
+</ul>
+</li>
+<li><strong>序列长度较长</strong><ul>
+<li>例如 <code>[&#39;你&#39;, &#39;好&#39;, &#39;世&#39;, &#39;界&#39;]</code> 这样拆分时，<strong>一个单词可能会被拆成多个字符</strong>，导致序列变长，增加 Transformer 计算量。</li>
+</ul>
+</li>
+</ol>
+<p><strong>2. <code>byte</code>（字节级 BPE）</strong></p>
+<p><strong>📌 原理</strong>：</p>
+<ul>
+<li>按照<strong>字节</strong>（Byte）进行分词，而不是按照字符。</li>
+<li>例如 <code>&quot;你好&quot;</code> 在 UTF-8 编码下会被拆分成多个字节 <code>\xe4\xbd\xa0</code> 和 <code>\xe5\xa5\xbd</code>。</li>
+</ul>
+<p><strong>✅ 优势</strong></p>
+<ol>
+<li><strong>通用性更强</strong><ul>
+<li>能够处理 <strong>任何语言、特殊符号、表情符号</strong>，甚至可以用于 <strong>代码（编程语言）</strong>。</li>
+</ul>
+</li>
+<li><strong>词表更小</strong><ul>
+<li>只需学习 <strong>256 个字节（Byte-Level）</strong>，就能覆盖所有 Unicode 字符，不会有 OOV。</li>
+</ul>
+</li>
+<li><strong>数据压缩效果好</strong><ul>
+<li>由于 BPE 在字节级别运作，它可以动态学习子词，从而压缩文本（减少 Token 数量）。</li>
+</ul>
+</li>
+<li><strong>适用于多语言场景</strong><ul>
+<li>比如 GPT-2 选择 Byte-level BPE 就是为了支持<strong>多种语言</strong>。</li>
+</ul>
+</li>
+</ol>
+<p><strong>❌ 缺点</strong></p>
+<ol>
+<li><strong>可读性差</strong><ul>
+<li><code>byte</code> 级别的分词不可读，例如 <code>&quot;你好&quot;</code> 可能变成 <code>[&#39;\xe4\xbd\xa0&#39;, &#39;\xe5\xa5\xbd&#39;]</code>，对于人类来说完全看不懂。</li>
+</ul>
+</li>
+<li><strong>分词不自然</strong><ul>
+<li>例如 <code>&quot;apple&quot;</code> 可能变成 <code>[&quot;ap&quot;, &quot;ple&quot;]</code>，会拆分奇怪的部分。</li>
+</ul>
+</li>
+<li><strong>中文、日文、韩文（CJK 语言）分词效果不如 <code>char</code></strong><ul>
+<li>由于 <code>byte</code> 级别是基于 <strong>Unicode 字节流</strong>，<strong>对于 CJK 语言会拆得很碎</strong>，导致上下文丢失。</li>
+</ul>
+</li>
+</ol>
+<p><strong>3. <code>char</code> vs <code>byte</code> 选择建议</strong></p>
+<table>
+<thead>
+<tr>
+<th>选择场景</th>
+<th><code>char</code>（字符级 BPE）</th>
+<th><code>byte</code>（字节级 BPE）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>适用语言</strong></td>
+<td>中文、日文、韩文（CJK）</td>
+<td>多语言（特别是含代码、符号）</td>
+</tr>
+<tr>
+<td><strong>可读性</strong></td>
+<td>好，人能直接理解</td>
+<td>差，分词结果不可读</td>
+</tr>
+<tr>
+<td><strong>OOV（未登录词）</strong></td>
+<td>低，基本不会有</td>
+<td>永远没有 OOV</td>
+</tr>
+<tr>
+<td><strong>模型适配</strong></td>
+<td>更适合 NLP 任务</td>
+<td>适合 GPT-2、编程语言</td>
+</tr>
+<tr>
+<td><strong>词表大小</strong></td>
+<td>较大</td>
+<td>非常小（256 tokens）</td>
+</tr>
+<tr>
+<td><strong>序列长度</strong></td>
+<td>较长</td>
+<td>较短（更适合 Transformer）</td>
+</tr>
+<tr>
+<td><strong>特殊字符处理</strong></td>
+<td>需要额外处理符号</td>
+<td>直接支持任何符号</td>
+</tr>
+</tbody></table>
+<p><strong>👉 推荐选择</strong></p>
+<ul>
+<li><strong>中文 NLP（ASR、翻译、摘要） → <code>char</code></strong></li>
+<li><strong>多语言 NLP（GPT-2, LLaMA） → <code>byte</code></strong></li>
+<li><strong>代码&#x2F;表情符号&#x2F;特殊符号 NLP → <code>byte</code></strong></li>
+<li><strong>光学字符识别（OCR） → <code>char</code></strong></li>
+<li><strong>数据量小，担心 OOV → <code>byte</code></strong></li>
+</ul>
+<p><strong>4. 总结</strong></p>
+<table>
+<thead>
+<tr>
+<th><code>char</code>（字符级 BPE）</th>
+<th><code>byte</code>（字节级 BPE）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ 适合 <strong>中文、日语等非空格分隔语言</strong></td>
+<td>✅ 适合 <strong>多语言（GPT-2&#x2F;LLaMA）</strong></td>
+</tr>
+<tr>
+<td>✅ <strong>可读性高</strong>，易理解</td>
+<td>❌ <strong>不可读</strong>，难以分析</td>
+</tr>
+<tr>
+<td>❌ <strong>词表较大</strong>，占内存</td>
+<td>✅ <strong>词表小</strong>，节省显存</td>
+</tr>
+<tr>
+<td>❌ <strong>序列长度长</strong>，增加计算量</td>
+<td>✅ <strong>序列短</strong>，更适合 Transformer</td>
+</tr>
+<tr>
+<td>✅ 适合 <strong>OCR、文本生成</strong></td>
+<td>✅ 适合 <strong>代码&#x2F;NLP&#x2F;通用 AI</strong></td>
+</tr>
+</tbody></table>
+<p><strong>最终建议</strong>：</p>
+<ul>
+<li><strong>处理单一语言（如中文 NLP）</strong> → <strong><code>char</code> 更合适</strong></li>
+<li><strong>多语言处理（如 GPT-2）</strong> → <strong><code>byte</code> 更合适</strong></li>
+<li><strong>如果不确定，默认 <code>char</code> 即可</strong> 🚀</li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/gmaaa123/article/details/140319691">https://blog.csdn.net/gmaaa123/article/details/140319691</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/charent/ChatLM-mini-Chinese">https://github.com/charent/ChatLM-mini-Chinese</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LLM/" rel="tag"># LLM</a>
+              <a href="/tags/ChatLM-mini-Chinese/" rel="tag"># ChatLM-mini-Chinese</a>
+              <a href="/tags/Pre-train/" rel="tag"># Pre-train</a>
+              <a href="/tags/SFT/" rel="tag"># SFT</a>
+              <a href="/tags/DPO/" rel="tag"># DPO</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/" rel="prev" title="Qwen2.5VL 7B安装与官方玩法体验">
+                  <i class="fa fa-angle-left"></i> Qwen2.5VL 7B安装与官方玩法体验
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/" rel="next" title="AI系列课程：导论and数学基础1">
+                  AI系列课程：导论and数学基础1 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">73k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:25</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

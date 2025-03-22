@@ -19,27 +19,33 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Welcome to my little world">
+    <meta name="description" content="前言前面直接简单的使用LLamaFactory微调了Qwen2.5 VL 7B（其实和视觉能力没关系，只简单微调了文本），但转念一想，还没体验过Qwen2.5 VL的官方玩法，本文即记录下官方玩法以及记录一下占用情况。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Qwen2.5VL安装与官方玩法体验">
+<meta property="og:title" content="Qwen2.5VL 7B安装与官方玩法体验">
 <meta property="og:url" content="https://caihaoran-00.github.io/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/index.html">
 <meta property="og:site_name" content="Chr&#39;s Blog">
-<meta property="og:description" content="Welcome to my little world">
+<meta property="og:description" content="前言前面直接简单的使用LLamaFactory微调了Qwen2.5 VL 7B（其实和视觉能力没关系，只简单微调了文本），但转念一想，还没体验过Qwen2.5 VL的官方玩法，本文即记录下官方玩法以及记录一下占用情况。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/17bf15268ec70aa64a1f7d2fddbfb9a.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/b8024758c9d0ab160260fd9d80d8b6b.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/0ce74c805c2f3a274ca8996b29cc88a.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/image-20250319101903786.png">
 <meta property="article:published_time" content="2025-03-18T06:54:49.000Z">
-<meta property="article:modified_time" content="2025-03-18T07:09:36.444Z">
+<meta property="article:modified_time" content="2025-03-19T12:17:34.015Z">
 <meta property="article:author" content="Chr">
-<meta property="article:tag" content="Hexo,langgraph,ASR,LLM,TTS">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="Qwen2.5 VL">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/17bf15268ec70aa64a1f7d2fddbfb9a.png">
 
 
 <link rel="canonical" href="https://caihaoran-00.github.io/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/","path":"2025/03/18/Qwen2-5VL安装与官方玩法体验/","title":"Qwen2.5VL安装与官方玩法体验"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/","path":"2025/03/18/Qwen2-5VL安装与官方玩法体验/","title":"Qwen2.5VL 7B安装与官方玩法体验"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Qwen2.5VL安装与官方玩法体验 | Chr's Blog</title>
+<title>Qwen2.5VL 7B安装与官方玩法体验 | Chr's Blog</title>
   
 
 
@@ -126,7 +132,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -139,6 +145,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">安装与使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web-UI%E6%96%B9%E5%BC%8F%E4%BD%BF%E7%94%A8"><span class="nav-number">2.2.</span> <span class="nav-text">Web UI方式使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vLLM%E6%96%B9%E5%BC%8F%E8%BF%90%E8%A1%8C"><span class="nav-number">2.3.</span> <span class="nav-text">vLLM方式运行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -151,7 +158,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -162,7 +169,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-count">46</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -211,12 +218,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Qwen2.5VL安装与官方玩法体验 | Chr's Blog">
+      <meta itemprop="name" content="Qwen2.5VL 7B安装与官方玩法体验 | Chr's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Qwen2.5VL安装与官方玩法体验
+          Qwen2.5VL 7B安装与官方玩法体验
         </h1>
 
         <div class="post-meta-container">
@@ -226,9 +233,24 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-03-18 14:54:49 / 修改时间：15:09:36" itemprop="dateCreated datePublished" datetime="2025-03-18T14:54:49+08:00">2025-03-18</time>
+      <time title="创建时间：2025-03-18 14:54:49" itemprop="dateCreated datePublished" datetime="2025-03-18T14:54:49+08:00">2025-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-19 20:17:34" itemprop="dateModified" datetime="2025-03-19T20:17:34+08:00">2025-03-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
     </span>
 
   
@@ -245,14 +267,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>1.3k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -262,7 +284,70 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面直接简单的使用LLamaFactory微调了Qwen2.5 VL 7B（其实和视觉能力没关系，只简单微调了文本），但转念一想，还没体验过Qwen2.5 VL的官方玩法，本文即记录下官方玩法以及记录一下占用情况。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="安装与使用"><a href="#安装与使用" class="headerlink" title="安装与使用"></a>安装与使用</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 克隆项目</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/QwenLM/Qwen2.5-VL</span><br><span class="line"></span><br><span class="line"><span class="comment"># 切换到项目工作目录</span></span><br><span class="line"><span class="built_in">cd</span> /Qwen2.5-VL</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建一个名为 Qwen2_5_VL 的新虚拟环境，并指定 Python 版本为 3.12</span></span><br><span class="line">conda create --name Qwen2_5_VL python=3.12 -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 激活虚拟环境</span></span><br><span class="line">conda activate Qwen2_5_VL</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line">pip install git+https://github.com/huggingface/transformers accelerate</span><br><span class="line">pip install -U flash-attn --no-build-isolation</span><br><span class="line">pip install -r requirements_web_demo.txt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载预训练权重</span></span><br><span class="line">git lfs install</span><br><span class="line">git <span class="built_in">clone</span> https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">git <span class="built_in">clone</span> https://www.modelscope.cn/Qwen/Qwen2.5-VL-7B-Instruct.git</span><br></pre></td></tr></table></figure>
+
+<p>然后打开<code>web_demo_mm.py</code>，看下<code>DEFAULT_CKPT_PATH</code>的路径：<code>Qwen/Qwen2.5-VL-7B-Instruct</code>，那么我们需要把下载的<code>Qwen2.5-VL-7B-Instruct</code>放在<code>Qwen</code>文件夹下，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python web_demo_mm.py --flash-attn2</span><br></pre></td></tr></table></figure>
+
+<p>吼，报错了，那再试试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python web_demo_mm.py</span><br></pre></td></tr></table></figure>
+
+<p>还是报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">RuntimeError: Failed to import transformers.models.qwen2_5_vl.modeling_qwen2_5_vl because of the following error (look up to see its traceback):</span><br><span class="line">/home/chr/anaconda3/envs/Qwen2_5_VL/lib/python3.12/site-packages/flash_attn_2_cuda.cpython-312-x86_64-linux-gnu.so: undefined symbol: _ZNK3c1011StorageImpl27throw_data_ptr_access_errorEv</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/17bf15268ec70aa64a1f7d2fddbfb9a.png" class="" title="17bf15268ec70aa64a1f7d2fddbfb9a">
+
+<hr>
+<h3 id="Web-UI方式使用"><a href="#Web-UI方式使用" class="headerlink" title="Web UI方式使用"></a>Web UI方式使用</h3><p>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/a61022706/article/details/141570792">链接2</a>的步骤，然后继续运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python web_demo_mm.py --flash-attn2</span><br></pre></td></tr></table></figure>
+
+<p>好的，运行起来了！！！</p>
+<img src="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/b8024758c9d0ab160260fd9d80d8b6b.png" class="" title="b8024758c9d0ab160260fd9d80d8b6b">
+
+<p>但是吧，目前发现两类主要问题：</p>
+<ol>
+<li>让模型框出某个位置，得到的回答有点奇怪（见上图）</li>
+<li>4s的720P视频都爆显存</li>
+</ol>
+<p>还是用3B的模型玩玩吧，将<code>DEFAULT_CKPT_PATH</code>的路径改为<code>Qwen/Qwen2.5-VL-3B-Instruct</code>，运行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python web_demo_mm.py --flash-attn2</span><br></pre></td></tr></table></figure>
+
+<p>漫长的等待….，铛铛铛铛：</p>
+<img src="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/0ce74c805c2f3a274ca8996b29cc88a.png" class="" title="0ce74c805c2f3a274ca8996b29cc88a">
+
+<p>翻译：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">视频显示了一个户外游乐场的嬉戏场景。一个人坐在一把黄色腿的彩色圆形橙色椅子上。他们穿着紫色无檐便帽、深色夹克和浅色裤子。另一个看起来像孩子的人站在附近，与坐着的人互动。这孩子穿着黑色夹克和红色鞋子。</span><br><span class="line">坐着的人正在进行一项有趣的活动，可能会假装成一个角色或表演一个舞蹈动作。他们有力地移动着胳膊和腿，营造出一种活泼的氛围。孩子似乎很享受这种互动，为场景增添了欢乐的气氛。</span><br><span class="line">在背景中，还有其他游乐场设备和结构，包括一个大型的彩色滑梯。地面覆盖着典型的游乐场橡胶表面，确保了孩子们玩耍的安全。整体环境明亮晴朗，表明可能是白天。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">十分我能打几分：<span class="number">5</span>分</span><br><span class="line"></span><br><span class="line">背景：<span class="number">3</span>B模型部署在<span class="number">4090</span>单卡上，ubuntu系统；</span><br><span class="line">速度方面：<span class="number">49</span> S的<span class="number">1080</span>P视频（用我手机之前在游乐场录得）用时<span class="number">10</span> S；</span><br><span class="line">占用：</span><br><span class="line">不部署模型，仅正常开了几个网页：显存占用<span class="number">1275</span> MB</span><br><span class="line">仅部署，不使用模型回答任何问题：显存占用<span class="number">10370</span> MB</span><br><span class="line">使用模型回答视频问题：显存占用<span class="number">23007</span> MB</span><br><span class="line"></span><br><span class="line">开两个网页使用模型回答相同的视频问题：后发送问题的那个网页会爆显存，然后待会又回答了（看服务后台像是串行回答的，即第一个网页的问题回复完毕才去问第二个网页的问题）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="vLLM方式运行"><a href="#vLLM方式运行" class="headerlink" title="vLLM方式运行"></a>vLLM方式运行</h3><p>由于我上面已经缓存了3B模型，所以只需要：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install <span class="string">&#x27;vllm&gt;0.7.2&#x27;</span></span><br><span class="line"></span><br><span class="line">vllm serve Qwen/Qwen2.5-VL-3B-Instruct --port 8000 --host 0.0.0.0 --dtype bfloat16 --limit-mm-per-prompt image=5,video=5</span><br></pre></td></tr></table></figure>
+
+<p>但是，一个3B大模型把我现存占满了？</p>
+<img src="/2025/03/18/Qwen2-5VL%E5%AE%89%E8%A3%85%E4%B8%8E%E5%AE%98%E6%96%B9%E7%8E%A9%E6%B3%95%E4%BD%93%E9%AA%8C/image-20250319101903786.png" class="" title="image-20250319101903786">
+
+
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/23296553864">https://zhuanlan.zhihu.com/p/23296553864</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/a61022706/article/details/141570792">https://blog.csdn.net/a61022706/article/details/141570792</a></li>
+</ol>
+<p><strong>AI视觉认知引擎升级方案</strong><br> <em>基于Qwen2.5-VL-72B的多模态领域专精化训练</em></p>
+<p>▍技术架构<br> <code>72B参数视觉语言基座</code> × <code>垂直领域知识注入</code><br> • <strong>基座模型</strong>: Qwen2.5-VL-72B多模态大模型（视觉-语言跨模态预训练架构）​<br> • <strong>微调策略</strong>: 双模态联合训练范式（文本语料+视频帧序列）​<br> • <strong>增强组件</strong>: 动态梯度裁剪 + 混合精度训练引擎​<br> • <strong>优化策略</strong>: 渐进式解冻 + 层级学习率调度（非全参数训练)</p>
+<p>▍领域适应技术<br> <code>结构化知识蒸馏</code> | <code>时序特征对齐</code> | <code>跨模态语义桥接</code><br> • <strong>文本增强</strong>: 专业术语向量空间重构​<br> • <strong>视频解析</strong>: ViT时空特征提取 + 关键帧语义标注​<br> • <strong>对齐机制</strong>: CLIP风格的跨模态对比学习损失函数​<br> • <strong>加速方案</strong>: FlashAttention优化 + 动态计算图编译</p>
+<p>▍实测性能优势</p>
+<p> • <strong>跨模态检索</strong>: 图像-文本匹配准确率提升28.6%（相较于原始版本）</p>
+<p> • <strong>细粒度解析</strong>: 图像区域语义识别准确率达到91.2%</p>
+<p> • <strong>推理加速</strong>: 高分辨率图像处理速度提升3.1倍</p>
+<p> • <strong>训练效率</strong>: 微调成本降低67%（参数冻结策略）</p>
+<p>▍商业价值锚点 </p>
+<p> ✓ 构建图像-语言联动的领域认知系统<br> ✓ 实现像素级视觉理解与业务知识融合​<br> ✓ 支持复杂场景的即时推理与决策闭环</p>
+
     </div>
 
     
@@ -270,6 +355,10 @@
     
 
     <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LLM/" rel="tag"># LLM</a>
+              <a href="/tags/Qwen2-5-VL/" rel="tag"># Qwen2.5 VL</a>
+          </div>
 
         
 
@@ -280,6 +369,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese/" rel="next" title="从零训练大模型系统之ChatLM-mini-Chinese">
+                  从零训练大模型系统之ChatLM-mini-Chinese <i class="fa fa-angle-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -310,13 +402,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">67k</span>
+    <span title="站点总字数">73k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:04</span>
+    <span title="站点阅读时长">4:25</span>
   </span>
 </div>
 <div class="busuanzi-count">
