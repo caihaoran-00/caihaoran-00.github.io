@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言在AI系列课程：导论and数学基础1一文中，用网页版Excalidraw画了一些图，风格还不错，但是发现了致命的缺点，不支持Latex数学公式（没找到怎么使用，姑且认为不支持吧），搜索发现可以通过Obsidian安装Excalidraw插件解决这个问题，本文尝试并记录该方案（windows电脑)，用作记录和分享。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Obsidian+Excalidraw插件绘图">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言在AI系列课程：导论and数学基础1一文中，用网页版Excalidraw画了一些图，风格还不错，但是发现了致命的缺点，不支持Latex数学公式（没找到怎么使用，姑且认为不支持吧），搜索发现可以通过Obsidian安装Excalidraw插件解决这个问题，本文尝试并记录该方案（windows电脑)，用作记录和分享。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/1742640304163.jpg">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/1742640322607.jpg">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322184907067.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322185056792.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322185130549.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322185405846.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322190154595.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322190950725.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322191129172.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322191846058.png">
+<meta property="article:published_time" content="2025-03-22T10:24:40.000Z">
+<meta property="article:modified_time" content="2025-03-22T11:22:17.243Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="Obsidian">
+<meta property="article:tag" content="Excalidraw">
+<meta property="article:tag" content="实用工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/1742640304163.jpg">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/","path":"2025/03/22/Obsidian-Excalidraw插件绘图/","title":"Obsidian+Excalidraw插件绘图"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Obsidian+Excalidraw插件绘图 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%93%E9%AA%8C"><span class="nav-number">3.</span> <span class="nav-text">体验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">4.</span> <span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Obsidian+Excalidraw插件绘图 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Obsidian+Excalidraw插件绘图
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-03-22 18:24:40 / 修改时间：19:22:17" itemprop="dateCreated datePublished" datetime="2025-03-22T18:24:40+08:00">2025-03-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>357</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在AI系列课程：导论and数学基础1一文中，用网页版Excalidraw画了一些图，风格还不错，但是发现了致命的缺点，不支持Latex数学公式（没找到怎么使用，姑且认为不支持吧），搜索发现可以通过Obsidian安装Excalidraw插件解决这个问题，本文尝试并记录该方案（<strong>windows电脑</strong>)，用作记录和分享。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ol>
+<li><p>在<a target="_blank" rel="noopener" href="https://obsidian.md/download">这个页面</a>选择合适自己的版本进行下载安装，安装完成后你会看到这个页面：</p>
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/1742640304163.jpg" class="" width="1742640304163">
+</li>
+<li><p>点击左下角的设置：</p>
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/1742640322607.jpg" class="" width="1742640322607">
+
+<p>再点击<code>第三方插件</code>-&gt;<code>关闭安全模式</code>，你将会看到：</p>
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322184907067.png" class="" title="image-20250322184907067"></li>
+</ol>
+<p>点击后，搜索<code>Excalidraw</code>（其实不用搜索，第一条就是）：</p>
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322185056792.png" class="" title="image-20250322185056792">
+
+<p>点击<code>Excalidraw</code>，会看到下图，再点击安装：</p>
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322185130549.png" class="" title="image-20250322185130549">
+
+<p>再点击下启用，以启用<code>Excalidraw</code>：</p>
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322185405846.png" class="" title="image-20250322185405846">
+
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322190154595.png" class="" title="image-20250322190154595">
+
+<p>关掉软件，从新打开，两种方式打开<code>Excalidraw</code>，一是左侧：</p>
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322190950725.png" class="" title="image-20250322190950725">
+
+<p>二是这里：</p>
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322191129172.png" class="" title="image-20250322191129172">
+
+<p>效果一样，左侧更方便些。</p>
+<hr>
+<h2 id="体验"><a href="#体验" class="headerlink" title="体验"></a>体验</h2><p>我主要是想在原有的基础上加上公式编辑的功能，按下图所示进行操作即可添加公式（不过需要学习下Latex语法）：</p>
+<img src="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/image-20250322191846058.png" class="" title="image-20250322191846058">
+
+<hr>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>本文记录了Obsidian+Excalidraw插件绘图的安装步骤和简单实用，主要目的是使用Obsidian的Latex公式编辑能力，使Excalidraw成为完全体😄。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Obsidian/" rel="tag"># Obsidian</a>
+              <a href="/tags/Excalidraw/" rel="tag"># Excalidraw</a>
+              <a href="/tags/%E5%AE%9E%E7%94%A8%E5%B7%A5%E5%85%B7/" rel="tag"># 实用工具</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/22/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%802/" rel="prev" title="AI系列课程：导论and数学基础2">
+                  <i class="fa fa-angle-left"></i> AI系列课程：导论and数学基础2
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/03/24/LLamaFactory%E5%BE%AE%E8%B0%83Qwen2-5-7B/" rel="next" title="LLamaFactory微调Qwen2.5 7B">
+                  LLamaFactory微调Qwen2.5 7B <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">77k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:40</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
