@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-count">59</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -195,7 +195,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/25/%E5%A6%82%E4%BD%95%E5%B0%86%E4%BD%A0%E7%9A%84DeepSeek-R1%E5%BE%AE%E8%B0%83%E6%88%90%E6%9F%90%E4%B8%AA%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%93%E5%AE%B6%EF%BC%88%E7%90%86%E8%AE%BA%E7%AF%87%EF%BC%89/">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/04/03/KWS%E4%B9%8BmicroWakeWord%E5%AE%89%E8%A3%85%E3%80%81%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%B5%8B%E8%AF%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -213,7 +213,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/25/%E5%A6%82%E4%BD%95%E5%B0%86%E4%BD%A0%E7%9A%84DeepSeek-R1%E5%BE%AE%E8%B0%83%E6%88%90%E6%9F%90%E4%B8%AA%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%93%E5%AE%B6%EF%BC%88%E7%90%86%E8%AE%BA%E7%AF%87%EF%BC%89/" class="post-title-link" itemprop="url">如何将你的DeepSeek-R1微调成某个领域的专家（理论篇）</a>
+          <a href="/2025/04/03/KWS%E4%B9%8BmicroWakeWord%E5%AE%89%E8%A3%85%E3%80%81%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%B5%8B%E8%AF%95/" class="post-title-link" itemprop="url">KWS之microWakeWord安装、训练与测试</a>
         </h2>
 
         <div class="post-meta-container">
@@ -223,8 +223,18 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2025-03-25 18:31:53" itemprop="dateCreated datePublished" datetime="2025-03-25T18:31:53+08:00">2025-03-25</time>
+      <time title="创建时间：2025-04-03 11:50:41 / 修改时间：12:02:17" itemprop="dateCreated datePublished" datetime="2025-04-03T11:50:41+08:00">2025-04-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
     </span>
 
   
@@ -234,7 +244,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>151</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -252,7 +262,359 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>公司在做一个AI对话玩具，需要语音唤醒功能，想运行在ESP32-S3芯片上，经过调研，觉得<a target="_blank" rel="noopener" href="https://github.com/kahrendt/microWakeWord">microWakeWord</a>项目最合适，另一个可能的方案是使用<a target="_blank" rel="noopener" href="https://edgeimpulse.com/">Edge Impulse</a>平台进行训练，参考<a target="_blank" rel="noopener" href="https://wiki.seeedstudio.com/cn/xiao_esp32s3_keyword_spotting/">这里</a>，有博主也是用的这个方案设计了<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV11ZrTYrE4p/?buvid=XUA3832AA22EE78A7351BC87C3080F4E6E14D&from_spmid=search.search-result.0.0&is_story_h5=false&mid=l75wYmHAuHqmVrUJdy96xQ==&plat_id=116&share_from=ugc&share_medium=android&share_plat=android&share_session_id=d6a6e4b8-ca14-4af3-a280-0c14c9c628d5&share_source=WEIXIN&share_source=weixin&share_tag=s_i&spmid=united.player-video-detail.0.0&timestamp=1743391874&unique_k=nQCe0ax&up_id=1171991528&vd_source=075a061948e76c87e2ee8754e264056e">小玩意</a>，但是，我认为这个方案不怎么靠谱（我要我觉得）。还是使用microWakeWord吧，这个项目是基于tensorflow的，很久没使用tensorflow进行训练了，基于这个机会也是把ubuntu22.04的显卡驱动、cuda和cudnn都更新了下，<a href="">见</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/" class="post-title-link" itemprop="url">Ubuntu22.04更新NVIDIA驱动</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-04-02 16:13:17 / 修改时间：19:12:09" itemprop="dateCreated datePublished" datetime="2025-04-02T16:13:17+08:00">2025-04-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>495</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在玩一个项目（microWakeWord，写在另一篇博客），发现该项目依赖项的<code>tensorflow2.16</code>需要<code>CUDA 12.3</code>支持，但是我的驱动目前最多只能支持到<code>CUDA12.0</code>(通过<code>nvidia-smi</code>看右上角的<code>CUDA_Version: 12.0</code>)，也很久没更新过驱动和cuda、cudnn了，借这个机会更新一下吧。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/" class="post-title-link" itemprop="url">ollama安装与使用（ubuntu）</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-27 10:38:29" itemprop="dateCreated datePublished" datetime="2025-03-27T10:38:29+08:00">2025-03-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-28 09:22:26" itemprop="dateModified" datetime="2025-03-28T09:22:26+08:00">2025-03-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>312</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>久仰<code>ollama</code>的大名，但之前并没有去玩过，借着在大佬的时频中又一次看到<code>ollama</code>的身影，我想是时候玩玩了，本文记录了我的安装和实际过程。</p>
+<hr>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://ollama.com/install.sh | sh</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/fd3f58a640deb7086b6d21bec9b9c25.png" class="" title="fd3f58a640deb7086b6d21bec9b9c25">
+
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h3><p>安装好之后，运行下面命令下载deepseek-r1:8b模型，即为Deepseek蒸馏的Llama 8B模型，体验：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama run deepseek-r1:8b</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/db9205bafe23c8452c9bf1920a798a5.png" class="" title="db9205bafe23c8452c9bf1920a798a5">
+
+<hr>
+<h3 id="加载本地gguf文件"><a href="#加载本地gguf文件" class="headerlink" title="加载本地gguf文件"></a>加载本地gguf文件</h3><p>以下图为例：</p>
+<img src="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/image-20250327143924386.png" class="" title="image-20250327143924386">
+
+<p>运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">touch</span> Modelfile</span><br></pre></td></tr></table></figure>
+
+<p>在<code>Modelfile</code>里面写上：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FROM ./unsloth.Q8<span class="built_in">_</span>0.gguf</span><br></pre></td></tr></table></figure>
+
+<p>并保存，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ollama create fortel -f Modelfile	<span class="comment"># 创建ollama本地文件</span></span><br><span class="line">ollama run fortel  <span class="comment"># 运行模型</span></span><br></pre></td></tr></table></figure>
+
+<p>但是呢，报错了😂：</p>
+<img src="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/938442560d1c3ee2617021c978758aa.png" class="" title="938442560d1c3ee2617021c978758aa">
+
+<img src="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/4363ef2b7f4e5e3d70b7a1430f0d159.png" class="" title="4363ef2b7f4e5e3d70b7a1430f0d159">
+
+<p>咱也不知道哪错了，<code>ollama rm fortel</code>后再重新走一遍流程也不行，算了，先另辟蹊径，运行下面命令从<code>huggingface</code>仓库进行模型下载并运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama run hf.co/caihaoran/fortunetelling</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/963bd76207d288e938aa9a05b22b087.png" class="" title="963bd76207d288e938aa9a05b22b087">
+
+<p>还是不行，奇了怪了…，从大佬的仓库下载试试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama run hf.co/Conard/fortunetelling</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/2c840e68536871c83904df91e0bdd38.png" class="" title="2c840e68536871c83904df91e0bdd38">
+
+<img src="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/56998b355526d8a75d1584c43760d6b.png" class="" title="56998b355526d8a75d1584c43760d6b">
+
+<p>哇哦，居然可以，emmmm，难道是我的模型转成<code>gguf</code>的过程中出了问题？</p>
+<p>在colab中训练并上传到Huggingface的gguf模型文件也不能在ollama中运行(累了.gif)，先这样吧…</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/25/%E5%A6%82%E4%BD%95%E5%B0%86%E4%BD%A0%E7%9A%84DeepSeek-R1%E5%BE%AE%E8%B0%83%E6%88%90%E6%9F%90%E4%B8%AA%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%93%E5%AE%B6%EF%BC%88%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/25/%E5%A6%82%E4%BD%95%E5%B0%86%E4%BD%A0%E7%9A%84DeepSeek-R1%E5%BE%AE%E8%B0%83%E6%88%90%E6%9F%90%E4%B8%AA%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%93%E5%AE%B6%EF%BC%88%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%89/" class="post-title-link" itemprop="url">如何将你的DeepSeek-R1微调成某个领域的专家（实战篇）</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-25 18:31:53" itemprop="dateCreated datePublished" datetime="2025-03-25T18:31:53+08:00">2025-03-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-28 21:35:32" itemprop="dateModified" datetime="2025-03-28T21:35:32+08:00">2025-03-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>29k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1:47</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>偶然在bilibili大学刷到一个宝藏博主（我要我觉得）-<a target="_blank" rel="noopener" href="https://space.bilibili.com/474921808">code秘密花园</a>，质量高（符合我的方向）但是低产（所以我能跟上😁），目前只有四个视频，但信息量也不小，遂打算先把前辈其中的与本文同名的视频整理一下（我与作者同名），见参考链接。顺便一提，本文长度超集长，简单总结一下：我通过colab折腾了好久，显示通过重新编译llama.cpp解决了一个严重问题，后制作GGUF文件成功后，通过ollama加载该文件失败，重装ollama也不行，但是用大佬的huggingface上的GGUF文件就可以运行，我又尝试了使用本机的jupyter notebook进行同等代码的运行，值得一提的时，模型直接从hugging face下载会出问题，遂先下载到本地，加载本地模型问题，也出现了llama.cpp的问题（同等方式解决）,也是制作成GGUF文件后，ollama无法正常加载（毁灭吧），最后还是没用上ollama，使用vLLM进行的模型加载，并简单直接的对比了模型的效果。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/25/%E5%A6%82%E4%BD%95%E5%B0%86%E4%BD%A0%E7%9A%84DeepSeek-R1%E5%BE%AE%E8%B0%83%E6%88%90%E6%9F%90%E4%B8%AA%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%93%E5%AE%B6%EF%BC%88%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%89/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -717,7 +1079,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-25 17:53:28" itemprop="dateModified" datetime="2025-03-25T17:53:28+08:00">2025-03-25</time>
+      <time title="修改时间：2025-03-26 15:32:07" itemprop="dateModified" datetime="2025-03-26T15:32:07+08:00">2025-03-26</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -736,14 +1098,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.7k</span>
+      <span>4.9k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>14 分钟</span>
+      <span>18 分钟</span>
     </span>
 </div>
 
@@ -888,339 +1250,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/17/ja%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/17/ja%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/" class="post-title-link" itemprop="url">ja方案调研</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-03-17 11:41:09" itemprop="dateCreated datePublished" datetime="2025-03-17T11:41:09+08:00">2025-03-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-18 14:40:34" itemprop="dateModified" datetime="2025-03-18T14:40:34+08:00">2025-03-18</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近我们公司想与某上市公司合作的一个LLM应用的项目，本文记录下调研和思路历程，用作记录和分享。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/17/ja%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/15/TTS%E4%B9%8Bfish-speech/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/15/TTS%E4%B9%8Bfish-speech/" class="post-title-link" itemprop="url">TTS之fish-speech</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-03-15 15:14:47" itemprop="dateCreated datePublished" datetime="2025-03-15T15:14:47+08:00">2025-03-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-17 11:37:13" itemprop="dateModified" datetime="2025-03-17T11:37:13+08:00">2025-03-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>354</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>**碎碎念：**之前一直使用的是GSV（GPT-Sovits） V2版本，主要是因为它能满足我的基本需求（速度快，模仿情绪的能力，而且有音色融合的功能，但0样本克隆的效果也就那样吧，真想音色像得微调），可是呢，之前没正经使用过音色融合的功能，昨天试了下，发现webui版本的音色融合是以右侧的参考音频（音色融合音频）为准（音色融合音频只放一个的情况下，放多个将会将多个音频的音色进行融合，无论放一个还是放多个，音色都与左侧的参考音频的音色无关，但是呢，我做实验的时候都是用webui进行的实验，再转移到api_v2上进行使用，当我实验好，转移到api_v2上发现，api_v2的效果与webui的不一样，api_v2会将左侧的参考音频的音色融合起来，我觉得这是个bug，待会提下issue吧）。所以，还是得多玩玩其他家的TTS，以备不时之需，看了下fish-speech和F5-TTS的github首页，决定先宠幸fish-speech😏。</p>
-<p>**项目地址：**<a target="_blank" rel="noopener" href="https://github.com/fishaudio/fish-speech">https://github.com/fishaudio/fish-speech</a></p>
-<p>**在线Demo：**<a target="_blank" rel="noopener" href="https://fish.audio/zh-CN/">https://fish.audio/zh-CN/</a></p>
-<p>**文档：**<a target="_blank" rel="noopener" href="https://speech.fish.audio/">https://speech.fish.audio/</a></p>
-<p><strong>快速开始本地推理：<a target="_blank" rel="noopener" href="https://github.com/fishaudio/fish-speech/blob/main/inference.ipynb">https://github.com/fishaudio/fish-speech/blob/main/inference.ipynb</a></strong></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/15/TTS%E4%B9%8Bfish-speech/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">论文：Qwen2.5VL</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-03-11 11:21:48" itemprop="dateCreated datePublished" datetime="2025-03-11T11:21:48+08:00">2025-03-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-25 17:34:23" itemprop="dateModified" datetime="2025-03-25T17:34:23+08:00">2025-03-25</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>14k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>53 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>说来惭愧，玩了这么久LLM，还没正经看过LLM的论文，最近要好好玩玩Qwen2.5 VL，目的是探索能基于它做什么应用（主要看能不能做到实时检测），这里先看一下论文，有个原理上的认识，再去微调Qwen2.5 VL。</p>
-<p><strong>论文名：Qwen2.5-VL Technical Report</strong></p>
-<p><strong>作者：Qwen Team, Alibaba Group</strong></p>
-<p><strong>论文地址：</strong> <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2502.13923">https://arxiv.org/abs/2502.13923</a></p>
-<p><strong>Qwen Chat:</strong> <a target="_blank" rel="noopener" href="https://chat.qwenlm.ai/">https://chat.Qwenlm.ai</a></p>
-<p><strong>Hugging face:</strong> <a target="_blank" rel="noopener" href="https://huggingface.co/Qwen">https://huggingface.co/Qwen</a></p>
-<p><strong>ModelScope:</strong> <a target="_blank" rel="noopener" href="https://modelscope.cn/organization/Qwen">https://modelscope.cn/organization/Qwen</a></p>
-<p><strong>Github:</strong> <a target="_blank" rel="noopener" href="https://github.com/QwenLM/Qwen2.5-VL">https://github.com/QwenLM/Qwen2.5-VL</a></p>
-<p><em><strong>年份：2025</strong></em></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1244,13 +1273,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">77k</span>
+    <span title="站点总字数">109k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:40</span>
+    <span title="站点阅读时长">6:35</span>
   </span>
 </div>
 <div class="busuanzi-count">

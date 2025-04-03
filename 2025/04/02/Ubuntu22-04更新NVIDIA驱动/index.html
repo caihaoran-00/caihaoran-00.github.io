@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言最近在玩一个项目（microWakeWord，写在另一篇博客），发现该项目依赖项的tensorflow2.16需要CUDA 12.3支持，但是我的驱动目前最多只能支持到CUDA12.0(通过nvidia-smi看右上角的CUDA_Version: 12.0)，也很久没更新过驱动和cuda、cudnn了，借这个机会更新一下吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu22.04更新NVIDIA驱动">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言最近在玩一个项目（microWakeWord，写在另一篇博客），发现该项目依赖项的tensorflow2.16需要CUDA 12.3支持，但是我的驱动目前最多只能支持到CUDA12.0(通过nvidia-smi看右上角的CUDA_Version: 12.0)，也很久没更新过驱动和cuda、cudnn了，借这个机会更新一下吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/10d160ae7733a9bca06f138803af3263.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/4f3ba006f7150786c0f231329cccdb57.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/215b78656adcbf619a3a4da75a8c5f27.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/c4354861d0b11ccb2dd59777e69f7bdf.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/8966b812b0c31d23418c8682e75d0f42.jpg">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/e99c553b0b77817a6604df16414a5a66.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/cee88543436a5fe63fc81d31bf9e40e6.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/dc2b86948ddb39b3fef8289de756c471.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/image-20250402174205715.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/image-20250402174255948.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/ce3b2a483ae3ba05e202feba439e8cb4.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/81e6a6b8db114c52b48e36729ff427e4.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/ebe7fe7a3b1bb816b780d4061e33b810.png">
+<meta property="article:published_time" content="2025-04-02T08:13:17.000Z">
+<meta property="article:modified_time" content="2025-04-02T11:12:09.046Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="CUDA">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/10d160ae7733a9bca06f138803af3263.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/","path":"2025/04/02/Ubuntu22-04更新NVIDIA驱动/","title":"Ubuntu22.04更新NVIDIA驱动"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Ubuntu22.04更新NVIDIA驱动 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%B1%E5%8A%A8%E6%9B%B4%E6%96%B0"><span class="nav-number">2.</span> <span class="nav-text">驱动更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CUDA%E6%9B%B4%E6%96%B0"><span class="nav-number">3.</span> <span class="nav-text">CUDA更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CUDNN%E6%9B%B4%E6%96%B0"><span class="nav-number">4.</span> <span class="nav-text">CUDNN更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">59</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Ubuntu22.04更新NVIDIA驱动 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ubuntu22.04更新NVIDIA驱动
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-04-02 16:13:17 / 修改时间：19:12:09" itemprop="dateCreated datePublished" datetime="2025-04-02T16:13:17+08:00">2025-04-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>495</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在玩一个项目（microWakeWord，写在另一篇博客），发现该项目依赖项的<code>tensorflow2.16</code>需要<code>CUDA 12.3</code>支持，但是我的驱动目前最多只能支持到<code>CUDA12.0</code>(通过<code>nvidia-smi</code>看右上角的<code>CUDA_Version: 12.0</code>)，也很久没更新过驱动和cuda、cudnn了，借这个机会更新一下吧。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="驱动更新"><a href="#驱动更新" class="headerlink" title="驱动更新"></a>驱动更新</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ubuntu-drivers devices  <span class="comment">#  查看 Ubuntu 推荐的驱动,后面带 recommended 的通常是最稳定的。</span></span><br><span class="line"><span class="built_in">sudo</span> apt install nvidia-driver-570-server-open  <span class="comment"># 安装推荐的驱动</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> reboot  <span class="comment"># 重启系统</span></span><br><span class="line"></span><br><span class="line">nvidia-smi  <span class="comment"># 即可看到第一行的版本号不一样了</span></span><br></pre></td></tr></table></figure>
+
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/10d160ae7733a9bca06f138803af3263.png" class="" title="10d160ae7733a9bca06f138803af3263">
+
+<hr>
+<h2 id="CUDA更新"><a href="#CUDA更新" class="headerlink" title="CUDA更新"></a>CUDA更新</h2><p>打开<a target="_blank" rel="noopener" href="https://developer.nvidia.com/cuda-toolkit-archive">官网</a>，我这里选择CUDA12.6.3，然后选择对应你本机的选项，如下图：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/4f3ba006f7150786c0f231329cccdb57.png" class="" title="4f3ba006f7150786c0f231329cccdb57">
+
+<p>将网站给的命令依次输入到终端：</p>
+<p>第一条：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/215b78656adcbf619a3a4da75a8c5f27.png" class="" title="215b78656adcbf619a3a4da75a8c5f27">
+
+<p>第二条：</p>
+<p>提示安装程序检测到你已经通过包管理器安装了NVIDIA驱动，强烈建议你先卸载它。一方面我不知道怎么卸载，另一方面即使知道，也不打算接收这个建议🙄，好的，选择继续：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/c4354861d0b11ccb2dd59777e69f7bdf.png" class="" title="c4354861d0b11ccb2dd59777e69f7bdf">
+
+<p>看不懂，但是肯定让你同意，打上<code>accept</code>，回车：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/8966b812b0c31d23418c8682e75d0f42.jpg" class="" title="8966b812b0c31d23418c8682e75d0f42">
+
+<p>因为我们已经安装过驱动了，所以需要把驱动前面的勾（❌，whatever）去掉：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/e99c553b0b77817a6604df16414a5a66.png" class="" title="e99c553b0b77817a6604df16414a5a66">
+
+<p>然后提示链接已存在，更新链接，选择是：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/cee88543436a5fe63fc81d31bf9e40e6.png" class="" title="cee88543436a5fe63fc81d31bf9e40e6">
+
+<p>好的，安装完成后：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/dc2b86948ddb39b3fef8289de756c471.png" class="" title="dc2b86948ddb39b3fef8289de756c471">
+
+<p>可以看到，这时候<code>cuda</code>还是显式11.8（原来的版本）的。</p>
+<p>继续运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>更改前：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/image-20250402174205715.png" class="" title="image-20250402174205715">
+
+<p>更改后：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/image-20250402174255948.png" class="" title="image-20250402174255948">
+
+<p>好的，再依次运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br><span class="line">nvcc -V</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/ce3b2a483ae3ba05e202feba439e8cb4.png" class="" title="ce3b2a483ae3ba05e202feba439e8cb4">
+
+<p>好的，大功告成！（但是呢，以防万一，我还是去吧原来的cuda11.8文件夹删掉吧）。</p>
+<hr>
+<h2 id="CUDNN更新"><a href="#CUDNN更新" class="headerlink" title="CUDNN更新"></a>CUDNN更新</h2><p>打开<a target="_blank" rel="noopener" href="https://developer.nvidia.com/cudnn-downloads">官网</a>，和cuda安装差不多，选择配置后，依次运行给的代码：</p>
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/81e6a6b8db114c52b48e36729ff427e4.png" class="" title="81e6a6b8db114c52b48e36729ff427e4">
+
+<p>然后：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install libfreeimage3 libfreeimage-dev</span><br><span class="line"></span><br><span class="line"><span class="built_in">cp</span> -r /usr/src/cudnn_samples_v9/ <span class="variable">$HOME</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span>/cudnn_samples_v9/mnistCUDNN</span><br><span class="line">make clean &amp;&amp; make</span><br><span class="line">./mnistCUDNN</span><br></pre></td></tr></table></figure>
+
+<img src="/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/ebe7fe7a3b1bb816b780d4061e33b810.png" class="" title="ebe7fe7a3b1bb816b780d4061e33b810">
+
+<p>就哦了（可以把刚复制的cudnn_samples_v9删除掉）。</p>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/takedachia/article/details/130375718">https://blog.csdn.net/takedachia/article/details/130375718</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CUDA/" rel="tag"># CUDA</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/03/27/ollama%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8%EF%BC%88ubuntu%EF%BC%89/" rel="prev" title="ollama安装与使用（ubuntu）">
+                  <i class="fa fa-angle-left"></i> ollama安装与使用（ubuntu）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/04/03/KWS%E4%B9%8BmicroWakeWord%E5%AE%89%E8%A3%85%E3%80%81%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%B5%8B%E8%AF%95/" rel="next" title="KWS之microWakeWord安装、训练与测试">
+                  KWS之microWakeWord安装、训练与测试 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">109k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">6:35</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
