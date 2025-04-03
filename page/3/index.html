@@ -653,9 +653,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-02-10 10:08:58 / 修改时间：16:48:39" itemprop="dateCreated datePublished" datetime="2025-02-10T10:08:58+08:00">2025-02-10</time>
+      <time title="创建时间：2025-02-10 10:08:58" itemprop="dateCreated datePublished" datetime="2025-02-10T10:08:58+08:00">2025-02-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-03 14:05:19" itemprop="dateModified" datetime="2025-04-03T14:05:19+08:00">2025-04-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -674,7 +680,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>948</span>
+      <span>949</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -694,57 +700,14 @@
     <div class="post-body" itemprop="articleBody">
           <h2 id="什么是Agent"><a href="#什么是Agent" class="headerlink" title="什么是Agent"></a>什么是Agent</h2><p>Agent（智能体，代理），是指一种能够模拟人类思考和行为来自动执行程序，以解决复杂问题的程序或系统。在大模型应用开发中，Agent是指能够感知环境、做出决策并执行动作的智能实体。通常基于大模型构建，具备自然语言处理、推理、规划等能力。Agent的核心目标是通过与环境的交互完成特定任务或解决复杂问题。OpenAI将AI Agent定义为“以大语言模型为大脑驱动的系统，具备<strong>自主理解</strong>、<strong>感受</strong>、<strong>规划</strong>、<strong>记忆</strong>和<strong>使用工具</strong>的能力，能够自动化执行完成复杂任务的系统。”</p>
 <p>Agent与LLM的区别：可以把LLM理解为人的大脑，LLM思考方案，agent最终使用工具完成特定任务。</p>
-<h2 id="Agent架构图"><a href="#Agent架构图" class="headerlink" title="Agent架构图"></a>Agent架构图</h2><img src="/2025/02/10/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D/image-20250210102002343.png" class="" title="image-20250210102002343">
-
-<ul>
-<li>感知：Agent通过输入（如文本、图像、声音等）感知环境。</li>
-</ul>
-<img src="/2025/02/10/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D/image-20250210102630576.png" class="" title="image-20250210102630576">
-
-<p>大模型Agent技术架构主要包括规划（Planning）、记忆（Memory）、工具（Tools）和行动（Action)）四个关键部分</p>
-<ul>
-<li><strong>规划（Planning）</strong>：规划是大模型Agent的思维模式，负责将任务拆解为更小、更可管理的子任务，并评估工具的执行能力。通过大模型提示工程，如ReAct、CoT推理模式，可赋予Agent类似于人类的思维方式，精确拆解复杂任务，分布执行。基于感知到的信息，Agent利用大模型的推理能力做出规划决策</li>
-<li><strong>记忆（Memory）</strong>：记忆即信息存储与回忆。Agent模拟人类，设有短期记忆和长期记忆。短期记忆存储会话上下文，助力多轮对话；长期记忆存储用户特征、业务数据，实现向量数据库的速存速查</li>
-<li><strong>工具（Tools）</strong>：工具是Agent感知环境、执行决策的重要手段。通过配备多样工具并赋权，如API调用业务信息、插件扩展大模型能力等，Agent可以更加灵活地应对复杂任务</li>
-<li><strong>行动（Action）</strong>：行动是Agent将规划与记忆转化为实际输出的过程。Agent依托规划与记忆，执行具体行动，包括与外部互动或工具调用，实现输入至输出的转化。</li>
-</ul>
-<p><strong>一个典型的Agent系统架构包括以下模块</strong>：</p>
-<ol>
-<li><strong>输入模块</strong>：接收用户输入或环境信息（如文本、语音、图像等）</li>
-<li><strong>理解模块</strong>：利用大模型对输入进行理解和分析（如意图识别、实体提取）</li>
-<li><strong>推理模块</strong>：基于理解结果进行推理和决策（如生成回复、规划任务）</li>
-<li><strong>执行模块</strong>：执行决策结果（如调用API、生成文本、控制设备）</li>
-<li><strong>记忆模块</strong>：存储历史交互信息，支持上下文理解和长期记忆</li>
-<li><strong>学习模块</strong>：通过反馈优化Agent的行为（如强化学习、在线学习）</li>
-</ol>
-<h3 id="一个具体的问题"><a href="#一个具体的问题" class="headerlink" title="一个具体的问题"></a>一个具体的问题</h3><p>Q:长沙今天白天和晚上温差是多少？</p>
-<p>针对上述问题，你会怎么解决？</p>
-<ul>
-<li>查询今天天气情况，获取白天温度和晚上温度-&gt;天气查询工具</li>
-<li>白天温度-晚上温度-&gt;计算器工具</li>
-</ul>
-<h2 id="如何开发AI-Agent"><a href="#如何开发AI-Agent" class="headerlink" title="如何开发AI Agent"></a>如何开发AI Agent</h2><p>分为两大类：</p>
-<ol>
-<li><p>基于python</p>
-<ul>
-<li>结合langchain等大模型应用开发框架</li>
-<li>不使用大模型应用开发框架</li>
-</ul>
-</li>
-<li><p>基于Dify、Coze、AutoGen等Agent开发管理平台，通过拖拉拽的方式快速生成一个Agent。</p>
-</li>
-</ol>
-<p>下面我将用这三种方法分别实现上述的一个具体的问题：</p>
-<h3 id="基于langgraph"><a href="#基于langgraph" class="headerlink" title="基于langgraph"></a>基于langgraph</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1dxm6YPEDB/?spm_id_from=333.337.search-card.all.click&vd_source=075a061948e76c87e2ee8754e264056e">https://www.bilibili.com/video/BV1dxm6YPEDB/?spm_id_from=333.337.search-card.all.click&amp;vd_source=075a061948e76c87e2ee8754e264056e</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/edisonchou/p/-/quick-start-on-ai-agent-by-sk">https://www.cnblogs.com/edisonchou/p/-/quick-start-on-ai-agent-by-sk</a></li>
-<li></li>
-</ol>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/02/10/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
