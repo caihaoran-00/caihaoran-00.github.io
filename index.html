@@ -223,9 +223,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-04-03 11:50:41 / 修改时间：14:01:06" itemprop="dateCreated datePublished" datetime="2025-04-03T11:50:41+08:00">2025-04-03</time>
+      <time title="创建时间：2025-04-03 11:50:41" itemprop="dateCreated datePublished" datetime="2025-04-03T11:50:41+08:00">2025-04-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-07 18:15:23" itemprop="dateModified" datetime="2025-04-07T18:15:23+08:00">2025-04-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -244,14 +250,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>151</span>
+      <span>6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>22 分钟</span>
     </span>
 </div>
 
@@ -262,8 +268,16 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>公司在做一个AI对话玩具，需要语音唤醒功能，想运行在ESP32-S3芯片上，经过调研，觉得<a target="_blank" rel="noopener" href="https://github.com/kahrendt/microWakeWord">microWakeWord</a>项目最合适，另一个可能的方案是使用<a target="_blank" rel="noopener" href="https://edgeimpulse.com/">Edge Impulse</a>平台进行训练，参考<a target="_blank" rel="noopener" href="https://wiki.seeedstudio.com/cn/xiao_esp32s3_keyword_spotting/">这里</a>，有博主也是用的这个方案设计了<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV11ZrTYrE4p/?buvid=XUA3832AA22EE78A7351BC87C3080F4E6E14D&from_spmid=search.search-result.0.0&is_story_h5=false&mid=l75wYmHAuHqmVrUJdy96xQ==&plat_id=116&share_from=ugc&share_medium=android&share_plat=android&share_session_id=d6a6e4b8-ca14-4af3-a280-0c14c9c628d5&share_source=WEIXIN&share_source=weixin&share_tag=s_i&spmid=united.player-video-detail.0.0&timestamp=1743391874&unique_k=nQCe0ax&up_id=1171991528&vd_source=075a061948e76c87e2ee8754e264056e">小玩意</a>，但是，我认为这个方案不怎么靠谱（我要我觉得）。还是使用microWakeWord吧，这个项目是基于tensorflow的，很久没使用tensorflow进行训练了，基于这个机会也是把ubuntu22.04的显卡驱动、cuda和cudnn都更新了下，<a href="">见</a></p>
-
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>公司在做一个AI对话玩具，需要语音唤醒功能，想运行在ESP32-S3芯片上，经过调研，觉得<a target="_blank" rel="noopener" href="https://github.com/kahrendt/microWakeWord">microWakeWord</a>项目最合适。另一个可能的方案是使用<a target="_blank" rel="noopener" href="https://edgeimpulse.com/">Edge Impulse</a>平台进行训练，参考<a target="_blank" rel="noopener" href="https://wiki.seeedstudio.com/cn/xiao_esp32s3_keyword_spotting/">这里</a>，有博主也是用的这个方案设计了<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV11ZrTYrE4p/?buvid=XUA3832AA22EE78A7351BC87C3080F4E6E14D&from_spmid=search.search-result.0.0&is_story_h5=false&mid=l75wYmHAuHqmVrUJdy96xQ==&plat_id=116&share_from=ugc&share_medium=android&share_plat=android&share_session_id=d6a6e4b8-ca14-4af3-a280-0c14c9c628d5&share_source=WEIXIN&share_source=weixin&share_tag=s_i&spmid=united.player-video-detail.0.0&timestamp=1743391874&unique_k=nQCe0ax&up_id=1171991528&vd_source=075a061948e76c87e2ee8754e264056e">小玩意</a>，但是，我认为这个方案不怎么靠谱（我要我觉得）。还是使用microWakeWord吧，这个项目是基于tensorflow的，很久没使用tensorflow进行训练了，基于这个机会也是把ubuntu22.04的显卡驱动、cuda和cudnn都更新了下，见<a href="https://caihaoran-00.github.io/2025/04/02/Ubuntu22-04%E6%9B%B4%E6%96%B0NVIDIA%E9%A9%B1%E5%8A%A8/">这里</a>。本文记录实际使用历程，包括项目安装、代码介绍、训练和简单实际使用测试。</p>
+<p>**github:**<a target="_blank" rel="noopener" href="https://github.com/kahrendt/microWakeWord">https://github.com/kahrendt/microWakeWord</a></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/04/03/KWS%E4%B9%8BmicroWakeWord%E5%AE%89%E8%A3%85%E3%80%81%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%B5%8B%E8%AF%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -533,7 +547,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-28 21:35:32" itemprop="dateModified" datetime="2025-03-28T21:35:32+08:00">2025-03-28</time>
+      <time title="修改时间：2025-04-08 09:56:57" itemprop="dateModified" datetime="2025-04-08T09:56:57+08:00">2025-04-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1237,13 +1251,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">109k</span>
+    <span title="站点总字数">115k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">6:35</span>
+    <span title="站点阅读时长">6:56</span>
   </span>
 </div>
 <div class="busuanzi-count">
