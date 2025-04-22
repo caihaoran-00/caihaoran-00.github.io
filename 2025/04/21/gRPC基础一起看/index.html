@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言最近在探索高并发下的TTS服务(可能并发也不算高，目标是20个)，但是目前10个并发都勉强（13600KF+4090），目前使用的是Gpt-Sovits，在了解别的TTS时，目前主要关注的是Spark-tts和F5-tts，这两个TTS都有基于Nvidia Triton的使用方式（出自同一个作者），发现Triton支持客户端使用HTTP(requests)和gRPC的方式进行连接，之前看fun">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gRPC基础一起看">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/04/21/gRPC%E5%9F%BA%E7%A1%80%E4%B8%80%E8%B5%B7%E7%9C%8B/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言最近在探索高并发下的TTS服务(可能并发也不算高，目标是20个)，但是目前10个并发都勉强（13600KF+4090），目前使用的是Gpt-Sovits，在了解别的TTS时，目前主要关注的是Spark-tts和F5-tts，这两个TTS都有基于Nvidia Triton的使用方式（出自同一个作者），发现Triton支持客户端使用HTTP(requests)和gRPC的方式进行连接，之前看fun">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-04-21T10:02:10.000Z">
+<meta property="article:modified_time" content="2025-04-22T07:25:47.239Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="gRPC">
+<meta property="article:tag" content="FastAPI">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/04/21/gRPC%E5%9F%BA%E7%A1%80%E4%B8%80%E8%B5%B7%E7%9C%8B/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/04/21/gRPC%E5%9F%BA%E7%A1%80%E4%B8%80%E8%B5%B7%E7%9C%8B/","path":"2025/04/21/gRPC基础一起看/","title":"gRPC基础一起看"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>gRPC基础一起看 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E7%90%86%E8%A7%A3"><span class="nav-number">1.0.1.</span> <span class="nav-text">**第一步：核心概念理解 **</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%8E-FastAPI-%E5%AF%B9%E6%AF%94"><span class="nav-number">1.0.1.1.</span> <span class="nav-text">与 FastAPI 对比</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%9F%BA%E7%A1%80%E5%B7%A5%E4%BD%9C%E6%B5%81-%E7%AC%AC%E4%B8%80%E4%B8%AA-gRPC-%E5%BA%94%E7%94%A8-Python"><span class="nav-number">1.0.2.</span> <span class="nav-text">第二步：基础工作流 - 第一个 gRPC 应用 (Python)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">1.0.2.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%9C%8D%E5%8A%A1-proto-%E6%96%87%E4%BB%B6"><span class="nav-number">1.0.2.2.</span> <span class="nav-text">定义服务 (.proto 文件)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81"><span class="nav-number">1.0.2.3.</span> <span class="nav-text">生成代码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%9C%8D%E5%8A%A1%E5%99%A8-grpc-server-py"><span class="nav-number">1.0.2.4.</span> <span class="nav-text">实现服务器 (grpc_server.py)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%AE%A2%E6%88%B7%E7%AB%AF-client-py"><span class="nav-number">1.0.2.5.</span> <span class="nav-text">实现客户端 (client.py)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C"><span class="nav-number">1.0.2.6.</span> <span class="nav-text">运行:</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E6%B7%B1%E5%85%A5-RPC-%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.0.3.</span> <span class="nav-text">第三步：深入 RPC 类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%F0%9F%8C%9F-gRPC-%E5%9B%9B%E7%A7%8D%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%81"><span class="nav-number">1.0.4.</span> <span class="nav-text">🌟 gRPC 四种通信方式小课堂！</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%EF%B8%8F%E2%83%A3-%E5%8D%95%E8%AF%B7%E6%B1%82-%E5%8D%95%E5%93%8D%E5%BA%94%EF%BC%88Unary-RPC%EF%BC%89"><span class="nav-number">1.0.4.1.</span> <span class="nav-text">1️⃣ 单请求 - 单响应（Unary RPC）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%EF%B8%8F%E2%83%A3-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%B5%81%E5%BC%8F%EF%BC%88Server-Streaming%EF%BC%89"><span class="nav-number">1.0.4.2.</span> <span class="nav-text">2️⃣ 服务端流式（Server Streaming）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%EF%B8%8F%E2%83%A3-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%B5%81%E5%BC%8F%EF%BC%88Client-Streaming%EF%BC%89"><span class="nav-number">1.0.4.3.</span> <span class="nav-text">3️⃣ 客户端流式（Client Streaming）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4%EF%B8%8F%E2%83%A3-%E5%8F%8C%E5%90%91%E6%B5%81%E5%BC%8F%EF%BC%88Bidirectional-Streaming%EF%BC%89"><span class="nav-number">1.0.4.4.</span> <span class="nav-text">4️⃣ 双向流式（Bidirectional Streaming）</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%BF%9B%E9%98%B6%E7%89%B9%E6%80%A7-%E4%BA%86%E8%A7%A3%E5%8D%B3%E5%8F%AF%EF%BC%8C%E5%90%8E%E7%BB%AD%E6%B7%B1%E5%85%A5"><span class="nav-number">1.0.5.</span> <span class="nav-text">第四步：进阶特性 (了解即可，后续深入)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E4%B8%8E-FastAPI-%E5%AF%B9%E6%AF%94%E4%B8%8E%E9%80%89%E6%8B%A9"><span class="nav-number">1.0.6.</span> <span class="nav-text">第五步：与 FastAPI 对比与选择</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/04/21/gRPC%E5%9F%BA%E7%A1%80%E4%B8%80%E8%B5%B7%E7%9C%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="gRPC基础一起看 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          gRPC基础一起看
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-21 18:02:10" itemprop="dateCreated datePublished" datetime="2025-04-21T18:02:10+08:00">2025-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-22 15:25:47" itemprop="dateModified" datetime="2025-04-22T15:25:47+08:00">2025-04-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>15 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在探索高并发下的<code>TTS</code>服务(可能并发也不算高，目标是20个)，但是目前10个并发都勉强（<code>13600KF+4090</code>），目前使用的是<code>Gpt-Sovits</code>，在了解别的<code>TTS</code>时，目前主要关注的是<code>Spark-tts</code>和<code>F5-tts</code>，这两个TTS都有基于<code>Nvidia Triton</code>的使用方式（出自同一个作者），发现<code>Triton</code>支持客户端使用HTTP(requests)和gRPC的方式进行连接，之前看<a target="_blank" rel="noopener" href="https://github.com/modelscope/FunASR/tree/main">funasr</a>库的时候就看到官方提供了<a target="_blank" rel="noopener" href="https://github.com/modelscope/FunASR/tree/main/runtime/python/grpc">gRPC连接方式</a>，最近在<a href="">F5-TTS</a>的Issues中看到了问<a target="_blank" rel="noopener" href="https://github.com/SWivid/F5-TTS/issues/945">如何高并发</a>的问题，作者让<a target="_blank" rel="noopener" href="https://github.com/SWivid/F5-TTS/issues/945#issuecomment-2774777083">查看库中grpc的相关代码</a>，我觉得是时候了，必须得学学gRPC这个框架了。本文将从：</p>
+<ol>
+<li><strong>核心概念理解:</strong> 了解 gRPC 是什么，解决什么问题，以及它的关键组成部分。</li>
+<li><strong>基础工作流:</strong> 学习如何定义服务、生成代码，并运行一个最简单的 gRPC 服务（一元 RPC）。</li>
+<li><strong>深入 RPC 类型:</strong> 学习并实践不同的流式 RPC。</li>
+<li><strong>进阶特性:</strong> 了解错误处理、元数据、超时、认证等。</li>
+<li><strong>与 FastAPI 对比与选择:</strong> 理解两者的优劣势和适用场景。</li>
+</ol>
+<p>以切点展开介绍gRPC这个框架，Let’s go!</p>
+<span id="more"></span>
+
+<hr>
+<h4 id="第一步：核心概念理解"><a href="#第一步：核心概念理解" class="headerlink" title="**第一步：核心概念理解 **"></a>**第一步：核心概念理解 **</h4><p>gRPC 是一个由 Google 开发的高性能、开源的通用 <strong>远程过程调用 (RPC, Remote Procedure Call)</strong> 框架。它旨在实现服务之间（尤其是在微服务架构中）高效、可靠的通信。</p>
+<p>以下是关于 gRPC 的一些关键点：</p>
+<ol>
+<li><strong>高性能:</strong> gRPC 使用 <strong>HTTP&#x2F;2</strong> 作为传输协议。HTTP&#x2F;2 提供了多路复用、头部压缩、服务器推送和双向流式通信等特性，相比 HTTP&#x2F;1.1 效率更高。此外，它默认使用 <strong>Protocol Buffers (protobuf)</strong> 作为接口定义语言 (IDL) 和消息序列化格式。Protobuf 是一种二进制序列化格式，比基于文本的格式（如 JSON）更小、更快。</li>
+<li><strong>跨语言和平台:</strong> gRPC 的核心理念是定义一个服务契约（.proto 文件），然后可以使用官方提供的工具为多种语言（如 Java, C++, Python, Go, Ruby, C#, Node.js, Android Java, Objective-C, PHP 等）自动生成客户端和服务器端的代码存根 (stub)。这使得用不同语言编写的服务可以轻松地相互通信。</li>
+<li><strong>强类型契约:</strong> 使用 Protocol Buffers 定义服务接口和消息结构，提供了严格的模式（schema）。这有助于在编译时捕获错误，并确保客户端和服务器之间的数据结构一致性，减少了运行时错误。</li>
+<li><strong>支持多种 RPC 类型:</strong><ul>
+<li><strong>一元 RPC (Unary RPC):</strong> 客户端发送单个请求，服务器返回单个响应，类似于传统的 RESTful 调用。</li>
+<li><strong>服务器流式 RPC (Server streaming RPC):</strong> 客户端发送单个请求，服务器返回一个响应流。</li>
+<li><strong>客户端流式 RPC (Client streaming RPC):</strong> 客户端发送一个请求流，服务器在接收完所有请求后返回单个响应。</li>
+<li><strong>双向流式 RPC (Bidirectional streaming RPC):</strong> 客户端和服务器都可以独立地发送消息流。</li>
+</ul>
+</li>
+<li><strong>内置特性:</strong> gRPC 内建了对认证、负载均衡、超时与截止时间 (Deadlines)、取消、元数据交换等高级功能的支持。</li>
+<li><strong>主要应用场景:</strong><ul>
+<li>微服务之间的内部通信。</li>
+<li>连接移动设备、浏览器客户端与后端服务。</li>
+<li>需要高性能、低延迟通信的场景。</li>
+<li>需要处理流式数据的场景。</li>
+</ul>
+</li>
+</ol>
+<p>总的来说，gRPC 是一个现代化的、功能强大的 RPC 框架，特别适合构建分布式系统和微服务架构。</p>
+<hr>
+<h5 id="与-FastAPI-对比"><a href="#与-FastAPI-对比" class="headerlink" title="与 FastAPI 对比"></a><strong>与 FastAPI 对比</strong></h5><ul>
+<li><strong>RPC (Remote Procedure Call):</strong><ul>
+<li><strong>gRPC:</strong> 核心是 RPC。你可以像调用本地函数一样调用远程服务器上的函数。你不需要关心底层的网络通信细节（如 HTTP 方法、URL 路径、请求&#x2F;响应体格式）。</li>
+<li><strong>FastAPI:</strong> 通常基于 RESTful 架构。你通过 HTTP 方法 (GET, POST, PUT, DELETE) 和 URL 路径来定义操作，数据通常用 JSON 格式在请求体或响应体中传输。</li>
+<li><strong>关键区别:</strong> gRPC 隐藏了更多的底层细节，更像函数调用；FastAPI 更显式地使用 HTTP 协议。</li>
+</ul>
+</li>
+<li><strong>Protocol Buffers (Protobuf):</strong><ul>
+<li><strong>gRPC:</strong> 这是 gRPC 默认的<strong>接口定义语言 (IDL)</strong> 和<strong>数据序列化格式</strong>。你需要在一个 .proto 文件中定义你的服务（有哪些函数）和消息结构（函数的参数和返回值长什么样）。</li>
+<li><strong>FastAPI:</strong> 通常使用 Python 的类型注解 (Type Hints) 结合 Pydantic 来定义数据模型和验证。数据序列化通常是 <code>JSON</code>。</li>
+<li><strong>关键区别:</strong><ul>
+<li><strong>定义方式:</strong> gRPC 使用独立的 .proto 文件定义契约；FastAPI 在 Python 代码中使用类型注解<code>Pydantic</code>。</li>
+<li><strong>序列化格式:</strong> gRPC 默认使用 Protobuf (二进制，高效)；FastAPI 默认使用 JSON (文本，人类可读)。</li>
+<li><strong>强类型契约:</strong> Protobuf 提供了语言无关的、严格的模式定义。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>HTTP&#x2F;2:</strong><ul>
+<li><strong>gRPC:</strong> <strong>必须</strong>在 HTTP&#x2F;2 上运行。这带来了性能优势，如多路复用（在单个连接上处理多个请求）、头部压缩、服务器推送，并为流式 RPC 提供了基础。</li>
+<li><strong>FastAPI:</strong> 可以运行在 HTTP&#x2F;1.1 或 HTTP&#x2F;2 上（取决于 ASGI 服务器如 Uvicorn&#x2F;Hypercorn 的配置）。</li>
+<li><strong>关键区别:</strong> gRPC 强制使用更高效的 HTTP&#x2F;2。</li>
+</ul>
+</li>
+<li><strong>代码生成:</strong><ul>
+<li><strong>gRPC:</strong> 这是 gRPC 工作流的<strong>核心部分</strong>。你需要使用 protoc (Protocol Buffer 编译器) 和特定语言的插件，根据 .proto 文件自动生成客户端和服务端的代码骨架（stubs&#x2F;skeletons）。</li>
+<li><strong>FastAPI:</strong> 通常不需要显式的代码生成步骤来定义 API 接口本身（虽然 OpenAPI 文档是自动生成的）。</li>
+<li><strong>关键区别:</strong> gRPC 严重依赖代码生成来简化开发。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="第二步：基础工作流-第一个-gRPC-应用-Python"><a href="#第二步：基础工作流-第一个-gRPC-应用-Python" class="headerlink" title="第二步：基础工作流 - 第一个 gRPC 应用 (Python)"></a><strong>第二步：基础工作流 - 第一个 gRPC 应用 (Python)</strong></h4><p>让我们创建一个简单的 “Greeter” 服务，客户端发送一个名字，服务器返回一句问候语。</p>
+<h5 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a><strong>环境准备</strong></h5><ul>
+<li><p>安装 Python (假设你已经有了)。</p>
+</li>
+<li><p>安装必要的 gRPC 库：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip <span class="keyword">install</span> grpcio grpcio-tools</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>grpcio: 核心 gRPC 库。</li>
+<li>grpcio-tools: 包含 protoc 编译器和 Python 插件，用于从 .proto 文件生成代码。</li>
+</ul>
+</li>
+</ul>
+<h5 id="定义服务-proto-文件"><a href="#定义服务-proto-文件" class="headerlink" title="定义服务 (.proto 文件)"></a><strong>定义服务 (.proto 文件)</strong></h5><p>创建一个名为 greeter.proto 的文件，内容如下：</p>
+<figure class="highlight protobuf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 指定使用 proto3 语法</span></span><br><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义包名，可选，但推荐，用于避免命名冲突</span></span><br><span class="line"><span class="keyword">package</span> greeter;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义服务 &quot;Greeter&quot;</span></span><br><span class="line"><span class="keyword">service </span><span class="title class_">Greeter</span> &#123;</span><br><span class="line">  <span class="comment">// 定义一个 RPC 方法 &quot;SayHello&quot;</span></span><br><span class="line">  <span class="comment">// 它接收 HelloRequest 消息，返回 HelloReply 消息</span></span><br><span class="line">  <span class="comment">// 这是最简单的 Unary RPC (一元 RPC)</span></span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> SayHello (HelloRequest) <span class="keyword">returns</span> (HelloReply)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义请求消息结构</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloRequest</span> &#123;</span><br><span class="line">  <span class="type">string</span> name = <span class="number">1</span>; <span class="comment">// 字段类型是 string，字段名叫 name，字段编号是 1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义响应消息结构</span></span><br><span class="line"><span class="keyword">message </span><span class="title class_">HelloReply</span> &#123;</span><br><span class="line">  <span class="type">string</span> message = <span class="number">1</span>; <span class="comment">// 字段类型是 string，字段名叫 message，字段编号是 1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>syntax &#x3D; “proto3”;</strong>: 声明使用 Protobuf 的第 3 版语法。</li>
+<li><strong>service Greeter { … }</strong>: 定义一个名为 Greeter 的服务。</li>
+<li><strong>rpc SayHello (…) returns (…);</strong>: 定义一个名为 SayHello 的远程过程调用。</li>
+<li><strong>message HelloRequest { … } &#x2F; message HelloReply { … }</strong>: 定义请求和响应的数据结构。每个字段有类型、名称和唯一的编号。</li>
+</ul>
+<h5 id="生成代码"><a href="#生成代码" class="headerlink" title="生成代码"></a><strong>生成代码</strong></h5><p>在包含 <code>greeter.proto</code> 文件的目录下，运行以下命令：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m grpc_tools.protoc -I. <span class="attribute">--python_out</span>=. <span class="attribute">--grpc_python_out</span>=. greeter.proto</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>python -m grpc_tools.protoc</code>: 调用 Python 的 <code>protoc</code> 工具。</li>
+<li>-I.: 指定 <code>.proto</code> 文件的搜索路径（. 表示当前目录）。</li>
+<li>–python_out&#x3D;.: 指定生成的 Python 消息代码 (_pb2.py) 的输出目录。</li>
+<li>–grpc_python_out&#x3D;.: 指定生成的 Python gRPC 服务&#x2F;客户端代码 (_pb2_grpc.py) 的输出目录。</li>
+<li>greeter.proto: 要编译的 .proto 文件。</li>
+</ul>
+<p>执行成功后，你会看到当前目录下多了两个文件：</p>
+<ul>
+<li>greeter_pb2.py（数据结构类）: 包含 Protobuf 消息类的 Python 代码（HelloRequest, HelloReply）。</li>
+<li>greeter_pb2_grpc.py（服务和客户端基类）: 包含：<ul>
+<li>GreeterStub: 客户端用来调用服务的类。</li>
+<li>GreeterServicer: 服务器需要实现的基类（定义了 SayHello 方法的接口）。</li>
+<li>add_GreeterServicer_to_server: 将服务实现注册到服务器的函数。</li>
+</ul>
+</li>
+</ul>
+<h5 id="实现服务器-grpc-server-py"><a href="#实现服务器-grpc-server-py" class="headerlink" title="实现服务器 (grpc_server.py)"></a><strong>实现服务器 (grpc_server.py)</strong></h5><p>创建一个 <code>grpc_server.py</code> 文件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> grpc</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> concurrent <span class="keyword">import</span> futures</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入生成的代码</span></span><br><span class="line"><span class="keyword">import</span> greeter_pb2</span><br><span class="line"><span class="keyword">import</span> greeter_pb2_grpc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 实现 .proto 文件中定义的服务接口</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GreeterServicer</span>(greeter_pb2_grpc.GreeterServicer):</span><br><span class="line">    <span class="comment"># 实现 SayHello 方法</span></span><br><span class="line">    <span class="comment"># 在方法定义的末尾传入 context为使用 gRPC Python 框架来实现服务端 RPC 方法时的一个固定、标准的写法。</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">SayHello</span>(<span class="params">self, request, context</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;收到请求: name=&#x27;<span class="subst">&#123;request.name&#125;</span>&#x27;&quot;</span>)</span><br><span class="line">        <span class="comment"># 构建响应消息</span></span><br><span class="line">        reply = greeter_pb2.HelloReply(message=<span class="string">f&quot;你好, <span class="subst">&#123;request.name&#125;</span>!&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> reply</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">serve</span>():</span><br><span class="line">    <span class="comment"># 创建一个 gRPC 服务器，使用线程池处理请求</span></span><br><span class="line">    server = grpc.server(futures.ThreadPoolExecutor(max_workers=<span class="number">10</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 将我们实现的服务注册到服务器中</span></span><br><span class="line">    greeter_pb2_grpc.add_GreeterServicer_to_server(GreeterServicer(), server)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 监听端口 50051 (不安全的连接，用于测试)</span></span><br><span class="line">    server.add_insecure_port(<span class="string">&#x27;[::]:50051&#x27;</span>) <span class="comment"># [::] 监听所有 IPv4 和 IPv6 地址</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;服务器启动，监听端口 50051...&quot;</span>)</span><br><span class="line">    <span class="comment"># 启动服务器</span></span><br><span class="line">    server.start()</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;服务已启动，等待终止信号...&quot;</span>)</span><br><span class="line">    <span class="comment"># 使用 wait_for_termination() 来阻塞主线程，直到服务器停止</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">       server.wait_for_termination()</span><br><span class="line">    <span class="keyword">except</span> KeyboardInterrupt:</span><br><span class="line">    	<span class="comment"># 收到 Ctrl+C信号</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;收到键盘中断信号，开始停止服务器...&quot;</span>)</span><br><span class="line">        <span class="comment"># 调用 server.stop() 来触发优雅关闭，可以给一个宽限期</span></span><br><span class="line">        <span class="comment"># wait_for_termination 会在 stop 完成后解除阻塞</span></span><br><span class="line">        server.stop(<span class="number">5</span>) <span class="comment"># 优雅停止，最多等待 5S 让请求完成</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;服务器已停止&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    serve()</span><br></pre></td></tr></table></figure>
+
+<h5 id="实现客户端-client-py"><a href="#实现客户端-client-py" class="headerlink" title="实现客户端 (client.py)"></a><strong>实现客户端 (client.py)</strong></h5><p>创建一个 client.py 文件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> grpc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入生成的代码</span></span><br><span class="line"><span class="keyword">import</span> greeter_pb2</span><br><span class="line"><span class="keyword">import</span> greeter_pb2_grpc</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run</span>():</span><br><span class="line">    <span class="comment"># 连接到 gRPC 服务器 (注意地址和端口要匹配服务器)</span></span><br><span class="line">    <span class="comment"># grpc.insecure_channel 表示不使用 TLS 加密，用于测试</span></span><br><span class="line">    <span class="keyword">with</span> grpc.insecure_channel(<span class="string">&#x27;localhost:50051&#x27;</span>) <span class="keyword">as</span> channel:</span><br><span class="line">        <span class="comment"># 创建一个客户端 stub (存根)</span></span><br><span class="line">        stub = greeter_pb2_grpc.GreeterStub(channel)</span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;--- 调用 SayHello ---&quot;</span>)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 创建请求消息</span></span><br><span class="line">            request = greeter_pb2.HelloRequest(name=<span class="string">&#x27;gRPC 小白&#x27;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 调用远程方法，就像调用本地方法一样</span></span><br><span class="line">            response = stub.SayHello(request, timeout=<span class="number">10</span>) <span class="comment"># 设置10秒超时</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 打印服务器返回的响应</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;服务器响应: <span class="subst">&#123;response.message&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">except</span> grpc.RpcError <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;RPC 调用失败: <span class="subst">&#123;e.code()&#125;</span> - <span class="subst">&#123;e.details()&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    run()</span><br></pre></td></tr></table></figure>
+
+<h5 id="运行"><a href="#运行" class="headerlink" title="运行:"></a><strong>运行:</strong></h5><ul>
+<li>先在一个终端启动服务器：python grpc_server.py</li>
+<li>然后在另一个终端启动客户端：python grpc_client.py</li>
+</ul>
+<p>你应该能看到服务器打印收到请求，客户端打印收到的响应 “你好, gRPC 小白!”。</p>
+<p><strong>恭喜！你已经成功运行了你的第一个 gRPC 应用！</strong></p>
+<hr>
+<h4 id="第三步：深入-RPC-类型"><a href="#第三步：深入-RPC-类型" class="headerlink" title="第三步：深入 RPC 类型"></a><strong>第三步：深入 RPC 类型</strong></h4><p>gRPC 不仅仅支持上面这种简单的一对一请求响应（Unary RPC），还支持流式 RPC：</p>
+<ol>
+<li><strong>服务器流式 RPC (Server Streaming RPC):</strong><ul>
+<li><strong>场景:</strong> 客户端发送一个请求，服务器返回一个数据流。例如，客户端请求股票价格，服务器持续推送更新。</li>
+<li><strong>.proto 定义:</strong> rpc ListFeatures (Point) returns (stream Feature); (注意 stream 关键字在返回值前)</li>
+<li><strong>实现:</strong> 服务器端的 RPC 方法需要返回一个迭代器或生成器 (yield 数据)。客户端会迭代接收服务器发送的消息。</li>
+</ul>
+</li>
+<li><strong>客户端流式 RPC (Client Streaming RPC):</strong><ul>
+<li><strong>场景:</strong> 客户端发送一个数据流给服务器，服务器处理完所有数据后返回一个响应。例如，客户端上传一个大文件（分块发送），服务器接收完后返回确认信息。</li>
+<li><strong>.proto 定义:</strong> rpc RecordRoute (stream Point) returns (RouteSummary); (注意 stream 关键字在参数前)</li>
+<li><strong>实现:</strong> 服务器端的 RPC 方法接收一个请求迭代器。客户端需要提供一个迭代器或生成器来发送数据流。</li>
+</ul>
+</li>
+<li><strong>双向流式 RPC (Bidirectional Streaming RPC):</strong><ul>
+<li><strong>场景:</strong> 客户端和服务器可以互相独立地发送消息流。例如，一个聊天应用，客户端和服务器都可以随时发送消息。</li>
+<li><strong>.proto 定义:</strong> rpc RouteChat (stream RouteNote) returns (stream RouteNote); (参数和返回值前都有 stream)</li>
+<li><strong>实现:</strong> 服务器端接收请求迭代器，并返回响应迭代器。客户端也使用迭代器发送和接收。</li>
+</ul>
+</li>
+</ol>
+<p><strong>建议:</strong> 先完全掌握 Unary RPC，然后尝试实现一个 Server Streaming 的例子，再逐步尝试 Client Streaming 和 Bidirectional Streaming。官方 gRPC Python 教程中有这些类型的示例。</p>
+<p>好！那我就按照顺序，<strong>先从第一种到第四种</strong>，每种都用<strong>简单易懂的小例子</strong>来讲，帮助你快速理解。</p>
+<hr>
+<h4 id="🌟-gRPC-四种通信方式小课堂！"><a href="#🌟-gRPC-四种通信方式小课堂！" class="headerlink" title="🌟 gRPC 四种通信方式小课堂！"></a>🌟 gRPC 四种通信方式小课堂！</h4><h5 id="1️⃣-单请求-单响应（Unary-RPC）"><a href="#1️⃣-单请求-单响应（Unary-RPC）" class="headerlink" title="1️⃣ 单请求 - 单响应（Unary RPC）"></a>1️⃣ 单请求 - 单响应（Unary RPC）</h5><p>最简单，像 HTTP 请求一样。</p>
+<p>客户端发出一个请求，服务器返回一个结果。</p>
+<figure class="highlight proto"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">service </span><span class="title class_">Greeter</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> SayHello (HelloRequest) <span class="keyword">returns</span> (HelloReply)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>✅ 用法场景：</p>
+<ul>
+<li>登录验证</li>
+<li>获取用户信息</li>
+<li>获取天气数据</li>
+</ul>
+<p>刚刚写的 <code>SayHello</code> 就是这种类型！</p>
+<hr>
+<h5 id="2️⃣-服务端流式（Server-Streaming）"><a href="#2️⃣-服务端流式（Server-Streaming）" class="headerlink" title="2️⃣ 服务端流式（Server Streaming）"></a>2️⃣ 服务端流式（Server Streaming）</h5><p>客户端发出一次请求，服务器<strong>连续返回多条数据</strong>，直到发完。</p>
+<figure class="highlight proto"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">service </span><span class="title class_">Greeter</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> StreamHello (HelloRequest) <span class="keyword">returns</span> (stream HelloReply)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Python 服务端示范：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">StreamHello</span>(<span class="params">self, request, context</span>):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">        <span class="keyword">yield</span> greeter_pb2.HelloReply(message=<span class="string">f&quot;Hello <span class="subst">&#123;request.name&#125;</span>! <span class="subst">&#123;i&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>客户端调用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">responses = stub.StreamHello(greeter_pb2.HelloRequest(name=<span class="string">&#x27;Streamer&#x27;</span>))</span><br><span class="line"><span class="keyword">for</span> response <span class="keyword">in</span> responses:</span><br><span class="line">    <span class="built_in">print</span>(response.message)</span><br></pre></td></tr></table></figure>
+
+<p>✅ 用法场景：</p>
+<ul>
+<li>实时日志推送</li>
+<li>服务器通知</li>
+<li>视频流 &#x2F; 数据流发送</li>
+</ul>
+<hr>
+<h5 id="3️⃣-客户端流式（Client-Streaming）"><a href="#3️⃣-客户端流式（Client-Streaming）" class="headerlink" title="3️⃣ 客户端流式（Client Streaming）"></a>3️⃣ 客户端流式（Client Streaming）</h5><p>客户端<strong>连续发多条消息</strong>，服务器收到后，最后返回一个结果。</p>
+<figure class="highlight proto"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">service </span><span class="title class_">Greeter</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> CollectHello (stream HelloRequest) <span class="keyword">returns</span> (HelloReply)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Python 客户端示范：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">generate_requests</span>():</span><br><span class="line">    <span class="keyword">for</span> name <span class="keyword">in</span> [<span class="string">&#x27;Alice&#x27;</span>, <span class="string">&#x27;Bob&#x27;</span>, <span class="string">&#x27;Carol&#x27;</span>]:</span><br><span class="line">        <span class="keyword">yield</span> greeter_pb2.HelloRequest(name=name)</span><br><span class="line"></span><br><span class="line">response = stub.CollectHello(generate_requests())</span><br><span class="line"><span class="built_in">print</span>(response.message)</span><br></pre></td></tr></table></figure>
+
+<p>服务器端示范：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">CollectHello</span>(<span class="params">self, request_iterator, context</span>):</span><br><span class="line">    names = [request.name <span class="keyword">for</span> request <span class="keyword">in</span> request_iterator]</span><br><span class="line">    <span class="keyword">return</span> greeter_pb2.HelloReply(message=<span class="string">f&quot;Hello <span class="subst">&#123;<span class="string">&#x27;, &#x27;</span>.join(names)&#125;</span>!&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>✅ 用法场景：</p>
+<ul>
+<li>批量上传文件</li>
+<li>多个小请求聚合</li>
+<li>IoT 设备上报数据</li>
+</ul>
+<hr>
+<h5 id="4️⃣-双向流式（Bidirectional-Streaming）"><a href="#4️⃣-双向流式（Bidirectional-Streaming）" class="headerlink" title="4️⃣ 双向流式（Bidirectional Streaming）"></a>4️⃣ 双向流式（Bidirectional Streaming）</h5><p>客户端和服务端都能<strong>同时发消息，互相流动</strong>，像聊天室一样！</p>
+<figure class="highlight proto"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">service </span><span class="title class_">Greeter</span> &#123;</span><br><span class="line">  <span class="function"><span class="keyword">rpc</span> ChatHello (stream HelloRequest) <span class="keyword">returns</span> (stream HelloReply)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>服务端示范：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">ChatHello</span>(<span class="params">self, request_iterator, context</span>):</span><br><span class="line">    <span class="keyword">for</span> request <span class="keyword">in</span> request_iterator:</span><br><span class="line">        <span class="keyword">yield</span> greeter_pb2.HelloReply(message=<span class="string">f&quot;Hello <span class="subst">&#123;request.name&#125;</span>!&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>客户端示范：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">generate_requests</span>():</span><br><span class="line">    <span class="keyword">for</span> name <span class="keyword">in</span> [<span class="string">&#x27;Tom&#x27;</span>, <span class="string">&#x27;Jerry&#x27;</span>, <span class="string">&#x27;Spike&#x27;</span>]:</span><br><span class="line">        <span class="keyword">yield</span> greeter_pb2.HelloRequest(name=name)</span><br><span class="line"></span><br><span class="line">responses = stub.ChatHello(generate_requests())</span><br><span class="line"><span class="keyword">for</span> response <span class="keyword">in</span> responses:</span><br><span class="line">    <span class="built_in">print</span>(response.message)</span><br></pre></td></tr></table></figure>
+
+<p>✅ 用法场景：</p>
+<ul>
+<li>聊天软件</li>
+<li>实时音频 &#x2F; 视频</li>
+<li>多设备双向数据交换</li>
+</ul>
+<hr>
+<p>✅ 到这里你应该能看出来了：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>类比</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单请求单响应</td>
+<td>普通 HTTP 请求</td>
+<td>简单稳定</td>
+</tr>
+<tr>
+<td>服务端流式</td>
+<td>点播视频</td>
+<td>一次请求，多次返回</td>
+</tr>
+<tr>
+<td>客户端流式</td>
+<td>批量文件上传</td>
+<td>多次请求，一次返回</td>
+</tr>
+<tr>
+<td>双向流式</td>
+<td>微信聊天 &#x2F; 音视频通话</td>
+<td>一边发一边收，像对讲机</td>
+</tr>
+</tbody></table>
+<hr>
+<h4 id="第四步：进阶特性-了解即可，后续深入"><a href="#第四步：进阶特性-了解即可，后续深入" class="headerlink" title="第四步：进阶特性 (了解即可，后续深入)"></a><strong>第四步：进阶特性 (了解即可，后续深入)</strong></h4><ul>
+<li><strong>错误处理:</strong> gRPC 通过状态码和可选的错误详情来传递错误信息。你需要在服务器端设置状态码和详情，在客户端捕获 grpc.RpcError。</li>
+<li><strong>元数据 (Metadata):</strong> 类似于 HTTP Headers，用于传递请求&#x2F;响应的附加信息，如认证令牌、追踪 ID 等。</li>
+<li><strong>截止时间&#x2F;超时 (Deadlines&#x2F;Timeouts):</strong> 客户端可以指定一个 RPC 调用的最长等待时间。服务器可以检查调用是否已超时。</li>
+<li><strong>认证 (Authentication):</strong> gRPC 支持多种认证机制，如 SSL&#x2F;TLS (加密传输)、基于 Token 的认证 (如 JWT) 等。</li>
+<li><strong>拦截器 (Interceptors):</strong> 类似于 Web 框架中的中间件 (Middleware)，可以在 RPC 调用之前或之后执行通用逻辑，如日志记录、认证检查、度量收集等。</li>
+<li><strong>健康检查 (Health Checking):</strong> gRPC 标准化了服务健康检查的协议。</li>
+<li><strong>负载均衡 (Load Balancing):</strong> gRPC 客户端可以配置负载均衡策略，将请求分发到多个后端服务器实例。</li>
+</ul>
+<hr>
+<h4 id="第五步：与-FastAPI-对比与选择"><a href="#第五步：与-FastAPI-对比与选择" class="headerlink" title="第五步：与 FastAPI 对比与选择"></a><strong>第五步：与 FastAPI 对比与选择</strong></h4><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>gRPC (通常 Protobuf + HTTP&#x2F;2)</th>
+<th>FastAPI (通常 JSON + HTTP&#x2F;1.1&#x2F;2)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>范式</strong></td>
+<td>RPC</td>
+<td>RESTful (或 GraphQL 等)</td>
+</tr>
+<tr>
+<td><strong>协议</strong></td>
+<td>HTTP&#x2F;2 (强制)</td>
+<td>HTTP&#x2F;1.1 或 HTTP&#x2F;2</td>
+</tr>
+<tr>
+<td><strong>数据格式</strong></td>
+<td>Protobuf (二进制, 高效)</td>
+<td>JSON (文本, 可读性好)</td>
+</tr>
+<tr>
+<td><strong>契约定义</strong></td>
+<td>.proto 文件 (语言无关)</td>
+<td>Python 类型注解&#x2F;Pydantic</td>
+</tr>
+<tr>
+<td><strong>代码生成</strong></td>
+<td>核心，必需</td>
+<td>通常不需要 (除了 OpenAPI)</td>
+</tr>
+<tr>
+<td><strong>性能</strong></td>
+<td>通常更高 (尤其网络&#x2F;序列化)</td>
+<td>良好，但可能低于 gRPC</td>
+</tr>
+<tr>
+<td><strong>流处理</strong></td>
+<td>原生支持四种类型</td>
+<td>服务器流 (StreamingResponse), 其他需 WebSocket 等</td>
+</tr>
+<tr>
+<td><strong>浏览器支持</strong></td>
+<td>需要代理 (gRPC-Web)</td>
+<td>原生支持</td>
+</tr>
+<tr>
+<td><strong>开发体验</strong></td>
+<td>契约先行，较严格</td>
+<td>代码即文档，更灵活</td>
+</tr>
+<tr>
+<td><strong>生态&#x2F;工具</strong></td>
+<td>跨语言，工具链成熟</td>
+<td>Python 生态丰富，集成方便</td>
+</tr>
+</tbody></table>
+<p><strong>何时选择 gRPC?</strong></p>
+<ul>
+<li>微服务之间的内部通信，追求高性能、低延迟。</li>
+<li>需要严格的 API 契约和强类型检查。</li>
+<li>需要高效的流式数据处理（双向流等）。</li>
+<li>跨语言通信是主要需求。</li>
+</ul>
+<p><strong>何时选择 FastAPI?</strong></p>
+<ul>
+<li>需要构建面向公众的 Web API，尤其需要浏览器直接访问。</li>
+<li>开发速度和灵活性是首要考虑。</li>
+<li>团队更熟悉 REST 和 JSON。</li>
+<li>希望利用丰富的 Python Web 生态（数据库 ORM、模板引擎等）。</li>
+<li>需要自动生成交互式 API 文档 (Swagger UI&#x2F;ReDoc)。</li>
+</ul>
+<hr>
+<p><strong>学习建议:</strong></p>
+<ol>
+<li><strong>动手实践:</strong> 跟着官方教程或上面的例子，亲自编写、生成、运行代码。</li>
+<li><strong>理解 .proto:</strong> 这是 gRPC 的基础，花时间学习它的语法和最佳实践。</li>
+<li><strong>从小处着手:</strong> 先精通 Unary RPC，再逐步学习流式 RPC。</li>
+<li><strong>阅读官方文档:</strong> gRPC.io 网站是最好的资源，特别是 Python 部分。</li>
+<li><strong>看示例代码:</strong> gRPC 的 GitHub 仓库 (grpc&#x2F;grpc) 包含各种语言的示例。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/gRPC/" rel="tag"># gRPC</a>
+              <a href="/tags/FastAPI/" rel="tag"># FastAPI</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/17/Unsloth-Llama-3-2-3B-Instruct-SFT%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/" rel="prev" title="Unsloth:Llama-3.2-3B-Instruct+SFT将通用LLM微调成推理LLM">
+                  <i class="fa fa-angle-left"></i> Unsloth:Llama-3.2-3B-Instruct+SFT将通用LLM微调成推理LLM
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">179k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">10:52</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

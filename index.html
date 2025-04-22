@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">66</span>
+        <span class="site-state-item-count">68</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -186,6 +186,121 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/04/21/gRPC%E5%9F%BA%E7%A1%80%E4%B8%80%E8%B5%B7%E7%9C%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/04/21/gRPC%E5%9F%BA%E7%A1%80%E4%B8%80%E8%B5%B7%E7%9C%8B/" class="post-title-link" itemprop="url">gRPC基础一起看</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-21 18:02:10" itemprop="dateCreated datePublished" datetime="2025-04-21T18:02:10+08:00">2025-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-22 15:25:47" itemprop="dateModified" datetime="2025-04-22T15:25:47+08:00">2025-04-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>15 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在探索高并发下的<code>TTS</code>服务(可能并发也不算高，目标是20个)，但是目前10个并发都勉强（<code>13600KF+4090</code>），目前使用的是<code>Gpt-Sovits</code>，在了解别的<code>TTS</code>时，目前主要关注的是<code>Spark-tts</code>和<code>F5-tts</code>，这两个TTS都有基于<code>Nvidia Triton</code>的使用方式（出自同一个作者），发现<code>Triton</code>支持客户端使用HTTP(requests)和gRPC的方式进行连接，之前看<a target="_blank" rel="noopener" href="https://github.com/modelscope/FunASR/tree/main">funasr</a>库的时候就看到官方提供了<a target="_blank" rel="noopener" href="https://github.com/modelscope/FunASR/tree/main/runtime/python/grpc">gRPC连接方式</a>，最近在<a href="">F5-TTS</a>的Issues中看到了问<a target="_blank" rel="noopener" href="https://github.com/SWivid/F5-TTS/issues/945">如何高并发</a>的问题，作者让<a target="_blank" rel="noopener" href="https://github.com/SWivid/F5-TTS/issues/945#issuecomment-2774777083">查看库中grpc的相关代码</a>，我觉得是时候了，必须得学学gRPC这个框架了。本文将从：</p>
+<ol>
+<li><strong>核心概念理解:</strong> 了解 gRPC 是什么，解决什么问题，以及它的关键组成部分。</li>
+<li><strong>基础工作流:</strong> 学习如何定义服务、生成代码，并运行一个最简单的 gRPC 服务（一元 RPC）。</li>
+<li><strong>深入 RPC 类型:</strong> 学习并实践不同的流式 RPC。</li>
+<li><strong>进阶特性:</strong> 了解错误处理、元数据、超时、认证等。</li>
+<li><strong>与 FastAPI 对比与选择:</strong> 理解两者的优劣势和适用场景。</li>
+</ol>
+<p>以切点展开介绍gRPC这个框架，Let’s go!</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/04/21/gRPC%E5%9F%BA%E7%A1%80%E4%B8%80%E8%B5%B7%E7%9C%8B/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -223,9 +338,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-04-17 17:55:49 / 修改时间：17:57:06" itemprop="dateCreated datePublished" datetime="2025-04-17T17:55:49+08:00">2025-04-17</time>
+      <time title="创建时间：2025-04-17 17:55:49" itemprop="dateCreated datePublished" datetime="2025-04-17T17:55:49+08:00">2025-04-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-18 19:37:58" itemprop="dateModified" datetime="2025-04-18T19:37:58+08:00">2025-04-18</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -244,14 +365,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2</span>
+      <span>24k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>1:28</span>
     </span>
 </div>
 
@@ -262,7 +383,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://caihaoran-00.github.io/2025/04/14/Unsloth-Llama-3-2-3B-Instruct-GRPO%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/">前面</a>我们一起做了使用<code>Unsloth</code>框架将<code>Llama-3.2-3B-Instruct</code>通过<code>GRPO</code>的方式转化为推理语言大模型，效果有一点但并不多🤪，而且发现了几个我觉得很严重的问题，一是推理能力并没有感觉到增强，二是由于训练期间搭配了系统提示词，所以如果推理时不加上提示词会引导不出推理过程，三是容易出现推理过程是错的，但答案是对的情况。我认为在有推理数据集的基础上，<code>SFT+COT</code>可能效果更稳定，本文即实践下<code>SFT+COT</code>，对实验过程进行记录。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/04/17/Unsloth-Llama-3-2-3B-Instruct-SFT%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -423,9 +552,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-04-11 18:31:09 / 修改时间：19:38:43" itemprop="dateCreated datePublished" datetime="2025-04-11T18:31:09+08:00">2025-04-11</time>
+      <time title="创建时间：2025-04-11 18:31:09" itemprop="dateCreated datePublished" datetime="2025-04-11T18:31:09+08:00">2025-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-21 17:42:42" itemprop="dateModified" datetime="2025-04-21T17:42:42+08:00">2025-04-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -444,14 +579,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>88</span>
+      <span>1.6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>6 分钟</span>
     </span>
 </div>
 
@@ -1122,107 +1257,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/24/LLamaFactory%E5%BE%AE%E8%B0%83Qwen2-5-7B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/24/LLamaFactory%E5%BE%AE%E8%B0%83Qwen2-5-7B/" class="post-title-link" itemprop="url">LLamaFactory微调Qwen2.5 7B</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2025-03-24 14:47:12 / 修改时间：18:22:42" itemprop="dateCreated datePublished" datetime="2025-03-24T14:47:12+08:00">2025-03-24</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.1k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>11 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://caihaoran-00.github.io/2025/02/18/LLamaFactory%E5%BE%AE%E8%B0%83Qwen2-5VL/#more">前面</a>简单尝试了LLamaFactory微调Qwen2.5 VL，但其实并未用到图像或者视频数据，本质上用的还是文本生成能力，现在有个真实的需求需要做（AI玩具，仅是文本生成方面），本文记录是怎么一步一步实现的，以及遇到的坑和想法。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/24/LLamaFactory%E5%BE%AE%E8%B0%83Qwen2-5-7B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1246,13 +1280,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">149k</span>
+    <span title="站点总字数">179k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">9:01</span>
+    <span title="站点阅读时长">10:52</span>
   </span>
 </div>
 <div class="busuanzi-count">
