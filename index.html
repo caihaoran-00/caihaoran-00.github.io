@@ -231,7 +231,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-22 20:43:07" itemprop="dateModified" datetime="2025-04-22T20:43:07+08:00">2025-04-22</time>
+      <time title="修改时间：2025-04-23 09:33:44" itemprop="dateModified" datetime="2025-04-23T09:33:44+08:00">2025-04-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -268,7 +268,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在探索高并发下的<code>TTS</code>服务(可能并发也不算高，目标是20个)，但是目前10个并发都勉强（<code>13600KF+4090</code>），目前使用的是<code>Gpt-Sovits</code>，在了解别的<code>TTS</code>时，目前主要关注的是<code>Spark-tts</code>和<code>F5-tts</code>，这两个TTS都有基于<code>Nvidia Triton</code>的使用方式（出自同一个作者），发现<code>Triton</code>支持客户端使用HTTP(requests)和gRPC的方式进行连接，之前看<a target="_blank" rel="noopener" href="https://github.com/modelscope/FunASR/tree/main">funasr</a>库的时候就看到官方提供了<a target="_blank" rel="noopener" href="https://github.com/modelscope/FunASR/tree/main/runtime/python/grpc">gRPC连接方式</a>，最近在<a href="">F5-TTS</a>的Issues中看到了问<a target="_blank" rel="noopener" href="https://github.com/SWivid/F5-TTS/issues/945">如何高并发</a>的问题，作者让<a target="_blank" rel="noopener" href="https://github.com/SWivid/F5-TTS/issues/945#issuecomment-2774777083">查看库中grpc的相关代码</a>，我觉得是时候了，必须得学学gRPC这个框架了。本文将从：</p>
+          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近在探索高并发下的<code>TTS</code>服务(可能并发也不算高，目标是20个)，但是目前10个并发都勉强（<code>13600KF+4090</code>），目前使用的是<code>Gpt-Sovits</code>，在了解别的<code>TTS</code>时，目前主要关注的是<code>Spark-tts</code>和<code>F5-tts</code>，这两个TTS都有基于<code>Nvidia Triton</code>的使用方式（出自同一个作者），发现<code>Triton</code>支持客户端使用HTTP(requests)和gRPC的方式进行连接，之前看<a target="_blank" rel="noopener" href="https://github.com/modelscope/FunASR/tree/main">funasr</a>库的时候就看到官方提供了<a target="_blank" rel="noopener" href="https://github.com/modelscope/FunASR/tree/main/runtime/python/grpc">gRPC连接方式</a>，最近在<a href="">F5-TTS</a>的Issues中看到了问<a target="_blank" rel="noopener" href="https://github.com/SWivid/F5-TTS/issues/945">如何高并发</a>的问题，作者让<a target="_blank" rel="noopener" href="https://github.com/SWivid/F5-TTS/issues/945#issuecomment-2774777083">查看库中grpc的相关代码</a>，我觉得是时候了，必须得学学gRPC这个框架了。本文将从：</p>
 <ol>
 <li><strong>核心概念理解:</strong> 了解 gRPC 是什么，解决什么问题，以及它的关键组成部分。</li>
 <li><strong>基础工作流:</strong> 学习如何定义服务、生成代码，并运行一个最简单的 gRPC 服务（一元 RPC）。</li>
