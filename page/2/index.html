@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">42</span>
+          <span class="site-state-item-count">43</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-count">69</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -186,6 +186,113 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/25/%E5%A6%82%E4%BD%95%E5%B0%86%E4%BD%A0%E7%9A%84DeepSeek-R1%E5%BE%AE%E8%B0%83%E6%88%90%E6%9F%90%E4%B8%AA%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%93%E5%AE%B6%EF%BC%88%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/25/%E5%A6%82%E4%BD%95%E5%B0%86%E4%BD%A0%E7%9A%84DeepSeek-R1%E5%BE%AE%E8%B0%83%E6%88%90%E6%9F%90%E4%B8%AA%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%93%E5%AE%B6%EF%BC%88%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%89/" class="post-title-link" itemprop="url">如何将你的DeepSeek-R1微调成某个领域的专家（实战篇）</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-25 18:31:53" itemprop="dateCreated datePublished" datetime="2025-03-25T18:31:53+08:00">2025-03-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-22 15:31:25" itemprop="dateModified" datetime="2025-04-22T15:31:25+08:00">2025-04-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>29k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1:47</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>偶然在bilibili大学刷到一个宝藏博主（我要我觉得）-<a target="_blank" rel="noopener" href="https://space.bilibili.com/474921808">code秘密花园</a>，质量高（符合我的方向）但是低产（所以我能跟上😁），目前只有四个视频，但信息量也不小，遂打算先把前辈其中的与本文同名的视频整理一下（我与作者同名），见参考链接。顺便一提，本文长度超集长，简单总结一下：我通过colab折腾了好久，显示通过重新编译llama.cpp解决了一个严重问题，后制作GGUF文件成功后，通过ollama加载该文件失败，重装ollama也不行，但是用大佬的huggingface上的GGUF文件就可以运行，我又尝试了使用本机的jupyter notebook进行同等代码的运行，值得一提的时，模型直接从hugging face下载会出问题，遂先下载到本地，加载本地模型问题，也出现了llama.cpp的问题（同等方式解决）,也是制作成GGUF文件后，ollama无法正常加载（毁灭吧），最后还是没用上ollama，使用vLLM进行的模型加载，并简单直接的对比了模型的效果。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/25/%E5%A6%82%E4%BD%95%E5%B0%86%E4%BD%A0%E7%9A%84DeepSeek-R1%E5%BE%AE%E8%B0%83%E6%88%90%E6%9F%90%E4%B8%AA%E9%A2%86%E5%9F%9F%E7%9A%84%E4%B8%93%E5%AE%B6%EF%BC%88%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%89/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1151,119 +1258,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">TTS之Spark-TTS介绍与使用</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-03-07 19:15:52" itemprop="dateCreated datePublished" datetime="2025-03-07T19:15:52+08:00">2025-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-21 16:45:35" itemprop="dateModified" datetime="2025-04-21T16:45:35+08:00">2025-04-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>近日（2025-3-7），香港科技大学、出门问问、西北工业大学、上海交通大学、南洋理工大学等研究机构，重磅推出新一代语音生成模型 Spark-TTS。该模型完全基于Qwen2.5架构，摒弃额外生成模型辅助，以单阶段、单流方式实现 TTS 生成，具备超自然的语音克隆与跨语种生成能力，还支持用户根据需求定制专属声音。目前，Spark-TTS已经在开源社区SparkAudio发布，迅速登上Hugging Face趋势榜TTS第二，目前仍在持续攀升中。</p>
-<p><strong>论文题目：Spark-TTS: An Efficient LLM-Based Text-to-Speech Model with Single-Stream Decoupled Speech Tokens</strong></p>
-<p><strong>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2503.01710">https://arxiv.org/pdf/2503.01710</a></strong></p>
-<p><strong>样例展示：<a target="_blank" rel="noopener" href="https://sparkaudio.github.io/spark-tts/">https://sparkaudio.github.io/spark-tts/</a></strong></p>
-<p><strong>项目地址：<a target="_blank" rel="noopener" href="https://github.com/SparkAudio/Spark-TTS">https://github.com/SparkAudio/Spark-TTS</a></strong></p>
-<p><strong>模型地址：<a target="_blank" rel="noopener" href="https://huggingface.co/SparkAudio/Spark-TTS-0.5B">https://huggingface.co/SparkAudio/Spark-TTS-0.5B</a></strong></p>
-<p><strong>试用地址：<a target="_blank" rel="noopener" href="https://huggingface.co/spaces/Mobvoi/Offical-Spark-TTS">https://huggingface.co/spaces/Mobvoi/Offical-Spark-TTS</a></strong></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1287,13 +1281,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">183k</span>
+    <span title="站点总字数">198k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">11:06</span>
+    <span title="站点阅读时长">11:58</span>
   </span>
 </div>
 <div class="busuanzi-count">
