@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://caihaoran-00.github.io/2025/04/24/DeepSeek-R1%E8%AE%BA%E6%96%87%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20250424162046638.png">
 <meta property="og:image" content="https://caihaoran-00.github.io/2025/04/24/DeepSeek-R1%E8%AE%BA%E6%96%87%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20250424162851384.png">
 <meta property="article:published_time" content="2025-04-24T01:49:22.000Z">
-<meta property="article:modified_time" content="2025-04-29T07:01:15.234Z">
+<meta property="article:modified_time" content="2025-05-07T03:22:34.482Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="llm">
 <meta property="article:tag" content="deepseek-r1">
@@ -162,7 +162,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -173,7 +173,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-count">73</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -245,7 +245,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-29 15:01:15" itemprop="dateModified" datetime="2025-04-29T15:01:15+08:00">2025-04-29</time>
+      <time title="修改时间：2025-05-07 11:22:34" itemprop="dateModified" datetime="2025-05-07T11:22:34+08:00">2025-05-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -330,14 +330,8 @@
 <h4 id="2-方法"><a href="#2-方法" class="headerlink" title="2. 方法"></a><strong>2. 方法</strong></h4><h5 id="2-1-概述"><a href="#2-1-概述" class="headerlink" title="2.1. 概述"></a><strong>2.1. 概述</strong></h5><p>以前的工作严重依赖大量监督数据来提升模型性能。在本研究中，我们证明了即使不使用监督微调 (SFT) 作为冷启动，通过大规模强化学习 (RL) 也可以显著提高推理能力。此外，通过引入少量冷启动数据，性能可以得到进一步增强。在以下章节中，我们介绍：(1) DeepSeek-R1-Zero，它直接将 RL 应用于基础模型，无需任何 SFT 数据；(2) DeepSeek-R1，它从一个经过数千个长思维链 (CoT) 示例微调的检查点开始应用 RL；3) 将 DeepSeek-R1 的推理能力蒸馏到小型密集模型中。</p>
 <h5 id="2-2-DeepSeek-R1-Zero-基于基础模型做强化学习"><a href="#2-2-DeepSeek-R1-Zero-基于基础模型做强化学习" class="headerlink" title="2.2. DeepSeek-R1-Zero: 基于基础模型做强化学习"></a><strong>2.2. DeepSeek-R1-Zero: 基于基础模型做强化学习</strong></h5><p>正如我们之前的工作所证明的 (Shao et al., 2024; Wang et al., 2023)，强化学习在推理任务中已显示出显著的有效性。然而，这些工作严重依赖于监督数据，而收集这些数据非常耗时。在本节中，我们探索 LLM 在没有任何监督数据的情况下发展推理能力的潜力，重点关注它们通过纯强化学习过程的自我进化。我们首先简要概述我们的 RL 算法，然后展示一些令人兴奋的结果，希望这能为社区提供有价值的见解。</p>
 <hr>
-<h6 id="2-2-1-强化学习算法"><a href="#2-2-1-强化学习算法" class="headerlink" title="2.2.1. 强化学习算法"></a><strong>2.2.1. 强化学习算法</strong></h6><p><strong>组相对策略优化 (Group Relative Policy Optimization,GRPO)</strong> 为了节省 RL 的训练成本，我们采用组相对策略优化 (GRPO) (Shao et al., 2024)，该方法放弃了通常与策略模型大小相同的评论家模型 (critic model)，而是根据组得分来估计基线。具体来说，对于每个问题$ q $，GRPO 从旧策略 $ \pi_{\theta_{\text{old}}} $ 中采样一组输出 $ {o_1, o_2, …, o_g} $，然后通过最大化以下目标函数来优化策略模型 $ \pi_\theta $：<br>$$<br>J_{\text{GRPO}}(\theta) &#x3D; \mathbb{E}<em>{q \sim \mathcal{P}(Q), {o_i}</em>{i&#x3D;1}^G \sim \pi_{\theta_{\text{old}}}(O|q)}<br>\left[ \frac{1}{G} \sum_{i&#x3D;1}^G \left(<br>\min \left(<br>\frac{\pi_\theta(o_i|q)}{\pi_{\theta_{\text{old}}}(o_i|q)} \cdot A_i,\<br>\text{clip}\left(<br>\frac{\pi_\theta(o_i|q)}{\pi_{\theta_{\text{old}}}(o_i|q)},\ 1 - \epsilon,\ 1 + \epsilon<br>\right) \cdot A_i<br>\right)</p>
-<ul>
-<li>\beta \cdot D_{\text{KL}}(\pi_\theta | \pi_{\text{ref}})<br>\right) \right]\tag{1}<br>$$</li>
-</ul>
-<p>$$<br>D_{\text{KL}}(\pi_\theta | \pi_{\text{ref}}) &#x3D;<br>\left( \frac{\pi_{\text{ref}}(o_i|q)}{\pi_\theta(o_i|q)} \right) </p>
-<ul>
-<li>\log \left( \frac{\pi_{\text{ref}}(o_i|q)}{\pi_\theta(o_i|q)} \right) - 1\tag{2}<br>$$</li>
-</ul>
+<h6 id="2-2-1-强化学习算法"><a href="#2-2-1-强化学习算法" class="headerlink" title="2.2.1. 强化学习算法"></a><strong>2.2.1. 强化学习算法</strong></h6><p><strong>组相对策略优化 (Group Relative Policy Optimization,GRPO)</strong> 为了节省 RL 的训练成本，我们采用组相对策略优化 (GRPO) (Shao et al., 2024)，该方法放弃了通常与策略模型大小相同的评论家模型 (critic model)，而是根据组得分来估计基线。具体来说，对于每个问题$ q $，GRPO 从旧策略 $ \pi_{\theta_{\text{old}}} $ 中采样一组输出 $ {o_1, o_2, …, o_g} $，然后通过最大化以下目标函数来优化策略模型 $ \pi_\theta $：<br>$$<br>J_{\text{GRPO}}(\theta) &#x3D; \mathbb{E}<em>{q \sim \mathcal{P}(Q), {o_i}</em>{i&#x3D;1}^G \sim \pi_{\theta_{\text{old}}}(O|q)}<br>\left[ \frac{1}{G} \sum_{i&#x3D;1}^G \left(<br>\min \left(<br>\frac{\pi_\theta(o_i|q)}{\pi_{\theta_{\text{old}}}(o_i|q)} \cdot A_i,\<br>\text{clip}\left(<br>\frac{\pi_\theta(o_i|q)}{\pi_{\theta_{\text{old}}}(o_i|q)},\ 1 - \epsilon,\ 1 + \epsilon<br>\right) \cdot A_i<br>\right) - \beta \cdot D_{\text{KL}}(\pi_\theta | \pi_{\text{ref}})<br>\right) \right]<br>$$</p>
+<p>$$<br>D_{\text{KL}}(\pi_\theta | \pi_{\text{ref}}) &#x3D;<br>\left( \frac{\pi_{\text{ref}}(o_i|q)}{\pi_\theta(o_i|q)} \right) - \log \left( \frac{\pi_{\text{ref}}(o_i|q)}{\pi_\theta(o_i|q)} \right) - 1<br>$$</p>
 <p>其中  $ \varepsilon $ 和 $ \beta $ 是超参数，$ A_i $是优势（Advantage），使用一组对应于组内输出的奖励 $ { r_1, r_2, \dots, r_G } $  计算得出:<br>$$<br>A_i &#x3D; \frac{r_i - \text{mean}({r_1, r_2, \dots, r_G})}<br>{\text{std}({r_1, r_2, \dots, r_G})}\tag{3}<br>$$</p>
 <img src="/2025/04/24/DeepSeek-R1%E8%AE%BA%E6%96%87%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20250424144433909.png" class="" title="image-20250424144433909">
 
@@ -1019,7 +1013,7 @@
 <p>非推理类数据采用 DeepSeek-V3 的数据生成流程，并复用了部分DeepSeek-V3 的监督微调（SFT）数据集。<br>在某些非推理类任务中，调用 DeepSeek-V3在回答问题前通过提示语引导其生成一个可能的 思维链（Chain-of-Thought, CoT）。对于较为简单的请求，例如 “hello”，不会生成 CoT，仅直接给出回复。<br>收集了大约 20 万条与推理无关的训练样本。</p>
 <p>总共大约 80 万条数据（60 万推理类 + 20 万非推理类），对 DeepSeek-V3-Base 进行了 <strong>2 轮（epochs）微调训练</strong>。</p>
 </li>
-<li><p>第3步完成后，进行第二阶段的强化学习，旨在提升模型的有用性（helpfulness）与无害性（harmlessness），同时进一步优化其推理能力。<br>  推理类数据方面，采用 DeepSeek-R1-Zero 中的方法，基于规则的奖励函数来指导模型在数学、代码和逻辑推理领域的学习。<br>  通用任务数据方面，采用奖励模型来捕捉人类在复杂和细腻情境下的偏好。</p>
+<li><p>第3步完成后，进行第二阶段的强化学习，旨在提升模型的有用性（helpfulness）与无害性（harmlessness），同时进一步优化其推理能力。<br> 推理类数据方面，采用 DeepSeek-R1-Zero 中的方法，基于规则的奖励函数来指导模型在数学、代码和逻辑推理领域的学习。<br> 通用任务数据方面，采用奖励模型来捕捉人类在复杂和细腻情境下的偏好。</p>
 </li>
 </ol>
 <p>  基于 DeepSeek-V3 的训练流程，采用类似的偏好对（preference pairs）和训练提示语分布。</p>
@@ -1080,13 +1074,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">207k</span>
+    <span title="站点总字数">221k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">12:32</span>
+    <span title="站点阅读时长">13:22</span>
   </span>
 </div>
 <div class="busuanzi-count">
@@ -1145,7 +1139,7 @@
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="/js/third-party/math/mathjax.js"></script>
 
 

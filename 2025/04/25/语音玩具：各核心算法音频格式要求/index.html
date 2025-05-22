@@ -27,7 +27,7 @@
 <meta property="og:description" content="前言目前在做的语音玩具设计了四块音频算法，分别是人声检测，说话人验证，语音识别，语音合成，现整理各算法需要的音频输入格式以及官方和个人（我的）参考链接。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-04-25T01:54:47.000Z">
-<meta property="article:modified_time" content="2025-04-25T08:34:48.158Z">
+<meta property="article:modified_time" content="2025-05-22T02:18:41.446Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="asr">
 <meta property="article:tag" content="tts">
@@ -155,7 +155,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">53</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -166,7 +166,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-count">73</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -230,9 +230,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-04-25 09:54:47 / 修改时间：16:34:48" itemprop="dateCreated datePublished" datetime="2025-04-25T09:54:47+08:00">2025-04-25</time>
+      <time title="创建时间：2025-04-25 09:54:47" itemprop="dateCreated datePublished" datetime="2025-04-25T09:54:47+08:00">2025-04-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-05-22 10:18:41" itemprop="dateModified" datetime="2025-05-22T10:18:41+08:00">2025-05-22</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -258,7 +264,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>313</span>
+      <span>345</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -300,7 +306,12 @@
 <tr>
 <td>asr（语音识别）</td>
 <td>(Paraformer)funasr</td>
-<td>int16，单声道，16K采样率</td>
+<td>int16， 单声道，16K采样率</td>
+</tr>
+<tr>
+<td>asr（语音识别）</td>
+<td>faster wisper</td>
+<td>float32，单声道，16K采样率</td>
 </tr>
 <tr>
 <td></td>
@@ -311,6 +322,11 @@
 <td>tts（语音合成）<strong>输出</strong></td>
 <td>Gpt-SoVits</td>
 <td>int16，单声道，32K采样率</td>
+</tr>
+<tr>
+<td>tts（语音合成）<strong>输出</strong></td>
+<td>Index-tts</td>
+<td>int16，单声道，24K采样率</td>
 </tr>
 </tbody></table>
 <p>参考链接：</p>
@@ -400,13 +416,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">207k</span>
+    <span title="站点总字数">221k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">12:32</span>
+    <span title="站点阅读时长">13:22</span>
   </span>
 </div>
 <div class="busuanzi-count">
@@ -465,7 +481,7 @@
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
