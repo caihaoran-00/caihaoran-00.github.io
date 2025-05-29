@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">73</span>
+        <span class="site-state-item-count">78</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -195,6 +195,107 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/05/29/LLM%E5%BA%94%E7%94%A8%EF%BC%9A%E7%BB%93%E6%9E%84%E5%8C%96%E6%8F%90%E5%8F%96%E5%8F%8A%E5%90%8E%E7%BB%AD%E6%80%9D%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/05/29/LLM%E5%BA%94%E7%94%A8%EF%BC%9A%E7%BB%93%E6%9E%84%E5%8C%96%E6%8F%90%E5%8F%96%E5%8F%8A%E5%90%8E%E7%BB%AD%E6%80%9D%E8%B7%AF/" class="post-title-link" itemprop="url">LLM应用：结构化提取及后续思路</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-05-29 10:21:21 / 修改时间：14:03:47" itemprop="dateCreated datePublished" datetime="2025-05-29T10:21:21+08:00">2025-05-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>12 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在招标智能体的第二个智能体中，要求做到从众多pdf文件中提取出关注的字段，流程上分为两步，一是解析pdf文件，对于文本型pdf，使用pdfplumber等即可，对于图片型pdf，需使用ocr技术，（更建议）或者直接使用pdf解析框架，比如<a target="_blank" rel="noopener" href="https://github.com/opendatalab/MinerU">MinerU</a>，<a target="_blank" rel="noopener" href="https://github.com/bytedance/Dolphin">Dolphin</a>；二是对于解析出来的内容如何使用，即如何抽取出感兴趣的结构化字段，本文将重点阐述目前关于结构化提取目前做的demo效果及发现的问题以及后续的思路。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/05/29/LLM%E5%BA%94%E7%94%A8%EF%BC%9A%E7%BB%93%E6%9E%84%E5%8C%96%E6%8F%90%E5%8F%96%E5%8F%8A%E5%90%8E%E7%BB%AD%E6%80%9D%E8%B7%AF/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/05/27/%E9%80%9A%E4%BF%97%E7%90%86%E8%A7%A3Boosting-%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97-GBDT-XGBoost/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -213,7 +314,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/05/27/%E9%80%9A%E4%BF%97%E7%90%86%E8%A7%A3Boosting-%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97-GBDT-XGBoost/" class="post-title-link" itemprop="url">通俗理解Boosting 随机森林 GBDT XGBoost</a>
+          <a href="/2025/05/27/%E9%80%9A%E4%BF%97%E7%90%86%E8%A7%A3Boosting-%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97-GBDT-XGBoost/" class="post-title-link" itemprop="url">通俗理解Boosting、随机森林、GBDT、XGBoost</a>
         </h2>
 
         <div class="post-meta-container">
@@ -226,6 +327,22 @@
 
       <time title="创建时间：2025-05-27 18:18:14" itemprop="dateCreated datePublished" datetime="2025-05-27T18:18:14+08:00">2025-05-27</time>
     </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-05-29 16:12:18" itemprop="dateModified" datetime="2025-05-29T16:12:18+08:00">2025-05-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
 
   
     <span class="post-meta-break"></span>
@@ -234,14 +351,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>4k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>14 分钟</span>
     </span>
 </div>
 
@@ -252,7 +369,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在<a href="https://caihaoran-00.github.io/2025/04/28/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%E8%B0%83%E7%A0%94%EF%BC%9A%E6%8B%9B%E6%A0%87%E6%99%BA%E8%83%BD%E4%BD%93/">解决方案调研：招标智能体</a>一文中，我们使用了XGBoost算法简单做了个demo，但本人对于XGBoost的原理不太清晰，这两天也在了解XGBoost的原理，看到了很多术语：<strong>集成学习</strong>、<strong>boosting</strong>、<strong>随机森林</strong>、<strong>XGBooST</strong>，<strong>GBDT</strong>、<strong>决策树</strong>、<strong>LightGBM</strong>、<strong>CatBoost</strong>，之前对这里的了解几乎为0，所以看着有点糊涂，遂准备捋一下这些术语间的关系与基本原理（尽量避免涉及数学公式，重点有个算法原理的认识）并给出个具象的例子帮助理解。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/05/27/%E9%80%9A%E4%BF%97%E7%90%86%E8%A7%A3Boosting-%E9%9A%8F%E6%9C%BA%E6%A3%AE%E6%9E%97-GBDT-XGBoost/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -967,7 +1092,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-05-27 18:18:32" itemprop="dateModified" datetime="2025-05-27T18:18:32+08:00">2025-05-27</time>
+      <time title="修改时间：2025-05-29 10:19:33" itemprop="dateModified" datetime="2025-05-29T10:19:33+08:00">2025-05-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1144,113 +1269,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/04/27/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9Apython-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%AE%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/04/27/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9Apython-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%AE%BA/" class="post-title-link" itemprop="url">AI系列课程：python+深度学习导论</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-04-27 09:51:44" itemprop="dateCreated datePublished" datetime="2025-04-27T09:51:44+08:00">2025-04-27</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-29 16:00:50" itemprop="dateModified" datetime="2025-04-29T16:00:50+08:00">2025-04-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>2.3k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>8 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>这是AI系列课程的第三次课：python基础和深度学习导论，本节课老大讲了：python基础以及概率论相关的东西，重点强调了贝叶斯定理，在留了课后作业的基础上也留了贝叶斯定理相关的附加作业。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/04/27/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9Apython-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%AE%BA/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1274,13 +1292,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">223k</span>
+    <span title="站点总字数">231k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">13:32</span>
+    <span title="站点阅读时长">13:59</span>
   </span>
 </div>
 <div class="busuanzi-count">
@@ -1339,7 +1357,7 @@
 
   
 
-  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
