@@ -29,8 +29,12 @@
 <meta property="og:image" content="https://caihaoran-00.github.io/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250607183525036.png">
 <meta property="og:image" content="https://caihaoran-00.github.io/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250607184623841.png">
 <meta property="og:image" content="https://caihaoran-00.github.io/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250607184749367.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/80fcd0352873350ed4f0ec12c6165f06.jpg">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/fd581376751d0bcd489f0e814772b16e.jpg">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/09940936-15ed-48af-aee8-b616dc364233.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/62dcd83a-dc9d-4afe-8b4d-9f4bc6cabc23.png">
 <meta property="article:published_time" content="2025-06-07T09:50:59.000Z">
-<meta property="article:modified_time" content="2025-06-07T11:11:02.454Z">
+<meta property="article:modified_time" content="2025-06-09T03:52:24.767Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="clip">
 <meta name="twitter:card" content="summary">
@@ -156,7 +160,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -167,7 +171,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">82</span>
+        <span class="site-state-item-count">85</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -231,9 +235,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-06-07 17:50:59 / 修改时间：19:11:02" itemprop="dateCreated datePublished" datetime="2025-06-07T17:50:59+08:00">2025-06-07</time>
+      <time title="创建时间：2025-06-07 17:50:59" itemprop="dateCreated datePublished" datetime="2025-06-07T17:50:59+08:00">2025-06-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-06-09 11:52:24" itemprop="dateModified" datetime="2025-06-09T11:52:24+08:00">2025-06-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -259,14 +269,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>579</span>
+      <span>904</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -310,7 +320,40 @@
 <img src="/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/image-20250607184749367.png" class="" title="image-20250607184749367"></li>
 </ul>
 <p><strong>但是怎么没有图片与图片间的余弦相似度计算例子？</strong></p>
-<p>没有咱们就自己写一个看看，直接在这个colab环境写吧：</p>
+<p>没有咱们就自己写一个看看，直接在这个colab环境写吧，我将使用下面的四张图片进行实验（勺子是实拍，底色不一样，猫是让ChatGpt生成的）：</p>
+<img src="/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/80fcd0352873350ed4f0ec12c6165f06.jpg" class="" title="80fcd0352873350ed4f0ec12c6165f06">
+
+<img src="/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/fd581376751d0bcd489f0e814772b16e.jpg" class="" title="fd581376751d0bcd489f0e814772b16e">
+
+<img src="/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/09940936-15ed-48af-aee8-b616dc364233.png" class="" title="09940936-15ed-48af-aee8-b616dc364233">
+
+<img src="/2025/06/07/CLIP%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/62dcd83a-dc9d-4afe-8b4d-9f4bc6cabc23.png" class="" title="62dcd83a-dc9d-4afe-8b4d-9f4bc6cabc23">
+
+<p><strong>Colab代码：</strong></p>
+<p><strong>安装并导入CLIP库：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">!pip install ftfy regex tqdm</span><br><span class="line">!pip install git+https://github.com/openai/CLIP.git</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> clip</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">import</span> itertools</span><br><span class="line"></span><br><span class="line">device = <span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span></span><br><span class="line">model, preprocess = clip.load(<span class="string">&quot;ViT-B/32&quot;</span>, device=device)</span><br></pre></td></tr></table></figure>
+
+<p><strong>上传图片：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.colab <span class="keyword">import</span> files</span><br><span class="line">uploaded = files.upload()</span><br></pre></td></tr></table></figure>
+
+<p><strong>加载4张图片并预处理：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">image_paths = [<span class="string">&quot;img1.jpg&quot;</span>, <span class="string">&quot;img2.jpg&quot;</span>, <span class="string">&quot;img3.jpg&quot;</span>, <span class="string">&quot;img4.jpg&quot;</span>]</span><br><span class="line">images = [preprocess(Image.<span class="built_in">open</span>(p).convert(<span class="string">&quot;RGB&quot;</span>)).unsqueeze(<span class="number">0</span>).to(device) <span class="keyword">for</span> p <span class="keyword">in</span> image_paths]</span><br></pre></td></tr></table></figure>
+
+<p><strong>提取图像特征并归一化：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    features = [model.encode_image(img) <span class="keyword">for</span> img <span class="keyword">in</span> images]</span><br><span class="line">    features = [f / f.norm(dim=-<span class="number">1</span>, keepdim=<span class="literal">True</span>) <span class="keyword">for</span> f <span class="keyword">in</span> features]  <span class="comment"># 归一化</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>两两计算余弦相似度：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Pairwise Cosine Similarities:&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> (i, feat1), (j, feat2) <span class="keyword">in</span> itertools.combinations(<span class="built_in">enumerate</span>(features), <span class="number">2</span>):</span><br><span class="line">    similarity = (feat1 @ feat2.T).item()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Image <span class="subst">&#123;i+<span class="number">1</span>&#125;</span> vs Image <span class="subst">&#123;j+<span class="number">1</span>&#125;</span>: <span class="subst">&#123;similarity:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Pairwise Cosine Similarities:</span><br><span class="line">Image 1 vs Image 2: 0.9346</span><br><span class="line">Image 1 vs Image 3: 0.5781</span><br><span class="line">Image 1 vs Image 4: 0.5713</span><br><span class="line">Image 2 vs Image 3: 0.5737</span><br><span class="line">Image 2 vs Image 4: 0.5522</span><br><span class="line">Image 3 vs Image 4: 0.9497</span><br></pre></td></tr></table></figure>
+
+<p><strong>以矩阵形式输出相似度（更直观）：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line"></span><br><span class="line">sim_matrix = np.zeros((<span class="number">4</span>, <span class="number">4</span>))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(4):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(4):</span><br><span class="line">        sim_matrix[i][j] = (features[i] @ features[j].T).item()</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\nCosine Similarity Matrix:&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(sim_matrix)</span><br></pre></td></tr></table></figure>
+
+<p>输出（对称矩阵）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Cosine Similarity Matrix:</span><br><span class="line">[[0.99951172 0.93457031 0.578125   0.57128906]</span><br><span class="line"> [0.93457031 1.         0.57373047 0.55224609]</span><br><span class="line"> [0.578125   0.57373047 1.         0.94970703]</span><br><span class="line"> [0.57128906 0.55224609 0.94970703 1.        ]]</span><br></pre></td></tr></table></figure>
+
 <hr>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://github.com/openai/CLIP">https://github.com/openai/CLIP</a></li>
@@ -340,6 +383,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2025/06/09/%E6%96%87%E6%9C%AC%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%A4%BA%E4%BE%8B/" rel="next" title="文本查重系统示例">
+                  文本查重系统示例 <i class="fa fa-angle-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -370,13 +416,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">252k</span>
+    <span title="站点总字数">256k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">15:16</span>
+    <span title="站点阅读时长">15:29</span>
   </span>
 </div>
 <div class="busuanzi-count">

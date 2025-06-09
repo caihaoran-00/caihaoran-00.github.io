@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">82</span>
+        <span class="site-state-item-count">85</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -186,6 +186,127 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/06/09/%E6%96%87%E6%9C%AC%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%A4%BA%E4%BE%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/06/09/%E6%96%87%E6%9C%AC%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%A4%BA%E4%BE%8B/" class="post-title-link" itemprop="url">文本查重系统示例</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-06-09 11:54:44 / 修改时间：14:02:42" itemprop="dateCreated datePublished" datetime="2025-06-09T11:54:44+08:00">2025-06-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>12 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li><p>背景：投标文件查重系统</p>
+</li>
+<li><p>目的：展示+记录</p>
+</li>
+<li><p>思路：文本预处理（分词）+<code>simhash</code>粗筛（第一层）+计算<code>TF-IDF</code>（第二层） 和 <code>BERT</code> 相似度（第三层），满足一定条件则判定可疑</p>
+</li>
+<li><p>后续优化方向</p>
+<ul>
+<li><p>明确使用场景✅</p>
+</li>
+<li><p>具体满足什么条件认定为可疑文本</p>
+</li>
+<li><p>可以文本达到什么程度认定可疑文件</p>
+</li>
+<li><p>是在什么文件的什么位置出现的可疑文本✅</p>
+</li>
+<li><p>…</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>直接上代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 投标文件查重：分层查重系统（SimHash + TF-IDF + BERT） 支持 DOCX</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> glob</span><br><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> simhash <span class="keyword">import</span> Simhash</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> TfidfVectorizer</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics.pairwise <span class="keyword">import</span> cosine_similarity</span><br><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer, util</span><br><span class="line"><span class="keyword">from</span> docx <span class="keyword">import</span> Document</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化 BERT 模型</span></span><br><span class="line">bert_model = SentenceTransformer(<span class="string">&#x27;paraphrase-MiniLM-L6-v2&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># -------------------- 文本预处理 --------------------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">split_sentences</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;中文分句&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> re.split(<span class="string">r&#x27;[。！？\n]&#x27;</span>, text)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">preprocess</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;去空格+分词+重组&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27; &#x27;</span>.join(jieba.cut(text.strip().replace(<span class="string">&#x27;\n&#x27;</span>, <span class="string">&#x27;&#x27;</span>).replace(<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;&#x27;</span>)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">read_docx</span>(<span class="params">path</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;读取 docx 文本内容&quot;&quot;&quot;</span></span><br><span class="line">    doc = Document(path)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;\n&#x27;</span>.join([p.text <span class="keyword">for</span> p <span class="keyword">in</span> doc.paragraphs])</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_documents</span>(<span class="params">path_pattern</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;加载历史文档库（支持 .docx）&quot;&quot;&quot;</span></span><br><span class="line">    documents = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> path <span class="keyword">in</span> glob.glob(path_pattern):</span><br><span class="line">        <span class="keyword">if</span> path.endswith(<span class="string">&#x27;.docx&#x27;</span>):</span><br><span class="line">            text = read_docx(path)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">with</span> <span class="built_in">open</span>(path, <span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">                text = f.read()</span><br><span class="line">        documents[os.path.basename(path)] = text</span><br><span class="line">    <span class="keyword">return</span> documents</span><br><span class="line"></span><br><span class="line"><span class="comment"># -------------------- 相似度计算函数 --------------------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">simhash_similarity</span>(<span class="params">s1, s2</span>):</span><br><span class="line">    h1 = Simhash(preprocess(s1))</span><br><span class="line">    h2 = Simhash(preprocess(s2))</span><br><span class="line">    max_bits = <span class="number">64</span></span><br><span class="line">    distance = h1.distance(h2)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span> - distance / max_bits</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tfidf_similarity</span>(<span class="params">s1, s2</span>):</span><br><span class="line">    vectorizer = TfidfVectorizer()</span><br><span class="line">    tfidf = vectorizer.fit_transform([s1, s2])</span><br><span class="line">    <span class="keyword">return</span> cosine_similarity(tfidf[<span class="number">0</span>:<span class="number">1</span>], tfidf[<span class="number">1</span>:<span class="number">2</span>])[<span class="number">0</span>][<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bert_similarity</span>(<span class="params">s1, s2</span>):</span><br><span class="line">    emb1 = bert_model.encode(s1, convert_to_tensor=<span class="literal">True</span>)</span><br><span class="line">    emb2 = bert_model.encode(s2, convert_to_tensor=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> util.cos_sim(emb1, emb2).item()</span><br><span class="line"></span><br><span class="line"><span class="comment"># -------------------- 主查重函数 --------------------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_similarity</span>(<span class="params">query_path, library_pattern</span>):</span><br><span class="line">    <span class="comment"># 读取 query 文档</span></span><br><span class="line">    <span class="keyword">if</span> query_path.endswith(<span class="string">&#x27;.docx&#x27;</span>):</span><br><span class="line">        query_doc = read_docx(query_path)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        query_doc = <span class="built_in">open</span>(query_path, encoding=<span class="string">&#x27;utf-8&#x27;</span>).read()</span><br><span class="line"></span><br><span class="line">    query_sentences = [s <span class="keyword">for</span> s <span class="keyword">in</span> split_sentences(query_doc) <span class="keyword">if</span> s.strip()]</span><br><span class="line"></span><br><span class="line">    library = load_documents(library_pattern)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> lib_name, lib_content <span class="keyword">in</span> library.items():</span><br><span class="line">        lib_sentences = [s <span class="keyword">for</span> s <span class="keyword">in</span> split_sentences(lib_content) <span class="keyword">if</span> s.strip()]</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\n📄 对比文档：<span class="subst">&#123;lib_name&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">for</span> q <span class="keyword">in</span> query_sentences:</span><br><span class="line">            <span class="keyword">for</span> s <span class="keyword">in</span> lib_sentences:</span><br><span class="line">                sim1 = simhash_similarity(q, s)</span><br><span class="line">                <span class="keyword">if</span> sim1 &lt; <span class="number">0.8</span>:</span><br><span class="line">                    <span class="keyword">continue</span>  <span class="comment"># 第一层过滤</span></span><br><span class="line"></span><br><span class="line">                q_p, s_p = preprocess(q), preprocess(s)</span><br><span class="line">                sim2 = tfidf_similarity(q_p, s_p)</span><br><span class="line">                sim3 = bert_similarity(q, s)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> sim2 &gt; <span class="number">0.6</span> <span class="keyword">or</span> sim3 &gt; <span class="number">0.8</span>:</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">&quot;\n【可能重复】&quot;</span>)</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">&quot;▶ 查询段落:&quot;</span>, q)</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">&quot;◆ 库中段落:&quot;</span>, s)</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">f&quot;SimHash: <span class="subst">&#123;sim1:<span class="number">.2</span>f&#125;</span>, TF-IDF: <span class="subst">&#123;sim2:<span class="number">.2</span>f&#125;</span>, BERT: <span class="subst">&#123;sim3:<span class="number">.2</span>f&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># -------------------- 运行入口 --------------------</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="comment"># 查询文件路径（docx 格式）</span></span><br><span class="line">    query_file = <span class="string">&#x27;技术文档.docx&#x27;</span>  <span class="comment"># 替换成你的待查文件路径</span></span><br><span class="line">    <span class="comment"># 文档库路径匹配（仅查找 docx 文件）</span></span><br><span class="line">    library_files = <span class="string">&#x27;./library/*.docx&#x27;</span>  <span class="comment"># 文库目录</span></span><br><span class="line">    check_similarity(query_file, library_files)</span><br></pre></td></tr></table></figure>
+
+<p><strong>输出：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br></pre></td><td class="code"><pre><span class="line">📄 对比文档：技术文档（橙色）.docx</span><br><span class="line">Building prefix dict from the default dictionary ...</span><br><span class="line">Dumping model to file cache /tmp/jieba.cache</span><br><span class="line">Loading model cost 0.256 seconds.</span><br><span class="line">Prefix dict has been built successfully.</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 1、支持建立四级的通讯录架构，上一级别的部门管理员可对下一级别的部门进行管理</span><br><span class="line">◆ 库中段落: 1、支持建立四级的通讯录架构，上一级别的部门管理员可对下一级别的部门进行管理</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 2、部门管理员可添加成员、新建子部门、将成员移出部门</span><br><span class="line">◆ 库中段落: 2、部门管理员可添加成员、新建子部门、将成员移出部门</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 3、通讯录支持全部展开或部分展开显示</span><br><span class="line">◆ 库中段落: 3、通讯录支持全部展开或部分展开显示</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 会议名称：默认为“#昵称#的即时会议”，不限制输入字符类型，但不超过256个字符；</span><br><span class="line">◆ 库中段落: 会议名称：默认为“#昵称#的即时会议”，不限制输入字符类型，但不超过256个字符；</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 开始时间：默认为当下操作时间</span><br><span class="line">◆ 库中段落: 开始时间：默认为当下操作时间</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 会议时长：默认为30分钟</span><br><span class="line">◆ 库中段落: 会议时长：默认为30分钟</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 入会密码：默认为关闭</span><br><span class="line">◆ 库中段落: 入会密码：默认为关闭</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 仅限受邀人加入：默认为关闭</span><br><span class="line">◆ 库中段落: 仅限受邀人加入：默认为关闭</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 1、支持会议中成员，复制会议的邀请信息，将会议信息分享给会议外的成员</span><br><span class="line">◆ 库中段落: 1、支持会议中成员，复制会议的邀请信息，将会议信息分享给会议外的成员</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 2、会中支持添加会议外成员至会议参会人员中，同时呼叫会议外成员加入会议</span><br><span class="line">◆ 库中段落: 2、会中支持添加会议外成员至会议参会人员中，同时呼叫会议外成员加入会议</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 1、参会人角色支持3种：主持人、联席主持人、普通会议人，会议创建者默认是主持人；</span><br><span class="line">◆ 库中段落: 1、成员角色支持3种：主持人、联席主持人、普通会议人，会议创建者默认是主持人；</span><br><span class="line">SimHash: 0.86, TF-IDF: 0.91, BERT: 0.98</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 2、主持人/联席主持人可管控普通成员的音视频权限，普通成员音视频被禁用时，需举手审批，管理员通过后才能打开</span><br><span class="line">◆ 库中段落: 2、主持人/联席主持人可管控普通成员的音视频权限，普通成员音视频被禁用时，需举手审批，管理员通过后才能打开</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 3、主持人/联席主持人的功能按钮与普通会议人的功能按钮不同，可参考下图所示</span><br><span class="line">◆ 库中段落: 3、主持人/联席主持人的功能按钮与普通会议人的功能按钮不同</span><br><span class="line">SimHash: 0.95, TF-IDF: 0.85, BERT: 0.99</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 1、会议中所有成员可发送文字消息进行聊天，支持设置公开聊天或私密聊天</span><br><span class="line">◆ 库中段落: 1、会议中所有成员可发送文字消息进行聊天，支持设置公开聊天或私密聊天</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 2、管理员可以管控普通成员的聊天权限</span><br><span class="line">◆ 库中段落: 2、主持人可以管控普通成员的聊天权限</span><br><span class="line">SimHash: 0.81, TF-IDF: 0.75, BERT: 0.87</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 1、支持用户在会前/会后上传会议相关资料</span><br><span class="line">◆ 库中段落: 1、支持用户在会前/会后上传会议相关资料</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 2、用户可在会议记录中进行下载与检索</span><br><span class="line">◆ 库中段落: 2、用户可在会议记录中进行下载与检索</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 3年（不含开发期）</span><br><span class="line">◆ 库中段落: 3年（不含开发期）</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 提供7x24小时的技术支持，确保客户在任何时间都能得到帮助</span><br><span class="line">◆ 库中段落: 提供7x24小时的技术支持，确保客户在任何时间都能得到帮助</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 在线远程支持，通过远程桌面等方式快速解决问题</span><br><span class="line">◆ 库中段落: 在线远程支持，通过远程桌面等方式快速解决问题</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 定期技术培训，帮助客户更好地使用和维护系统</span><br><span class="line">◆ 库中段落: 定期技术培训，帮助客户更好地使用和维护系统</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 定期系统检查和维护，预防问题的发生</span><br><span class="line">◆ 库中段落: 定期系统检查和维护，预防问题的发生</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 系统更新和升级服务，确保客户的系统始终处于最新状态</span><br><span class="line">◆ 库中段落: 系统更新和升级服务，确保客户的系统始终处于最新状态</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 快速响应机制，确保在规定时间内响应客户的问题</span><br><span class="line">◆ 库中段落: 快速响应机制，确保在规定时间内响应客户的问题</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 故障诊断和修复服务，提供专业的故障诊断和修复方案</span><br><span class="line">◆ 库中段落: 故障诊断和修复服务，提供专业的故障诊断和修复方案</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 故障报告和分析，帮助客户了解故障原因并提供预防措施</span><br><span class="line">◆ 库中段落: 故障报告和分析，帮助客户了解故障原因并提供预防措施</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">📄 对比文档：技术文档（红色）.docx</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 技术文件</span><br><span class="line">◆ 库中段落: 技术文件</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 会议名称：默认为“#昵称#的即时会议”，不限制输入字符类型，但不超过256个字符；</span><br><span class="line">◆ 库中段落: 会议名称：默认为“#昵称#的即时会议”，不限制输入字符类型，但不超过256个字符；</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 开始时间：默认为当下操作时间</span><br><span class="line">◆ 库中段落: 开始时间：默认为当下操作时间</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 会议时长：默认为30分钟</span><br><span class="line">◆ 库中段落: 会议时长：默认为30分钟</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 入会密码：默认为关闭</span><br><span class="line">◆ 库中段落: 入会密码：默认为关闭</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 仅限受邀人加入：默认为关闭</span><br><span class="line">◆ 库中段落: 仅限受邀人加入：默认为关闭</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 支持公有云、私有云、混合云三种部署方式</span><br><span class="line">◆ 库中段落: 支持公有云、私有云、混合云部署</span><br><span class="line">SimHash: 0.81, TF-IDF: 0.75, BERT: 0.97</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 3年（不含开发期）</span><br><span class="line">◆ 库中段落: 3年（不含开发期）</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 5.2.2 技术支持</span><br><span class="line">◆ 库中段落: 4.2.2 技术支持</span><br><span class="line">SimHash: 0.83, TF-IDF: 1.00, BERT: 0.93</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 提供7x24小时的技术支持，确保客户在任何时间都能得到帮助</span><br><span class="line">◆ 库中段落: 提供7x24小时的技术支持，确保客户在任何时间都能得到帮助</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 在线远程支持，通过远程桌面等方式快速解决问题</span><br><span class="line">◆ 库中段落: 在线远程支持，通过远程桌面等方式快速解决问题</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 定期技术培训，帮助客户更好地使用和维护系统</span><br><span class="line">◆ 库中段落: 定期技术培训，帮助客户更好地使用和维护系统</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 定期系统检查和维护，预防问题的发生</span><br><span class="line">◆ 库中段落: 定期系统检查和维护，预防问题的发生</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 系统更新和升级服务，确保客户的系统始终处于最新状态</span><br><span class="line">◆ 库中段落: 系统更新和升级服务，确保客户的系统始终处于最新状态</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 5.2.4 故障处理</span><br><span class="line">◆ 库中段落: 4.2.4 故障处理</span><br><span class="line">SimHash: 0.86, TF-IDF: 1.00, BERT: 0.95</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 快速响应机制，确保在规定时间内响应客户的问题</span><br><span class="line">◆ 库中段落: 快速响应机制，确保在规定时间内响应客户的问题</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 故障诊断和修复服务，提供专业的故障诊断和修复方案</span><br><span class="line">◆ 库中段落: 故障诊断和修复服务，提供专业的故障诊断和修复方案</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br><span class="line"></span><br><span class="line">【可能重复】</span><br><span class="line">▶ 查询段落: 故障报告和分析，帮助客户了解故障原因并提供预防措施</span><br><span class="line">◆ 库中段落: 故障报告和分析，帮助客户了解故障原因并提供预防措施</span><br><span class="line">SimHash: 1.00, TF-IDF: 1.00, BERT: 1.00</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -223,9 +344,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-06-07 17:50:59 / 修改时间：19:11:02" itemprop="dateCreated datePublished" datetime="2025-06-07T17:50:59+08:00">2025-06-07</time>
+      <time title="创建时间：2025-06-07 17:50:59" itemprop="dateCreated datePublished" datetime="2025-06-07T17:50:59+08:00">2025-06-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-06-09 11:52:24" itemprop="dateModified" datetime="2025-06-09T11:52:24+08:00">2025-06-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -244,14 +371,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>579</span>
+      <span>904</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>3 分钟</span>
     </span>
 </div>
 
@@ -1135,115 +1262,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/05/13/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1%EF%BC%9Afast-wisper/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/05/13/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1%EF%BC%9Afast-wisper/" class="post-title-link" itemprop="url">语音识别微服务：fast_wisper</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-05-13 10:03:50" itemprop="dateCreated datePublished" datetime="2025-05-13T10:03:50+08:00">2025-05-13</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-05-23 14:12:32" itemprop="dateModified" datetime="2025-05-23T14:12:32+08:00">2025-05-23</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.7k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在对话玩具中使用的ASR是funasr(paraformer)，但想往国外卖，所以英语是主要应用场景，但产品反馈说英语场景下识别准确率不高（我最开始也组织收集公司内人员的真实英语录音，直接以文件方式进行ASR，测试下来确实英语识别率不高，当然也不能排除我们的发音不飘准(●’◡’●)），遂还是部署个英文表现好的ASR服务作为对比实验吧。久仰wisper系列的大名，本次先部署fast_wisper试试效果，本文简单记录代码和部署过程。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/05/13/%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB%E5%BE%AE%E6%9C%8D%E5%8A%A1%EF%BC%9Afast-wisper/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1265,13 +1285,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">252k</span>
+    <span title="站点总字数">256k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">15:16</span>
+    <span title="站点阅读时长">15:29</span>
   </span>
 </div>
 <div class="busuanzi-count">
