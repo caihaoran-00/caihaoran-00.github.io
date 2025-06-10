@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言久仰MCP大名已久，最近没写Agent，故也没去了解MCP，今天暂时空下来了，看看这MCP到底是何方神圣，本文是我从Youtube上搜到的一个感觉还不错的教程，来自马克的技术工坊，链接见参考链接1，在B站搜了下，发现博主在B站也有账号，见参考链接2，下面我们一起看下大佬的讲解吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MCP基础：从原理到实战">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言久仰MCP大名已久，最近没写Agent，故也没去了解MCP，今天暂时空下来了，看看这MCP到底是何方神圣，本文是我从Youtube上搜到的一个感觉还不错的教程，来自马克的技术工坊，链接见参考链接1，在B站搜了下，发现博主在B站也有账号，见参考链接2，下面我们一起看下大佬的讲解吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/image-20250610150918144.png">
+<meta property="article:published_time" content="2025-06-09T08:35:20.000Z">
+<meta property="article:modified_time" content="2025-06-10T07:47:26.480Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="agent">
+<meta property="article:tag" content="mcp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/image-20250610150918144.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/","path":"2025/06/09/MCP基础：从原理到实战/","title":"MCP基础：从原理到实战"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MCP基础：从原理到实战 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%A6%81%E8%A7%A3%E9%87%8A"><span class="nav-number">2.1.</span> <span class="nav-text">简要解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%92%8C%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8MCP-Host-Cline"><span class="nav-number">2.2.</span> <span class="nav-text">安装和简单使用MCP Host(Cline)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E4%B8%AAMCP%E9%97%AE%E9%A2%98"><span class="nav-number">2.3.</span> <span class="nav-text">第一个MCP问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MCP-Server-%E5%92%8C-Tool"><span class="nav-number">2.4.</span> <span class="nav-text">MCP Server 和 Tool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEMCP-Server"><span class="nav-number">2.5.</span> <span class="nav-text">配置MCP Server</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">2.5.1.</span> <span class="nav-text">环境配置</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%8D%E8%AF%95%E4%B8%80%E6%AC%A1"><span class="nav-number">2.6.</span> <span class="nav-text">再试一次</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MCP-%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B%E8%AF%A6%E8%A7%A3"><span class="nav-number">2.7.</span> <span class="nav-text">MCP 交互流程详解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E5%88%AB%E4%BA%BA%E5%88%B6%E4%BD%9C%E5%A5%BD%E7%9A%84MCP-Server"><span class="nav-number">2.8.</span> <span class="nav-text">如何使用别人制作好的MCP Server</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#uvx%E9%83%A8%E5%88%86"><span class="nav-number">2.8.1.</span> <span class="nav-text">uvx部分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#npx%E9%83%A8%E5%88%86"><span class="nav-number">2.8.2.</span> <span class="nav-text">npx部分</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MCP-Server%E5%B8%82%E5%9C%BA"><span class="nav-number">2.9.</span> <span class="nav-text">MCP Server市场</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MCP基础：从原理到实战 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MCP基础：从原理到实战
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-09 16:35:20" itemprop="dateCreated datePublished" datetime="2025-06-09T16:35:20+08:00">2025-06-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-06-10 15:47:26" itemprop="dateModified" datetime="2025-06-10T15:47:26+08:00">2025-06-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>久仰MCP大名已久，最近没写Agent，故也没去了解MCP，今天暂时空下来了，看看这MCP到底是何方神圣，本文是我从<code>Youtube</code>上搜到的一个感觉还不错的教程，来自马克的技术工坊，链接见参考链接1，在B站搜了下，发现博主在B站也有账号，见参考链接2，下面我们一起看下大佬的讲解吧。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="简要解释"><a href="#简要解释" class="headerlink" title="简要解释"></a>简要解释</h3><p>MCP(Model Context Protocol，模型上下文协议)，是Anthropic公司在2024年11月25号发布的一个协议，不用管这个故弄玄虚的名字，简单来说，MCP就是能让LLM更好的使用各类工具的一个协议，比如说借助MCP可以让LLM使用浏览器上网查询信息，可以让模型操作Unity编写游戏，也可以让LLM查询实时路况。是不是有点心动呢，别着急，在使用MCP之前还需要了解另一个东西：MCP Host，不用管它这个名字是啥，本质上就是一个支持MCP协议的软件，常见的包括：Cloud Desktop、Cursor、Cline、Cherry Studio等。相信大家即使没用过至少也听说过部分。下文将以Cline为例讲解MCP的使用方法。</p>
+<h3 id="安装和简单使用MCP-Host-Cline"><a href="#安装和简单使用MCP-Host-Cline" class="headerlink" title="安装和简单使用MCP Host(Cline)"></a>安装和简单使用MCP Host(Cline)</h3><p>Cline其实是VS Code中的一个插件，直接在扩展中搜索安装即可。然后配置你的<code>API key</code>，这里我是用Deepseek，选择deepseek-chat代表V3模型，我不使用<code>use different models for plan and act modes</code>，填好之后选择<code>Save</code>，现在就可以使用<code>Cline</code>了，我们给它打个招呼，模型能正常回复就基本没问题了。</p>
+<blockquote>
+<p>如遇到<code>Save</code>按钮为灰色，请在<code>Custom Instructions</code>里面写任意内容再删掉，建议在里面写上：请用中文回复。</p>
+</blockquote>
+<h3 id="第一个MCP问题"><a href="#第一个MCP问题" class="headerlink" title="第一个MCP问题"></a>第一个MCP问题</h3><p>现在我们真正问它一个真正的问题：<code>明天纽约的天气怎么样？</code></p>
+
+
+<p>这里它提到了<code>MCP</code>服务器，那么<code>MCP</code>服务器是什么呢？</p>
+<h3 id="MCP-Server-和-Tool"><a href="#MCP-Server-和-Tool" class="headerlink" title="MCP Server 和 Tool"></a>MCP Server 和 Tool</h3><p><code>MCP</code>服务器的英文原名是<code>MCP Server</code> ，听起来有点高大上，而且貌似和我们传统网络协议里面的Server有点联系，似乎是一个远程的服务器，需要联网才能使用，比如我们打开<code>Google</code>的首页，就是访问了<code>Google</code>的服务器，不过实际上，<code>MCP Server</code>跟我们传统意义上的<code>Server</code>并没有太大关系，它就是一个程序而已，只不过这个程序的执行是符合<code>MCP</code>协议的，比如大部分的<code>MCP Server</code>都是本地通过<code>Node</code>或者<code>Python</code>启动的，在使用过程中可能联网也有可能纯本地使用（不联网），不管联不联网，它都可以叫做<code>MCP Server</code>，所以这个名字里面的<code>Server</code>有一定的误导性，它就是一个程序，只是内置了一些功能模块，这些模块在<code>MCP</code>领域的专业名词叫做<code>Tool</code>，翻译成中文是工具，对编程的人来说，工具就是函数。</p>
+<h3 id="配置MCP-Server"><a href="#配置MCP-Server" class="headerlink" title="配置MCP Server"></a>配置MCP Server</h3>
+
+<p>我们明白了<code>MCP Server</code>和<code>Tool</code>的关系，下面我们来实际配置一个<code>MCP Server</code>，上文的两种图，第一张图，<code>Cline</code>生成命令行参数来安装<code>天气MCP服务器</code>，第二张图将会在你提供<code>API秘钥</code>后创建<code>天气MCP服务器</code>，还有两种方法，第三种，点击红色箭头后会出现下图，点击<code>Install</code>后即可安装，这里的每个仓库都对应着一个<code>Github仓库</code>，模型就是靠参考<code>Github仓库</code>说明文档中的安装过程进行安装的：</p>
+.png)
+
+<p>注意上述三种（或者说两种，前两种是一类）安装方式都是模型主导的，比较依赖模型的能力，我们还是喜欢确定性的东西，而且虽然<code>Cline</code>支持第三种自动安装的方式，有些<code>MCP Host</code>是不支持的，那么就有第四种安装方式：</p>
+.png)
+
+<p>与<code>Marketplace</code>的同级页面，点击<code>Installed</code>，再点击下方的<code>Configure MCP Servers</code>，右方就会创建一个空白的<code>Cline_mcp_settings.json</code>。</p>
+<h4 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h4><p>运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">conda create -n mcp python=3.13</span><br><span class="line">conda activate mcp </span><br><span class="line"></span><br><span class="line">curl -LsSf https://astral.sh/uv/install.sh | sh</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;source $HOME/.local/bin/env&#x27;</span> &gt;&gt; ~/.bashrc</span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br><span class="line"></span><br><span class="line">uv --version  <span class="comment"># uv 0.7.12</span></span><br></pre></td></tr></table></figure>
+
+<p>点击<a target="_blank" rel="noopener" href="https://github.com/MarkTechStation/VideoCode/tree/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E8%BF%9B%E9%98%B6%E7%AF%87/weather">这里</a>，将<code>pyproject.toml</code>和<code>weather.py</code>复制到<code>/home/chr/mcp_files/weather</code>下，将下面代码替换掉<code>cline_mcp_setting.json</code>的内容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;mcpServers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;weather&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;timeout&quot;</span><span class="punctuation">:</span> <span class="number">60</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;uv&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;args&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;--directory&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;/home/chr/mcp_files/weather&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;run&quot;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="string">&quot;weather.py&quot;</span></span><br><span class="line">      <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;transportType&quot;</span><span class="punctuation">:</span> <span class="string">&quot;stdio&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>即可在<code>Installed</code>中看到<code>weather</code>：</p>
+.png)
+
+<hr>
+<h3 id="再试一次"><a href="#再试一次" class="headerlink" title="再试一次"></a>再试一次</h3><p>现在再去问相同的问题：</p>
+
+
+<p>会先出现经纬度，让你确认，确认之后就会回答你具体内容：</p>
+
+
+<hr>
+<h3 id="MCP-交互流程详解"><a href="#MCP-交互流程详解" class="headerlink" title="MCP 交互流程详解"></a>MCP 交互流程详解</h3><ul>
+<li>配置<code>cline_mcp_setting.json</code>并保存-&gt;启动<code>MCP Server</code>(<code>Cline-&gt;MCP Server</code>)</li>
+<li>你好，我是<code>Cline</code>(<code>Cline-&gt;MCP Server</code>)</li>
+<li>你好，我是<code>weather</code>(<code>MCP Server-&gt;Cline</code>）</li>
+<li>你有啥工具呀(<code>Cline-&gt;MCP Server</code>)</li>
+<li>我有<code>get_forecast</code>和<code>get_alerts</code>(<code>MCP Server-&gt;Cline</code>）</li>
+<li>纽约明天的天气怎么样？(<code>用户-&gt;Cline</code>）</li>
+<li>纽约明天的天气怎么样？(我有一些工具，分别是…)(<code>Cline-&gt;LLM</code>）</li>
+<li>我要调用<code>get_forecast</code>，参数是…（<code>LLM-&gt;Cline</code>）</li>
+<li>我要调用<code>get_forecast</code>，参数是…(<code>Cline-&gt;MCP Server</code>)</li>
+<li>调用完成，结果是…（<code>MCP Server-&gt;Cline</code>）</li>
+<li>调用完成，结果是…（<code>Cline-&gt;LLM</code>）</li>
+<li>纽约明天的天气是这样的…（<code>LLM-&gt;Cline</code>）</li>
+<li>纽约明天的天气是这样的…（<code>Cline-&gt;用户</code>）</li>
+</ul>
+<img src="/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/image-20250610150918144.png" class="" title="image-20250610150918144">
+
+<hr>
+<h3 id="如何使用别人制作好的MCP-Server"><a href="#如何使用别人制作好的MCP-Server" class="headerlink" title="如何使用别人制作好的MCP Server"></a>如何使用别人制作好的MCP Server</h3><p><code>MCP Sever</code>一般是使用<code>Python</code>或<code>Node</code>进行编写，对应的启动方式分别是<code>uvx</code>和<code>npx</code>，下面我们将分别展示一个示例，大家举一反三即可。</p>
+<h4 id="uvx部分"><a href="#uvx部分" class="headerlink" title="uvx部分"></a>uvx部分</h4><p>打开<a href="mcp.so">mcp.so</a>，在其中搜索<code>fetch</code>，点击如图所示图标：.png)</p>
+<p>会看到：</p>
+
+
+<p>将右侧的<code>Server Config</code>中的内容复制下来，填入<code>cline_mcp_settings.json</code>：</p>
+
+
+<p>新开一个聊天使用<code>fetch</code>工具：</p>
+
+
+<p>非常丝滑，获取网页内容转化为markdown形式并存在项目目录下的<code>guides.md</code>文件下。</p>
+<h4 id="npx部分"><a href="#npx部分" class="headerlink" title="npx部分"></a>npx部分</h4><p>这里只说明步骤，不实操了：</p>
+<ul>
+<li>下载<code>Node.js</code></li>
+<li>打开<a href="mcpmarket.com">mcpmarket.com</a></li>
+<li>搜索<code>hotnews</code></li>
+<li>后续与上文一致</li>
+<li>询问今天最火的科技新闻看效果</li>
+</ul>
+<hr>
+<h3 id="MCP-Server市场"><a href="#MCP-Server市场" class="headerlink" title="MCP Server市场"></a>MCP Server市场</h3><ul>
+<li><a href="mcpmarket.com">mcpmarket.com</a></li>
+<li><a href="mcp.so">mcp.so</a></li>
+<li><a target="_blank" rel="noopener" href="https://smithery.ai/">Smithery</a></li>
+</ul>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=yjBUnbRgiNs">https://www.youtube.com/watch?v=yjBUnbRgiNs</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1uronYREWR/?spm_id_from=333.1387.homepage.video_card.click&vd_source=075a061948e76c87e2ee8754e264056e">https://www.bilibili.com/video/BV1uronYREWR/?spm_id_from=333.1387.homepage.video_card.click&amp;vd_source=075a061948e76c87e2ee8754e264056e</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/MarkTechStation/VideoCode/tree/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E8%BF%9B%E9%98%B6%E7%AF%87/weather">https://github.com/MarkTechStation/VideoCode/tree/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E8%BF%9B%E9%98%B6%E7%AF%87/weather</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/agent/" rel="tag"># agent</a>
+              <a href="/tags/mcp/" rel="tag"># mcp</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/06/09/%E6%96%87%E6%9C%AC%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%A4%BA%E4%BE%8B/" rel="prev" title="文本查重系统示例">
+                  <i class="fa fa-angle-left"></i> 文本查重系统示例
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">257k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:35</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
