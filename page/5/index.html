@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">64</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">86</span>
+        <span class="site-state-item-count">88</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -186,6 +186,234 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">论文：Qwen2.5VL</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-11 11:21:48" itemprop="dateCreated datePublished" datetime="2025-03-11T11:21:48+08:00">2025-03-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-28 15:08:22" itemprop="dateModified" datetime="2025-04-28T15:08:22+08:00">2025-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>14k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>53 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>说来惭愧，玩了这么久LLM，还没正经看过LLM的论文，最近要好好玩玩Qwen2.5 VL，目的是探索能基于它做什么应用（主要看能不能做到实时检测），这里先看一下论文，有个原理上的认识，再去微调Qwen2.5 VL。</p>
+<p><strong>论文名：Qwen2.5-VL Technical Report</strong></p>
+<p><strong>作者：Qwen Team, Alibaba Group</strong></p>
+<p><strong>论文地址：</strong> <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2502.13923">https://arxiv.org/abs/2502.13923</a></p>
+<p><strong>Qwen Chat:</strong> <a target="_blank" rel="noopener" href="https://chat.qwenlm.ai/">https://chat.Qwenlm.ai</a></p>
+<p><strong>Hugging face:</strong> <a target="_blank" rel="noopener" href="https://huggingface.co/Qwen">https://huggingface.co/Qwen</a></p>
+<p><strong>ModelScope:</strong> <a target="_blank" rel="noopener" href="https://modelscope.cn/organization/Qwen">https://modelscope.cn/organization/Qwen</a></p>
+<p><strong>Github:</strong> <a target="_blank" rel="noopener" href="https://github.com/QwenLM/Qwen2.5-VL">https://github.com/QwenLM/Qwen2.5-VL</a></p>
+<p><em><strong>年份：2025</strong></em></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">TTS之Spark-TTS介绍与使用</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-07 19:15:52" itemprop="dateCreated datePublished" datetime="2025-03-07T19:15:52+08:00">2025-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-28 15:07:39" itemprop="dateModified" datetime="2025-04-28T15:07:39+08:00">2025-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>近日（2025-3-7），香港科技大学、出门问问、西北工业大学、上海交通大学、南洋理工大学等研究机构，重磅推出新一代语音生成模型 Spark-TTS。该模型完全基于Qwen2.5架构，摒弃额外生成模型辅助，以单阶段、单流方式实现 TTS 生成，具备超自然的语音克隆与跨语种生成能力，还支持用户根据需求定制专属声音。目前，Spark-TTS已经在开源社区SparkAudio发布，迅速登上Hugging Face趋势榜TTS第二，目前仍在持续攀升中。</p>
+<p><strong>论文题目：Spark-TTS: An Efficient LLM-Based Text-to-Speech Model with Single-Stream Decoupled Speech Tokens</strong></p>
+<p><strong>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2503.01710">https://arxiv.org/pdf/2503.01710</a></strong></p>
+<p><strong>样例展示：<a target="_blank" rel="noopener" href="https://sparkaudio.github.io/spark-tts/">https://sparkaudio.github.io/spark-tts/</a></strong></p>
+<p><strong>项目地址：<a target="_blank" rel="noopener" href="https://github.com/SparkAudio/Spark-TTS">https://github.com/SparkAudio/Spark-TTS</a></strong></p>
+<p><strong>模型地址：<a target="_blank" rel="noopener" href="https://huggingface.co/SparkAudio/Spark-TTS-0.5B">https://huggingface.co/SparkAudio/Spark-TTS-0.5B</a></strong></p>
+<p><strong>试用地址：<a target="_blank" rel="noopener" href="https://huggingface.co/spaces/Mobvoi/Offical-Spark-TTS">https://huggingface.co/spaces/Mobvoi/Offical-Spark-TTS</a></strong></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1051,222 +1279,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/" class="post-title-link" itemprop="url">说话人确认之CAM++</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-11 17:24:14" itemprop="dateCreated datePublished" datetime="2025-02-11T17:24:14+08:00">2025-02-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-05-22 16:59:44" itemprop="dateModified" datetime="2025-05-22T16:59:44+08:00">2025-05-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>13 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>说话人确认，又名说话人验证（SV, Speaker Verification）、声纹认证、语音认证、说话人认证，是声纹识别的一个子任务，主要用于确认某个人的身份，即<strong>这个人是不是那个人</strong>。验证采用<strong>1:1对比</strong>，即用户提供的语音与已注册的声纹模版进行匹配，以决定是否通过认证。</p>
-<p>本文以3D-speaker中的CAM++（ERES2Net V2也类似）为例，实验说话人确认效果。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/10/langgraph%E4%BB%8B%E7%BB%8D%E5%8F%8Ademo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/10/langgraph%E4%BB%8B%E7%BB%8D%E5%8F%8Ademo/" class="post-title-link" itemprop="url">langgraph介绍及demo</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-10 17:14:33" itemprop="dateCreated datePublished" datetime="2025-02-10T17:14:33+08:00">2025-02-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-28 15:18:21" itemprop="dateModified" datetime="2025-04-28T15:18:21+08:00">2025-04-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>8.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>31 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在现代大模型应用开发中，构建能够处理复杂任务和多步骤推理的 Agent 是一个重要需求。<strong>LangGraph</strong> 是一个基于 LangChain 的框架，专门设计用于构建和编排复杂的 Agent 工作流。它通过图（Graph）结构定义任务流程，支持循环、分支、并行等复杂逻辑，是开发高效、灵活 Agent 应用的理想选择。</p>
-<p>本文将介绍 LangGraph 的核心概念，并通过几个基础示例展示如何使用它构建 Agent 应用。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/10/langgraph%E4%BB%8B%E7%BB%8D%E5%8F%8Ademo/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1290,13 +1302,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">257k</span>
+    <span title="站点总字数">258k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">15:35</span>
+    <span title="站点阅读时长">15:39</span>
   </span>
 </div>
 <div class="busuanzi-count">

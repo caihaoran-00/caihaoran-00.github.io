@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言周一（2025-6-9）向客户展示了查重demo（其实也算不上demo，算是做了下可行性分析吧），但是是以代码的输出结果进行展示的（之前也一直是这么展示的），但这次的客户似乎完全不想看这些东西，只想看直观的UI页面的，上级让弄个带UI页面的进行展示，这篇博客记录一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="查重系统：公司服务器上部署查重系统简单demo">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E9%83%A8%E7%BD%B2%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%AE%80%E5%8D%95demo/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言周一（2025-6-9）向客户展示了查重demo（其实也算不上demo，算是做了下可行性分析吧），但是是以代码的输出结果进行展示的（之前也一直是这么展示的），但这次的客户似乎完全不想看这些东西，只想看直观的UI页面的，上级让弄个带UI页面的进行展示，这篇博客记录一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E9%83%A8%E7%BD%B2%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%AE%80%E5%8D%95demo/image-20250611110353559.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E9%83%A8%E7%BD%B2%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%AE%80%E5%8D%95demo/image-20250611110604966.png">
+<meta property="article:published_time" content="2025-06-11T00:43:09.000Z">
+<meta property="article:modified_time" content="2025-06-11T03:40:26.022Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="查重">
+<meta property="article:tag" content="streamlit">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E9%83%A8%E7%BD%B2%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%AE%80%E5%8D%95demo/image-20250611110353559.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E9%83%A8%E7%BD%B2%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%AE%80%E5%8D%95demo/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E9%83%A8%E7%BD%B2%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%AE%80%E5%8D%95demo/","path":"2025/06/11/查重系统：公司服务器上部署查重系统简单demo/","title":"查重系统：公司服务器上部署查重系统简单demo"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>查重系统：公司服务器上部署查重系统简单demo | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%90%AF%E5%8A%A8%E8%84%9A%E6%9C%AC"><span class="nav-number">2.2.</span> <span class="nav-text">创建启动脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.3.</span> <span class="nav-text">存在的问题</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">88</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E9%83%A8%E7%BD%B2%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%AE%80%E5%8D%95demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="查重系统：公司服务器上部署查重系统简单demo | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          查重系统：公司服务器上部署查重系统简单demo
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-06-11 08:43:09 / 修改时间：11:40:26" itemprop="dateCreated datePublished" datetime="2025-06-11T08:43:09+08:00">2025-06-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>954</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>周一（2025-6-9）向客户展示了查重demo（其实也算不上demo，算是做了下可行性分析吧），但是是以代码的输出结果进行展示的（之前也一直是这么展示的），但这次的客户似乎完全不想看这些东西，只想看直观的<code>UI</code>页面的，上级让弄个带<code>UI</code>页面的进行展示，这篇博客记录一下。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>使用<code>streamlit</code>做前端页面，<code>pdfplumber</code>作为<code>pdf</code>解析器，关于文本查重的思路可见<a href="https://caihaoran-00.github.io/2025/06/09/%E6%96%87%E6%9C%AC%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%A4%BA%E4%BE%8B/">这里</a>，<strong>代码：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> streamlit <span class="keyword">as</span> st</span><br><span class="line"><span class="keyword">import</span> pdfplumber</span><br><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> itertools</span><br><span class="line"><span class="keyword">from</span> simhash <span class="keyword">import</span> Simhash</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> TfidfVectorizer</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics.pairwise <span class="keyword">import</span> cosine_similarity</span><br><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer, util</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化 BERT 模型</span></span><br><span class="line">bert_model = SentenceTransformer(<span class="string">&#x27;paraphrase-MiniLM-L6-v2&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># -------------------- 文本处理函数 --------------------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">split_sentences</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> [s.strip() <span class="keyword">for</span> s <span class="keyword">in</span> re.split(<span class="string">r&#x27;[。！？\n]&#x27;</span>, text) <span class="keyword">if</span> s.strip()]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">preprocess</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27; &#x27;</span>.join(jieba.cut(text.strip().replace(<span class="string">&#x27;\n&#x27;</span>, <span class="string">&#x27;&#x27;</span>).replace(<span class="string">&#x27; &#x27;</span>, <span class="string">&#x27;&#x27;</span>)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">read_pdf_text</span>(<span class="params">file</span>):</span><br><span class="line">    <span class="keyword">with</span> pdfplumber.<span class="built_in">open</span>(file) <span class="keyword">as</span> pdf:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;\n&#x27;</span>.join(page.extract_text() <span class="keyword">or</span> <span class="string">&#x27;&#x27;</span> <span class="keyword">for</span> page <span class="keyword">in</span> pdf.pages)</span><br><span class="line"></span><br><span class="line"><span class="comment"># -------------------- 相似度函数 --------------------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">simhash_similarity</span>(<span class="params">s1, s2</span>):</span><br><span class="line">    h1 = Simhash(preprocess(s1))</span><br><span class="line">    h2 = Simhash(preprocess(s2))</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span> - h1.distance(h2) / <span class="number">64</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">tfidf_similarity</span>(<span class="params">s1, s2</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> s1.strip() <span class="keyword">or</span> <span class="keyword">not</span> s2.strip():</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span>  <span class="comment"># 空字符串相似度为0</span></span><br><span class="line">    vectorizer = TfidfVectorizer()</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        tfidf = vectorizer.fit_transform([s1, s2])</span><br><span class="line">        <span class="keyword">return</span> cosine_similarity(tfidf[<span class="number">0</span>:<span class="number">1</span>], tfidf[<span class="number">1</span>:<span class="number">2</span>])[<span class="number">0</span>][<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">except</span> ValueError:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0.0</span>  <span class="comment"># 如果文本内容导致词表为空，也返回相似度0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bert_similarity</span>(<span class="params">s1, s2</span>):</span><br><span class="line">    emb1 = bert_model.encode(s1, convert_to_tensor=<span class="literal">True</span>)</span><br><span class="line">    emb2 = bert_model.encode(s2, convert_to_tensor=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> util.cos_sim(emb1, emb2).item()</span><br><span class="line"></span><br><span class="line"><span class="comment"># -------------------- 查重主函数 --------------------</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">compare_docs</span>(<span class="params">name1, text1, name2, text2</span>):</span><br><span class="line">    results = []</span><br><span class="line">    sents1 = split_sentences(text1)</span><br><span class="line">    sents2 = split_sentences(text2)</span><br><span class="line">    matched_sentences = <span class="built_in">set</span>()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i, q <span class="keyword">in</span> <span class="built_in">enumerate</span>(sents1):</span><br><span class="line">        <span class="keyword">for</span> s <span class="keyword">in</span> sents2:</span><br><span class="line">            sim1 = simhash_similarity(q, s)</span><br><span class="line">            <span class="keyword">if</span> sim1 &lt; <span class="number">0.8</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            q_p, s_p = preprocess(q), preprocess(s)</span><br><span class="line">            sim2 = tfidf_similarity(q_p, s_p)</span><br><span class="line">            sim3 = bert_similarity(q, s)</span><br><span class="line">            <span class="keyword">if</span> sim2 &gt; <span class="number">0.6</span> <span class="keyword">or</span> sim3 &gt; <span class="number">0.8</span>:</span><br><span class="line">                matched_sentences.add(i)</span><br><span class="line">                results.append(&#123;</span><br><span class="line">                    <span class="string">&quot;query&quot;</span>: q,</span><br><span class="line">                    <span class="string">&quot;match&quot;</span>: s</span><br><span class="line">                &#125;)</span><br><span class="line">                <span class="keyword">break</span>  <span class="comment"># 一段查到一次就够了</span></span><br><span class="line"></span><br><span class="line">    repeat_rate = <span class="built_in">len</span>(matched_sentences) / <span class="built_in">len</span>(sents1) <span class="keyword">if</span> sents1 <span class="keyword">else</span> <span class="number">0</span></span><br><span class="line">    <span class="keyword">return</span> results, repeat_rate</span><br><span class="line"></span><br><span class="line"><span class="comment"># -------------------- 页面展示 --------------------</span></span><br><span class="line">st.set_page_config(page_title=<span class="string">&quot;PDF 查重系统&quot;</span>, layout=<span class="string">&quot;wide&quot;</span>)</span><br><span class="line">st.title(<span class="string">&quot;📄 多 PDF 文件查重系统&quot;</span>)</span><br><span class="line"></span><br><span class="line">uploaded_files = st.file_uploader(<span class="string">&quot;请上传多个 PDF 文件（至少两个）&quot;</span>, <span class="built_in">type</span>=[<span class="string">&quot;pdf&quot;</span>], accept_multiple_files=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> uploaded_files <span class="keyword">and</span> <span class="built_in">len</span>(uploaded_files) &gt;= <span class="number">2</span>:</span><br><span class="line">    st.success(<span class="string">f&quot;已上传 <span class="subst">&#123;<span class="built_in">len</span>(uploaded_files)&#125;</span> 个文件，正在处理...&quot;</span>)</span><br><span class="line"></span><br><span class="line">    docs = &#123;f.name: read_pdf_text(f) <span class="keyword">for</span> f <span class="keyword">in</span> uploaded_files&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (name1, text1), (name2, text2) <span class="keyword">in</span> itertools.combinations(docs.items(), <span class="number">2</span>):</span><br><span class="line">        st.markdown(<span class="string">f&quot;---&quot;</span>)</span><br><span class="line">        <span class="keyword">with</span> st.expander(<span class="string">f&quot;📊 对比结果：<span class="subst">&#123;name1&#125;</span> ⟷ <span class="subst">&#123;name2&#125;</span>&quot;</span>, expanded=<span class="literal">True</span>):</span><br><span class="line">            matches, repeat_rate = compare_docs(name1, text1, name2, text2)</span><br><span class="line">            st.markdown(<span class="string">f&quot;**🔁 重复率：<span class="subst">&#123;repeat_rate * <span class="number">100</span>:<span class="number">.1</span>f&#125;</span>%**&quot;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> matches:</span><br><span class="line">                <span class="keyword">for</span> i, item <span class="keyword">in</span> <span class="built_in">enumerate</span>(matches, <span class="number">1</span>):</span><br><span class="line">                    st.markdown(<span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                    &lt;div style=&#x27;background-color:#f9f9f9; padding:10px; margin-bottom:10px; border-left: 4px solid #4CAF50;&#x27;&gt;</span></span><br><span class="line"><span class="string">                    &lt;b&gt;📌 文档1段落:&lt;/b&gt; <span class="subst">&#123;item[<span class="string">&#x27;query&#x27;</span>]&#125;</span>&lt;br&gt;</span></span><br><span class="line"><span class="string">                    &lt;b&gt;📌 文档2段落:&lt;/b&gt; <span class="subst">&#123;item[<span class="string">&#x27;match&#x27;</span>]&#125;</span></span></span><br><span class="line"><span class="string">                    &lt;/div&gt;</span></span><br><span class="line"><span class="string">                    &quot;&quot;&quot;</span>, unsafe_allow_html=<span class="literal">True</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                st.info(<span class="string">&quot;✅ 未检测到重复内容。&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    st.warning(<span class="string">&quot;请至少上传两个 PDF 文件以进行查重。&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>界面：</strong></p>
+<img src="/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E9%83%A8%E7%BD%B2%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%AE%80%E5%8D%95demo/image-20250611110353559.png" class="" title="image-20250611110353559">
+
+<p><strong>上传文件后会自动查重，效果如下：</strong></p>
+<img src="/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%E9%83%A8%E7%BD%B2%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%E7%AE%80%E5%8D%95demo/image-20250611110604966.png" class="" title="image-20250611110604966">
+
+<p>这里展示的<code>18.3%</code>的重复率，计算方式是：橙色文档与红色文档重合的字数除以橙色文档的总字数。</p>
+<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">conda create -n chachong python=<span class="number">3.10</span></span><br><span class="line">conda activate chachong</span><br><span class="line"></span><br><span class="line">pip install streamlit pdfplumber jieba simhash scikit-learn sentence-transformers</span><br><span class="line"></span><br><span class="line">export HF_ENDPOINT=https://hf-mirror.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建启动脚本"><a href="#创建启动脚本" class="headerlink" title="创建启动脚本"></a>创建启动脚本</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">touch</span> run_pdf_check.sh</span><br><span class="line"></span><br><span class="line">nano run_pdf_check.sh</span><br></pre></td></tr></table></figure>
+
+<p><strong>把下面的内容复制进去：</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 自动化启动 Streamlit 项目</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;启动 pdf_check_web.py ...&quot;</span></span><br><span class="line"><span class="built_in">nohup</span> streamlit run pdf_check_web.py --server.address 0.0.0.0 --server.port 8501 &gt; streamlit.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+
+<p><strong>赋予执行权限：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> +x run_pdf_check.sh</span><br></pre></td></tr></table></figure>
+
+<p><strong>运行脚本：</strong></p>
+<p>注意注意，第一次启动时，<code>stream</code>会邀请用户填写<code>email</code>或者空格填过，但<code>nohup</code>是非交互式的，如果使用<code>nohup</code>启动就会卡住，第一次启动时应该手动运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">streamlit run pdf_check_web.py --server.address 0.0.0.0 --server.port 8501</span><br></pre></td></tr></table></figure>
+
+<p>然后填写<code>email</code>或者空格跳过，后续再启动时就可以直接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./run_pdf_check.sh</span><br></pre></td></tr></table></figure>
+
+<p>服务就在后台启动了，想查看代码日志输出，可运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">tail</span> -f streamlit.log</span><br></pre></td></tr></table></figure>
+
+<h3 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h3><p>上面代码只是个简单的展示demo，存在很多能想到和想不到的问题，目前最大的问题是：</p>
+<ul>
+<li><code>pdf</code>解析问题，现在用的是最简单的<code>extract_text</code>，对表格的兼容不好，且是一行一行读取，会割断语句</li>
+</ul>
+<p>下面会着重先解决这个问题。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9F%A5%E9%87%8D/" rel="tag"># 查重</a>
+              <a href="/tags/streamlit/" rel="tag"># streamlit</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/" rel="prev" title="MCP基础：从原理到实战">
+                  <i class="fa fa-angle-left"></i> MCP基础：从原理到实战
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/11/%E6%9F%A5%E9%87%8D%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%88%9D%E7%BA%A7pdf%E8%A7%A3%E6%9E%90%E5%8F%8A%E5%8F%A5%E5%AD%90%E9%87%8D%E7%BB%84/" rel="next" title="查重系统：初级pdf解析及句子重组">
+                  查重系统：初级pdf解析及句子重组 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">258k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:39</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
