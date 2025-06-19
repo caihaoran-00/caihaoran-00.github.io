@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-count">71</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -186,6 +186,327 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/04/17/Unsloth-Llama-3-2-3B-Instruct-SFT%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/04/17/Unsloth-Llama-3-2-3B-Instruct-SFT%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/" class="post-title-link" itemprop="url">Unsloth:Llama-3.2-3B-Instruct+SFT将通用LLM微调成推理LLM</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-17 17:55:49" itemprop="dateCreated datePublished" datetime="2025-04-17T17:55:49+08:00">2025-04-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-18 19:37:58" itemprop="dateModified" datetime="2025-04-18T19:37:58+08:00">2025-04-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>24k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1:28</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://caihaoran-00.github.io/2025/04/14/Unsloth-Llama-3-2-3B-Instruct-GRPO%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/">前面</a>我们一起做了使用<code>Unsloth</code>框架将<code>Llama-3.2-3B-Instruct</code>通过<code>GRPO</code>的方式转化为推理语言大模型，效果有一点但并不多🤪，而且发现了几个我觉得很严重的问题，一是推理能力并没有感觉到增强，二是由于训练期间搭配了系统提示词，所以如果推理时不加上提示词会引导不出推理过程，三是容易出现推理过程是错的，但答案是对的情况。我认为在有推理数据集的基础上，<code>SFT+COT</code>可能效果更稳定，本文即实践下<code>SFT+COT</code>，对实验过程进行记录。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/04/17/Unsloth-Llama-3-2-3B-Instruct-SFT%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/04/14/Unsloth-Llama-3-2-3B-Instruct-GRPO%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/04/14/Unsloth-Llama-3-2-3B-Instruct-GRPO%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/" class="post-title-link" itemprop="url">Unsloth:Llama-3.2-3B-Instruct+GRPO将通用LLM微调成推理LLM</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-14 15:41:20" itemprop="dateCreated datePublished" datetime="2025-04-14T15:41:20+08:00">2025-04-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-28 15:07:25" itemprop="dateModified" datetime="2025-04-28T15:07:25+08:00">2025-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>18k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1:06</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://caihaoran-00.github.io/2025/04/08/Unsloth-Phi-4-GRPO%E5%B0%86%E9%80%9A%E7%94%A8%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/">前面</a>我们使用<code>Unsloth</code>将<code>Phi-4 14B</code>通过<code>GRPO</code>方法转化成了推理<code>LLM</code>，但示例中的两个奖励函数有些问题，官方也并未有改正的意向，只是给了另一个<a target="_blank" rel="noopener" href="https://colab.research.google.com/github/unslothai/notebooks/blob/main/nb/Advanced_Llama3_1_(3B)_GRPO_LoRA.ipynb#scrollTo=vzOuSVCL_GA9">Llama-3.2-3B</a>的示例供开发者参考，那么本文就一起来看一下这个新示例吧，同时本文将深入的解析其中所使用的代码。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/04/14/Unsloth-Llama-3-2-3B-Instruct-GRPO%E5%B0%86%E9%80%9A%E7%94%A8LLM%E5%BE%AE%E8%B0%83%E6%88%90%E6%8E%A8%E7%90%86LLM/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/04/11/gradio-cam%E6%90%AD%E5%BB%BAweb%E9%A1%B5%E9%9D%A2%E4%BD%93%E9%AA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/04/11/gradio-cam%E6%90%AD%E5%BB%BAweb%E9%A1%B5%E9%9D%A2%E4%BD%93%E9%AA%8C/" class="post-title-link" itemprop="url">gradio+cam搭建web页面体验</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-11 18:31:09" itemprop="dateCreated datePublished" datetime="2025-04-11T18:31:09+08:00">2025-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-21 17:42:42" itemprop="dateModified" datetime="2025-04-21T17:42:42+08:00">2025-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面使用<code>fastapi</code>搭建了<code>cam++</code>说话人辨识的微服务，现在要让测试人员测试下<code>cam++</code>的可用性和准确度方面，遂打算搭建个<code>gradio+cam++</code>的web页面，让测试人员直接使用web页面进行相关测试，本文主要提供思路及对应代码。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/04/11/gradio-cam%E6%90%AD%E5%BB%BAweb%E9%A1%B5%E9%9D%A2%E4%BD%93%E9%AA%8C/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -928,323 +1249,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/" class="post-title-link" itemprop="url">Obsidian+Excalidraw插件绘图</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2025-03-22 18:24:40 / 修改时间：19:22:17" itemprop="dateCreated datePublished" datetime="2025-03-22T18:24:40+08:00">2025-03-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>357</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在AI系列课程：导论and数学基础1一文中，用网页版Excalidraw画了一些图，风格还不错，但是发现了致命的缺点，不支持Latex数学公式（没找到怎么使用，姑且认为不支持吧），搜索发现可以通过Obsidian安装Excalidraw插件解决这个问题，本文尝试并记录该方案（<strong>windows电脑</strong>)，用作记录和分享。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/22/Obsidian-Excalidraw%E6%8F%92%E4%BB%B6%E7%BB%98%E5%9B%BE/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/22/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%802/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/22/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%802/" class="post-title-link" itemprop="url">AI系列课程：导论and数学基础2</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-03-22 16:48:48" itemprop="dateCreated datePublished" datetime="2025-03-22T16:48:48+08:00">2025-03-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-12 15:57:29" itemprop="dateModified" datetime="2025-04-12T15:57:29+08:00">2025-04-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>8.2k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>30 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上节课老大（老板）着重讲了线性代数相关的知识，这节课依旧是老大进行分享（问了下才知道老大准备开12课时，且都是自己讲，真牛啊，敢于定目标，且付诸行动），本节课的重点是微积分、导数、偏导、梯度下降相关的东西，依照传统留了课后作业，本文依旧是记录下作业，对了，还有奇异值分解，老大说谁要是能在第三次课讲奇异值分解，会加大分，我先把作业写完，再准备下奇异值分解的相关内容吧。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/22/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%802/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/" class="post-title-link" itemprop="url">AI系列课程：导论and数学基础1</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-03-21 20:45:42" itemprop="dateCreated datePublished" datetime="2025-03-21T20:45:42+08:00">2025-03-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-22 16:10:20" itemprop="dateModified" datetime="2025-03-22T16:10:20+08:00">2025-03-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.4k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>老大（老板）25年开始就打算开个AI导学系列，也是以身作则进行了第一期的讲解，从小学到大学的数学知识都进行了讲解（留了一部分微积分、导数和偏导等第二次课讲解），重点讲解了线性代数相关的东西，这次课反复提及的一句话：矩阵计算就是线性变换。同时也留了几题课后作业，本文记录下作业，小友们有兴趣也可以看看。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/03/21/AI%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%EF%BC%9A%E5%AF%BC%E8%AE%BAand%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%801/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1266,13 +1272,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">266k</span>
+    <span title="站点总字数">279k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">16:09</span>
+    <span title="站点阅读时长">16:56</span>
   </span>
 </div>
 <div class="busuanzi-count">
