@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言前面整理了MCP基础：从原理到实战、MCP进阶：带你深入掌握MCP、MCP番外：Cline与模型的交互过程，本文用于填坑，包括：  Function Call MCP客户端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MCP填坑篇：Function Call &amp; MCP客户端">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/06/20/MCP%E6%80%BB%E7%BB%93%EF%BC%9A%E5%85%88%E7%9C%8B%E8%BF%99%E7%AF%87/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言前面整理了MCP基础：从原理到实战、MCP进阶：带你深入掌握MCP、MCP番外：Cline与模型的交互过程，本文用于填坑，包括：  Function Call MCP客户端">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/20/MCP%E6%80%BB%E7%BB%93%EF%BC%9A%E5%85%88%E7%9C%8B%E8%BF%99%E7%AF%87/image-20250620195037970.png">
+<meta property="article:published_time" content="2025-06-20T03:32:28.000Z">
+<meta property="article:modified_time" content="2025-06-20T12:01:30.802Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="mcp">
+<meta property="article:tag" content="function call">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/06/20/MCP%E6%80%BB%E7%BB%93%EF%BC%9A%E5%85%88%E7%9C%8B%E8%BF%99%E7%AF%87/image-20250620195037970.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/06/20/MCP%E6%80%BB%E7%BB%93%EF%BC%9A%E5%85%88%E7%9C%8B%E8%BF%99%E7%AF%87/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/06/20/MCP%E6%80%BB%E7%BB%93%EF%BC%9A%E5%85%88%E7%9C%8B%E8%BF%99%E7%AF%87/","path":"2025/06/20/MCP总结：先看这篇/","title":"MCP填坑篇：Function Call & MCP客户端"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MCP填坑篇：Function Call & MCP客户端 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MCP%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">2.1.</span> <span class="nav-text">MCP是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MCP-VS-function-call"><span class="nav-number">2.2.</span> <span class="nav-text">MCP VS function call</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MCP%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91"><span class="nav-number">2.3.</span> <span class="nav-text">MCP客户端开发</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%80%E8%83%83%E5%B0%8F%E8%8F%9C"><span class="nav-number">2.3.1.</span> <span class="nav-text">开胃小菜</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A3%E8%8F%9C"><span class="nav-number">2.3.2.</span> <span class="nav-text">正菜</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">71</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">91</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/06/20/MCP%E6%80%BB%E7%BB%93%EF%BC%9A%E5%85%88%E7%9C%8B%E8%BF%99%E7%AF%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MCP填坑篇：Function Call & MCP客户端 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MCP填坑篇：Function Call & MCP客户端
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-06-20 11:32:28 / 修改时间：20:01:30" itemprop="dateCreated datePublished" datetime="2025-06-20T11:32:28+08:00">2025-06-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>14 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面整理了<a href="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/">MCP基础：从原理到实战</a>、<a href="https://caihaoran-00.github.io/2025/06/12/MCP%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E6%8E%8C%E6%8F%A1MCP/">MCP进阶：带你深入掌握MCP</a>、<a href="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/">MCP番外：Cline与模型的交互过程</a>，本文用于填坑，包括：</p>
+<ul>
+<li><code>Function Call</code></li>
+<li><code>MCP</code>客户端</li>
+</ul>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="MCP是什么"><a href="#MCP是什么" class="headerlink" title="MCP是什么"></a>MCP是什么</h3><p><code>MCP</code>（Model Context Protocol，模型上下文协议）。这是一种开放标准，旨在统一大型语言模型（<code>LLMs</code>）与<strong>外部数据源和工具</strong>之间的通信协议。</p>
+<p><code>MCP</code>允许应用程序以一种标准化的方式向<code>LLMs</code>提供上下文信息，这使得不同来源的数据可以更容易地被集成到<code>LLMs</code>中。</p>
+<p>此外，<code>MCP</code>也被描述为类似于<code>USB-C</code>端口的一种接口，对于AI应用来说，它提供了一种通用的方法来连接不同的数据源和服务。通过使用<code>MCP</code>，开发者能够创建更加灵活且功能丰富的AI驱动的应用程序，因为它们可以无缝地与多种外部服务进行交互。</p>
+<hr>
+<h3 id="MCP-VS-function-call"><a href="#MCP-VS-function-call" class="headerlink" title="MCP VS function call"></a><code>MCP</code> VS function call</h3><img src="/2025/06/20/MCP%E6%80%BB%E7%BB%93%EF%BC%9A%E5%85%88%E7%9C%8B%E8%BF%99%E7%AF%87/image-20250620195037970.png" class="" title="image-20250620195037970">
+
+<p>还记得之前我们<code>MCP</code>系列文章中插图的<code>Cline</code>的位置吗，是不是位于<code>OpenAI</code>服务器的位置，而<code>MCP</code>并未规定<code>MCP Host</code>如何以<code>LLM</code>交互，这里可以把<code>API</code>看成<code>LLM</code>，上图就是通过<code>Function Calling</code>的方式与<code>LLM</code>进行信息交互，而<code>Cline</code>是通过的<code>XML</code>的方式（或者说<code>Prompt System</code>的方式）,所以<code>Function Calling</code>起作用的位置如上图蓝色框所示；</p>
+<p>而<code>MCP</code>协议规定的是如何发现和调用函数的，是在上图红色框区域生效的；</p>
+<p>可见，两者并不是在同一个位置起作用，两者是可以<strong>共存</strong>的。</p>
+<hr>
+<h3 id="MCP客户端开发"><a href="#MCP客户端开发" class="headerlink" title="MCP客户端开发"></a><code>MCP</code>客户端开发</h3><p>在前面的<code>MCP</code>系列文章中，我们的老演员<code>weather.py</code>已经很熟悉了，但是我们一直使用的是<code>Cline</code>，还没自己动手实现下<code>MCP</code>客户端，接下来我们将一起看下客户端的原理与写法。</p>
+<h4 id="开胃小菜"><a href="#开胃小菜" class="headerlink" title="开胃小菜"></a>开胃小菜</h4><p>在正式开始之前，我们先看下如何在客户端中调用我们开发的<code>MCP Server</code>中的工具：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> mcp.client.stdio <span class="keyword">import</span> stdio_client</span><br><span class="line"><span class="keyword">from</span> mcp <span class="keyword">import</span> ClientSession, StdioServerParameters</span><br><span class="line"></span><br><span class="line"><span class="comment"># 为 stdio 连接创建服务器参数</span></span><br><span class="line">server_params = StdioServerParameters(</span><br><span class="line">    <span class="comment"># 服务器执行的命令，这里我们使用 uv 来运行 web_search.py</span></span><br><span class="line">    command=<span class="string">&#x27;uv&#x27;</span>,</span><br><span class="line">    <span class="comment"># 运行的参数</span></span><br><span class="line">    args=[<span class="string">&#x27;run&#x27;</span>, <span class="string">&#x27;weather.py&#x27;</span>],</span><br><span class="line">    <span class="comment"># 环境变量，默认为 None，表示使用当前环境变量</span></span><br><span class="line">    <span class="comment"># env=None</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="comment"># 创建 stdio 客户端</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> stdio_client(server_params) <span class="keyword">as</span> (stdio, write):</span><br><span class="line">        <span class="comment"># 创建 ClientSession 对象</span></span><br><span class="line">        <span class="keyword">async</span> <span class="keyword">with</span> ClientSession(stdio, write) <span class="keyword">as</span> session:</span><br><span class="line">            <span class="comment"># 初始化 ClientSession</span></span><br><span class="line">            <span class="keyword">await</span> session.initialize()</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 列出可用的工具</span></span><br><span class="line">            response = <span class="keyword">await</span> session.list_tools()</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;list=<span class="subst">&#123;response&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 调用工具</span></span><br><span class="line">            response = <span class="keyword">await</span> session.call_tool(<span class="string">&#x27;get_forecast&#x27;</span>, &#123;<span class="string">&#x27;latitude&#x27;</span>: <span class="number">40.7128</span>, <span class="string">&#x27;longitude&#x27;</span>: -<span class="number">74.0060</span>&#125;)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;response=<span class="subst">&#123;response&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    asyncio.run(main())</span><br></pre></td></tr></table></figure>
+
+<p><strong>代码解释：</strong></p>
+<p>这段代码是一个使用 <code>MCP</code>（Model Context Protocol） 标准的 Python 客户端示例。它通过 <code>stdio</code>（标准输入输出）方式启动并连接一个工具服务器（在这里是 <code>weather.py</code> 脚本），调用其暴露的工具 <code>get_forecast</code>，并获取天气预报信息。</p>
+<p>下面逐行解释其作用：</p>
+<ol>
+<li>引入必要模块</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">from</span> mcp.client.stdio <span class="keyword">import</span> stdio_client</span><br><span class="line"><span class="keyword">from</span> mcp <span class="keyword">import</span> ClientSession, StdioServerParameters</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>asyncio</code>：用于运行异步任务。</li>
+<li><code>stdio_client</code>：提供与通过标准输入输出通信的工具进程连接的能力。</li>
+<li><code>ClientSession</code>：代表与工具服务器的一个 <code>MCP</code> 协议会话。</li>
+<li><code>StdioServerParameters</code>：定义如何通过 <code>stdio</code> 启动子进程（比如你要连接的工具服务）。</li>
+</ul>
+<ol start="2">
+<li>设置服务器参数</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">server_params = StdioServerParameters(</span><br><span class="line">    command=<span class="string">&#x27;uv&#x27;</span>,</span><br><span class="line">    args=[<span class="string">&#x27;run&#x27;</span>, <span class="string">&#x27;weather.py&#x27;</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>这表示你要通过 <code>uv run weather.py</code> 来启动一个子进程（比如一个工具服务），其会通过 <code>stdio</code> 与 MCP 客户端通信。</p>
+<ul>
+<li><code>uv</code> 是一种比 <code>pip</code> 更快的 Python 包管理&#x2F;运行工具。</li>
+<li><code>weather.py</code> 是你要运行的 <code>MCP</code> 工具服务器脚本。</li>
+</ul>
+<ol start="3">
+<li>异步主函数 <code>main</code></li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">main</span>():</span><br></pre></td></tr></table></figure>
+
+<p>这是一个异步函数，用于运行整个客户端生命周期。</p>
+<ol start="4">
+<li>启动子进程并建立连接</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">with</span> stdio_client(server_params) <span class="keyword">as</span> (stdio, write):</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>stdio_client</code> 启动 <code>uv run weather.py</code>，并将该进程的标准输入输出流作为通信通道。</li>
+<li>返回的是 <code>(reader, writer)</code> 对象。</li>
+<li><code>stdio</code> 是 <strong>子进程的 <code>stdout</code>（标准输出）对应的 reader</strong>，你可以用它来读取子进程返回的内容。</li>
+<li><code>write</code> 是 <strong>子进程的 <code>stdin</code>（标准输入）对应的 writer</strong>，你可以通过它向子进程发送内容。</li>
+</ul>
+<ol start="5">
+<li>使用 <code>MCP</code> 协议初始化连接</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">with</span> ClientSession(stdio, write) <span class="keyword">as</span> session:</span><br><span class="line">    <span class="keyword">await</span> session.initialize()</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>ClientSession</code>：创建与工具服务通信的 <code>MCP</code> 会话。</li>
+<li><code>initialize()</code>：启动 handshake（握手），建立协议连接。</li>
+</ul>
+<ol start="6">
+<li>查看工具列表</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">response = <span class="keyword">await</span> session.list_tools()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;list=<span class="subst">&#123;response&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>list_tools()</code>：请求工具服务器返回它支持的所有“工具”名称及其功能描述。</li>
+<li>打印返回的工具信息。</li>
+</ul>
+<ol start="7">
+<li>调用具体工具</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">response = <span class="keyword">await</span> session.call_tool(<span class="string">&#x27;get_forecast&#x27;</span>, &#123;<span class="string">&#x27;latitude&#x27;</span>: <span class="number">40.7128</span>, <span class="string">&#x27;longitude&#x27;</span>: -<span class="number">74.0060</span>&#125;)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;response=<span class="subst">&#123;response&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>调用名为 <code>get_forecast</code> 的工具，传入经纬度参数（这是纽约市的坐标）。</li>
+<li>打印获取到的天气预报结果。</li>
+</ul>
+<ol start="8">
+<li>运行入口</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    asyncio.run(main())</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当直接运行该文件时，执行 <code>main()</code> 协程。</li>
+</ul>
+<p><strong>总结一下作用：</strong></p>
+<p>这段代码完成了 <strong>通过<code>MCP</code> 协议连接一个通过 <code>uv run weather.py</code> 启动的工具服务，并调用其中的天气查询功能</strong>。整个过程包括：</p>
+<ol>
+<li>通过标准输入输出连接工具服务器；</li>
+<li>初始化 <code>MCP</code> 会话；</li>
+<li>获取可用工具列表；</li>
+<li>调用其中一个工具（<code>get_forecast</code>）；</li>
+<li>打印结果。</li>
+</ol>
+<p><strong>输出（手动格式化后）：</strong></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line">/home/chr/桌面/weather/.venv/bin/python /home/chr/桌面/weather/client_basic.py</span><br><span class="line"></span><br><span class="line">list=</span><br><span class="line">meta=None </span><br><span class="line">nextCursor=None</span><br><span class="line">tools=<span class="punctuation">[</span></span><br><span class="line">    Tool(</span><br><span class="line">        name=&#x27;get_alerts&#x27;<span class="punctuation">,</span></span><br><span class="line">        description=&#x27;Get weather alerts for a US state.</span><br><span class="line">        </span><br><span class="line">        Args<span class="punctuation">:</span></span><br><span class="line">        state<span class="punctuation">:</span> Two-letter US state code (e.g. 			CA<span class="punctuation">,</span> NY)</span><br><span class="line">    	&#x27;<span class="punctuation">,</span></span><br><span class="line">        inputSchema=<span class="punctuation">&#123;</span></span><br><span class="line">            &#x27;properties&#x27;<span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                &#x27;state&#x27;<span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    &#x27;title&#x27;<span class="punctuation">:</span> &#x27;State&#x27;<span class="punctuation">,</span></span><br><span class="line">                    &#x27;type&#x27;<span class="punctuation">:</span> &#x27;string&#x27;</span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span> </span><br><span class="line">            &#x27;required&#x27;<span class="punctuation">:</span> <span class="punctuation">[</span>&#x27;state&#x27;<span class="punctuation">]</span><span class="punctuation">,</span> </span><br><span class="line">            &#x27;title&#x27;<span class="punctuation">:</span> &#x27;get_alertsArguments&#x27;<span class="punctuation">,</span> </span><br><span class="line">            &#x27;type&#x27;<span class="punctuation">:</span> &#x27;object&#x27;</span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        annotations=None)<span class="punctuation">,</span></span><br><span class="line">    </span><br><span class="line">    Tool(</span><br><span class="line">        name=&#x27;get_forecast&#x27;<span class="punctuation">,</span></span><br><span class="line">        description=&#x27;Get weather forecast for a location.</span><br><span class="line">        </span><br><span class="line">        	Args<span class="punctuation">:</span></span><br><span class="line">        </span><br><span class="line">        	latitude<span class="punctuation">:</span> Latitude of the location</span><br><span class="line">        	longitude<span class="punctuation">:</span> Longitude of the location</span><br><span class="line">        	&#x27;<span class="punctuation">,</span> </span><br><span class="line">        inputSchema=<span class="punctuation">&#123;</span></span><br><span class="line">            &#x27;properties&#x27;<span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                &#x27;latitude&#x27;<span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    &#x27;title&#x27;<span class="punctuation">:</span> &#x27;Latitude&#x27;<span class="punctuation">,</span></span><br><span class="line">                    &#x27;type&#x27;<span class="punctuation">:</span> &#x27;number&#x27;</span><br><span class="line">                <span class="punctuation">&#125;</span><span class="punctuation">,</span> </span><br><span class="line">                &#x27;longitude&#x27;<span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                    &#x27;title&#x27;<span class="punctuation">:</span> &#x27;Longitude&#x27;<span class="punctuation">,</span></span><br><span class="line">                    &#x27;type&#x27;<span class="punctuation">:</span> &#x27;number&#x27;</span><br><span class="line">                <span class="punctuation">&#125;</span></span><br><span class="line">            <span class="punctuation">&#125;</span><span class="punctuation">,</span> </span><br><span class="line">            &#x27;required&#x27;<span class="punctuation">:</span> <span class="punctuation">[</span>&#x27;latitude&#x27;<span class="punctuation">,</span> &#x27;longitude&#x27;<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            &#x27;title&#x27;<span class="punctuation">:</span> &#x27;get_forecastArguments&#x27;<span class="punctuation">,</span></span><br><span class="line">            &#x27;type&#x27;<span class="punctuation">:</span> &#x27;object&#x27;</span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        annotations=None)<span class="punctuation">]</span></span><br><span class="line"></span><br><span class="line">response=</span><br><span class="line"></span><br><span class="line">meta=None</span><br><span class="line">content=<span class="punctuation">[</span></span><br><span class="line">    TextContent(</span><br><span class="line">        type=&#x27;text&#x27;<span class="punctuation">,</span></span><br><span class="line">        text=&#x27;</span><br><span class="line">        Overnight<span class="punctuation">:</span></span><br><span class="line">        Temperature<span class="punctuation">:</span> <span class="number">68</span>°F</span><br><span class="line">        Wind<span class="punctuation">:</span> <span class="number">16</span> mph W</span><br><span class="line">        Forecast<span class="punctuation">:</span> Partly cloudy. Low around <span class="number">68</span><span class="punctuation">,</span> with temperatures rising to around <span class="number">70</span> overnight. West wind 					around <span class="number">16</span> mph.</span><br><span class="line">        </span><br><span class="line">        ---</span><br><span class="line">        </span><br><span class="line">        Friday<span class="punctuation">:</span></span><br><span class="line">        Temperature<span class="punctuation">:</span> <span class="number">81</span>°F</span><br><span class="line">        Wind<span class="punctuation">:</span> <span class="number">16</span> mph W</span><br><span class="line">        Forecast<span class="punctuation">:</span> Sunny<span class="punctuation">,</span> with a high near <span class="number">81.</span> West wind around <span class="number">16</span> mph.</span><br><span class="line">        </span><br><span class="line">        ---</span><br><span class="line">        </span><br><span class="line">        Friday Night<span class="punctuation">:</span></span><br><span class="line">        Temperature<span class="punctuation">:</span> <span class="number">72</span>°F</span><br><span class="line">        Wind<span class="punctuation">:</span> <span class="number">6</span> to <span class="number">14</span> mph W</span><br><span class="line">        Forecast<span class="punctuation">:</span> Partly cloudy<span class="punctuation">,</span> with a low around <span class="number">72.</span> West wind <span class="number">6</span> to <span class="number">14</span> mph.</span><br><span class="line">        </span><br><span class="line">        ---</span><br><span class="line">        </span><br><span class="line">        Saturday<span class="punctuation">:</span></span><br><span class="line">        Temperature<span class="punctuation">:</span> <span class="number">84</span>°F</span><br><span class="line">        Wind<span class="punctuation">:</span> <span class="number">6</span> to <span class="number">9</span> mph SW</span><br><span class="line">        Forecast<span class="punctuation">:</span> Mostly sunny<span class="punctuation">,</span> with a high near <span class="number">84.</span> Southwest wind <span class="number">6</span> to <span class="number">9</span> mph.</span><br><span class="line">        </span><br><span class="line">        ---</span><br><span class="line">        </span><br><span class="line">        Saturday Night<span class="punctuation">:</span></span><br><span class="line">        Temperature<span class="punctuation">:</span> <span class="number">74</span>°F</span><br><span class="line">        Wind<span class="punctuation">:</span> <span class="number">10</span> mph SW</span><br><span class="line">        Forecast<span class="punctuation">:</span> Mostly cloudy. Low around <span class="number">74</span><span class="punctuation">,</span> with temperatures rising to around <span class="number">78</span> overnight. Southwest 				wind around <span class="number">10</span> mph.</span><br><span class="line">        &#x27;<span class="punctuation">,</span></span><br><span class="line">        annotations=None)</span><br><span class="line">                           <span class="punctuation">]</span> </span><br><span class="line">isError=False</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="正菜"><a href="#正菜" class="headerlink" title="正菜"></a>正菜</h4><p><strong>完整代码如下：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Optional</span></span><br><span class="line"><span class="keyword">from</span> contextlib <span class="keyword">import</span> AsyncExitStack</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> mcp <span class="keyword">import</span> ClientSession, StdioServerParameters</span><br><span class="line"><span class="keyword">from</span> mcp.client.stdio <span class="keyword">import</span> stdio_client</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MCPClient</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.session: <span class="type">Optional</span>[ClientSession] = <span class="literal">None</span></span><br><span class="line">        <span class="variable language_">self</span>.exit_stack = AsyncExitStack()</span><br><span class="line">        <span class="variable language_">self</span>.client = OpenAI()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">connect_to_server</span>(<span class="params">self</span>):</span><br><span class="line">        server_params = StdioServerParameters(</span><br><span class="line">        command=<span class="string">&#x27;uv&#x27;</span>,</span><br><span class="line">        args=[<span class="string">&#x27;run&#x27;</span>, <span class="string">&#x27;weather.py&#x27;</span>],</span><br><span class="line">        env=<span class="literal">None</span></span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        stdio_transport = <span class="keyword">await</span> <span class="variable language_">self</span>.exit_stack.enter_async_context(</span><br><span class="line">            stdio_client(server_params))</span><br><span class="line">        stdio, write = stdio_transport</span><br><span class="line">        <span class="variable language_">self</span>.session = <span class="keyword">await</span> <span class="variable language_">self</span>.exit_stack.enter_async_context(</span><br><span class="line">            ClientSession(stdio, write))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">await</span> <span class="variable language_">self</span>.session.initialize()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">process_query</span>(<span class="params">self, query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        system_prompt = (</span><br><span class="line">            <span class="string">&quot;请用轻松自然的方式回答问题，像是朋友间闲聊时带点小幽默的语气。&quot;</span></span><br><span class="line">            <span class="string">&quot;你说话简洁，幽默中又不失稳重。&quot;</span></span><br><span class="line">            <span class="string">&quot;不用刻意讲笑话，而是在解释专业内容时偶尔用个生活化的比喻，或者在严肃话题里穿插一句俏皮话调节气氛。&quot;</span></span><br><span class="line">            <span class="string">&quot;以纯文本形式回复，避免emoji表情或markdown等格式。&quot;</span></span><br><span class="line">        )</span><br><span class="line">        </span><br><span class="line">        messages = [</span><br><span class="line">            &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>, <span class="string">&quot;content&quot;</span>: system_prompt&#125;,</span><br><span class="line">            &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: query&#125;</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 获取所有 mcp 服务器 工具列表信息</span></span><br><span class="line">        response = <span class="keyword">await</span> <span class="variable language_">self</span>.session.list_tools()</span><br><span class="line">        <span class="comment"># 生成 function call 的描述信息</span></span><br><span class="line">        available_tools = [&#123;</span><br><span class="line">            <span class="string">&quot;type&quot;</span>: <span class="string">&quot;function&quot;</span>,</span><br><span class="line">            <span class="string">&quot;function&quot;</span>: &#123;</span><br><span class="line">                <span class="string">&quot;name&quot;</span>: tool.name,</span><br><span class="line">                <span class="string">&quot;description&quot;</span>: tool.description,</span><br><span class="line">                <span class="string">&quot;input_schema&quot;</span>: tool.inputSchema</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">for</span> tool <span class="keyword">in</span> response.tools]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 请求 deepseek，function call 的描述信息通过 tools 参数传入</span></span><br><span class="line">        response = <span class="variable language_">self</span>.client.chat.completions.create(</span><br><span class="line">            model=os.getenv(<span class="string">&quot;OPENAI_MODEL&quot;</span>),</span><br><span class="line">            messages=messages,</span><br><span class="line">            tools=available_tools</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 处理返回的内容</span></span><br><span class="line">        content = response.choices[<span class="number">0</span>]</span><br><span class="line">        <span class="keyword">if</span> content.finish_reason == <span class="string">&quot;tool_calls&quot;</span>:</span><br><span class="line">            <span class="comment"># 如何是需要使用工具，就解析工具</span></span><br><span class="line">            tool_call = content.message.tool_calls[<span class="number">0</span>]</span><br><span class="line">            tool_name = tool_call.function.name</span><br><span class="line">            tool_args = json.loads(tool_call.function.arguments)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 执行工具</span></span><br><span class="line">            result = <span class="keyword">await</span> <span class="variable language_">self</span>.session.call_tool(tool_name, tool_args)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;\n\n[Calling tool <span class="subst">&#123;tool_name&#125;</span> with args <span class="subst">&#123;tool_args&#125;</span>]\n\n&quot;</span>)</span><br><span class="line">            </span><br><span class="line">            <span class="comment"># 将 deepseek 返回的调用哪个工具数据和工具执行完成后的数据都存入messages中</span></span><br><span class="line">            messages.append(content.message.model_dump())</span><br><span class="line">            messages.append(&#123;</span><br><span class="line">                <span class="string">&quot;role&quot;</span>: <span class="string">&quot;tool&quot;</span>,</span><br><span class="line">                <span class="string">&quot;content&quot;</span>: result.content[<span class="number">0</span>].text,</span><br><span class="line">                <span class="string">&quot;tool_call_id&quot;</span>: tool_call.<span class="built_in">id</span>,</span><br><span class="line">            &#125;)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 将上面的结果再返回给 deepseek 用于生产最终的结果</span></span><br><span class="line">            response = <span class="variable language_">self</span>.client.chat.completions.create(</span><br><span class="line">                model=os.getenv(<span class="string">&quot;OPENAI_MODEL&quot;</span>),</span><br><span class="line">                messages=messages,</span><br><span class="line">            )</span><br><span class="line">            <span class="keyword">return</span> response.choices[<span class="number">0</span>].message.content</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> content.message.content</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">chat_loop</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                query = <span class="built_in">input</span>(<span class="string">&quot;\nQuery: &quot;</span>).strip()</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> query.lower() == <span class="string">&#x27;quit&#x27;</span>:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">                response = <span class="keyword">await</span> <span class="variable language_">self</span>.process_query(query)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;\n&quot;</span> + response)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                <span class="keyword">import</span> traceback</span><br><span class="line">                traceback.print_exc()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">cleanup</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Clean up resources&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">await</span> <span class="variable language_">self</span>.exit_stack.aclose()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    client = MCPClient()</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">await</span> client.connect_to_server()</span><br><span class="line">        <span class="keyword">await</span> client.chat_loop()</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="keyword">await</span> client.cleanup()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line">    asyncio.run(main())</span><br></pre></td></tr></table></figure>
+
+<p><strong>这段代码是一个集成了：</strong></p>
+<ol>
+<li><strong>OpenAI GPT 模型（支持 function call）</strong></li>
+<li><strong>MCP 工具服务（通过 <code>stdio</code> 启动 <code>weather.py</code>）</strong></li>
+</ol>
+<p>的 <strong>多轮聊天客户端</strong>，用户提问时，模型会判断是否要调用工具，如果需要，就通过 <code>MCP</code> 协议调用工具返回结果，并继续对话。</p>
+<p>下面是逐部分的详细解释：</p>
+<ol>
+<li><strong>导入模块</strong></li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Optional</span></span><br><span class="line"><span class="keyword">from</span> contextlib <span class="keyword">import</span> AsyncExitStack</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> mcp <span class="keyword">import</span> ClientSession, StdioServerParameters</span><br><span class="line"><span class="keyword">from</span> mcp.client.stdio <span class="keyword">import</span> stdio_client</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>导入标准库和三方库：</p>
+<ul>
+<li><p><code>openai</code>：用于与 <code>LLM</code> 通信</p>
+</li>
+<li><p><code>mcp</code>：用于 <code>MCP</code> 工具调用</p>
+</li>
+<li><p><code>dotenv</code>：加载 <code>.env</code> 文件（用于设置 <code>OPENAI_MODEL</code> 和 <code>OPENAI_API_KEY</code>等），格式如下：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">OPENAI<span class="built_in">_</span>API<span class="built_in">_</span>KEY=sk-xxxxxxxxxxxxxxxxxxxxx</span><br><span class="line">OPENAI<span class="built_in">_</span>BASE<span class="built_in">_</span>URL=https://api.deepseek.com</span><br><span class="line">OPENAI<span class="built_in">_</span>MODEL=deepseek-chat</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li><strong>环境变量加载</strong></li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">load_dotenv()</span><br></pre></td></tr></table></figure>
+
+<p>从 <code>.env</code> 文件中读取环境变量（如 <code>OPENAI_API_KEY</code>, <code>OPENAI_MODEL</code>）。</p>
+<ol start="3">
+<li><strong><code>MCPClient</code> 类</strong>：管理与模型和 <code>MCP</code> 工具的整个对话流程</li>
+</ol>
+<p>​	 初始化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MCPClient</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="variable language_">self</span>.session: <span class="type">Optional</span>[ClientSession] = <span class="literal">None</span></span><br><span class="line">        <span class="variable language_">self</span>.exit_stack = AsyncExitStack()</span><br><span class="line">        <span class="variable language_">self</span>.client = OpenAI()</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>self.session</code>：与 MCP 工具的连接会话。</li>
+<li><code>self.exit_stack</code>：用于管理多个异步资源（子进程、会话等）。</li>
+<li><code>self.client</code>：OpenAI 客户端。</li>
+</ul>
+<p>​	<strong>连接 <code>MCP</code> 工具服务</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">connect_to_server</span>(<span class="params">self</span>):</span><br><span class="line">    server_params = StdioServerParameters(</span><br><span class="line">        command=<span class="string">&#x27;uv&#x27;</span>,</span><br><span class="line">        args=[<span class="string">&#x27;run&#x27;</span>, <span class="string">&#x27;weather.py&#x27;</span>],</span><br><span class="line">        env=<span class="literal">None</span></span><br><span class="line">    )</span><br><span class="line">    stdio_transport = <span class="keyword">await</span> <span class="variable language_">self</span>.exit_stack.enter_async_context(stdio_client(server_params))</span><br><span class="line">    stdio, write = stdio_transport</span><br><span class="line">    <span class="variable language_">self</span>.session = <span class="keyword">await</span> <span class="variable language_">self</span>.exit_stack.enter_async_context(ClientSession(stdio, write))</span><br><span class="line">    <span class="keyword">await</span> <span class="variable language_">self</span>.session.initialize()</span><br></pre></td></tr></table></figure>
+
+<p>通过 <code>uv run weather.py</code> 启动 <code>MCP</code> 工具服务，建立标准输入输出的通信，初始化 <code>MCP</code> 协议会话。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">connect_to_server</span>(<span class="params">self</span>):</span><br></pre></td></tr></table></figure>
+
+<p>定义一个协程方法 <code>connect_to_server</code>，用于建立与 <code>MCP</code> 工具服务器的连接。因为涉及异步 I&#x2F;O（比如启动子进程、读写流等），所以使用 <code>async def</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">server_params = StdioServerParameters(</span><br><span class="line">    command=<span class="string">&#x27;uv&#x27;</span>,</span><br><span class="line">    args=[<span class="string">&#x27;run&#x27;</span>, <span class="string">&#x27;weather.py&#x27;</span>],</span><br><span class="line">    env=<span class="literal">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>这一行创建了一个 <code>StdioServerParameters</code> 对象，表示将以 <code>stdio</code>（标准输入输出）方式启动一个 <code>MCP</code> 工具服务进程。</p>
+<p>参数解释：</p>
+<ul>
+<li><code>command=&#39;uv&#39;</code>：表示用 <code>uv</code> 命令来运行程序（<code>uv</code> 是比 pip 更快的 Python 包&#x2F;脚本运行工具）。</li>
+<li><code>args=[&#39;run&#39;, &#39;weather.py&#39;]</code>：实际执行的是 <code>uv run weather.py</code>，也就是运行你的 <code>weather.py</code> MCP 工具。</li>
+<li><code>env=None</code>：不传入额外环境变量，使用当前 Python 环境的默认变量。</li>
+</ul>
+<hr>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">stdio_transport = <span class="keyword">await</span> <span class="variable language_">self</span>.exit_stack.enter_async_context(</span><br><span class="line">    stdio_client(server_params)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>stdio_client(server_params)</code>：启动 MCP 工具服务（<code>uv run weather.py</code>），并将其标准输入输出连接包装为一个异步流（<code>reader</code>&#x2F;<code>writer</code>）。</li>
+<li><code>exit_stack.enter_async_context(...)</code>：将其注册到 <code>AsyncExitStack</code> 中，确保后续退出时能自动清理（类似于 <code>with</code> 自动释放资源）。</li>
+<li><code>await</code> 是因为这个是异步上下文管理器。</li>
+</ul>
+<p>最终结果 <code>stdio_transport</code> 是一个元组 <code>(stdio, write)</code>：</p>
+<ul>
+<li><code>stdio</code> 是 <code>StreamReader</code>，可以从 MCP 工具读数据；</li>
+<li><code>write</code> 是 <code>StreamWriter</code>，可以向 MCP 工具写入命令。</li>
+</ul>
+<hr>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stdio, write = stdio_transport</span><br></pre></td></tr></table></figure>
+
+<p>解包上述元组，赋值给本地变量 <code>stdio</code> 和 <code>write</code>。</p>
+<hr>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">self</span>.session = <span class="keyword">await</span> <span class="variable language_">self</span>.exit_stack.enter_async_context(</span><br><span class="line">    ClientSession(stdio, write)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>stdio</code> 和 <code>write</code> 初始化一个 <code>ClientSession</code>，表示 MCP 协议层面的连接会话对象。</p>
+<p>仍然使用 <code>exit_stack</code> 管理资源，退出时自动关闭。</p>
+<p>这一步完成后，你就拥有了一个可以用来：</p>
+<ul>
+<li><code>list_tools()</code> 查看工具；</li>
+<li><code>call_tool(...)</code> 调用工具函数；<br> 的 <code>MCP</code> 会话对象。</li>
+</ul>
+<hr>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">await</span> <span class="variable language_">self</span>.session.initialize()</span><br></pre></td></tr></table></figure>
+
+<p>这一步进行协议初始化（即握手 handshake）：</p>
+<ul>
+<li>通知 <code>MCP</code> 工具客户端已连接；</li>
+<li>工具端返回支持的协议版本、工具信息等；</li>
+<li>连接正式可用。</li>
+</ul>
+<p> <strong>小总结</strong></p>
+<p>这段函数完成了以下任务：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>用 <code>uv run weather.py</code> 启动 <code>MCP</code> 工具服务</td>
+</tr>
+<tr>
+<td>2</td>
+<td>与 <code>MCP</code> 工具服务建立 <code>stdio</code> 通信</td>
+</tr>
+<tr>
+<td>3</td>
+<td>使用 <code>stdio</code> 建立 <code>ClientSession</code> 会话</td>
+</tr>
+<tr>
+<td>4</td>
+<td>执行 <code>MCP</code> 协议初始化 handshake</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>处理用户问题：<code>process_query</code></strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">process_query</span>(<span class="params">self, query: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br></pre></td></tr></table></figure>
+
+<p>这个函数实现了大语言模型结合工具调用的核心逻辑。</p>
+<p>① 设定系统提示词（system prompt）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">system_prompt = <span class="string">&quot;...&quot;</span>  <span class="comment"># 定义聊天语气：轻松自然、带点幽默</span></span><br></pre></td></tr></table></figure>
+
+<p>② 构造 messages</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">messages = [</span><br><span class="line">    &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>, <span class="string">&quot;content&quot;</span>: system_prompt&#125;,</span><br><span class="line">    &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: query&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>构建聊天历史上下文，送入LLM。</p>
+<p>③ 获取 <code>MCP</code> 工具信息，并构造 <code>function schema</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">response = <span class="keyword">await</span> <span class="variable language_">self</span>.session.list_tools()</span><br><span class="line">available_tools = [&#123;</span><br><span class="line">    <span class="string">&quot;type&quot;</span>: <span class="string">&quot;function&quot;</span>,</span><br><span class="line">    <span class="string">&quot;function&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;name&quot;</span>: tool.name,</span><br><span class="line">        <span class="string">&quot;description&quot;</span>: tool.description,</span><br><span class="line">        <span class="string">&quot;input_schema&quot;</span>: tool.inputSchema</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">for</span> tool <span class="keyword">in</span> response.tools]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>list_tools()</code> 获取 <code>MCP</code> 工具端支持的函数</li>
+<li>构造<code>function call</code> 所需的 <code>tools</code> 参数（用于 tool calling）</li>
+</ul>
+<p>④ <code>function call</code> 请求</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">response = <span class="variable language_">self</span>.client.chat.completions.create(</span><br><span class="line">    model=os.getenv(<span class="string">&quot;OPENAI_MODEL&quot;</span>),</span><br><span class="line">    messages=messages,</span><br><span class="line">    tools=available_tools</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>发起对话请求</li>
+<li>如果大模型决定调用某个工具，返回的结果中 <code>finish_reason</code> 会是 <code>&quot;tool_calls&quot;</code>。</li>
+</ul>
+<p> 如果需要调用工具：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> content.finish_reason == <span class="string">&quot;tool_calls&quot;</span>:</span><br><span class="line">    tool_call = content.message.tool_calls[<span class="number">0</span>]</span><br><span class="line">    tool_name = tool_call.function.name</span><br><span class="line">    tool_args = json.loads(tool_call.function.arguments)</span><br></pre></td></tr></table></figure>
+
+<p>解析模型要调用的工具及参数，然后：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result = <span class="keyword">await</span> <span class="variable language_">self</span>.session.call_tool(tool_name, tool_args)</span><br></pre></td></tr></table></figure>
+
+<p>使用 MCP 会话调用工具，获取返回值。</p>
+<p><strong>接下来再补上下文重新调用 <code>LLM</code>：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">messages.append(content.message.model_dump())</span><br><span class="line">messages.append(&#123;</span><br><span class="line">    <span class="string">&quot;role&quot;</span>: <span class="string">&quot;tool&quot;</span>,</span><br><span class="line">    <span class="string">&quot;content&quot;</span>: result.content[<span class="number">0</span>].text,</span><br><span class="line">    <span class="string">&quot;tool_call_id&quot;</span>: tool_call.<span class="built_in">id</span>,</span><br><span class="line">&#125;)</span><br><span class="line">response = <span class="variable language_">self</span>.client.chat.completions.create(</span><br><span class="line">    model=os.getenv(<span class="string">&quot;OPENAI_MODEL&quot;</span>),</span><br><span class="line">    messages=messages,</span><br><span class="line">)</span><br><span class="line"><span class="keyword">return</span> response.choices[<span class="number">0</span>].message.content</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>把函数调用和结果作为上下文追加</li>
+<li>重新向<code>LLM</code>请求，生成更自然的“回复用户”的内容</li>
+</ul>
+<p><strong>否则直接返回普通回答</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> content.message.content</span><br></pre></td></tr></table></figure>
+
+<p><strong>聊天循环</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">chat_loop</span>(<span class="params">self</span>):</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        query = <span class="built_in">input</span>(<span class="string">&quot;\nQuery: &quot;</span>).strip()</span><br><span class="line">        ...</span><br><span class="line">        response = <span class="keyword">await</span> <span class="variable language_">self</span>.process_query(query)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n&quot;</span> + response)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>持续接收用户输入</li>
+<li>输入 <code>&#39;quit&#39;</code> 退出</li>
+<li>调用 <code>process_query</code> 处理每轮提问</li>
+</ul>
+<p><strong>资源清理</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">cleanup</span>(<span class="params">self</span>):</span><br><span class="line">    <span class="keyword">await</span> <span class="variable language_">self</span>.exit_stack.aclose()</span><br></pre></td></tr></table></figure>
+
+<p>关闭 <code>MCP</code> 连接等资源。</p>
+<p><strong>主程序入口</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    asyncio.run(main())</span><br></pre></td></tr></table></figure>
+
+<p>运行 <code>main()</code> 函数，调用顺序为：</p>
+<ol>
+<li>初始化并连接 <code>MCP</code> 工具</li>
+<li>启动聊天交互</li>
+<li>程序结束时关闭资源</li>
+</ol>
+<p><strong>总结流程图（简化）</strong></p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[用户输入 query]</span><br><span class="line">      ↓</span><br><span class="line">[构造 messages + tools schema]</span><br><span class="line">      ↓</span><br><span class="line">[调用 LLM]</span><br><span class="line">      ↓</span><br><span class="line">是否要调用工具？</span><br><span class="line"> ├── 否 → 返回内容</span><br><span class="line"> └── 是 →</span><br><span class="line">        ├── 解析 tool<span class="built_in">_</span>call（函数名 + 参数）</span><br><span class="line">        ├── 使用 MCP session 调用工具</span><br><span class="line">        ├── 将函数调用和结果加入上下文</span><br><span class="line">        └── 再次调用 LLM → 得到最终回答</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>输出：</strong></p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">weather(base) chr@chr:~/桌面/weather<span class="built_in">$</span> /home/chr/桌面/weather/.venv/bin/python /home/chr/桌面/weather/client<span class="built_in">_</span>advanced.py</span><br><span class="line"></span><br><span class="line">Query: 你好 </span><br><span class="line"></span><br><span class="line">嘿，朋友！今天过得怎么样？有什么可以帮你的吗？</span><br><span class="line"></span><br><span class="line">Query: 纽约明天天气怎么样</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[Calling tool get<span class="built_in">_</span>forecast with args &#123;&#x27;latitude&#x27;: 40.7128, &#x27;longitude&#x27;: -74.006&#125;]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">纽约明天是个好天气呢！大晴天，最高温81华氏度（约27℃），西风16英里/小时。就像个天然的吹风机，保证你发型飘逸。晚上稍微凉快点，72度左右，适合出门遛弯。周末会更暖和，看来纽约要开始它的夏日表演了~</span><br><span class="line"></span><br><span class="line">Query: 72华氏度是多少摄氏度</span><br><span class="line"></span><br><span class="line">72华氏度换算成摄氏度大约是22.2°C。简单来说，就是那种穿短袖刚好，但晚上可能需要加件薄外套的温度。</span><br><span class="line"></span><br><span class="line">Query: quit</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/">https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/</a></li>
+<li><a href="https://caihaoran-00.github.io/2025/06/12/MCP%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E6%8E%8C%E6%8F%A1MCP/">https://caihaoran-00.github.io/2025/06/12/MCP%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E6%8E%8C%E6%8F%A1MCP/</a></li>
+<li><a href="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/">https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV15YJTzkENC?spm_id_from=333.788.player.player_end_recommend_autoplay&vd_source=075a061948e76c87e2ee8754e264056e">https://www.bilibili.com/video/BV15YJTzkENC?spm_id_from=333.788.player.player_end_recommend_autoplay&amp;vd_source=075a061948e76c87e2ee8754e264056e</a></li>
+<li><a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/quickstart/client">https://modelcontextprotocol.io/quickstart/client</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/liaokongVFX/MCP-Chinese-Getting-Started-Guide?tab=readme-ov-file">https://github.com/liaokongVFX/MCP-Chinese-Getting-Started-Guide?tab=readme-ov-file</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mcp/" rel="tag"># mcp</a>
+              <a href="/tags/function-call/" rel="tag"># function call</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/" rel="prev" title="MCP番外：Cline与模型的交互过程">
+                  <i class="fa fa-angle-left"></i> MCP番外：Cline与模型的交互过程
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">288k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">17:26</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

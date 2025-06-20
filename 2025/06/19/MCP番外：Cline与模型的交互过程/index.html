@@ -19,18 +19,41 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Welcome to my little world">
+    <meta name="description" content="前言前面我们介绍了MCP基础：从原理到实战和MCP进阶：带你深入掌握MCP，对MCP协议的原理有了比较清晰的认识，明确了MCP协议主要规定的是如何发现和调用函数的，也明确了MCP协议并没有规定如何与模型进行交互。之所以这篇文章叫做番外篇也是出于MCP协议并没有规定如何与模型进行交互的考虑。在MCP进阶一文中提到MCP协议没有对模型的输入和输出格式进行进行要求，因此不同的MCP Host就可能使用不">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MCP番外：Cline与模型的交互过程">
 <meta property="og:url" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Chr&#39;s Blog">
-<meta property="og:description" content="Welcome to my little world">
+<meta property="og:description" content="前言前面我们介绍了MCP基础：从原理到实战和MCP进阶：带你深入掌握MCP，对MCP协议的原理有了比较清晰的认识，明确了MCP协议主要规定的是如何发现和调用函数的，也明确了MCP协议并没有规定如何与模型进行交互。之所以这篇文章叫做番外篇也是出于MCP协议并没有规定如何与模型进行交互的考虑。在MCP进阶一文中提到MCP协议没有对模型的输入和输出格式进行进行要求，因此不同的MCP Host就可能使用不">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619185230434.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619185533547.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619191512554.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619192458576.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619200034438.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202131461.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202246486.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202537061.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202715758.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202854719.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619203010260.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619203101212.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620093246910.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620094314905-1750383799716-1.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620095010772.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620095205618.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620100756734.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620101346042.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620102128105.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620104138101.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620105044487.png">
 <meta property="article:published_time" content="2025-06-19T10:18:51.000Z">
-<meta property="article:modified_time" content="2025-06-19T10:18:51.681Z">
+<meta property="article:modified_time" content="2025-06-20T02:59:03.039Z">
 <meta property="article:author" content="Chr">
-<meta property="article:tag" content="Hexo,langgraph,ASR,LLM,TTS">
+<meta property="article:tag" content="agent">
+<meta property="article:tag" content="mcp">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619185230434.png">
 
 
 <link rel="canonical" href="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/">
@@ -126,7 +149,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -139,6 +162,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E8%BD%AC%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BB%A3%E7%A0%81%E8%A7%A3%E9%87%8A"><span class="nav-number">2.1.</span> <span class="nav-text">中转服务器代码解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%AD%E8%BD%AC%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">配置中转服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cline%E5%8F%91%E5%BE%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AF%B7%E6%B1%82"><span class="nav-number">2.3.</span> <span class="nav-text">Cline发往模型的请求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#System-Prompt"><span class="nav-number">2.3.1.</span> <span class="nav-text">System Prompt</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">工具使用格式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">工具</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E8%AF%B7%E6%B1%82"><span class="nav-number">2.3.2.</span> <span class="nav-text">用户请求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%BF%94%E5%9B%9E"><span class="nav-number">2.3.3.</span> <span class="nav-text">模型返回</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E7%94%A8MCP%E5%B7%A5%E5%85%B7%E6%97%B6%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AF%B7%E6%B1%82%E5%92%8C%E8%BF%94%E5%9B%9E"><span class="nav-number">2.3.4.</span> <span class="nav-text">调用MCP工具时模型的请求和返回</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cline%E7%9A%84XML%E5%8D%8F%E8%AE%AE%E4%B8%8EReAct%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">2.4.</span> <span class="nav-text">Cline的XML协议与ReAct的关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -162,7 +186,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -229,6 +253,22 @@
 
       <time title="创建时间：2025-06-19 18:18:51" itemprop="dateCreated datePublished" datetime="2025-06-19T18:18:51+08:00">2025-06-19</time>
     </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-06-20 10:59:03" itemprop="dateModified" datetime="2025-06-20T10:59:03+08:00">2025-06-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
 
   
     <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
@@ -244,14 +284,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>4.1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>15 分钟</span>
     </span>
 </div>
 
@@ -261,7 +301,209 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面我们介绍了<a href="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/">MCP基础：从原理到实战</a>和<a href="https://caihaoran-00.github.io/2025/06/12/MCP%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E6%8E%8C%E6%8F%A1MCP/">MCP进阶：带你深入掌握MCP</a>，对<code>MCP</code>协议的原理有了比较清晰的认识，明确了<code>MCP</code>协议主要规定的是如何发现和调用函数的，也明确了<code>MCP</code>协议并没有规定如何与模型进行交互。之所以这篇文章叫做番外篇也是出于<code>MCP</code>协议并没有规定如何与模型进行交互的考虑。在<code>MCP</code>进阶一文中提到<code>MCP</code>协议没有对模型的输入和输出格式进行进行要求，因此不同的<code>MCP Host</code>就可能使用不同的格式来与模型沟通，比如<code>Cline</code>用的就是<code>XML</code>，<code>Cherry Studio</code>用的是<code>Function Call</code>，本文将以<code>Cline</code>为例讲解<code>MCP Host</code>是如何与模型沟通的。</p>
+<p>本文参考<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1v9V5zSEHA/?spm_id_from=333.1387.homepage.video_card.click&vd_source=075a061948e76c87e2ee8754e264056e">这里</a>，主要内容包括：</p>
+<ul>
+<li>截获模型输入&#x2F;输出，展示<code>Cline</code>与模型交互的具体细节</li>
+<li>如何构建<code>Agent</code>常用的<code>ReAct</code>模式以及<code>Cline</code>用的<code>XML</code>协议与<code>ReAct</code>模式之间的关系</li>
+</ul>
+<p>目标：不是单纯的了解<code>Cline</code>的<code>XML</code>协议，而是通过学习这个协议了解如何编写一个像<code>Cline</code>一样能够与模型持续交互的程序。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>拿出我们的老演员：<code>MCP Host</code>与<code>MCP Server</code>之间的交互过程，我们本文关注的是右半边的内容：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619185230434.png" class="" title="image-20250619185230434">
+
+<p>我们截获模型输入输出的方式是通过一个本地服务器来实现的，本地服务器负责请求的转发与记录，框架如下图所示：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619185533547.png" class="" title="image-20250619185533547">
+
+<p>决定能否实现上述框架的前提是：<code>Cline</code>支持连接本地服务器吗？答案是肯定的。在<code>Cline</code>的<code>Settings</code>中的<code>API Provider</code>中，有个选项叫<code>OpenAI Compatible</code>，对于兼容<code>OpenAI</code>格式的模型，都可以通过该选项进行配置，所以重点在于本地服务器的输入和输出满足<code>OpenAI</code>的格式规范。</p>
+<h3 id="中转服务器代码解释"><a href="#中转服务器代码解释" class="headerlink" title="中转服务器代码解释"></a>中转服务器代码解释</h3><p>代码来自<a target="_blank" rel="noopener" href="https://github.com/MarkTechStation/VideoCode/blob/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E7%95%AA%E5%A4%96%E7%AF%87/llm_logger.py">这里</a>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> httpx</span><br><span class="line"><span class="keyword">from</span> fastapi <span class="keyword">import</span> FastAPI, Request</span><br><span class="line"><span class="keyword">from</span> starlette.responses <span class="keyword">import</span> StreamingResponse</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AppLogger</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, log_file=<span class="string">&quot;llm.log&quot;</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Initialize the logger with a file that will be cleared on startup.&quot;&quot;&quot;</span></span><br><span class="line">        <span class="variable language_">self</span>.log_file = log_file</span><br><span class="line">        <span class="comment"># Clear the log file on startup</span></span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(<span class="variable language_">self</span>.log_file, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            f.write(<span class="string">&quot;&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">log</span>(<span class="params">self, message</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Log a message to both file and console.&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># Log to file</span></span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(<span class="variable language_">self</span>.log_file, <span class="string">&#x27;a&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            f.write(message + <span class="string">&quot;\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Log to console</span></span><br><span class="line">        <span class="built_in">print</span>(message)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">app = FastAPI(title=<span class="string">&quot;LLM API Logger&quot;</span>)</span><br><span class="line">logger = AppLogger(<span class="string">&quot;llm.log&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/chat/completions&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">proxy_request</span>(<span class="params">request: Request</span>):</span><br><span class="line"></span><br><span class="line">    body_bytes = <span class="keyword">await</span> request.body()</span><br><span class="line">    body_str = body_bytes.decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">    logger.log(<span class="string">f&quot;模型请求：<span class="subst">&#123;body_str&#125;</span>&quot;</span>)</span><br><span class="line">    body = <span class="keyword">await</span> request.json()</span><br><span class="line"></span><br><span class="line">    logger.log(<span class="string">&quot;模型返回：\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">event_stream</span>():</span><br><span class="line">        <span class="keyword">async</span> <span class="keyword">with</span> httpx.AsyncClient(timeout=<span class="literal">None</span>) <span class="keyword">as</span> client:</span><br><span class="line">            <span class="keyword">async</span> <span class="keyword">with</span> client.stream(</span><br><span class="line">                    <span class="string">&quot;POST&quot;</span>,</span><br><span class="line">                    <span class="string">&quot;https://openrouter.ai/api/v1/chat/completions&quot;</span>,</span><br><span class="line">                    json=body,</span><br><span class="line">                    headers=&#123;</span><br><span class="line">                        <span class="string">&quot;Content-Type&quot;</span>: <span class="string">&quot;application/json&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;Accept&quot;</span>: <span class="string">&quot;text/event-stream&quot;</span>,</span><br><span class="line">                        <span class="string">&quot;Authorization&quot;</span>: request.headers.get(<span class="string">&quot;Authorization&quot;</span>),  <span class="comment"># 这里获取客户端传入的API Key</span></span><br><span class="line">                    &#125;,</span><br><span class="line">            ) <span class="keyword">as</span> response:</span><br><span class="line">                <span class="keyword">async</span> <span class="keyword">for</span> line <span class="keyword">in</span> response.aiter_lines():</span><br><span class="line">                    logger.log(line)</span><br><span class="line">                    <span class="keyword">yield</span> <span class="string">f&quot;<span class="subst">&#123;line&#125;</span>\n&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> StreamingResponse(event_stream(), media_type=<span class="string">&quot;text/event-stream&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">import</span> uvicorn</span><br><span class="line"></span><br><span class="line">    uvicorn.run(app, host=<span class="string">&quot;0.0.0.0&quot;</span>, port=<span class="number">8000</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>代码比较清晰，整体流程：</strong></p>
+<ul>
+<li>创建日志类</li>
+<li>创建<code>FastAPI</code>实例</li>
+<li>创建兼容<code>OpenAI</code>的代理端点<code>chat/completions</code></li>
+<li>实现流式返回</li>
+</ul>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619191512554.png" class="" title="image-20250619191512554">
+
+<blockquote>
+<p>流式返回的专业名词叫做<code>Server-Sent Events</code>，简称<code>SSE</code>，用于客户端发送一次请求，服务端返回多次的场景。</p>
+</blockquote>
+<hr>
+<h3 id="配置中转服务器"><a href="#配置中转服务器" class="headerlink" title="配置中转服务器"></a>配置中转服务器</h3><p>该部分包含运行中转服务器（安装下依赖）以及配置<code>API provider</code>，略，不会操作可查看参考链接3的8分45秒左右。</p>
+<hr>
+<h3 id="Cline发往模型的请求"><a href="#Cline发往模型的请求" class="headerlink" title="Cline发往模型的请求"></a>Cline发往模型的请求</h3><p>向<code>Cline</code>发送<code>Hi</code>:</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619192458576.png" class="" title="image-20250619192458576">
+
+<p>模型请求中包括了：</p>
+<ul>
+<li>模型名称</li>
+<li>消息列表</li>
+</ul>
+<h4 id="System-Prompt"><a href="#System-Prompt" class="headerlink" title="System Prompt"></a>System Prompt</h4><p>这里的系统提示词超级长，可以见<a target="_blank" rel="noopener" href="https://github.com/MarkTechStation/VideoCode/blob/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E7%95%AA%E5%A4%96%E7%AF%87/Cline%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%EF%BC%88%E8%8B%B1%E6%96%87%EF%BC%89.md">这里</a>，总计<code>48671</code>个字符，那么这么多内容都包含了什么呢？咱们翻译成中文版方便查看，完整版见<a target="_blank" rel="noopener" href="https://github.com/MarkTechStation/VideoCode/blob/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E7%95%AA%E5%A4%96%E7%AF%87/Cline%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%EF%BC%88%E4%B8%AD%E6%96%87%EF%BC%89.md">这里</a>，小标题包括：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">工具使用格式</span><br><span class="line"></span><br><span class="line">工具</span><br><span class="line"></span><br><span class="line">工具使用示例</span><br><span class="line"></span><br><span class="line">工具使用指南</span><br><span class="line"></span><br><span class="line">已连接的MCP服务器</span><br><span class="line"></span><br><span class="line">write<span class="built_in">_</span>to<span class="built_in">_</span>file</span><br><span class="line"></span><br><span class="line">replace<span class="built_in">_</span>in<span class="built_in">_</span>file</span><br><span class="line"></span><br><span class="line">选择合适的工具</span><br><span class="line"></span><br><span class="line">自动格式化注意事项</span><br><span class="line"></span><br><span class="line">工作流程提示</span><br><span class="line"></span><br><span class="line">首选语言</span><br></pre></td></tr></table></figure>
+
+<p>注意这里的工具包含两部分内容：</p>
+<ul>
+<li><code>Cline</code>内置工具<ul>
+<li>写入文件</li>
+<li>读取文件</li>
+<li>替换文件内容</li>
+<li>运行终端指令</li>
+</ul>
+</li>
+<li><code>MCP</code>工具<ul>
+<li>天气预报</li>
+<li>气象预警</li>
+</ul>
+</li>
+</ul>
+<h5 id="工具使用格式"><a href="#工具使用格式" class="headerlink" title="工具使用格式"></a><strong>工具使用格式</strong></h5><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 工具使用格式</span></span><br><span class="line">工具使用采用 XML 风格的标签进行格式化。工具名称包含在开始和结束标签中，每个参数也同样包含在其自己的一组标签中。结构如下：</span><br><span class="line"></span><br><span class="line"><span class="code">```xml</span></span><br><span class="line"><span class="code">&lt;tool_name&gt; </span></span><br><span class="line"><span class="code">&lt;parameter1_name&gt;value1&lt;/parameter1_name&gt;</span></span><br><span class="line"><span class="code">&lt;parameter2_name&gt;value2&lt;/parameter2_name&gt;</span></span><br><span class="line"><span class="code">... </span></span><br><span class="line"><span class="code">&lt;/tool_name&gt;</span></span><br><span class="line"><span class="code">```</span></span><br><span class="line"></span><br><span class="line">例如：</span><br><span class="line"></span><br><span class="line"><span class="code">```xml</span></span><br><span class="line"><span class="code">&lt;read_file&gt;</span></span><br><span class="line"><span class="code">src/main.js</span></span><br><span class="line"><span class="code">&lt;/read_file&gt;</span></span><br><span class="line"><span class="code">```</span></span><br><span class="line">始终遵守此格式以确保工具使用的正确解析和执行。</span><br></pre></td></tr></table></figure>
+
+<p><code>Cline</code>规定了工具调用请求必须要使用<code>XML</code>格式传递，外层写工具的名称，内层写参数的名称和参数值，比如读文件的工具，<code>read_file</code>是函数名，<code>path</code>是参数名，<code>src/main.js</code>是参数值，代表使用<code>read_file</code>去读取<code>src/main.js</code>这个文件的内容，图示流程如下：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619200034438.png" class="" title="image-20250619200034438">
+
+<p>那到底有哪些工具可以用呢，模型是怎么知道读取文件用的工具名是<code>read_file</code>呢。</p>
+<hr>
+<h5 id="工具"><a href="#工具" class="headerlink" title="工具"></a><strong>工具</strong></h5><p> <code>Cline</code>在工具中会给模型详细解释有哪些工具可以用，会告诉模型每个工具的名称、参数格式、用途等等。比如<code>execute_command</code>：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 工具</span></span><br><span class="line"></span><br><span class="line"><span class="section">## execute<span class="emphasis">_command</span></span></span><br><span class="line"><span class="emphasis"><span class="section">描述：请求在系统上执行一个 CLI 命令。当你需要执行系统操作或运行特定命令来完成用户任务中的任何步骤时，请使用此工具。你必须根据用户的系统定制你的命令，并清楚地解释该命令的作用。对于命令链式调用，请使用用户 shell 对应的链式调用语法。优先执行复杂的 CLI 命令，而不是创建可执行脚本，因为它们更灵活且更易于运行。命令将在当前工作目录中执行：/Users/joeygreen/PycharmProjects/VideoCode/MCP终极指南-番外篇 </span></span></span><br><span class="line"><span class="emphasis"><span class="section"></span></span></span><br><span class="line"><span class="emphasis"><span class="section">参数：</span></span></span><br><span class="line"><span class="emphasis"><span class="section"> - command: (必需) 要执行的 CLI 命令。这应该是对当前操作系统有效的命令。确保命令格式正确，并且不包含任何有害指令。</span></span></span><br><span class="line"><span class="emphasis"><span class="section"> - requires_</span>approval: (必需) 一个布尔值，指示在用户启用了自动批准模式的情况下，此命令是否需要在执行前获得用户的明确批准。对于可能产生重大影响的操作（如安装/卸载软件包、删除/覆盖文件、系统配置更改、网络操作或任何可能产生意外副作用的命令），请设置为 &#x27;true&#x27;。对于安全操作（如读取文件/目录、运行开发服务器、构建项目以及其他非破坏性操作），请设置为 &#x27;false&#x27;。</span></span><br><span class="line"> 用法：</span><br><span class="line"> <span class="code">```xml</span></span><br><span class="line"><span class="code"> &lt;execute_command&gt;</span></span><br><span class="line"><span class="code"> &lt;command&gt;你的命令在此&lt;/command&gt; </span></span><br><span class="line"><span class="code"> &lt;requires_approval&gt;true 或 false&lt;/requires_approval&gt; </span></span><br><span class="line"><span class="code"> &lt;/execute_command&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">还有其他一些工具：</span><br><span class="line"></span><br><span class="line">```markdown</span><br><span class="line">read_file：用于读取文件内容</span><br><span class="line"></span><br><span class="line">write_to_file：将内容写入指定文件</span><br><span class="line"></span><br><span class="line">replace_in_file：替换文件内容</span><br><span class="line"></span><br><span class="line">search_files：搜索文件内容</span><br><span class="line"></span><br><span class="line">list_files：列出文件和目录</span><br><span class="line"></span><br><span class="line">list_code_definition_names：列出指定目录顶层源代码文件中使用的定义名称（类、函数、方法等）</span><br><span class="line"></span><br><span class="line">browser_action：请求与 Puppeteer 控制的浏览器进行交互</span><br></pre></td></tr></table></figure>
+
+
+
+<p>✅<strong>下面是重点：</strong></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">## use<span class="emphasis">_mcp_</span>tool</span></span><br><span class="line">描述：请求使用由连接的 MCP 服务器提供的工具。每个 MCP 服务器可以提供具有不同功能的多个工具。工具有定义的输入模式，用于指定必需和可选参数。 </span><br><span class="line"></span><br><span class="line">参数：</span><br><span class="line"><span class="bullet"> -</span> server<span class="emphasis">_name: (必需) 提供该工具的 MCP 服务器的名称</span></span><br><span class="line"><span class="emphasis"> - tool_</span>name: (必需) 要执行的工具的名称</span><br><span class="line"><span class="bullet"> -</span> arguments: (必需) 一个 JSON 对象，包含工具的输入参数，遵循工具的输入模式 </span><br><span class="line"> 用法： </span><br><span class="line"> <span class="code">```xml</span></span><br><span class="line"><span class="code"> &lt;use_mcp_tool&gt;</span></span><br><span class="line"><span class="code"> &lt;server_name&gt;服务器名称在此&lt;/server_name&gt; </span></span><br><span class="line"><span class="code"> &lt;tool_name&gt;工具名称在此&lt;/tool_name&gt;</span></span><br><span class="line"><span class="code"> &lt;arguments&gt;</span></span><br><span class="line"><span class="code">&#123; </span></span><br><span class="line"><span class="code">	&quot;param1&quot;: &quot;value1&quot;, </span></span><br><span class="line"><span class="code">	&quot;param2&quot;: &quot;value2&quot;</span></span><br><span class="line"><span class="code">&#125;</span></span><br><span class="line"><span class="code">&lt;/arguments&gt;</span></span><br><span class="line"><span class="code">&lt;/use_mcp_tool&gt;</span></span><br><span class="line"><span class="code">```</span></span><br></pre></td></tr></table></figure>
+
+<p>它的参数分成三个：</p>
+<ul>
+<li>server_name：服务器名称</li>
+<li>tool_name：工具名称</li>
+<li>arguments：输入参数</li>
+</ul>
+<p>示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">use_mcp_tool</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">server_name</span>&gt;</span>weather<span class="tag">&lt;/<span class="name">server_name</span>&gt;</span> </span><br><span class="line"> <span class="tag">&lt;<span class="name">tool_name</span>&gt;</span>get_forecast<span class="tag">&lt;/<span class="name">tool_name</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">arguments</span>&gt;</span></span><br><span class="line">&#123; </span><br><span class="line">	&quot;latitude&quot;: 40.7128, </span><br><span class="line">	&quot;longitude&quot;: -74.006</span><br><span class="line">&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">arguments</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">use_mcp_tool</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在下面的工具包括：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">access<span class="emphasis">_mcp_</span>resource：获取MCP资源</span><br><span class="line"></span><br><span class="line">ask<span class="emphasis">_followup_</span>question：向用户提问以获取任务所需的附加信息</span><br><span class="line"></span><br><span class="line">attempt<span class="emphasis">_completion：用于返回最终结论</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>attempt_completion简易交互流程：</strong></p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202131461.png" class="" title="image-20250619202131461">
+
+<p><strong>attempt_completion更准确的流程（think部分）：</strong></p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202246486.png" class="" title="image-20250619202246486">
+
+<p><strong>来个具体的例子：</strong></p>
+<p>还是我们之前的经典问题：明天纽约的天气怎么样？发出问题后，</p>
+<p><strong>第一步thinking：</strong></p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202537061.png" class="" title="image-20250619202537061">
+
+<p><strong>第二步：调用<code>MCP</code>工具</strong></p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202715758.png" class="" title="image-20250619202715758">
+
+<p><strong>第三步：Response是<code>Cline</code>返回给模型的结果</strong></p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619202854719.png" class="" title="image-20250619202854719">
+
+<p><strong>第四步：模型拿到结果后先thinking</strong></p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619203010260.png" class="" title="image-20250619203010260">
+
+<p><strong>第五步：模型觉得完成这个任务了</strong></p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250619203101212.png" class="" title="image-20250619203101212">
+
+
+
+<p>✅<strong>已连接的服务器：</strong></p>
+<p>这一块会把用户在<code>Cline</code>上配置的<code>MCP</code>服务器和所包含的<code>MCP</code>工具列举出来供模型选用，也包含工具描述和参数描述。</p>
+<p>其他部分不太重要，此处跳过。</p>
+<hr>
+<h4 id="用户请求"><a href="#用户请求" class="headerlink" title="用户请求"></a>用户请求</h4><p>此部分包含两部分：</p>
+<ul>
+<li>用户输入，由&lt;task&gt;…&lt;&#x2F;task&gt;标签包围</li>
+<li>额外环境信息，由<environment_details>…</environment_details>包围，包含一些额外信息，比如<ul>
+<li>目前可见的文件</li>
+<li>打开的Tabs</li>
+<li>现在的时间</li>
+<li>当前目录下的文件</li>
+<li>已使用的tokens</li>
+<li>现在的模式（ACT OR PLAN）</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>temperature越小越固定。</p>
+</blockquote>
+<hr>
+<h4 id="模型返回"><a href="#模型返回" class="headerlink" title="模型返回"></a>模型返回</h4><p>注意点：</p>
+<ul>
+<li>以<code>：</code>开头的信息是注释信息（无实际信息，作用是保持连接）</li>
+<li>以<code>data</code>开头的信息是模型返回的结构化数据，子字段<code>content</code>包含流式传输数据</li>
+</ul>
+<p>当向<code>Cline</code>发送<code>Hi</code>的时候，子字段<code>content</code>中的内容会包括<code>&lt;thinking&gt;</code>和<code>&lt;ask_followup_question&gt;</code>这两部分的内容，因为我们只打了个招呼，所以模型会问我们有没有具体任务：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620093246910.png" class="" title="image-20250620093246910">
+
+<hr>
+<h4 id="调用MCP工具时模型的请求和返回"><a href="#调用MCP工具时模型的请求和返回" class="headerlink" title="调用MCP工具时模型的请求和返回"></a>调用<code>MCP</code>工具时模型的请求和返回</h4><p>模型返回的子字段<code>content</code>组合起来：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620094314905-1750383799716-1.png" class="" title="image-20250620094314905">
+
+<p>可以看出模型是先思考，然后使用<code>XML</code>格式向<code>Cline</code>提起调用<code>Weather</code>这个<code>MCP Server</code>。</p>
+<p><code>Cline</code>用指定的参数调用指定的<code>MCP Server</code>之后，会再次对模型发起请求，为实现模型的记忆功能，第二次请求会先发送第一次请求的内容，模型才知道前因后果：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620095010772.png" class="" title="image-20250620095010772">
+
+<p>紧接着是模型(assistant)的回复，包含<code>&lt;thinking&gt;</code>和想要调用<code>weather</code>这个<code>MCPServer</code>的<code>XML</code>格式，再接着是<code>Cline</code>(user)的返回结果，包含：</p>
+<ul>
+<li><code>MCP</code>工具的调用结果</li>
+<li>结果的具体内容，即上文第三步中的<code>Response</code></li>
+<li>环境信息，比如当前打开的<code>Tab</code>，时间信息等等</li>
+</ul>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620095205618.png" class="" title="image-20250620095205618">
+
+<p>模型获得上述信息后，依旧会流式返回具体内容（<code>：</code>开头的注释内容，<code>data</code>开头的具体信息，子字段<code>content</code>包含具体内容），具体内容组合后：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620100756734.png" class="" title="image-20250620100756734">
+
+<p>模型会先思考一番，然后认为自己已经完成任务了，就将最终返回结果包含在<code>attempt_completion</code>标签中，<code>Cline</code>会将模型的返回内容显式在对应位置。</p>
+<hr>
+<h3 id="Cline的XML协议与ReAct的关系"><a href="#Cline的XML协议与ReAct的关系" class="headerlink" title="Cline的XML协议与ReAct的关系"></a><code>Cline</code>的<code>XML</code>协议与<code>ReAct</code>的关系</h3><p>先以流程图的形式总结下上述流程：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620101346042.png" class="" title="image-20250620101346042">
+
+<p><strong>文字版说明（让我们站在<code>Cline</code>的角度看待这个过程）：</strong></p>
+<ul>
+<li>我问模型一个问题：纽约明天的天气怎么样？</li>
+<li>模型想了想，觉得要调用我这边某个工具才能得到答案，然后按固定格式告诉了我工具名和参数</li>
+<li>我去调用了工具，将结果给到模型</li>
+<li>模型拿到我给的工具结果，思考总结后将最终答案返回给我</li>
+</ul>
+<p>那如果我的问题变一变呢，让其将结果写入到<code>result.md</code>中，那么在<attempt_completion>前会加一套调用别的工具的流程，之后才能完成任务：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620102128105.png" class="" title="image-20250620102128105">
+
+<p>其中：</p>
+<ul>
+<li>&lt;thinking&gt;对应了思考（thought）</li>
+<li>调用工具&#x2F;给出最终答案对应了行动（Action），紧挨在思考之后</li>
+<li>如果任务未完成，即模型需要使用我（<code>Cline</code>）这边的能力，那么模型就需要观察（Observation）我这边的反馈结果。</li>
+</ul>
+<p><code>Thought</code>，<code>Action</code>，<code>Observation</code>是<code>ReAct</code>中最重要的三个词，<code>ReAct</code>是一篇2022的论文（REACT: synergizing reasoning and acting in language models）提出的一个词，它是reasoning和acting两个单词的合体，他提出的<code>ReACT</code>理念可以在不需要人干预的前提下，让模型自主思考，自主调用各类外部工具，从而完成用户指定的任务，就像<code>Cline</code>一样，本质上其实是个<code>Agent</code>。<code>Agent</code>是一个能持续思考，持续调用外部工具，直至解决用户问题的程序。<code>Cline</code>本质上也是根据<code>ReAct</code>思想进行它的<code>Agent</code>流程的，注意<code>ReAct</code>是个思想，精髓在于<code>Thought</code>，<code>Action</code>，<code>Observation</code>这三个词，并不对交互格式做要求，无论你是像<code>Cline</code>一样用<code>XML</code>格式，还是像<code>Cherry Studio</code>一样用<code>function call</code>那种格式，甚至用<code>ReAct</code>论文中那种近乎纯文本的格式，都是<code>ReAct</code>思想。</p>
+<p>近乎纯文本的方式：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620104138101.png" class="" title="image-20250620104138101">
+
+<p>无论是<code>XML</code>格式还是纯文本方式，都是由<code>System Prompt</code>进行规定的，但注意<code>Cline</code>的系统提示词是改不了的，所以并不能让<code>Cline</code>使用纯文本方式进行工具调用，但如果你自己写<code>MCP Host</code>的时候，这种类似的系统提示词就能给你灵感了，下面给个纯文本方式交互的系统提示词以供参考：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">你需要解决一个任务。为此，你需要将任务分解为多个步骤。对于每个步骤，首先使用 `Thought:` 思考要做什么，然后使用可用工具之一决定一个 `Action:`。接着，你将根据你的行动从环境/工具中收到一个 `Observation:`。持续这个思考和行动的过程，直到你有足够的信息来提供 `FinalAnswer:`。</span><br><span class="line"></span><br><span class="line">这里有一些例子：</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">示例 1:</span><br><span class="line"></span><br><span class="line">Question: 埃菲尔铁塔有多高？</span><br><span class="line">Thought: 我需要找到埃菲尔铁塔的高度。可以使用搜索工具。</span><br><span class="line">Action: get<span class="built_in">_</span>height(&quot;埃菲尔铁塔&quot;)</span><br><span class="line">Observation: 埃菲尔铁塔的高度约为330米（包含天线）。</span><br><span class="line">Thought: 搜索结果显示了高度。我已经得到答案了。</span><br><span class="line">FinalAnswer: 埃菲尔铁塔的高度约为330米。</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">示例 2:</span><br><span class="line"></span><br><span class="line">Question: 帮我找一个简单的番茄炒蛋食谱，并看看家里的冰箱里有没有西红柿。</span><br><span class="line">Thought: 这个任务分两步。第一步，找到番茄炒蛋的食谱。第二步，检查冰箱里是否有西红柿。我先用 `find<span class="built_in">_</span>recipe` 工具找食谱。</span><br><span class="line">Action: find<span class="built_in">_</span>recipe(dish=&quot;番茄炒蛋&quot;)</span><br><span class="line">Observation: 简单的番茄炒蛋食谱：将2个鸡蛋打散，2个番茄切块。热油，先炒鸡蛋，盛出。再热油，炒番茄至软烂，加入鸡蛋，放盐调味即可。</span><br><span class="line">Thought: 好的，我已经有食谱了。食谱需要西红柿。现在我需要用 `check<span class="built_in">_</span>fridge` 工具看看冰箱里有没有西红柿。</span><br><span class="line">Action: check<span class="built_in">_</span>fridge(item=&quot;西红柿&quot;)</span><br><span class="line">Observation: 冰箱检查结果：有3个西红柿。</span><br><span class="line">Thought: 我找到了食谱，并且确认了冰箱里有西红柿。可以回答问题了。</span><br><span class="line">FinalAnswer: 简单的番茄炒蛋食谱是：鸡蛋打散，番茄切块。先炒鸡蛋，再炒番茄，混合后加盐调味。冰箱里有3个西红柿。</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">请严格遵守：</span><br><span class="line">- 输出Action后立即停止生成</span><br><span class="line">- 等待返回真实的Observation</span><br><span class="line">- 擅自生成Observation将导致错误</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">本次任务可用工具：</span><br><span class="line"></span><br><span class="line">- get<span class="built_in">_</span>forecast(latitude, longitude): 获取指定坐标的天气预报。返回包含预报信息的字符串。</span><br><span class="line">- write<span class="built_in">_</span>to<span class="built_in">_</span>file(filename, content): 将指定内容写入指定文件。成功时返回 &quot;写入成功&quot;。</span><br></pre></td></tr></table></figure>
+
+<p>最后总结下<code>Agent</code>：</p>
+<img src="/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B/image-20250620105044487.png" class="" title="image-20250620105044487">
+
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/">https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/</a></li>
+<li><a href="https://caihaoran-00.github.io/2025/06/12/MCP%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E6%8E%8C%E6%8F%A1MCP/">https://caihaoran-00.github.io/2025/06/12/MCP%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E6%8E%8C%E6%8F%A1MCP/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1v9V5zSEHA/?spm_id_from=333.1387.homepage.video_card.click&vd_source=075a061948e76c87e2ee8754e264056e">https://www.bilibili.com/video/BV1v9V5zSEHA/?spm_id_from=333.1387.homepage.video_card.click&amp;vd_source=075a061948e76c87e2ee8754e264056e</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/MarkTechStation/VideoCode/blob/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E7%95%AA%E5%A4%96%E7%AF%87/llm_logger.py">https://github.com/MarkTechStation/VideoCode/blob/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E7%95%AA%E5%A4%96%E7%AF%87/llm_logger.py</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/MarkTechStation/VideoCode/blob/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E7%95%AA%E5%A4%96%E7%AF%87/Cline%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%EF%BC%88%E8%8B%B1%E6%96%87%EF%BC%89.md">https://github.com/MarkTechStation/VideoCode/blob/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E7%95%AA%E5%A4%96%E7%AF%87/Cline%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%EF%BC%88%E8%8B%B1%E6%96%87%EF%BC%89.md</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/MarkTechStation/VideoCode/blob/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E7%95%AA%E5%A4%96%E7%AF%87/Cline%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%EF%BC%88%E4%B8%AD%E6%96%87%EF%BC%89.md">https://github.com/MarkTechStation/VideoCode/blob/main/MCP%E7%BB%88%E6%9E%81%E6%8C%87%E5%8D%97-%E7%95%AA%E5%A4%96%E7%AF%87/Cline%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%EF%BC%88%E4%B8%AD%E6%96%87%EF%BC%89.md</a></li>
+</ol>
+
     </div>
 
     
@@ -269,16 +511,23 @@
     
 
     <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/agent/" rel="tag"># agent</a>
+              <a href="/tags/mcp/" rel="tag"># mcp</a>
+          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2025/06/18/MCP%E6%80%BB%E7%BB%93%EF%BC%9A%E5%85%88%E7%9C%8B%E8%BF%99%E7%AF%87/" rel="prev" title="MCP总结：先看这篇">
-                  <i class="fa fa-angle-left"></i> MCP总结：先看这篇
+                <a href="/2025/06/17/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D%E5%89%8D%E7%AF%87%EF%BC%9A%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8/" rel="prev" title="大模型应用开发之agent介绍前篇：工具调用">
+                  <i class="fa fa-angle-left"></i> 大模型应用开发之agent介绍前篇：工具调用
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2025/06/20/MCP%E6%80%BB%E7%BB%93%EF%BC%9A%E5%85%88%E7%9C%8B%E8%BF%99%E7%AF%87/" rel="next" title="MCP填坑篇：Function Call & MCP客户端">
+                  MCP填坑篇：Function Call & MCP客户端 <i class="fa fa-angle-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -309,13 +558,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">279k</span>
+    <span title="站点总字数">288k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">16:56</span>
+    <span title="站点阅读时长">17:26</span>
   </span>
 </div>
 <div class="busuanzi-count">

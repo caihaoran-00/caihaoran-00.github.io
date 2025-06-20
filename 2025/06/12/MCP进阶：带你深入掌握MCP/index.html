@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://caihaoran-00.github.io/2025/06/12/MCP%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E6%8E%8C%E6%8F%A1MCP/image-20250619150040766.png">
 <meta property="og:image" content="https://caihaoran-00.github.io/2025/06/12/MCP%E8%BF%9B%E9%98%B6%EF%BC%9A%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E6%8E%8C%E6%8F%A1MCP/image-20250619164316647.png">
 <meta property="article:published_time" content="2025-06-12T10:06:16.000Z">
-<meta property="article:modified_time" content="2025-06-19T09:07:02.422Z">
+<meta property="article:modified_time" content="2025-06-20T03:34:10.220Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="agent">
 <meta property="article:tag" content="mcp">
@@ -144,7 +144,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%99%E4%B8%80%E4%B8%AAMCP-Server"><span class="nav-number">2.1.</span> <span class="nav-text">写一个MCP Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90MCP%E5%BA%95%E5%B1%82%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.2.</span> <span class="nav-text">分析MCP底层协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8MCP%E5%BA%95%E5%B1%82%E5%8D%8F%E8%AE%AE%E7%9B%B4%E6%8E%A5%E4%B8%8EMCP-Server%E9%80%9A%E4%BF%A1"><span class="nav-number">2.2.1.</span> <span class="nav-text">使用MCP底层协议直接与MCP Server通信</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E8%B6%8A%E8%A1%A8%E8%B1%A1%EF%BC%9AMCP%E5%8D%8F%E8%AE%AE%E7%9A%84%E7%9C%9F%E5%AE%9E%E5%90%AB%E4%B9%89%E4%B8%8E%E5%AE%9A%E4%BD%8D"><span class="nav-number">2.3.</span> <span class="nav-text">超越表象：MCP协议的真实含义与定位</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%99%E4%B8%80%E4%B8%AAMCP-Server"><span class="nav-number">2.1.</span> <span class="nav-text">写一个MCP Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E6%9E%90MCP%E5%BA%95%E5%B1%82%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.2.</span> <span class="nav-text">分析MCP底层协议</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8MCP%E5%BA%95%E5%B1%82%E5%8D%8F%E8%AE%AE%E7%9B%B4%E6%8E%A5%E4%B8%8EMCP-Server%E9%80%9A%E4%BF%A1"><span class="nav-number">2.2.1.</span> <span class="nav-text">使用MCP底层协议直接与MCP Server通信</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E8%B6%8A%E8%A1%A8%E8%B1%A1%EF%BC%9AMCP%E5%8D%8F%E8%AE%AE%E7%9A%84%E7%9C%9F%E5%AE%9E%E5%90%AB%E4%B9%89%E4%B8%8E%E5%AE%9A%E4%BD%8D"><span class="nav-number">2.3.</span> <span class="nav-text">超越表象：MCP协议的真实含义与定位</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#weather-py%E4%BB%A3%E7%A0%81%E8%A7%A3%E9%87%8A"><span class="nav-number">3.1.</span> <span class="nav-text">weather.py代码解释</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">4.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -168,7 +168,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-count">91</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -240,7 +240,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-06-19 17:07:02" itemprop="dateModified" datetime="2025-06-19T17:07:02+08:00">2025-06-19</time>
+      <time title="修改时间：2025-06-20 11:34:10" itemprop="dateModified" datetime="2025-06-20T11:34:10+08:00">2025-06-20</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -266,14 +266,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>3.7k</span>
+      <span>4.7k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>13 分钟</span>
+      <span>17 分钟</span>
     </span>
 </div>
 
@@ -353,7 +353,7 @@
 </li>
 <li><p><code>inputSchema</code>：用于指定数据的输入格式规范，遵循的是<code>Json Schema</code>规范</p>
 <blockquote>
-<p><code>Json Schema</code>本身是Json，但能够用来描述另一个Json的结构。</p>
+<p><code>Json Schema</code>本身是<code>Json</code>，但能够用来描述另一个<code>Json</code>的结构。</p>
 </blockquote>
 </li>
 </ul>
@@ -373,7 +373,7 @@
 
 <p>第一条是<code>Cline</code>告诉<code>MCP  Server</code>：我要调用<code>get_forecast</code>方法，参数是…</p>
 <blockquote>
-<p>注意这里的参数（arguments）是完全符合inputSchema中定义的Json规范的，证明定义是有效的。</p>
+<p>注意这里的参数（arguments）是完全符合<code>inputSchema</code>中定义的<code>Json</code>规范的，证明定义是有效的。</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;latitude&quot;</span><span class="punctuation">:</span><span class="number">40.7128</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;longitude&quot;</span><span class="punctuation">:</span><span class="number">-74.006</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></blockquote>
 <p>第二条是<code>MCP  Server</code>回复给<code>Cline</code>的内容，重点是<code>text</code>字段中的内容，格式化后：</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">Tonight<span class="punctuation">:</span></span><br><span class="line">Temperature<span class="punctuation">:</span> <span class="number">71</span>°F</span><br><span class="line">Wind<span class="punctuation">:</span> <span class="number">5</span> mph SW</span><br><span class="line">Forecast<span class="punctuation">:</span> A chance of showers and thunderstorms before <span class="number">11</span>pm<span class="punctuation">,</span> then a slight chance of showers and thunderstorms between <span class="number">11</span>pm and <span class="number">2</span>am. Mostly cloudy<span class="punctuation">,</span> with a low around <span class="number">71.</span> Southwest wind around <span class="number">5</span> mph. Chance of precipitation is <span class="number">30</span>%.</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">Juneteenth<span class="punctuation">:</span></span><br><span class="line">Temperature<span class="punctuation">:</span> <span class="number">86</span>°F</span><br><span class="line">Wind<span class="punctuation">:</span> <span class="number">5</span> to <span class="number">14</span> mph SW</span><br><span class="line">Forecast<span class="punctuation">:</span> A chance of showers and thunderstorms after <span class="number">2</span>pm. Some of the storms could be severe. Mostly sunny<span class="punctuation">,</span> with a high near <span class="number">86.</span> Southwest wind <span class="number">5</span> to <span class="number">14</span> mph. Chance of precipitation is <span class="number">50</span>%. New rainfall amounts between a tenth and quarter of an inch possible.</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">Thursday Night<span class="punctuation">:</span></span><br><span class="line">Temperature<span class="punctuation">:</span> <span class="number">70</span>°F</span><br><span class="line">Wind<span class="punctuation">:</span> <span class="number">12</span> to <span class="number">15</span> mph W</span><br><span class="line">Forecast<span class="punctuation">:</span> A chance of showers and thunderstorms before <span class="number">11</span>pm<span class="punctuation">,</span> then a chance of showers and thunderstorms between <span class="number">11</span>pm and <span class="number">2</span>am. Some of the storms could be severe. Mostly cloudy<span class="punctuation">,</span> with a low around <span class="number">70.</span> West wind <span class="number">12</span> to <span class="number">15</span> mph. Chance of precipitation is <span class="number">50</span>%. New rainfall amounts between a quarter and half of an inch possible.</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">Friday<span class="punctuation">:</span></span><br><span class="line">Temperature<span class="punctuation">:</span> <span class="number">81</span>°F</span><br><span class="line">Wind<span class="punctuation">:</span> <span class="number">13</span> mph W</span><br><span class="line">Forecast<span class="punctuation">:</span> Sunny<span class="punctuation">,</span> with a high near <span class="number">81.</span> West wind around <span class="number">13</span> mph.</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">Friday Night<span class="punctuation">:</span></span><br><span class="line">Temperature<span class="punctuation">:</span> <span class="number">70</span>°F</span><br><span class="line">Wind<span class="punctuation">:</span> <span class="number">6</span> to <span class="number">10</span> mph W</span><br><span class="line">Forecast<span class="punctuation">:</span> Mostly clear<span class="punctuation">,</span> with a low around <span class="number">70.</span> West wind <span class="number">6</span> to <span class="number">10</span> mph.</span><br></pre></td></tr></table></figure>
@@ -397,8 +397,138 @@
 </ul>
 <p>当然，有些<code>MCP Server</code>内部还有资源可以使用，暂时忽略掉。上述两点可以总结为函数的注册与使用，我们可以看出这里面确实是没有模型什么事的，<code>MCP</code>协议规定的是如何发现和调用函数的，这套协议脱离大模型也是可以使用的，只是没人这么用罢了。<code>MCP</code>本身并没有规定与模型的交互方式，实际上不同的<code>MCP Host</code>与模型的交互方式确实会有很大差异，比如<code>Cline</code>用的是<code>XML</code>，而<code>Cherry Studio</code>使用的是<code>function call</code>。</p>
 <p><strong>总之，<code>MCP</code>协议并没有规定如何与模型进行交互。</strong></p>
-<p>我们再回头看看MCP（模型上下文协议）这个名字，什么是模型上下文？上下文就是环境，环境就是周围有哪些函数可以调用，从而<strong>获取外界的信息或者扩展模型的能力</strong>，比如获取天气信息、网络信息、文件信息等等。<code>MCP</code>就是让模型感知外界环境的一个协议，所以叫模型上下文协议。<br>这个名字合适吗？好坏不论，首先这个名字有一定的误导性，很容易让人觉得这个协议规定的是模型交互的内容，但实际上，我们最多只能说这个协议是给模型服务的，再者，这个名字太多玄妙，看起来很高端，作者难道是想让大家觉得<code>MCP</code>是个很高深的东西？</p>
+<p>我们再回头看看<code>MCP</code>（模型上下文协议）这个名字，什么是模型上下文？上下文就是环境，环境就是周围有哪些函数可以调用，从而<strong>获取外界的信息或者扩展模型的能力</strong>，比如获取天气信息、网络信息、文件信息等等。<code>MCP</code>就是让模型感知外界环境的一个协议，所以叫模型上下文协议。<br>这个名字合适吗？好坏不论，首先这个名字有一定的误导性，很容易让人觉得这个协议规定的是模型交互的内容，但实际上，我们最多只能说这个协议是给模型服务的，再者，这个名字太多玄妙，看起来很高端，作者难道是想让大家觉得<code>MCP</code>是个很高深的东西？</p>
 <p>下篇预告：<code>MCP Host</code>是怎么与模型通信的。</p>
+<hr>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="weather-py代码解释"><a href="#weather-py代码解释" class="headerlink" title="weather.py代码解释"></a><code>weather.py</code>代码解释</h3><p><strong>导入部分</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Any</span></span><br><span class="line"><span class="keyword">import</span> httpx</span><br><span class="line"><span class="keyword">from</span> mcp.server.fastmcp <span class="keyword">import</span> FastMCP</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>from typing import Any</code>: 从类型提示模块导入<code>Any</code>类型，表示可以是任何类型</li>
+<li><code>import httpx</code>: 导入httpx库，这是一个异步HTTP客户端</li>
+<li><code>from mcp.server.fastmcp import FastMCP</code>: 从<code>mcp</code>库中导入<code>FastMCP</code>类，用于创建服务器</li>
+</ul>
+<p><strong>服务器初始化</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mcp = FastMCP(<span class="string">&quot;weather&quot;</span>, log_level=<span class="string">&quot;ERROR&quot;</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建一个<code>FastMCP</code>服务器实例，命名为”weather”</li>
+<li>设置日志级别为”ERROR”，表示只记录错误级别的日志</li>
+</ul>
+<p><strong>常量定义</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NWS_API_BASE = <span class="string">&quot;https://api.weather.gov&quot;</span></span><br><span class="line">USER_AGENT = <span class="string">&quot;weather-app/1.0&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>NWS_API_BASE</code>: 美国国家气象局<code>(NWS)API</code>的基础URL</li>
+<li><code>USER_AGENT</code>: 用于HTTP请求的用户代理字符串，标识我们的应用</li>
+</ul>
+<p><strong>辅助函数: <code>make_nws_request</code></strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">make_nws_request</span>(<span class="params">url: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>] | <span class="literal">None</span>:</span><br></pre></td></tr></table></figure>
+<ul>
+<li>定义异步函数，接收URL字符串参数，返回字典或None</li>
+<li>类型提示表示返回可能是字典(键是字符串，值任意)或None</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&quot;User-Agent&quot;</span>: USER_AGENT,</span><br><span class="line">    <span class="string">&quot;Accept&quot;</span>: <span class="string">&quot;application/geo+json&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>设置HTTP请求头:<ul>
+<li><code>User-Agent</code>: 标识我们的应用</li>
+<li><code>Accept</code>: 指定我们接受geo+json格式的数据</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">with</span> httpx.AsyncClient() <span class="keyword">as</span> client:</span><br></pre></td></tr></table></figure>
+<ul>
+<li>创建异步HTTP客户端上下文管理器</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    response = <span class="keyword">await</span> client.get(url, headers=headers, timeout=<span class="number">30.0</span>)</span><br><span class="line">    response.raise_for_status()</span><br><span class="line">    <span class="keyword">return</span> response.json()</span><br></pre></td></tr></table></figure>
+<ul>
+<li>尝试发送GET请求，带超时30秒</li>
+<li><code>raise_for_status()</code>会在HTTP错误状态码(<code>4xx,5xx</code>)时抛出异常</li>
+<li>成功则返回解析后的<code>JSON</code>数据</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">except</span> Exception:</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>捕获任何异常并返回None</li>
+</ul>
+<p><strong>辅助函数: format_alert</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">format_alert</span>(<span class="params">feature: <span class="built_in">dict</span></span>) -&gt; <span class="built_in">str</span>:</span><br></pre></td></tr></table></figure>
+<ul>
+<li>定义函数，接收字典参数，返回格式化字符串</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">    props = feature[<span class="string">&quot;properties&quot;</span>]</span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Event: <span class="subst">&#123;props.get(<span class="string">&#x27;event&#x27;</span>, <span class="string">&#x27;Unknown&#x27;</span>)&#125;</span></span></span><br><span class="line"><span class="string">Area: <span class="subst">&#123;props.get(<span class="string">&#x27;areaDesc&#x27;</span>, <span class="string">&#x27;Unknown&#x27;</span>)&#125;</span></span></span><br><span class="line"><span class="string">Severity: <span class="subst">&#123;props.get(<span class="string">&#x27;severity&#x27;</span>, <span class="string">&#x27;Unknown&#x27;</span>)&#125;</span></span></span><br><span class="line"><span class="string">Description: <span class="subst">&#123;props.get(<span class="string">&#x27;description&#x27;</span>, <span class="string">&#x27;No description available&#x27;</span>)&#125;</span></span></span><br><span class="line"><span class="string">Instructions: <span class="subst">&#123;props.get(<span class="string">&#x27;instruction&#x27;</span>, <span class="string">&#x27;No specific instructions provided&#x27;</span>)&#125;</span></span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>从特征数据中提取properties</li>
+<li>使用f-string格式化多行字符串，显示天气警报的各个属性</li>
+<li>使用<code>.get()</code>方法提供默认值以防键不存在</li>
+</ul>
+<p><strong>工具函数: get_alerts</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@mcp.tool()</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">get_alerts</span>(<span class="params">state: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用<code>@mcp.tool()</code>装饰器注册为<code>MCP</code>工具</li>
+<li>异步函数，接收州代码字符串，返回格式化字符串</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">url = <span class="string">f&quot;<span class="subst">&#123;NWS_API_BASE&#125;</span>/alerts/active/area/<span class="subst">&#123;state&#125;</span>&quot;</span></span><br><span class="line">data = <span class="keyword">await</span> make_nws_request(url)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>构造<code>NWS API</code>的URL</li>
+<li>调用之前定义的<code>make_nws_request</code>获取数据</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> data <span class="keyword">or</span> <span class="string">&quot;features&quot;</span> <span class="keyword">not</span> <span class="keyword">in</span> data:</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;Unable to fetch alerts or no alerts found.&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>检查数据是否有效，没有则返回错误信息</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> data[<span class="string">&quot;features&quot;</span>]:</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;No active alerts for this state.&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>检查是否有警报特征数据，没有则返回无警报信息</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">alerts = [format_alert(feature) <span class="keyword">for</span> feature <span class="keyword">in</span> data[<span class="string">&quot;features&quot;</span>]]</span><br><span class="line"><span class="keyword">return</span> <span class="string">&quot;\n---\n&quot;</span>.join(alerts)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用列表推导式格式化所有警报特征</li>
+<li>用分隔符<code>---</code>连接所有格式化后的警报</li>
+</ul>
+<p><strong>工具函数: get_forecast</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@mcp.tool()</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">get_forecast</span>(<span class="params">latitude: <span class="built_in">float</span>, longitude: <span class="built_in">float</span></span>) -&gt; <span class="built_in">str</span>:</span><br></pre></td></tr></table></figure>
+<ul>
+<li>另一个<code>MCP</code>工具，接收经纬度坐标，返回预报字符串</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">points_url = <span class="string">f&quot;<span class="subst">&#123;NWS_API_BASE&#125;</span>/points/<span class="subst">&#123;latitude&#125;</span>,<span class="subst">&#123;longitude&#125;</span>&quot;</span></span><br><span class="line">points_data = <span class="keyword">await</span> make_nws_request(points_url)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>构造获取预报点的URL并请求数据</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> points_data:</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;Unable to fetch forecast data for this location.&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>检查数据是否有效</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">forecast_url = points_data[<span class="string">&quot;properties&quot;</span>][<span class="string">&quot;forecast&quot;</span>]</span><br><span class="line">forecast_data = <span class="keyword">await</span> make_nws_request(forecast_url)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>从点数据中提取预报URL并获取预报数据</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> forecast_data:</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;Unable to fetch detailed forecast.&quot;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>检查预报数据是否有效</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">    periods = forecast_data[<span class="string">&quot;properties&quot;</span>][<span class="string">&quot;periods&quot;</span>]</span><br><span class="line">    forecasts = []</span><br><span class="line">    <span class="keyword">for</span> period <span class="keyword">in</span> periods[:<span class="number">5</span>]:  <span class="comment"># Only show next 5 periods</span></span><br><span class="line">        forecast = <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string"><span class="subst">&#123;period[<span class="string">&#x27;name&#x27;</span>]&#125;</span>:</span></span><br><span class="line"><span class="string">Temperature: <span class="subst">&#123;period[<span class="string">&#x27;temperature&#x27;</span>]&#125;</span>°<span class="subst">&#123;period[<span class="string">&#x27;temperatureUnit&#x27;</span>]&#125;</span></span></span><br><span class="line"><span class="string">Wind: <span class="subst">&#123;period[<span class="string">&#x27;windSpeed&#x27;</span>]&#125;</span> <span class="subst">&#123;period[<span class="string">&#x27;windDirection&#x27;</span>]&#125;</span></span></span><br><span class="line"><span class="string">Forecast: <span class="subst">&#123;period[<span class="string">&#x27;detailedForecast&#x27;</span>]&#125;</span></span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">        forecasts.append(forecast)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>提取预报时段数据</li>
+<li>只处理前5个时段(通常是未来几天)</li>
+<li>格式化每个时段的预报信息</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="string">&quot;\n---\n&quot;</span>.join(forecasts)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>用分隔符连接所有预报信息</li>
+</ul>
+<p>主程序入口</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    mcp.run(transport=<span class="string">&#x27;stdio&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当直接运行脚本时:<ul>
+<li>启动<code>MCP</code>服务器</li>
+<li>使用标准输入输出作为传输方式</li>
+</ul>
+</li>
+</ul>
+<p><strong>总结</strong></p>
+<p>这段代码实现了一个天气服务，提供两个主要功能:</p>
+<ol>
+<li>获取美国各州的天气警报</li>
+<li>获取指定经纬度的天气预报</li>
+</ol>
+<p>它使用<code>FastMCP</code>框架创建服务，通过<code>NWS API</code>获取天气数据，并将结果格式化为易读的字符串。</p>
 <hr>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
 <li><a href="https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/">https://caihaoran-00.github.io/2025/06/09/MCP%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E5%8E%9F%E7%90%86%E5%88%B0%E5%AE%9E%E6%88%98/</a></li>
@@ -461,13 +591,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">279k</span>
+    <span title="站点总字数">288k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">16:56</span>
+    <span title="站点阅读时长">17:26</span>
   </span>
 </div>
 <div class="busuanzi-count">
