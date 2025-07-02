@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言 背景：视频会议项目需求 本文目的：调研及demo体验 本文结构：原理 + 代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="音频变调算法：调研与demo">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/06/30/%E9%9F%B3%E9%A2%91%E5%8F%98%E8%B0%83%E7%AE%97%E6%B3%95%EF%BC%9A%E8%B0%83%E7%A0%94%E4%B8%8Edemo/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言 背景：视频会议项目需求 本文目的：调研及demo体验 本文结构：原理 + 代码">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-06-30T10:25:18.000Z">
+<meta property="article:modified_time" content="2025-07-02T02:20:13.758Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="Phase Vocoder">
+<meta property="article:tag" content="Pitch Shifting">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/06/30/%E9%9F%B3%E9%A2%91%E5%8F%98%E8%B0%83%E7%AE%97%E6%B3%95%EF%BC%9A%E8%B0%83%E7%A0%94%E4%B8%8Edemo/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/06/30/%E9%9F%B3%E9%A2%91%E5%8F%98%E8%B0%83%E7%AE%97%E6%B3%95%EF%BC%9A%E8%B0%83%E7%A0%94%E4%B8%8Edemo/","path":"2025/06/30/音频变调算法：调研与demo/","title":"音频变调算法：调研与demo"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>音频变调算法：调研与demo | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%97%B6%E5%9F%9F%E6%96%B9%E6%B3%95-Time-Domain-Methods"><span class="nav-number">2.1.</span> <span class="nav-text">一、时域方法 (Time-Domain Methods)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%8E%9F%E7%90%86%E6%A0%B8%E5%BF%83"><span class="nav-number">2.1.1.</span> <span class="nav-text">1. 原理核心</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">2.1.2.</span> <span class="nav-text">2. 优缺点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%A2%91%E5%9F%9F%E6%96%B9%E6%B3%95-Frequency-Domain-Methods"><span class="nav-number">2.2.</span> <span class="nav-text">二、频域方法 (Frequency-Domain Methods)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%8E%9F%E7%90%86%E6%A0%B8%E5%BF%83-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. 原理核心</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E4%BC%98%E7%BC%BA%E7%82%B9-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">2. 优缺点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E4%B8%8E%E5%AF%B9%E6%AF%94"><span class="nav-number">2.3.</span> <span class="nav-text">总结与对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E6%BA%90%E6%96%B9%E6%B3%95"><span class="nav-number">2.4.</span> <span class="nav-text">开源方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%9C%85demo"><span class="nav-number">2.5.</span> <span class="nav-text">✅demo</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">76</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">94</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/06/30/%E9%9F%B3%E9%A2%91%E5%8F%98%E8%B0%83%E7%AE%97%E6%B3%95%EF%BC%9A%E8%B0%83%E7%A0%94%E4%B8%8Edemo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="音频变调算法：调研与demo | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          音频变调算法：调研与demo
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-30 18:25:18" itemprop="dateCreated datePublished" datetime="2025-06-30T18:25:18+08:00">2025-06-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-07-02 10:20:13" itemprop="dateModified" datetime="2025-07-02T10:20:13+08:00">2025-07-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>10 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li>背景：视频会议项目需求</li>
+<li>本文目的：调研及demo体验</li>
+<li>本文结构：原理 + 代码</li>
+</ul>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>我们先来了解下音频变调（Pitch Shifting）中最核心的两种方法的原理：<strong>时域方法</strong>和<strong>频域方法</strong>。</p>
+<p>首先要明确一个核心目标：<strong>在不改变音频时长（Tempo）的情况下，改变其音高（Pitch）。</strong></p>
+<p>如果只是简单地像快放&#x2F;慢放磁带一样改变播放速度，虽然音高变了，但时长也跟着变了，这不是我们想要的变调效果。因此，需要更复杂的技术来解耦音高和时长。</p>
+<hr>
+<h3 id="一、时域方法-Time-Domain-Methods"><a href="#一、时域方法-Time-Domain-Methods" class="headerlink" title="一、时域方法 (Time-Domain Methods)"></a>一、时域方法 (Time-Domain Methods)</h3><p>时域方法直接在音频的波形数据（一系列的采样点）上进行操作。最著名和经典的方法是 <strong>TD-PSOLA (Time-Domain Pitch-Synchronous Overlap-Add)</strong>，即“时域音高同步叠加法”。</p>
+<p>我们可以把它想象成一个“聪明的剪辑师”在处理声波。</p>
+<h4 id="1-原理核心"><a href="#1-原理核心" class="headerlink" title="1. 原理核心"></a>1. 原理核心</h4><p>TD-PSOLA的核心思想是：<strong>通过复制或丢弃原始音频中以基频周期为单位的小片段，来改变波形的疏密程度，从而改变音高。</strong></p>
+<p>它主要包含三个步骤：</p>
+<p><strong>第一步：分析 (Analysis) - 分帧与基频检测</strong></p>
+<ol>
+<li><strong>基频检测 (Pitch Detection)</strong>：算法首先要分析出音频的基频（Fundamental Frequency, F0），也就是音高的主要频率。对于人声或单一乐器声，这相对容易。算法会在波形上找到一个个周期性的“波峰”或相似的标记点。</li>
+<li><strong>分帧 (Segmentation)</strong>：以这些基频标记点为中心，将原始音频切割成一个个微小的、有重叠的音频片段（称为“帧”）。<strong>关键在于，每一帧都大致包含一个或两个完整的音高周期</strong>。这样做可以确保切割点位于波形相似的地方，避免在拼接时产生“咔哒”声。</li>
+</ol>
+<p><strong>第二步：修改 (Modification) - 移动帧</strong></p>
+<p>这是改变音高的关键。我们有了很多小音频帧，现在通过调整它们之间的距离来合成新的音频。</p>
+<ul>
+<li><strong>升高音高 (Pitch Up)</strong>：我们需要让波形变得更“密集”。做法是，在合成新音频时，将这些小帧<strong>靠得更近一些</strong>。这相当于在原始序列中<strong>跳过（丢弃）</strong> 一些帧。比如，原来按1, 2, 3, 4的顺序排列，现在可以按1, 2, 4, 5的顺序排列，帧之间的间隔缩短了。</li>
+<li><strong>降低音高 (Pitch Down)</strong>：我们需要让波形变得更“稀疏”。做法是，在合成新音频时，将这些小帧<strong>拉得更远一些</strong>。这相当于在原始序列中<strong>重复（复制）</strong> 一些帧。比如，原来是1, 2, 3, 4，现在可以变成1, 2, 2, 3, 4，帧之间的间隔被拉长了。</li>
+</ul>
+<p><strong>第三步：合成 (Synthesis) - 重叠相加 (Overlap-Add)</strong></p>
+<p>在确定了新帧的位置后，将这些（可能被复制或丢弃了部分同伴的）小帧，按照新的间距重新拼接起来。因为原始分帧时就有重叠，所以在拼接时，重叠部分会进行平滑的<strong>叠加混合（通常使用窗函数进行淡入淡出处理）</strong>，从而生成一段连续、平滑的新波形。</p>
+<h4 id="2-优缺点"><a href="#2-优缺点" class="headerlink" title="2. 优缺点"></a>2. 优缺点</h4><ul>
+<li><strong>优点</strong>：<ul>
+<li><strong>计算效率高</strong>：相比频域方法，计算量小，速度快，适合实时处理。</li>
+<li><strong>音色（Timbre）保持好</strong>：因为它直接操作原始波形片段，所以能很好地保留原始声音的共振峰（Formant）结构，听起来音色更自然，不会产生“机器人”或“米老鼠”效应。尤其对人声处理效果好。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：<ul>
+<li><strong>依赖基频检测的准确性</strong>：如果基频检测出错，切割位置不对，合成时就会产生明显的噪音和杂音。</li>
+<li><strong>不适合复音音乐（Polyphonic Music）</strong>：对于包含多种乐器、和弦的复杂音乐，很难找出一个统一的“基频”，算法会“混乱”，效果很差。</li>
+<li><strong>变调幅度大时容易产生瑕疵</strong>：大幅度升降调，会导致帧的重复或丢弃过于频繁，产生可闻的“颗粒感”或“颤音”瑕疵。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="二、频域方法-Frequency-Domain-Methods"><a href="#二、频域方法-Frequency-Domain-Methods" class="headerlink" title="二、频域方法 (Frequency-Domain Methods)"></a>二、频域方法 (Frequency-Domain Methods)</h3><p>频域方法不直接操作波形，而是先将音频转换到频域，对频率成分进行修改，再转换回时域。最主流的技术是<strong>相位声码器 (Phase Vocoder)</strong>。</p>
+<p>我们可以把它想象成一个“精密的光谱分析仪”。</p>
+<h4 id="1-原理核心-1"><a href="#1-原理核心-1" class="headerlink" title="1. 原理核心"></a>1. 原理核心</h4><p>相位声码器的核心思想是：<strong>将音频分解成一系列不同频率的正弦波，然后直接拉伸或压缩这个频率谱，最后再重新合成声音。</strong></p>
+<p>它也包含三个主要步骤：</p>
+<p><strong>第一步：分析 (Analysis) - 短时傅里叶变换 (STFT)</strong></p>
+<ol>
+<li><strong>分帧加窗</strong>：和时域法类似，先把音频切成一段段重叠的短帧。</li>
+<li><strong>傅里叶变换 (Fourier Transform)</strong>：对<strong>每一帧</strong>都进行傅里叶变换，得到该时刻的<strong>频谱（Spectrum）</strong>。频谱描述了这一小段声音包含了哪些频率成分，以及每个频率成分的<strong>振幅（Amplitude）<strong>和</strong>相位（Phase）</strong>。<ul>
+<li><strong>振幅</strong>：代表这个频率声音的大小。</li>
+<li><strong>相位</strong>：代表这个频率波形的起始位置。</li>
+</ul>
+</li>
+</ol>
+<p><strong>第二步：修改 (Modification) - 频谱拉伸与相位校正</strong></p>
+<p>这是频域法的精髓所在。我们现在操作的不是波形，而是频率和相位信息。</p>
+<ul>
+<li><strong>频率拉伸&#x2F;压缩 (Frequency Scaling)</strong>：<ul>
+<li><strong>升高音高</strong>：将整个频率轴进行“拉伸”。例如，要将音高提升一个八度（频率加倍），就将<code>100Hz</code>的能量移动到<code>200Hz</code>，<code>500Hz</code>的能量移动到<code>1000Hz.</code>.. 整个频谱图被“横向拉长”。</li>
+<li><strong>降低音高</strong>：将整个频率轴进行“压缩”。要降低一个八度，就将<code>200Hz</code>的能量移动到<code>100Hz</code>，<code>1000Hz</code>的能量移动到<code>500Hz</code>。</li>
+</ul>
+</li>
+<li><strong>相位校正 (Phase Correction)</strong>：这是最关键也最复杂的一步。如果只改变频率而不处理相位，合成后的声音会听起来非常奇怪，有严重的“相位感”或“金属回响”（称为<code>Phasiness</code>）。因为每个频率的相位必须与上一帧保持连续和同步。相位声码器会根据频率的变化重新计算每个频率应有的新相位，以确保波形在帧与帧之间能够平滑地衔接。</li>
+</ul>
+<p><strong>第三步：合成 (Synthesis) - 逆短时傅里叶变换 (<code>ISTFT</code>)</strong></p>
+<ol>
+<li><strong>逆傅里叶变换 (Inverse Fourier Transform)</strong>：对每一个<strong>被修改过</strong>的频谱帧（包含新的频率和校正后的相位）进行逆傅里叶变换，将其从频域重新转换回时域，得到一个个新的小波形片段。</li>
+<li><strong>重叠相加 (Overlap-Add)</strong>：和<code>TD-PSOLA</code>一样，将这些新的波形片段通过重叠相加的方式，拼接成最终的、音高被改变了的完整音频。</li>
+</ol>
+<h4 id="2-优缺点-1"><a href="#2-优缺点-1" class="headerlink" title="2. 优缺点"></a>2. 优缺点</h4><ul>
+<li><strong>优点</strong>：<ul>
+<li><strong>对复音音乐效果好</strong>：因为它处理的是所有频率成分，所以能很好地处理包含多个乐器、和弦的复杂音乐。</li>
+<li><strong>变调质量高</strong>：在正确实现的情况下，音质损失较小， artifacts（瑕疵）比时域方法少。</li>
+<li><strong>功能更强大</strong>：除了变调，还可以独立进行时间拉伸（Time Stretching），甚至更高级的音色保留（Formant Preservation）等操作。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：<ul>
+<li><strong>计算量巨大</strong>：<code>STFT</code>和<code>ISTFT</code>涉及大量复杂的数学运算，对计算资源要求很高，实时处理的延迟更大。</li>
+<li><strong>瞬态模糊 (Transient Smearing)</strong>：傅里叶变换的“窗口”特性，可能会导致声音中一些尖锐、短暂的冲击声（如鼓点、响指）的清晰度下降，听起来变得“模糊”或“软”。</li>
+<li><strong>相位瑕疵 (<code>Phasiness</code>)</strong>：如果相位校正做得不好，仍然会产生“相位感”的瑕疵，听起来不自然。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="总结与对比"><a href="#总结与对比" class="headerlink" title="总结与对比"></a>总结与对比</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>时域方法 (<code>TD-PSOLA</code>)</th>
+<th>频域方法 (Phase Vocoder)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>核心原理</strong></td>
+<td>剪切、复制、粘贴原始波形片段</td>
+<td>分解为频率，拉伸频谱，再合成</td>
+</tr>
+<tr>
+<td><strong>处理对象</strong></td>
+<td>音频波形采样点</td>
+<td>频谱（振幅和相位）</td>
+</tr>
+<tr>
+<td><strong>计算复杂度</strong></td>
+<td>低，速度快</td>
+<td>高，计算密集</td>
+</tr>
+<tr>
+<td><strong>音质</strong></td>
+<td>大幅度变调时易产生颗粒感</td>
+<td>通常更高，但可能模糊瞬态</td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td><strong>人声、单音乐器（Monophonic）</strong>，实时性要求高的应用</td>
+<td><strong>复杂音乐、和弦、背景音（Polyphonic）</strong>，对音质要求高的后期制作</td>
+</tr>
+<tr>
+<td><strong>主要挑战</strong></td>
+<td>基频检测的准确性</td>
+<td>相位校正与瞬态保持</td>
+</tr>
+</tbody></table>
+<p>另外，这里借用参考链接1的结论：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">###</span> 结论  </span><br><span class="line"></span><br><span class="line">SOLA方法能够以相对简单高效的方式实现时间/音高缩放，适用于小范围的时间或音高调整，并可应用于各类声音，包括人声和已制作完成的音乐。然而，当时间/音高调整比例较大（如超过百分之几十）时，SOLA的音质会受到影响，产生类似混响的伪影。  </span><br><span class="line"></span><br><span class="line">在使用标准C语言实现的情况下，实时处理CD级立体声音频（采用SOLA算法）大约需要一颗100 MHz的处理器，这意味着现代个人计算机甚至便携设备（如PDA和智能手机）均可轻松实现实时SOLA处理。此外，SOLA采用的互相关算法特别适合利用CPU的SIMD（单指令多数据）指令进行优化，可降低50<span class="comment">%-70%的CPU占用率。  </span></span><br><span class="line"></span><br><span class="line">如有必要，SOLA也可采用整数或定点运算实现，因此即使在不支持浮点运算的处理器上也能运行。  </span><br><span class="line"></span><br><span class="line">与SOLA算法相比，相位声码器（Phase Vocoder）在时间/音高缩放方面的最大优势在于，即使进行大幅调整，也不会像SOLA那样产生混响伪影。然而，相位声码器会引入其他伪影，最明显的是因相位失同步导致的音色沉闷，以及频率响应不均的问题。  </span><br><span class="line"></span><br><span class="line">相位声码器最适合处理单一或少数乐器的独立音轨、人声或歌唱音频，但对于已混音完成的高质量音乐后期处理，其表现可能不尽如人意。  </span><br><span class="line"></span><br><span class="line">相位声码器的计算量较大，涉及复数运算，因此通常必须使用浮点运算。高质量的相位声码器实现所需的计算能力约为SOLA算法的十倍。如果仅应用时间缩放效果（从而省略部分最耗时的计算阶段），并采用针对处理器优化的SIMD指令，在Pentium III级别的处理器上实时处理CD级立体声音频仍需约500 MHz的主频。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="开源方法"><a href="#开源方法" class="headerlink" title="开源方法"></a>开源方法</h3><table>
+<thead>
+<tr>
+<th>库名</th>
+<th>是否 Phase Vocoder</th>
+<th>协议</th>
+<th>链接</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>RubberBandLiveShifter</strong></td>
+<td>✅ 是</td>
+<td>GPL v2+（需授权）</td>
+<td><a target="_blank" rel="noopener" href="https://breakfastquay.com/rubberband/">1</a>,<br /><a target="_blank" rel="noopener" href="https://github.com/breakfastquay/rubberband">2</a></td>
+</tr>
+<tr>
+<td><strong>SoundTouch</strong></td>
+<td>❌ 否（基于 SOLA）</td>
+<td>LGPL v2.1</td>
+<td><a target="_blank" rel="noopener" href="https://www.surina.net/soundtouch/">SoundTouch</a></td>
+</tr>
+<tr>
+<td>**Audio-Effects **</td>
+<td>✅ 是</td>
+<td>GPL v3</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/juandagilc/Audio-Effects">Audio-Effects</a></td>
+</tr>
+</tbody></table>
+<p>这些协议都有限制，还是自己（让大模型）写吧。</p>
+<hr>
+<h3 id="✅demo"><a href="#✅demo" class="headerlink" title="✅demo"></a>✅demo</h3><hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.surina.net/article/time-and-pitch-scaling.html">https://www.surina.net/article/time-and-pitch-scaling.html</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Phase-Vocoder/" rel="tag"># Phase Vocoder</a>
+              <a href="/tags/Pitch-Shifting/" rel="tag"># Pitch Shifting</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/06/27/RAG%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9Alangchain/" rel="prev" title="RAG实战篇：langchain">
+                  <i class="fa fa-angle-left"></i> RAG实战篇：langchain
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/07/02/uv%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" rel="next" title="uv常用命令">
+                  uv常用命令 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">330k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20:01</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
