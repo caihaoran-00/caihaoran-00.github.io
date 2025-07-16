@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言我们在前面简单体验了下通义灵码的效果，现在我们将一起解析下自定义唤醒词系统，目的是加深认识并发掘其可优化的点。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义唤醒词系统解析">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/07/11/AAshare/abc/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言我们在前面简单体验了下通义灵码的效果，现在我们将一起解析下自定义唤醒词系统，目的是加深认识并发掘其可优化的点。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-11T06:20:06.000Z">
+<meta property="article:modified_time" content="2025-07-14T11:15:49.514Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="kws">
+<meta property="article:tag" content="通义灵码">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/07/11/AAshare/abc/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E8%A7%A3%E6%9E%90/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/07/11/AAshare/abc/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E8%A7%A3%E6%9E%90/","path":"2025/07/11/AAshare/abc/自定义唤醒词系统解析/","title":"自定义唤醒词系统解析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>自定义唤醒词系统解析 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%94%A4%E9%86%92%E8%AF%8D%E6%8F%90%E4%BA%A4%E6%8E%A5%E5%8F%A3%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">唤醒词提交接口定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#execute-training-job"><span class="nav-number">2.2.</span> <span class="nav-text">execute_training_job</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E9%9F%B3%E9%A2%91%E5%A2%9E%E5%BC%BA%E7%AD%96%E7%95%A5"><span class="nav-number">2.3.</span> <span class="nav-text">设置音频增强策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E9%A2%91%E8%B0%B1%E5%9B%BE%E5%B9%B6%E5%AD%98%E5%82%A8%E4%B8%BA-mmap-%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.4.</span> <span class="nav-text">生成频谱图并存储为 mmap 格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%94%81-%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="nav-number">2.5.</span> <span class="nav-text">🔁 数据流示意图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AE%AD%E7%BB%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.6.</span> <span class="nav-text">生成训练配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E%EF%BC%9A"><span class="nav-number">2.6.0.1.</span> <span class="nav-text">字段说明：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA-feature-%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9A"><span class="nav-number">2.6.0.2.</span> <span class="nav-text">多个 feature 的作用：</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">附录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95-1"><span class="nav-number">4.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#min-signal-remaining-out-scale"><span class="nav-number">4.1.</span> <span class="nav-text">min_signal_remaining &amp; out_scale</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#slide-frames"><span class="nav-number">4.2.</span> <span class="nav-text">slide_frames</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/07/11/AAshare/abc/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="自定义唤醒词系统解析 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          自定义唤醒词系统解析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-07-11 14:20:06" itemprop="dateCreated datePublished" datetime="2025-07-11T14:20:06+08:00">2025-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-07-14 19:15:49" itemprop="dateModified" datetime="2025-07-14T19:15:49+08:00">2025-07-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>21 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在<a href="https://caihaoran-00.github.io/2025/07/10/%E9%80%9A%E4%B9%89%E7%81%B5%E7%A0%81-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F/">前面</a>简单体验了下通义灵码的效果，现在我们将一起解析下自定义唤醒词系统，目的是加深认识并发掘其可优化的点。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>我们将采用从上到下，由浅及深的方式进行剖析，首先是基于<code>FastAPI</code>框架的服务端代码，该文件定义了三个接口供服务端调用，分别是：</p>
+<ul>
+<li>唤醒词提交接口 （<code>/api/v1/training-jobs</code>)</li>
+<li>状态查询接口  (<code>/api/v1/training-jobs/&#123;job-id&#125;</code>)</li>
+<li>模型文件下载接口 (<code>/api/v1/training-jobs/&#123;job-id&#125;/download</code>)</li>
+</ul>
+<p>状态查询接口与模型文件下载接口涉及的逻辑比较直接，我们将就唤醒词提交接口进行剖析。</p>
+<h3 id="唤醒词提交接口定义"><a href="#唤醒词提交接口定义" class="headerlink" title="唤醒词提交接口定义"></a>唤醒词提交接口定义</h3><p><strong>接口代码：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/api/v1/training-jobs&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">submit_job</span>(<span class="params"></span></span><br><span class="line"><span class="params">        background_tasks: BackgroundTasks,</span></span><br><span class="line"><span class="params">        wake_word: <span class="built_in">str</span> = Form(<span class="params">...</span>),</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Submits a training job. The wake_word will be used for training.&quot;&quot;&quot;</span></span><br><span class="line">    job_id = <span class="built_in">str</span>(uuid.uuid4())</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Use a format-friendly version of the wake word</span></span><br><span class="line">    wake_word_formatted = wake_word.lower().replace(<span class="string">&quot; &quot;</span>, <span class="string">&quot;_&quot;</span>)</span><br><span class="line"></span><br><span class="line">    JOBS[job_id] = &#123;</span><br><span class="line">        <span class="string">&#x27;job_id&#x27;</span>: job_id,</span><br><span class="line">        <span class="string">&#x27;status&#x27;</span>: <span class="string">&#x27;pending&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;wake_word&#x27;</span>: wake_word,</span><br><span class="line">        <span class="string">&#x27;submitted_at&#x27;</span>: time.time()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Delegate the entire training process to the background worker</span></span><br><span class="line">    background_tasks.add_task(execute_training_job, job_id, wake_word_formatted, JOBS)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> JSONResponse(</span><br><span class="line">        status_code=<span class="number">202</span>,</span><br><span class="line">        content=&#123;</span><br><span class="line">            <span class="string">&quot;message&quot;</span>: <span class="string">&quot;Training job submitted successfully.&quot;</span>,</span><br><span class="line">            <span class="string">&quot;job_id&quot;</span>: job_id,</span><br><span class="line">            <span class="string">&quot;status_check_url&quot;</span>: <span class="string">f&quot;/api/v1/training-jobs/<span class="subst">&#123;job_id&#125;</span>&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+
+<p>涉及以下<strong>几点</strong>：</p>
+<ul>
+<li><p>当客户端通过 POST 请求提交训练任务时，此函数会被调用。</p>
+</li>
+<li><p>生成唯一的任务 ID，并将任务信息存入 JOBS。</p>
+</li>
+<li><p>使用 <code>background_tasks.add_task</code> 异步执行训练过程，避免阻塞主线程。</p>
+</li>
+<li><p>返回包含任务 ID 和状态查询 URL 的响应。</p>
+</li>
+</ul>
+<hr>
+<h3 id="execute-training-job"><a href="#execute-training-job" class="headerlink" title="execute_training_job"></a>execute_training_job</h3><p>在唤醒词接口提交定义接口中，主要依赖的是<strong>execute_training_job</strong>方法进行的训练，<strong>流程</strong>具体包括：</p>
+<ul>
+<li><strong>生成唤醒词语音样本</strong><ul>
+<li>调用 <code>piper-sample-generator/generate_samples.py</code> 脚本。</li>
+<li>根据唤醒词文本生成对应的语音 <code>WAV</code> 文件。</li>
+<li>输出到 <code>jobs/&#123;job_id&#125;/generated_samples/</code> 目录中。</li>
+<li>参数控制最大样本数（5000）和每批生成数量（500）(具体数字仅供参考）。</li>
+</ul>
+</li>
+<li><strong>设置音频增强策略</strong><ul>
+<li>使用 Clips 类加载所有生成的样本。</li>
+<li>使用 Augmentation 设置各种音频增强策略，包括 <code>EQ</code>、失真、混响、背景噪声等。</li>
+<li>增强后的样本用于提升模型泛化能力。</li>
+</ul>
+</li>
+<li><strong>生成频谱图并存储为 <code>mmap</code> 格式</strong><ul>
+<li>对音频进行预处理，生成 Mel 频谱图。</li>
+<li>将频谱图以 <code>mmap</code> 格式写入磁盘，便于高效读取。</li>
+<li>分成训练集、验证集、测试集分别处理。</li>
+</ul>
+</li>
+<li><strong>生成训练配置文件</strong><ul>
+<li>构建一个包含训练参数的 <code>YAML</code> 配置文件。</li>
+<li>包括训练目录、特征路径、训练步数、学习率、批量大小等超参数。</li>
+<li>配置文件保存为 <code>jobs/&#123;job_id&#125;/training_parameters.yaml</code>。</li>
+</ul>
+</li>
+<li><strong>开始训练模型</strong><ul>
+<li>调用 <code>microwakeword.model_train_eval</code> 模块进行模型训练。</li>
+<li>使用指定的网络结构（如 <code>mixedne</code>t）。</li>
+<li>训练过程中会自动保存 checkpoint 和最佳权重。</li>
+<li>最终生成 <code>.tflite</code> 模型文件供嵌入式设备使用。</li>
+</ul>
+</li>
+<li><strong>获取最终模型并返回结果</strong><ul>
+<li>查找训练完成后生成的 <code>.tflite</code> 模型文件。</li>
+<li>更新任务状态为 <code>completed</code>。</li>
+<li>返回下载链接和模型路径供前端调用或下载。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>✅ 总结</p>
+<p>简单来说，这个方法依次完成：</p>
+<ol>
+<li>生成语音样本；</li>
+<li>数据增强；</li>
+<li>特征提取；</li>
+<li>模型训练；</li>
+<li>模型导出。</li>
+</ol>
+<hr>
+<h3 id="设置音频增强策略"><a href="#设置音频增强策略" class="headerlink" title="设置音频增强策略"></a>设置音频增强策略</h3><p><strong>节选代码：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- 2. Setup Augmentations ---</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;--- Step 2: Setting up augmentations ---&quot;</span>)</span><br><span class="line">        clips = Clips(</span><br><span class="line">            input_directory=os.path.join(job_dir, <span class="string">&#x27;generated_samples&#x27;</span>),</span><br><span class="line">            file_pattern=<span class="string">&#x27;*.wav&#x27;</span>,</span><br><span class="line">            max_clip_duration_s=<span class="literal">None</span>,</span><br><span class="line">            remove_silence=<span class="literal">False</span>,</span><br><span class="line">            random_split_seed=<span class="number">10</span>,</span><br><span class="line">            split_count=<span class="number">0.1</span>,</span><br><span class="line">        )</span><br><span class="line">        augmenter = Augmentation(</span><br><span class="line">            augmentation_duration_s=<span class="number">3.2</span>,</span><br><span class="line">            augmentation_probabilities=&#123;</span><br><span class="line">                <span class="string">&quot;SevenBandParametricEQ&quot;</span>: <span class="number">0.2</span>,</span><br><span class="line">                <span class="string">&quot;TanhDistortion&quot;</span>: <span class="number">0.1</span>,</span><br><span class="line">                <span class="string">&quot;PitchShift&quot;</span>: <span class="number">0.1</span>,</span><br><span class="line">                <span class="string">&quot;BandStopFilter&quot;</span>: <span class="number">0.2</span>,</span><br><span class="line">                <span class="string">&quot;AddColorNoise&quot;</span>: <span class="number">0.2</span>,</span><br><span class="line">                <span class="string">&quot;AddBackgroundNoise&quot;</span>: <span class="number">0.75</span>,</span><br><span class="line">                <span class="string">&quot;Gain&quot;</span>: <span class="number">0.5</span>,</span><br><span class="line">                <span class="string">&quot;RIR&quot;</span>: <span class="number">0.5</span>,</span><br><span class="line">            &#125;,</span><br><span class="line">            impulse_paths=[os.path.join(prerequisites_dir, <span class="string">&#x27;mit_rirs&#x27;</span>)],</span><br><span class="line">            background_paths=[</span><br><span class="line">                os.path.join(prerequisites_dir, <span class="string">&#x27;fma_16k&#x27;</span>),</span><br><span class="line">                os.path.join(prerequisites_dir, <span class="string">&#x27;audioset_16k&#x27;</span>)</span><br><span class="line">            ],</span><br><span class="line">            background_min_snr_db=<span class="number">0</span>,</span><br><span class="line">            background_max_snr_db=<span class="number">10</span>,</span><br><span class="line">            min_jitter_s=<span class="number">0.05</span>,</span><br><span class="line">            max_jitter_s=<span class="number">0.205</span>,</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>这里的<strong>Clips</strong>类（初始化）主要作用：</p>
+<ul>
+<li>一些参数的初始化赋值</li>
+<li><code>generated_samples</code>目录下的<code>wav</code>文件加载到类属性中</li>
+<li><code>generated_samples</code>目录下的<code>wav</code>文件切分成训练集、验证集和测试集后加载到类属性中</li>
+</ul>
+<p><strong>Augmentation</strong>类（初始化）主要作用：</p>
+<ul>
+<li>初始化方法 <code>init</code> 用于配置和构建一个音频增强管道，它使用了 <code>audiomentations</code> 库来实现多种音频增强操作</li>
+<li>如果提供了 <code>background_paths</code>，则启用背景噪声增强<ul>
+<li>使用指定目录下的背景噪声样本，并按 <code>SNR</code> 范围混合到目标音频中。</li>
+</ul>
+</li>
+<li>如果提供了 <code>impulse_paths</code>，则启用房间混响增强<ul>
+<li>使用提供的 <code>RIR</code> 文件模拟不同房间的声学效果</li>
+</ul>
+</li>
+<li>…</li>
+<li>通过 <code>audiomentations.Compose</code> 统一管理这些操作</li>
+</ul>
+<blockquote>
+<p>注意这里这是构建了一个音频增强管道，还未触发，继续往下流程，会有触发时机。</p>
+<p>数据流顺序：输入音频 → <code>EQ</code> → <code>Tanh</code>失真 → <code>PitchShift</code> → 带阻滤波 → 颜色噪声 → 背景噪声 → 增益 → 增益过渡 → 混响 → 归一化。</p>
+<table>
+<thead>
+<tr>
+<th align="left">增强操作</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>SevenBandParametricEQ</code></td>
+<td align="left">多频段均衡器，可随机调整频率响应</td>
+</tr>
+<tr>
+<td align="left"><code>TanhDistortion</code></td>
+<td align="left">添加 <code>tanh</code> 失真，模拟录音设备非线性失真</td>
+</tr>
+<tr>
+<td align="left"><code>PitchShift</code></td>
+<td align="left">音高偏移，改变音调</td>
+</tr>
+<tr>
+<td align="left"><code>BandStopFilter</code></td>
+<td align="left">带阻滤波器，模拟特定频率干扰</td>
+</tr>
+<tr>
+<td align="left"><code>AddColorNoise</code></td>
+<td align="left">添加彩色噪声，模拟环境噪声</td>
+</tr>
+<tr>
+<td align="left"><code>background_noise_augment</code></td>
+<td align="left">添加背景噪声（来自指定路径）</td>
+</tr>
+<tr>
+<td align="left"><code>Gain</code></td>
+<td align="left">随机增益调整</td>
+</tr>
+<tr>
+<td align="left"><code>GainTransition</code></td>
+<td align="left">模拟增益渐变（如从安静到大声）</td>
+</tr>
+<tr>
+<td align="left"><code>reverb_augment</code></td>
+<td align="left">混响增强（来自 <code>RIR</code> 文件）</td>
+</tr>
+<tr>
+<td align="left"><code>Normalize</code></td>
+<td align="left">归一化处理，防止音频溢出</td>
+</tr>
+</tbody></table>
+</blockquote>
+<hr>
+<h3 id="生成频谱图并存储为-mmap-格式"><a href="#生成频谱图并存储为-mmap-格式" class="headerlink" title="生成频谱图并存储为 mmap 格式"></a>生成频谱图并存储为 <code>mmap</code> 格式</h3><p><strong>代码节选：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- 3. Augment and Create Spectrograms ---</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;--- Step 3: Augmenting samples and creating spectrograms ---&quot;</span>)</span><br><span class="line">        output_dir_features = os.path.join(job_dir, <span class="string">&#x27;generated_augmented_features&#x27;</span>)</span><br><span class="line">        os.makedirs(output_dir_features, exist_ok=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        splits = [<span class="string">&quot;training&quot;</span>, <span class="string">&quot;validation&quot;</span>, <span class="string">&quot;testing&quot;</span>]</span><br><span class="line">        <span class="keyword">for</span> split <span class="keyword">in</span> splits:</span><br><span class="line">            out_dir = os.path.join(output_dir_features, split)</span><br><span class="line">            os.makedirs(out_dir, exist_ok=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># ... (logic for setting split_name, repetition, etc.) ...</span></span><br><span class="line">            split_name = <span class="string">&quot;train&quot;</span></span><br><span class="line">            repetition = <span class="number">2</span></span><br><span class="line">            spectrograms = SpectrogramGeneration(clips=clips, augmenter=augmenter, slide_frames=<span class="number">10</span>, step_ms=<span class="number">10</span>)</span><br><span class="line">            <span class="keyword">if</span> split == <span class="string">&quot;validation&quot;</span>:</span><br><span class="line">                split_name = <span class="string">&quot;validation&quot;</span></span><br><span class="line">                repetition = <span class="number">1</span></span><br><span class="line">            <span class="keyword">elif</span> split == <span class="string">&quot;testing&quot;</span>:</span><br><span class="line">                split_name = <span class="string">&quot;test&quot;</span></span><br><span class="line">                repetition = <span class="number">1</span></span><br><span class="line">                spectrograms = SpectrogramGeneration(clips=clips, augmenter=augmenter, slide_frames=<span class="number">1</span>, step_ms=<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">            RaggedMmap.from_generator(</span><br><span class="line">                out_dir=os.path.join(out_dir, <span class="string">&#x27;wakeword_mmap&#x27;</span>),</span><br><span class="line">                sample_generator=spectrograms.spectrogram_generator(split=split_name, repeat=repetition),</span><br><span class="line">                batch_size=<span class="number">100</span>,</span><br><span class="line">                verbose=<span class="literal">True</span>,</span><br><span class="line">            )</span><br></pre></td></tr></table></figure>
+
+<p>这里主要是两块：</p>
+<ul>
+<li><p><code>SpectrogramGeneration</code>，<code>.spectrogram_generator</code></p>
+<ul>
+<li>负责从 Clips 中获取音频片段；</li>
+<li>可选地通过 Augmentation 对音频进行增强；</li>
+<li>使用 generate_features_for_clip(…) 生成梅尔频谱图（Mel Spectrogram）；</li>
+<li>支持对频谱图进行切片、滑动窗口等处理，模拟流式输入。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">参数</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>clips</code></td>
+<td align="center">音频片段来源，通常是 Clips 实例</td>
+</tr>
+<tr>
+<td align="center"><code>augmenter</code></td>
+<td align="center">数据增强器，可为 <code>None</code> 表示不启用数据增强</td>
+</tr>
+<tr>
+<td align="center"><code>slide_frames</code></td>
+<td align="center">控制是否生成多个重叠的频谱图（用于模拟流式模型行为）</td>
+</tr>
+<tr>
+<td align="center"><code>step_ms</code></td>
+<td align="center">梅尔频谱图的帧移（frame shift），默认值 <code>10ms</code></td>
+</tr>
+</tbody></table>
+<p><strong>📡 核心方法：<code>spectrogram_generator(...)</code></strong></p>
+<p>这个方法返回一个 <strong>Python generator</strong>，可以按需生成频谱图。</p>
+<p><strong>示例调用：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">generator = spectrograms.spectrogram_generator(split=<span class="string">&quot;train&quot;</span>, repeat=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>工作流程：</strong></p>
+<ol>
+<li><p><strong>获取音频片段生成器</strong>：</p>
+<ul>
+<li>如果 <code>random=True</code>，使用 <code>clips.random_audio_generator()</code> 随机取样；</li>
+<li>否则使用 <code>clips.audio_generator(**kwargs)</code> 获取所有音频样本，repeat（重复）参数也是在这里作用的。</li>
+</ul>
+</li>
+<li><p><strong>应用增强（如果有）</strong>：</p>
+<ul>
+<li><p>如果传入了 <code>augmenter</code>，则调用其 <code>.augment_generator(...)</code> 方法对每个音频片段进行增强。</p>
+<blockquote>
+<p>.augment_generator(…)里面调用了<code>augment_clip</code>方法，负责对单个输入音频进行增强处理，参数说明：</p>
+<ul>
+<li><strong><code>input_audio</code></strong>: 输入的原始音频片段，格式为 <code>NumPy</code> 数组。</li>
+</ul>
+<p><strong>🧱 步骤解析</strong></p>
+<p><strong>1. 添加时间偏移（Jitter）</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input_audio = <span class="variable language_">self</span>.add_jitter(input_audio)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>调用 <code>self.add_jitter(...)</code> 方法，在音频中添加随机的时间偏移。</li>
+<li>时间偏移范围由 min_jitter_samples]和 max_jitter_samples控制（在初始化时根据秒数转换为采样点数）。</li>
+<li>这个操作<strong>模拟语音在不同位置开始的情况，提高模型鲁棒性</strong>。</li>
+</ul>
+<ol start="2">
+<li>创建固定长度片段</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input_audio = <span class="variable language_">self</span>.create_fixed_size_clip(input_audio)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>调用 <code>self.create_fixed_size_clip(...)</code> 方法，将音频裁剪或填充到指定长度（<code>self.augmented_samples</code>）。</li>
+<li>如果音频太短，则循环重复直到满足长度要求；</li>
+<li>如果音频太长，则根据 <code>truncate_randomly</code>决定是否随机截断。</li>
+</ul>
+<p><strong>3. 应用音频增强</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pythonwith warnings.catch_warnings():</span><br><span class="line">    warnings.simplefilter(<span class="string">&quot;ignore&quot;</span>)</span><br><span class="line">    output_audio = <span class="variable language_">self</span>.augment(input_audio, sample_rate=<span class="number">16000</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>self.augment(...)</code>使用 <code>audiomentations.Compose</code> 定义的增强管道对音频进行处理。</li>
+<li><code>audiomentations.Compose</code>增强过程按概率触发每个增强操作（如 <code>EQ</code>、<code>混响</code>、<code>背景噪声</code>等）。</li>
+<li>使用 <code>warnings.catch_warnings()</code> 忽略某些无关警告（如背景音量过低）</li>
+</ul>
+<ol start="4">
+<li>返回增强后的音频</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> output_audio</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>返回经过完整增强流程的音频数据，用于后续特征提取或训练。</li>
+</ul>
+<hr>
+<h3 id="🔁-数据流示意图"><a href="#🔁-数据流示意图" class="headerlink" title="🔁 数据流示意图"></a>🔁 数据流示意图</h3><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">输入音频 → <span class="built_in">add_jitter</span>() → <span class="built_in">create_fixed_size_clip</span>() → <span class="built_in">apply_augmentation</span>() → 输出增强后音频</span><br></pre></td></tr></table></figure>
+
+<hr>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p><strong>生成频谱图</strong>：</p>
+<ul>
+<li><p>使用 <code>generate_features_for_clip(...)</code> 将音频转换为梅尔频谱图（Mel Spectrogram）</p>
+<blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">generate_features_for_clip</span>(<span class="params"></span></span><br><span class="line"><span class="params">    audio_samples: np.ndarray, step_ms: <span class="built_in">int</span> = <span class="number">20</span>, use_c: <span class="built_in">bool</span> = <span class="literal">True</span></span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Generates spectrogram features for the given audio data.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        audio_samples (numpy.ndarray): The clip&#x27;s audio samples.</span></span><br><span class="line"><span class="string">        step_ms (int, optional): The window step size in ms. Defaults to 20.</span></span><br><span class="line"><span class="string">        use_c (bool, optional): Whether to use the C implementation of the microfrontend via pymicro-features. Defaults to True.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Raises:</span></span><br><span class="line"><span class="string">        ValueError: If the provided audio data is not a 16-bit integer array.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        numpy.ndarray: The spectrogram features for the provided audio clip.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Convert any float formatted audio data to an int16 array</span></span><br><span class="line">    <span class="keyword">if</span> audio_samples.dtype <span class="keyword">in</span> (np.float32, np.float64):</span><br><span class="line">        audio_samples = np.clip((audio_samples * <span class="number">32768</span>), -<span class="number">32768</span>, <span class="number">32767</span>).astype(np.int16)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> use_c:</span><br><span class="line">        audio_samples = audio_samples.tobytes()</span><br><span class="line">        micro_frontend = MicroFrontend()</span><br><span class="line">        features = []</span><br><span class="line">        audio_idx = <span class="number">0</span></span><br><span class="line">        num_audio_bytes = <span class="built_in">len</span>(audio_samples)</span><br><span class="line">        <span class="keyword">while</span> audio_idx + <span class="number">160</span> * <span class="number">2</span> &lt; num_audio_bytes:</span><br><span class="line">            frontend_result = micro_frontend.ProcessSamples(</span><br><span class="line">                audio_samples[audio_idx : audio_idx + <span class="number">160</span> * <span class="number">2</span>]</span><br><span class="line">            )</span><br><span class="line">            audio_idx += frontend_result.samples_read * <span class="number">2</span></span><br><span class="line">            <span class="keyword">if</span> frontend_result.features:</span><br><span class="line">                features.append(frontend_result.features)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> np.array(features).astype(np.float32)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.device(<span class="string">&quot;/cpu:0&quot;</span>):</span><br><span class="line">        <span class="comment"># The default settings match the TFLM preprocessor settings.</span></span><br><span class="line">        <span class="comment"># Preproccesor model is available from the tflite-micro repository, accessed December 2023.</span></span><br><span class="line">        micro_frontend = frontend_op.audio_microfrontend(</span><br><span class="line">            tf.convert_to_tensor(audio_samples),</span><br><span class="line">            sample_rate=<span class="number">16000</span>,</span><br><span class="line">            window_size=<span class="number">30</span>,</span><br><span class="line">            window_step=step_ms,</span><br><span class="line">            num_channels=<span class="number">40</span>,</span><br><span class="line">            upper_band_limit=<span class="number">7500</span>,</span><br><span class="line">            lower_band_limit=<span class="number">125</span>,</span><br><span class="line">            enable_pcan=<span class="literal">True</span>,</span><br><span class="line">            min_signal_remaining=<span class="number">0.05</span>,</span><br><span class="line">            out_scale=<span class="number">1</span>,</span><br><span class="line">            out_type=tf.uint16,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        spectrogram = micro_frontend.numpy()</span><br><span class="line">        <span class="keyword">return</span> spectrogram</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果音频数据是float型，那么转化为<code>int16</code>型</li>
+<li>上方的<code>MicroFrontend</code>看不到源码，下方的<code>frontend_op.audio_microfrontend</code>有效的底层也是<code>c/c++</code>代码（也看不到），目前知道的有效信息包括：<ul>
+<li>计算的是对数梅尔谱</li>
+<li><code>30ms</code>窗长</li>
+<li><code>10ms</code>步移</li>
+<li>每帧生成40个特征</li>
+<li>使用噪声抑制和自动增益控制</li>
+<li>最低频率是125 Hz，最高是7500 Hz</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>关于min_signal_remaining与out_scale的详细解释见文末的附录。</strong></p>
+</blockquote>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">window<span class="built_in">_</span>size=30：</span><br><span class="line">含义：时间帧的长度，单位为毫秒。</span><br><span class="line">作用：定义用于分析音频的窗口大小。窗口越大，频率分辨率越高，但时间分辨率会降低。</span><br><span class="line"></span><br><span class="line">window<span class="built_in">_</span>step=step<span class="built_in">_</span>ms：</span><br><span class="line">含义：帧之间的步长，单位为毫秒。</span><br><span class="line">作用：定义相邻帧之间的间隔，控制时间分辨率。较小的步长会增加帧的重叠，提高时间分辨率但增加计算量。</span><br><span class="line"></span><br><span class="line">num<span class="built_in">_</span>channels=40：</span><br><span class="line">含义：滤波器组的通道数。</span><br><span class="line">作用：指定梅尔滤波器组的数量。值越大，特征维度越高，能捕捉更精细的频率信息，但也会增加计算复杂度。</span><br><span class="line"></span><br><span class="line">upper<span class="built_in">_</span>band<span class="built_in">_</span>limit=7500：</span><br><span class="line">含义：滤波器组的最高频率限制，单位为 Hz。</span><br><span class="line">作用：定义梅尔滤波器组覆盖的最高频率范围。此值通常根据音频的频率特性设置。</span><br><span class="line"></span><br><span class="line">lower<span class="built_in">_</span>band<span class="built_in">_</span>limit=125：</span><br><span class="line">含义：滤波器组的最低频率限制，单位为 Hz。</span><br><span class="line">作用：定义梅尔滤波器组覆盖的最低频率范围。此值通常根据音频的频率特性设置。</span><br><span class="line"></span><br><span class="line">enable<span class="built_in">_</span>pcan=True：</span><br><span class="line">含义：是否启用 PCAN（Power Compressed Adaptive Normalization）自动增益控制。</span><br><span class="line">作用：提升模型对不同音量环境的鲁棒性，通过归一化处理减少音量变化对特征的影响。</span><br><span class="line"></span><br><span class="line">min<span class="built_in">_</span>signal<span class="built_in">_</span>remaining=0.05：</span><br><span class="line">含义：保留信号的最小比例。</span><br><span class="line">作用：控制背景噪声抑制的强度。值越小，抑制越强，但可能会过度衰减有用信号。</span><br><span class="line"></span><br><span class="line">out<span class="built_in">_</span>scale=1：</span><br><span class="line">含义：输出特征的缩放因子。</span><br><span class="line">作用：对滤波器组的输出进行缩放。值越大，特征值越小；值越小，特征值越大。</span><br><span class="line"></span><br><span class="line">out<span class="built_in">_</span>type=tf.uint16：</span><br><span class="line">含义：输出张量的数据类型。</span><br><span class="line">作用：指定输出特征的数据类型。这里使用 uint16 类型，适用于嵌入式设备和低资源环境。</span><br></pre></td></tr></table></figure></blockquote>
+</li>
+</ul>
+</li>
+<li><p><strong>频谱图切片处理（可选）</strong>：</p>
+<ul>
+<li><p>如果设置了 <code>split_spectrogram_duration_s</code>，则将频谱图切分为非重叠段。</p>
+</li>
+<li><p>如果设置了 <code>slide_frames</code>，则生成多个滑动窗口的频谱图（用于模拟实时语音识别场景）。</p>
+<blockquote>
+<p>关于slide_frames的具体作用见文末的附录。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p><code>RaggedMmap.from_generator</code></p>
+<ul>
+<li><p><strong>调用 <code>spectrogram_generator(split=..., repeat=...)</code> 生成频谱图；</strong></p>
+</li>
+<li><p>使用 <code>RaggedMmap.from_generator(...)</code> 将这些频谱图写入磁盘；</p>
+</li>
+<li><p>最终输出文件结构如下：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">generated<span class="built_in">_</span>augmented<span class="built_in">_</span>features/</span><br><span class="line">    training/</span><br><span class="line">        wakeword<span class="built_in">_</span>mmap/</span><br><span class="line">            data.mmap</span><br><span class="line">            index.json</span><br><span class="line">    validation/</span><br><span class="line">        wakeword<span class="built_in">_</span>mmap/</span><br><span class="line">            data.mmap</span><br><span class="line">            index.json</span><br><span class="line">    testing/</span><br><span class="line">        wakeword<span class="built_in">_</span>mmap/</span><br><span class="line">            data.mmap</span><br><span class="line">            index.json</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>data.mmap &#x3D; 数据库文件（所有频谱图），index.json &#x3D; 查询索引（记录每个样本的位置和大小），<strong>是一种高效的数据存储和读取方式和通用的特征存储方案</strong>。</p>
+<p>index.json示例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;offset&quot;</span><span class="punctuation">:</span> <span class="number">0</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;length&quot;</span><span class="punctuation">:</span> <span class="number">3200</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;shape&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="number">80</span><span class="punctuation">,</span> <span class="number">40</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wakeword&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;offset&quot;</span><span class="punctuation">:</span> <span class="number">3200</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;length&quot;</span><span class="punctuation">:</span> <span class="number">2400</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;shape&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="number">60</span><span class="punctuation">,</span> <span class="number">40</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;label&quot;</span><span class="punctuation">:</span> <span class="string">&quot;non_wakeword&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">]</span></span><br></pre></td></tr></table></figure></blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="生成训练配置文件"><a href="#生成训练配置文件" class="headerlink" title="生成训练配置文件"></a>生成训练配置文件</h3><p><strong>代码：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># --- 4. Create YAML Config ---</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;--- Step 4: Creating  training configuration file ---&quot;</span>)</span><br><span class="line">        <span class="comment"># Note the use of absolute paths for features_dir to link to pre-downloaded data</span></span><br><span class="line"></span><br><span class="line">        train_dir = os.path.join(job_dir, <span class="string">&quot;trained_models/wakeword&quot;</span>)</span><br><span class="line">        os.makedirs(train_dir, exist_ok=<span class="literal">True</span>)</span><br><span class="line">        config = &#123;</span><br><span class="line">            <span class="string">&quot;window_step_ms&quot;</span>: <span class="number">10</span>,</span><br><span class="line">            <span class="string">&quot;train_dir&quot;</span>: train_dir,  <span class="comment"># Relative to job_dir</span></span><br><span class="line">            <span class="string">&quot;features&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;features_dir&quot;</span>: os.path.abspath(output_dir_features),</span><br><span class="line">                    <span class="string">&quot;sampling_weight&quot;</span>: <span class="number">2.0</span>, <span class="string">&quot;penalty_weight&quot;</span>: <span class="number">1.0</span>, <span class="string">&quot;truth&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">                    <span class="string">&quot;truncation_strategy&quot;</span>: <span class="string">&quot;truncate_start&quot;</span>, <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mmap&quot;</span>,</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;features_dir&quot;</span>: os.path.join(negative_datasets_path, <span class="string">&quot;speech&quot;</span>),</span><br><span class="line">                    <span class="string">&quot;sampling_weight&quot;</span>: <span class="number">10.0</span>, <span class="string">&quot;penalty_weight&quot;</span>: <span class="number">1.0</span>, <span class="string">&quot;truth&quot;</span>: <span class="literal">False</span>,</span><br><span class="line">                    <span class="string">&quot;truncation_strategy&quot;</span>: <span class="string">&quot;random&quot;</span>, <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mmap&quot;</span>,</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;features_dir&quot;</span>: os.path.join(negative_datasets_path, <span class="string">&quot;dinner_party&quot;</span>),</span><br><span class="line">                    <span class="string">&quot;sampling_weight&quot;</span>: <span class="number">10.0</span>, <span class="string">&quot;penalty_weight&quot;</span>: <span class="number">1.0</span>, <span class="string">&quot;truth&quot;</span>: <span class="literal">False</span>,</span><br><span class="line">                    <span class="string">&quot;truncation_strategy&quot;</span>: <span class="string">&quot;random&quot;</span>, <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mmap&quot;</span>,</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;features_dir&quot;</span>: os.path.join(negative_datasets_path, <span class="string">&quot;no_speech&quot;</span>),</span><br><span class="line">                    <span class="string">&quot;sampling_weight&quot;</span>: <span class="number">5.0</span>, <span class="string">&quot;penalty_weight&quot;</span>: <span class="number">1.0</span>, <span class="string">&quot;truth&quot;</span>: <span class="literal">False</span>,</span><br><span class="line">                    <span class="string">&quot;truncation_strategy&quot;</span>: <span class="string">&quot;random&quot;</span>, <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mmap&quot;</span>,</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;features_dir&quot;</span>: os.path.join(negative_datasets_path, <span class="string">&quot;dinner_party_eval&quot;</span>),</span><br><span class="line">                    <span class="string">&quot;sampling_weight&quot;</span>: <span class="number">0.0</span>, <span class="string">&quot;penalty_weight&quot;</span>: <span class="number">1.0</span>, <span class="string">&quot;truth&quot;</span>: <span class="literal">False</span>,</span><br><span class="line">                    <span class="string">&quot;truncation_strategy&quot;</span>: <span class="string">&quot;split&quot;</span>, <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mmap&quot;</span>,</span><br><span class="line">                &#125;,</span><br><span class="line">            ],</span><br><span class="line">            <span class="string">&quot;training_steps&quot;</span>: [<span class="number">10000</span>], <span class="string">&quot;positive_class_weight&quot;</span>: [<span class="number">1</span>], <span class="string">&quot;negative_class_weight&quot;</span>: [<span class="number">20</span>],</span><br><span class="line">            <span class="string">&quot;learning_rates&quot;</span>: [<span class="number">0.001</span>], <span class="string">&quot;batch_size&quot;</span>: <span class="number">128</span>, <span class="string">&quot;time_mask_max_size&quot;</span>: [<span class="number">0</span>],</span><br><span class="line">            <span class="string">&quot;time_mask_count&quot;</span>: [<span class="number">0</span>], <span class="string">&quot;freq_mask_max_size&quot;</span>: [<span class="number">0</span>], <span class="string">&quot;freq_mask_count&quot;</span>: [<span class="number">0</span>],</span><br><span class="line">            <span class="string">&quot;eval_step_interval&quot;</span>: <span class="number">500</span>, <span class="string">&quot;clip_duration_ms&quot;</span>: <span class="number">1500</span>,</span><br><span class="line">            <span class="string">&quot;target_minimization&quot;</span>: <span class="number">0.9</span>, <span class="string">&quot;minimization_metric&quot;</span>: <span class="literal">None</span>,</span><br><span class="line">            <span class="string">&quot;maximization_metric&quot;</span>: <span class="string">&quot;average_viable_recall&quot;</span>,</span><br><span class="line">        &#125;</span><br><span class="line">        config_path = os.path.join(job_dir, <span class="string">&quot;training_parameters.yaml&quot;</span>)</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(config_path, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">            yaml.dump(config, file)</span><br></pre></td></tr></table></figure>
+
+<p>这段代码的主要功能是<strong>为训练任务生成一个 YAML 格式的配置文件training_parameters.yaml</strong>，用于控制模型训练的各个方面，包括数据路径、采样策略、训练参数等。</p>
+<p>🧾 配置内容详解</p>
+<p>🧩 基础参数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">config = &#123;</span><br><span class="line">    <span class="string">&quot;window_step_ms&quot;</span>: <span class="number">10</span>,</span><br><span class="line">    <span class="string">&quot;train_dir&quot;</span>: train_dir,</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+<th align="left">推荐值&#x2F;说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>window_step_ms</code></td>
+<td align="left">滑动窗口步长（单位毫秒），决定帧之间的重叠程度</td>
+<td align="left"><code>10 ms</code> 是标准语音处理常用值，提供较高时间分辨率</td>
+</tr>
+<tr>
+<td align="left"><code>train_dir</code></td>
+<td align="left">模型权重和中间结果的保存路径</td>
+<td align="left">由 <code>job_dir</code> 动态生成，确保每次任务独立</td>
+</tr>
+</tbody></table>
+<p>📂 特征数据源配置（features）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;features&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;features_dir&quot;</span>: os.path.abspath(output_dir_features),</span><br><span class="line">        <span class="string">&quot;sampling_weight&quot;</span>: <span class="number">2.0</span>, <span class="string">&quot;penalty_weight&quot;</span>: <span class="number">1.0</span>, <span class="string">&quot;truth&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">        <span class="string">&quot;truncation_strategy&quot;</span>: <span class="string">&quot;truncate_start&quot;</span>, <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mmap&quot;</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment"># ... 其他非唤醒词样本 ...</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>这部分定义了训练时使用的特征数据源，采用列表形式支持多源输入。每项是一个字典，描述一组特征数据的路径和行为。</p>
+<h5 id="字段说明："><a href="#字段说明：" class="headerlink" title="字段说明："></a>字段说明：</h5><table>
+<thead>
+<tr>
+<th align="left">字段名</th>
+<th align="left">含义</th>
+<th align="left">示例值说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>features_dir</code></td>
+<td align="left">特征数据目录，包含 <code>data.mmap</code> 和 <code>index.json</code></td>
+<td align="left">可以是唤醒词数据、背景噪声、其他语音片段等</td>
+</tr>
+<tr>
+<td align="left">sampling_weight</td>
+<td align="left">数据采样权重，数值越大表示在训练中被选中的概率越高</td>
+<td align="left"><code>2.0</code> 表示比默认高两倍</td>
+</tr>
+<tr>
+<td align="left">penalty_weight</td>
+<td align="left">错误分类惩罚权重，用于调整损失函数中不同类别的重要性</td>
+<td align="left"><code>1.0</code> 表示无特殊加权</td>
+</tr>
+<tr>
+<td align="left"><code>truth</code></td>
+<td align="left">是否为“正类”样本（即是否是唤醒词）</td>
+<td align="left"><code>True</code> 表示是唤醒词；<code>False</code> 表示负样本</td>
+</tr>
+<tr>
+<td align="left">truncation_strategy</td>
+<td align="left">截断策略，用于处理长度不一致的频谱图</td>
+<td align="left"><code>truncate_start</code>, <code>random</code>, <code>split</code> 等</td>
+</tr>
+<tr>
+<td align="left"><code>type</code></td>
+<td align="left">数据类型</td>
+<td align="left"><code>&quot;mmap&quot;</code> 表示使用内存映射文件格式</td>
+</tr>
+</tbody></table>
+<h5 id="多个-feature-的作用："><a href="#多个-feature-的作用：" class="headerlink" title="多个 feature 的作用："></a>多个 feature 的作用：</h5><ul>
+<li>第一项是 <strong>唤醒词样本</strong>（如 “<code>Hey Siri</code>”）；</li>
+<li>后续几项是 <strong>非唤醒词样本</strong>（如普通语音、环境噪音、空白音频）；</li>
+<li>通过不同 <code>sampling_weight</code> 控制正负样本的平衡；</li>
+<li>通过 <code>truth=False</code> 标记它们为负样本，用于训练模型识别非目标语音。</li>
+</ul>
+<p>⚙️ 训练参数配置</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;training_steps&quot;</span>: [<span class="number">10000</span>],</span><br><span class="line"><span class="string">&quot;positive_class_weight&quot;</span>: [<span class="number">1</span>], </span><br><span class="line"><span class="string">&quot;negative_class_weight&quot;</span>: [<span class="number">20</span>],</span><br><span class="line"><span class="string">&quot;learning_rates&quot;</span>: [<span class="number">0.001</span>], </span><br><span class="line"><span class="string">&quot;batch_size&quot;</span>: <span class="number">128</span>,</span><br><span class="line"><span class="string">&quot;time_mask_max_size&quot;</span>: [<span class="number">0</span>], </span><br><span class="line"><span class="string">&quot;time_mask_count&quot;</span>: [<span class="number">0</span>], </span><br><span class="line"><span class="string">&quot;freq_mask_max_size&quot;</span>: [<span class="number">0</span>], </span><br><span class="line"><span class="string">&quot;freq_mask_count&quot;</span>: [<span class="number">0</span>],</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+<th align="left">推荐值说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>training_steps</code></td>
+<td align="left">总共训练多少步</td>
+<td align="left"><code>[10000]</code> 表示训练 10000 步</td>
+</tr>
+<tr>
+<td align="left"><code>positive_class_weight</code></td>
+<td align="left">正类（唤醒词）在损失函数中的权重</td>
+<td align="left"><code>[1]</code> 表示正常权重</td>
+</tr>
+<tr>
+<td align="left"><code>negative_class_weight</code></td>
+<td align="left">负类（非唤醒词）在损失函数中的权重</td>
+<td align="left"><code>[20]</code> 表示模型更关注识别出非唤醒词</td>
+</tr>
+<tr>
+<td align="left"><code>learning_rates</code></td>
+<td align="left">学习率</td>
+<td align="left"><code>[0.001]</code> 是常用的初始学习率</td>
+</tr>
+<tr>
+<td align="left"><code>batch_size</code></td>
+<td align="left">每次训练使用的样本数</td>
+<td align="left"><code>128</code> 是常见值，适合大多数 GPU 内存容量</td>
+</tr>
+<tr>
+<td align="left"><code>time_mask_max_size</code>, <code>time_mask_count</code></td>
+<td align="left">时间维度上的随机掩码大小和数量</td>
+<td align="left"><code>[0]</code> 表示未启用 SpecAugment 中的时间掩码增强</td>
+</tr>
+<tr>
+<td align="left"><code>freq_mask_max_size</code>, <code>freq_mask_count</code></td>
+<td align="left">频率维度上的掩码大小和数量</td>
+<td align="left"><code>[0]</code> 表示未启用频率掩码增强</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>✅ 这些掩码参数如果设为大于 0 的值，则会启用 <strong>SpecAugment 数据增强技术</strong>，提高模型泛化能力。</p>
+</blockquote>
+<p>📊 评估与优化目标</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;eval_step_interval&quot;</span>: <span class="number">500</span>,</span><br><span class="line"><span class="string">&quot;clip_duration_ms&quot;</span>: <span class="number">1500</span>,</span><br><span class="line"><span class="string">&quot;target_minimization&quot;</span>: <span class="number">0.9</span>,</span><br><span class="line"><span class="string">&quot;minimization_metric&quot;</span>: <span class="literal">None</span>,</span><br><span class="line"><span class="string">&quot;maximization_metric&quot;</span>: <span class="string">&quot;average_viable_recall&quot;</span>,</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+<th align="left">推荐值说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>eval_step_interval</code></td>
+<td align="left">每隔多少步进行一次验证集评估</td>
+<td align="left"><code>500</code> 表示每训练 500 步就验证一次</td>
+</tr>
+<tr>
+<td align="left"><code>clip_duration_ms</code></td>
+<td align="left">输入音频片段的标准持续时间（单位：毫秒）</td>
+<td align="left"><code>1500 ms</code> 是唤醒词识别常见片段长度</td>
+</tr>
+<tr>
+<td align="left"><code>target_minimization</code></td>
+<td align="left">目标最小化指标阈值</td>
+<td align="left"><code>0.9</code> 表示达到此指标后停止训练</td>
+</tr>
+<tr>
+<td align="left"><code>minimization_metric</code></td>
+<td align="left">最小化指标名称</td>
+<td align="left"><code>None</code> 表示不启用自动停止机制</td>
+</tr>
+<tr>
+<td align="left"><code>maximization_metric</code></td>
+<td align="left">最大化指标名称</td>
+<td align="left"><code>&quot;average_viable_recall&quot;</code> 表示优先提升召回率</td>
+</tr>
+</tbody></table>
+<p>📝 保存配置到 YAML 文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">config_path = os.path.join(job_dir, <span class="string">&quot;training_parameters.yaml&quot;</span>)</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(config_path, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    yaml.dump(config, file)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将上述构建的 <code>config</code> 字典写入 <code>training_parameters.yaml</code>；</li>
+<li>YAML 是一种结构清晰、易读性强的配置文件格式；</li>
+<li>后续训练脚本可以直接加载这个文件来启动训练任务。</li>
+</ul>
+<blockquote>
+<p>一些补充信息，请查看</p>
+</blockquote>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><hr>
+<hr>
+<h2 id="附录-1"><a href="#附录-1" class="headerlink" title="附录"></a>附录</h2><h3 id="min-signal-remaining-out-scale"><a href="#min-signal-remaining-out-scale" class="headerlink" title="min_signal_remaining &amp; out_scale"></a>min_signal_remaining &amp; out_scale</h3><ol>
+<li><code>min_signal_remaining=0.05</code></li>
+</ol>
+<p>含义：</p>
+<ul>
+<li><code>min_signal_remaining</code> 表示在进行<strong>信号衰减（Smoothing）操作时，保留的最小信号比例</strong>。</li>
+<li>这个值是一个介于 0 和 1 之间的浮点数。</li>
+</ul>
+<p>科学解释：</p>
+<ul>
+<li>在音频处理中，为了减少背景噪声的影响，会对滤波器组输出的特征进行平滑处理（Smoothing）。</li>
+<li>平滑的过程可能会导致有用信号的衰减，特别是在低能量区域。</li>
+<li><code>min_signal_remaining</code> 的作用是：<strong>确保即使在平滑后，至少保留原始信号的一部分（这里是 5%）</strong>，以避免过度衰减有用信息。</li>
+</ul>
+<p>具象类比：</p>
+<p>想象你正在听一段音乐，但环境中有一定的背景噪音。为了让你听得更清晰，系统会尝试降低背景噪音的音量。然而，如果降得太狠，音乐本身的某些细节也可能被削弱了。</p>
+<ul>
+<li><code>min_signal_remaining=0.05</code> 就像是设置一个“最低保留音量”——即使你要降低背景噪音，也要保证音乐的主旋律至少保留 5%，这样不会完全丢失重要内容。</li>
+</ul>
+<p>推荐值说明：</p>
+<ul>
+<li><strong>推荐值为 0.05</strong>，意味着允许最多衰减 95% 的信号，但至少保留 5% 的原始信号强度。</li>
+<li>如果这个值太小（比如 0.01），可能导致背景噪声抑制过强，损失有用的语音信息；</li>
+<li>如果这个值太大（比如 0.2），可能无法有效抑制背景噪声。</li>
+</ul>
+<ol start="2">
+<li><code>out_scale=1</code></li>
+</ol>
+<p>含义：</p>
+<ul>
+<li><code>out_scale</code> 是对输出特征进行缩放的因子。</li>
+<li>它是一个整数，表示将最终输出的所有特征值都除以这个数。</li>
+</ul>
+<p>科学解释：</p>
+<ul>
+<li>音频前端处理后的特征值通常会比较大（例如范围在 0~65535，因为使用的是 <code>uint16</code> 类型）。</li>
+<li>为了适配后续模型输入的需求（如归一化到 [0,1] 或 [-1,1] 范围），需要对这些数值进行缩放。</li>
+<li><code>out_scale=1</code> 表示不对输出做任何缩放（即除以 1），保持原始数值。</li>
+</ul>
+<p>具象类比：</p>
+<p>你可以把它理解为一种“图像亮度调节”：</p>
+<ul>
+<li>如果你拍了一张照片很亮（像素值很高），你想让它适合显示设备，就会调低亮度（比如除以 256）；</li>
+<li><code>out_scale=1</code> 就相当于“不调整亮度”，直接输出原始图像；</li>
+<li>如果你设成 <code>out_scale=256</code>，那就是把每个值缩小 256 倍，让数值范围更适合模型处理。</li>
+</ul>
+<p>推荐值说明：</p>
+<ul>
+<li><strong>默认值为 1</strong>，适用于大多数情况，特别是当你希望保留原始动态范围时。</li>
+<li>如果你发现特征值过大，影响后续模型训练或推理，可以适当增大这个值（比如设为 2、4、8 等）来进行压缩。</li>
+</ul>
+<p>总结对比表：</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数名</th>
+<th align="left">含义</th>
+<th align="left">推荐值</th>
+<th align="left">作用</th>
+<th align="left">影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>min_signal_remaining</code></td>
+<td align="left">最小保留信号比例</td>
+<td align="left"><code>0.05</code></td>
+<td align="left">控制背景噪声抑制强度</td>
+<td align="left">太小 → 损失有用信号；太大 → 噪声抑制不足</td>
+</tr>
+<tr>
+<td align="left"><code>out_scale</code></td>
+<td align="left">输出特征缩放因子</td>
+<td align="left"><code>1</code></td>
+<td align="left">缩放输出特征值大小</td>
+<td align="left">增大 → 特征值变小；减小 → 特征值变大</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如果你是在嵌入式设备上运行这段代码，并且对内存和计算资源有限制，建议保持这些默认值不变，除非你有明确的性能或精度优化需求。</p>
+<hr>
+<hr>
+<h3 id="slide-frames"><a href="#slide-frames" class="headerlink" title="slide_frames"></a>slide_frames</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">elif</span> <span class="variable language_">self</span>.slide_frames <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                <span class="comment"># Generates self.slide_frames spectrograms by shifting over the already generated spectrogram</span></span><br><span class="line">                spectrogram_length = spectrogram.shape[<span class="number">0</span>] - <span class="variable language_">self</span>.slide_frames + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">                slided_spectrograms = np.lib.stride_tricks.sliding_window_view(</span><br><span class="line">                    spectrogram, window_shape=(spectrogram_length, spectrogram.shape[<span class="number">1</span>])</span><br><span class="line">                )</span><br><span class="line">                <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="variable language_">self</span>.slide_frames):</span><br><span class="line">                    <span class="keyword">yield</span> np.squeeze(slided_spectrograms[i])</span><br></pre></td></tr></table></figure>
+
+<p>你提到的这段代码确实就是实现 <strong>滑动窗口（Sliding Window）机制</strong> 的核心逻辑之一，它在唤醒词系统中用于模拟<strong>实时音频流的特征切片行为</strong>。下面我会从原理和一个具象的例子来详细解释。</p>
+<p>🔍 技术原理详解</p>
+<ol>
+<li><strong>滑动窗口的核心目标：</strong></li>
+</ol>
+<ul>
+<li><strong>模拟实时语音识别场景</strong>：比如用户说“Hey Siri”，但不是一次性说完，而是随着时间推移一点点输入；</li>
+<li><strong>提升模型对时间连续性的理解能力</strong>：通过不同偏移量的片段训练模型识别关键词的位置不变性；</li>
+<li><strong>数据增强</strong>：不增加新音频的前提下，从已有音频中生成更多训练样本。</li>
+</ul>
+<ol start="2">
+<li>代码逐行解释：</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">elif</span> <span class="variable language_">self</span>.slide_frames <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果启用了滑动窗口模式，则进入此分支。</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spectrogram_length = spectrogram.shape[<span class="number">0</span>] - <span class="variable language_">self</span>.slide_frames + <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>计算滑动窗口下每个窗口的长度（即输出帧数）。例如：</p>
+</blockquote>
+<ul>
+<li>如果原始频谱图有 100 帧，<code>slide_frames=5</code>，那么每次取 96 帧 → 可以滑动 5 次得到 5 个样本。</li>
+</ul>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pythonslided_spectrograms = np<span class="selector-class">.lib</span><span class="selector-class">.stride_tricks</span><span class="selector-class">.sliding_window_view</span>(</span><br><span class="line">    spectrogram, window_shape=(spectrogram_length, spectrogram<span class="selector-class">.shape</span><span class="selector-attr">[1]</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>使用 <code>NumPy</code> 的 <code>sliding_window_view</code> 创建一个滑动窗口视图，不会复制数据，效率高。</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="variable language_">self</span>.slide_frames):</span><br><span class="line">    <span class="keyword">yield</span> np.squeeze(slided_spectrograms[i])</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>依次取出每一个滑动窗口片段，并用 <code>yield</code> 返回，形成一个 Python 生成器（generator），按需加载。</p>
+</blockquote>
+<p><strong>🎯 具象举例说明</strong></p>
+<p><strong>场景描述：</strong></p>
+<p>你有一个唤醒词音频：“Hey Wake Word”，持续时间为 1 秒，采样率为 16000 Hz。</p>
+<p>使用默认参数处理后，你会得到一个形状为 <code>(100, 40)</code> 的梅尔频谱图（共 100 帧）。</p>
+<p>你希望你的模型能够：</p>
+<ul>
+<li>在推理阶段能实时检测唤醒词（而不是等整个句子说完）；</li>
+<li>在训练阶段看到不同位置的片段，提高鲁棒性。</li>
+</ul>
+<p>于是你设置了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">self</span>.slide_frames = <span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<p>你可以从这 100 帧中提取出以下 5 个片段：</p>
+<table>
+<thead>
+<tr>
+<th align="left">片段编号</th>
+<th align="left">起始帧</th>
+<th align="left">终止帧</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">96</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">97</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">2</td>
+<td align="left">98</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">3</td>
+<td align="left">99</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">4</td>
+<td align="left">100</td>
+</tr>
+</tbody></table>
+<p>然后依次送入模型训练或推理。</p>
+<p>✅ 实际意义总结</p>
+<table>
+<thead>
+<tr>
+<th align="left">目标</th>
+<th align="left">如何达成</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">实时语音识别</td>
+<td align="left">模拟语音随时间逐步输入的场景</td>
+</tr>
+<tr>
+<td align="left">提高泛化能力</td>
+<td align="left">从同一音频中提取多个不同偏移的片段</td>
+</tr>
+<tr>
+<td align="left">减少误判</td>
+<td align="left">模型学会在不同位置都能识别唤醒词</td>
+</tr>
+<tr>
+<td align="left">高效内存利用</td>
+<td align="left">使用生成器（generator）按需加载，不一次性占用大量内存</td>
+</tr>
+</tbody></table>
+<p>🧠 最佳实践建议（来自经验记忆）</p>
+<ul>
+<li><strong>嵌入式设备&#x2F;边缘计算场景</strong>：可以开启 slide_frames 来模拟在线语音输入；</li>
+<li><strong>训练集推荐值</strong>：<code>slide_frames=5~10</code>，避免滑动太密集导致样本冗余；</li>
+<li><strong>验证&#x2F;测试集慎用</strong>：为了准确评估模型性能，通常只保留原始完整片段；</li>
+<li><strong>结合生成器使用</strong>：如本例所示，使用 <code>yield</code> 按需生成，防止内存爆炸。</li>
+</ul>
+<hr>
+<p>如果你正在开发一个类似 “Hey Siri”、“OK Google” 这样的唤醒词识别系统，<code>slide_frames</code> 就是你让模型具备“实时识别”能力的关键设计之一。</p>
+<hr>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/kws/" rel="tag"># kws</a>
+              <a href="/tags/%E9%80%9A%E4%B9%89%E7%81%B5%E7%A0%81/" rel="tag"># 通义灵码</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/07/10/%E9%80%9A%E4%B9%89%E7%81%B5%E7%A0%81-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F/" rel="prev" title="通义灵码->自定义唤醒词系统">
+                  <i class="fa fa-angle-left"></i> 通义灵码->自定义唤醒词系统
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/07/15/python-argparse%E6%A8%A1%E5%9D%97%E8%AF%A6%E8%A7%A3/" rel="next" title="python: argparse模块详解">
+                  python: argparse模块详解 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">344k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">20:52</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
