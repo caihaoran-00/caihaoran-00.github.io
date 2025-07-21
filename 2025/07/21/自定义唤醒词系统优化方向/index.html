@@ -19,27 +19,27 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="前言前面做了些AI智能聊天机器人的工作，那能不能和数字人结合起来呢，给聊天机器人赋予形象，本文即为端侧（安卓端）可运行的数字人调研记录。">
+    <meta name="description" content="前言我们前面解析了自定义唤醒词的整体逻辑，对于该系统有了个整体的认识，结合代码原理以及初步测试结果，我们发现了目前系统的一些不足，基于此，在本文梳理目前的问题与优化方向，作为记录和分享。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="端侧实时交互数字人调研">
-<meta property="og:url" content="https://caihaoran-00.github.io/2025/03/05/%E7%AB%AF%E4%BE%A7%E5%AE%9E%E6%97%B6%E4%BA%A4%E4%BA%92%E6%95%B0%E5%AD%97%E4%BA%BA%E8%B0%83%E7%A0%94/index.html">
+<meta property="og:title" content="自定义唤醒词系统优化方向">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/07/21/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96%E6%96%B9%E5%90%91/index.html">
 <meta property="og:site_name" content="Chr&#39;s Blog">
-<meta property="og:description" content="前言前面做了些AI智能聊天机器人的工作，那能不能和数字人结合起来呢，给聊天机器人赋予形象，本文即为端侧（安卓端）可运行的数字人调研记录。">
+<meta property="og:description" content="前言我们前面解析了自定义唤醒词的整体逻辑，对于该系统有了个整体的认识，结合代码原理以及初步测试结果，我们发现了目前系统的一些不足，基于此，在本文梳理目前的问题与优化方向，作为记录和分享。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-03-05T03:22:41.000Z">
-<meta property="article:modified_time" content="2025-03-05T08:45:12.696Z">
+<meta property="article:published_time" content="2025-07-21T07:08:20.000Z">
+<meta property="article:modified_time" content="2025-07-21T07:26:09.869Z">
 <meta property="article:author" content="Chr">
-<meta property="article:tag" content="数字人">
+<meta property="article:tag" content="kws">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://caihaoran-00.github.io/2025/03/05/%E7%AB%AF%E4%BE%A7%E5%AE%9E%E6%97%B6%E4%BA%A4%E4%BA%92%E6%95%B0%E5%AD%97%E4%BA%BA%E8%B0%83%E7%A0%94/">
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/07/21/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96%E6%96%B9%E5%90%91/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/03/05/%E7%AB%AF%E4%BE%A7%E5%AE%9E%E6%97%B6%E4%BA%A4%E4%BA%92%E6%95%B0%E5%AD%97%E4%BA%BA%E8%B0%83%E7%A0%94/","path":"2025/03/05/端侧实时交互数字人调研/","title":"端侧实时交互数字人调研"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/07/21/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96%E6%96%B9%E5%90%91/","path":"2025/07/21/自定义唤醒词系统优化方向/","title":"自定义唤醒词系统优化方向"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>端侧实时交互数字人调研 | Chr's Blog</title>
+<title>自定义唤醒词系统优化方向 | Chr's Blog</title>
   
 
 
@@ -199,7 +199,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/05/%E7%AB%AF%E4%BE%A7%E5%AE%9E%E6%97%B6%E4%BA%A4%E4%BA%92%E6%95%B0%E5%AD%97%E4%BA%BA%E8%B0%83%E7%A0%94/">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/07/21/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96%E6%96%B9%E5%90%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -212,12 +212,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="端侧实时交互数字人调研 | Chr's Blog">
+      <meta itemprop="name" content="自定义唤醒词系统优化方向 | Chr's Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          端侧实时交互数字人调研
+          自定义唤醒词系统优化方向
         </h1>
 
         <div class="post-meta-container">
@@ -229,7 +229,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2025-03-05 11:22:41 / 修改时间：16:45:12" itemprop="dateCreated datePublished" datetime="2025-03-05T11:22:41+08:00">2025-03-05</time>
+      <time title="创建时间：2025-07-21 15:08:20 / 修改时间：15:26:09" itemprop="dateCreated datePublished" datetime="2025-07-21T15:08:20+08:00">2025-07-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -237,7 +237,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
         </span>
     </span>
 
@@ -255,7 +255,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>64</span>
+      <span>403</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -272,11 +272,22 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面做了些AI智能聊天机器人的工作，那能不能和数字人结合起来呢，给聊天机器人赋予形象，本文即为端侧（安卓端）可运行的数字人调研记录。</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们前面解析了自定义唤醒词的整体逻辑，对于该系统有了个整体的认识，结合代码原理以及初步测试结果，我们发现了目前系统的一些不足，基于此，在本文梳理目前的问题与优化方向，作为记录和分享。</p>
 <span id="more"></span>
 
 <hr>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>本文不涉及具体数据，只涉及测试总结和分析。由于系统处在相对早期状态，所以目前测试不涉及噪声环境或者远距离场景下的表现，只涉及相对普通的场景。测试人员测试发现目前该系统：</p>
+<ul>
+<li>唤醒率（召回率）&#x2F;误拒绝率受说话人影响比较大，小孩和女人的误拒绝率很高</li>
+<li>对于男性测试者，误拒绝率虽然不高，但误接受率挺高</li>
+</ul>
+<p>可见目前该系统处于相对早期的状态。由于本周市场那边将要进行拿去体验&#x2F;拍视频等。所以目前最重要的是让小孩和女人能唤醒，怎么做呢？经验认为是训练素材的多样性不足，随机抽取了一部分训练素材进行试听，发现确实是这样，所以针对训练素材扩充进行实验，那么怎么扩充训练素材？</p>
+<ul>
+<li>换&#x2F;增加<code>TTS</code>模块</li>
+<li>增加实际人声</li>
+</ul>
+<p>显然换个<code>TTS</code>模块的成本低，就该方向进行实验，发现确实效果有大幅度提升。模型已给出，等待该次测试结果再做进一步实验。</p>
+
     </div>
 
     
@@ -285,20 +296,20 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%95%B0%E5%AD%97%E4%BA%BA/" rel="tag"># 数字人</a>
+              <a href="/tags/kws/" rel="tag"># kws</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2025/03/04/cam-senseVoice-Qwen2-5%E6%9E%84%E5%BB%BA%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="prev" title="cam+++senseVoice+Qwen2.5构建微服务">
-                  <i class="fa fa-angle-left"></i> cam+++senseVoice+Qwen2.5构建微服务
+                <a href="/2025/07/21/%E6%9D%82%E8%B0%88%EF%BC%9A%E6%9C%80%E8%BF%91%E7%9A%84%E4%B8%80%E4%BA%9B%E5%A4%A7%E5%9D%91/" rel="prev" title="杂谈：最近的一些大坑">
+                  <i class="fa fa-angle-left"></i> 杂谈：最近的一些大坑
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/" rel="next" title="TTS之GPT-Sovits介绍与使用">
-                  TTS之GPT-Sovits介绍与使用 <i class="fa fa-angle-right"></i>
+                <a href="/2025/07/21/RAG%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9APython/" rel="next" title="RAG实战篇：Python">
+                  RAG实战篇：Python <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
