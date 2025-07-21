@@ -19,18 +19,21 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Welcome to my little world">
+    <meta name="description" content="前言我们在前面讲解了RAG系统的原理，以及体验了基于langchain和RAGFlow的RAG系统，我们本篇将尽量不使用框架，使用纯Python的方式进行RAG系统的实现，以进一步理解RAG系统的运行方式。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RAG实战篇：Python">
 <meta property="og:url" content="https://caihaoran-00.github.io/2025/07/21/RAG%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9APython/index.html">
 <meta property="og:site_name" content="Chr&#39;s Blog">
-<meta property="og:description" content="Welcome to my little world">
+<meta property="og:description" content="前言我们在前面讲解了RAG系统的原理，以及体验了基于langchain和RAGFlow的RAG系统，我们本篇将尽量不使用框架，使用纯Python的方式进行RAG系统的实现，以进一步理解RAG系统的运行方式。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/21/RAG%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9APython/1.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/21/RAG%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9APython/2.png">
 <meta property="article:published_time" content="2025-07-21T07:31:08.000Z">
-<meta property="article:modified_time" content="2025-07-21T07:31:08.145Z">
+<meta property="article:modified_time" content="2025-07-21T11:05:58.837Z">
 <meta property="article:author" content="Chr">
-<meta property="article:tag" content="Hexo,langgraph,ASR,LLM,TTS">
+<meta property="article:tag" content="rag">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/07/21/RAG%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9APython/1.png">
 
 
 <link rel="canonical" href="https://caihaoran-00.github.io/2025/07/21/RAG%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9APython/">
@@ -126,7 +129,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -139,6 +142,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">4.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -226,8 +230,18 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2025-07-21 15:31:08" itemprop="dateCreated datePublished" datetime="2025-07-21T15:31:08+08:00">2025-07-21</time>
+      <time title="创建时间：2025-07-21 15:31:08 / 修改时间：19:05:58" itemprop="dateCreated datePublished" datetime="2025-07-21T15:31:08+08:00">2025-07-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
     </span>
 
   
@@ -244,14 +258,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>0</span>
+      <span>6k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>22 分钟</span>
     </span>
 </div>
 
@@ -261,7 +275,215 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在前面讲解了<code>RAG</code>系统的原理，以及体验了基于<code>langchain</code>和<code>RAGFlow</code>的RAG系统，我们本篇将尽量不使用框架，使用纯Python的方式进行RAG系统的实现，以进一步理解RAG系统的运行方式。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>本文将会使用<code>uv</code>进行虚拟环境创建，前面有文章讲解用法，不会的请往前翻，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> rag_python</span><br><span class="line"><span class="built_in">cd</span> rag_python</span><br><span class="line"></span><br><span class="line">uv init .</span><br><span class="line">tree	<span class="comment"># 查看当前文件夹有哪些文件</span></span><br></pre></td></tr></table></figure>
+
+<p>文件夹中有三个文件，对应作用如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">main.py	<span class="comment"># uv给我们初始化的Python文件</span></span><br><span class="line">pyproject.toml	<span class="comment"># 存储项目的元信息和依赖列表</span></span><br><span class="line">README.md	<span class="comment"># uv给我们初始化的项目说明文件</span></span><br></pre></td></tr></table></figure>
+
+<p>其中的<code>main.py</code>本次是不需要的，因为我们接下来要使用<code>jupyter notebook</code>，删除掉它：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rm</span> main.py</span><br></pre></td></tr></table></figure>
+
+<p>安装依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv add sentence_transformers chromadb openai python-dotenv</span><br></pre></td></tr></table></figure>
+
+<p>各依赖说明：</p>
+<ul>
+<li><code>sentence_transformers</code>：加载<code>embedding</code>和<code>cross-encoder</code>模型</li>
+<li><code>chromadb</code>：一个非常流行的向量数据库</li>
+<li><code>openai</code>：用于调用兼容<code>OpenAI API</code>格式的接口</li>
+<li><code>python-dotenv</code>：将<code>LLM</code>的<code>API Key</code>映射到环境变量中</li>
+</ul>
+<p>依赖环境准备好之后，下面准备一篇简单的文档：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">touch</span> doc.md</span><br></pre></td></tr></table></figure>
+
+<p>然后将下面的内容复制进<code>doc.md</code>中</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">#</span> 哆啦A梦与超级赛亚人：时空之战</span><br><span class="line"></span><br><span class="line">在一个寻常的午后，大雄依旧坐在书桌前发呆，作业堆得像山，连第一页都没动。哆啦A梦在一旁翻着漫画，时不时叹口气，觉得这孩子还是一如既往的不靠谱。正当他们的生活照常进行时，一道强光突然从天而降，整个房间震动不已。光芒中走出一名金发少年，身披战甲、气势惊人，他就是来自未来的超级赛亚人——特兰克斯。他一出现便说出了惊人的话：未来的地球即将被黑暗势力摧毁，他来此是为了寻求哆啦A梦的帮助。</span><br><span class="line"></span><br><span class="line">哆啦A梦与大雄听后大惊，但也从特兰克斯坚定的眼神中读出了不容拒绝的决心。特兰克斯解释说，未来的敌人并非普通反派，而是一个名叫“黑暗赛亚人”的存在，他由邪恶科学家复制了贝吉塔的基因并加以改造，实力超乎想象。这个敌人不仅拥有赛亚人战斗力，还能操纵扭曲的时间能量，几乎无人可敌。特兰克斯已经独自战斗多年，但每一次都以惨败告终。他说：“科技，是我那个时代唯一缺失的武器，而你们，正好拥有它。”</span><br><span class="line"></span><br><span class="line">于是，哆啦A梦带着特兰克斯与大雄启动时光机，穿越到了那个即将崩溃的未来世界。眼前的景象令人震撼：城市沦为废墟，大地裂痕纵横，天空中浮动着压抑的黑雾。特兰克斯说，这正是黑暗赛亚人带来的结果，一切生命几乎都被抹杀，只剩他在苦苦支撑。大雄虽感到恐惧，但看到无辜的人类遭殃，内心逐渐燃起斗志。哆啦A梦则冷静地分析局势，决定使用他最强的三样秘密道具来对抗黑暗势力。</span><br><span class="line"></span><br><span class="line">三件秘密道具分别是：可以临时赋予超级战力的“复制斗篷”，能暂停时间五秒的“时间停止手表”，以及可在一分钟中完成一年修行的“精神与时光屋便携版”。大雄被推进精神屋内，在其中接受密集的训练，虽然只有几分钟现实时间，他却经历了整整一年的苦修。刚开始他依旧软弱，想放弃、想逃跑，但当他想起静香、父母，还有哆啦A梦那坚定的眼神时，他终于咬牙坚持了下来。出来之后，他的身体与精神都焕然一新，眼神中多了一份成熟与自信。</span><br><span class="line"></span><br><span class="line">最终战在黑暗赛亚人的空中要塞前爆发，特兰克斯率先出击，释放全力与敌人正面对决。哆啦A梦则用任意门和道具支援，从各个方向制造混乱，尽量压制敌人的时空能力。但黑暗赛亚人太过强大，仅凭特兰克斯一人根本无法压制，更别说击败。就在特兰克斯即将被击倒之际，大雄披上复制斗篷、冲破恐惧从高空跃下。他的拳头燃烧着金色光焰，目标直指敌人心脏。</span><br><span class="line"></span><br><span class="line">时间停止装置在关键时刻启动，世界陷入静止，大雄用这个短短五秒接近了敌人的盲点。他集中全力，一记重拳击穿了黑暗赛亚人的能量核心，引发巨大的能量反冲。黑暗赛亚人尖叫着化为碎光，天空中的黑雾瞬间散去，阳光重新洒落大地。特兰克斯倒在地上，看着眼前这个曾经懦弱的少年，露出了欣慰的笑容。他知道，这一次，是大雄救了世界。</span><br><span class="line"></span><br><span class="line">战后，未来世界开始恢复，植物重新生长，人类重建家园。特兰克斯告别时紧紧握住大雄的手，说：“你是我见过最特别的战士。”哆啦A梦也为大雄感到骄傲，说他终于真正成长了一次。三人站在山丘上，看着远方重新明亮的地平线，心中感受到从未有过的安宁。随后，哆啦A梦与大雄乘坐时光机返回了属于他们的那个年代，一切仿佛又恢复平静。</span><br><span class="line"></span><br><span class="line">回到现代后，大雄仿佛变了一个人，不再轻易抱怨、不再逃避责任。他认真写完作业，帮妈妈买菜，甚至主动练习体育，哆啦A梦惊讶得说不出话来。他知道，这不是一时兴起，而是大雄真正内心成长的结果。大雄有时会望着天空出神，仿佛还能看见未来世界的那一片废墟与重生的希望。他不会说出来，但他心中永远铭记那一战。</span><br><span class="line"></span><br><span class="line">几天后，电视新闻中突然出现一则画面：一位金发少年在街头击退了失控的机器人，引发市民围观与猜测。大雄放下手中的课本，望向哆啦A梦，两人心照不宣地笑了。也许，特兰克斯又回来了，也许，新的敌人正在逼近。冒险从未真正结束，而他们，早已准备好了。无论时空如何动荡，他们将永远并肩作战。</span><br></pre></td></tr></table></figure>
+
+<p>万事俱备，下面打开<code>jupyter notebook</code>，注意要使用<code>uv</code>虚拟环境下的依赖，不能直接运行<code>jupyter notebook</code>，本次只需以<strong>只读</strong>方式使用<code>uv</code>管理的虚拟环境，故可运行（具体可查看参考链接3）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uv run --with jupyter jupyter lab</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意这种方式不能在<code>jupyter notebook</code>中安装新依赖了。</p>
+</blockquote>
+<img src="/2025/07/21/RAG%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9APython/1.png" class="" width="1">
+
+<p>在右侧右键选择<code>New Notebook</code>，选择如图所示的<code>Kernal</code></p>
+<img src="/2025/07/21/RAG%E5%AE%9E%E6%88%98%E7%AF%87%EF%BC%9APython/2.png" class="" width="2">
+
+<p>后面的使用不再赘述，我将分块解析代码并给出最终输出：</p>
+<blockquote>
+<p>代码解析来自<a target="_blank" rel="noopener" href="https://www.kimi.com/">k2</a>。</p>
+</blockquote>
+<p><strong>第一块：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">split_into_chunks</span>(<span class="params">doc_file: <span class="built_in">str</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">str</span>]:</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(doc_file, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> file:</span><br><span class="line">        content = file.read()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> [chunk <span class="keyword">for</span> chunk <span class="keyword">in</span> content.split(<span class="string">&quot;\n\n&quot;</span>)]</span><br><span class="line"></span><br><span class="line">chunks = split_into_chunks(<span class="string">&quot;doc.md&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, chunk <span class="keyword">in</span> <span class="built_in">enumerate</span>(chunks):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[<span class="subst">&#123;i&#125;</span>] <span class="subst">&#123;chunk&#125;</span>\n&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>解析：</p>
+<ul>
+<li>从 <code>typing</code> 模块中引入 <code>List</code>，用来给函数返回值添加类型注解，表示该函数返回一个由字符串组成的列表</li>
+<li>定义一个名为 <code>split_into_chunks</code> 的函数，接收一个字符串参数 <code>doc_file</code>（文件路径），并返回 <code>List[str]</code>（字符串列表）</li>
+<li>以只读模式打开指定路径的文件，把全部内容一次性读入变量 <code>content</code> 中。<code>with</code> 语句会在读取完毕后自动关闭文件</li>
+<li>用两个连续的换行符 <code>&quot;\n\n&quot;</code> 作为分隔符，把整篇文档拆成若干“块”（chunk）。列表推导式把拆分后的结果收集成一个列表并返回</li>
+<li>把 <code>&quot;doc.md&quot;</code> 作为输入文件路径，调用上述函数，并把返回的字符串列表存入变量 <code>chunks</code></li>
+<li>用 <code>enumerate</code> 在遍历的同时获得索引 <code>i</code> 和对应的块 <code>chunk</code>。每行打印格式为 <code>[索引] 块内容</code>，后面再跟一个换行，使得每个块之间视觉效果更清晰</li>
+</ul>
+<hr>
+<p><strong>第二块</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"></span><br><span class="line">embedding_model = SentenceTransformer(<span class="string">&quot;shibing624/text2vec-base-chinese&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">embed_chunk</span>(<span class="params">chunk: <span class="built_in">str</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">float</span>]:</span><br><span class="line">    embedding = embedding_model.encode(chunk, normalize_embeddings=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> embedding.tolist()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">embedding = embed_chunk(<span class="string">&quot;测试内容&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">len</span>(embedding))</span><br><span class="line"><span class="built_in">print</span>(embedding)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>shibing624/text2vec-base-chinese</code>—&gt;Downloads last month: 1,167,135</p>
+</blockquote>
+<p>解析：</p>
+<ul>
+<li>从 <code>sentence_transformers</code> 包中引入 <code>SentenceTransformer</code> 类，用来加载和使用 Sentence-BERT 系列模型</li>
+<li>实例化一个句向量模型，模型名 <code>&quot;shibing624/text2vec-base-chinese&quot;</code> 是 Hugging Face Hub 上开源的一个中文文本向量化模型。第一次运行时会自动下载权重并缓存到本地</li>
+<li>定义向量化函数，参数 <code>chunk: str</code>：输入一段文本。<code>encode(..., normalize_embeddings=True)</code>：把文本转成固定维度的向量；<code>normalize_embeddings=True</code> 表示把向量做 <code>L2</code> 归一化（长度1）。<code>.tolist()</code>：把 <code>NumPy</code> 数组转换成普通的 Python <code>List[float]</code>，方便后续 <code>JSON</code> 序列化或其他处理</li>
+<li>对字符串 “测试内容” 进行向量化，打印出向量的维度（长度）以及具体的向量值。对于 <code>shibing624/text2vec-base-chinese</code> 这个模型，输出维度通常是 768。</li>
+</ul>
+<hr>
+<p><strong>第三块：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">embeddings = [embed_chunk(chunk) <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks]</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">len</span>(embeddings))</span><br><span class="line"><span class="built_in">print</span>(embeddings[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+
+<p>解析：</p>
+<ul>
+<li>批量向量化，对前面拆分得到的每一个文本块 <code>chunk</code>（来自 <code>chunks</code> 列表）调用 <code>embed_chunk</code>，将其转换为向量。结果是一个新的列表 <code>embeddings</code>，其中每个元素都是一个 <code>List[float]</code>，长度等于模型维度（768）</li>
+<li>打印向量化后的总块数，输出 <code>embeddings</code> 的长度，即一共有多少个文本块被成功向量化。这个值应当与前面 <code>chunks</code> 的数量一致</li>
+<li>打印第一个文本块的向量，将第一个文本块对应的 768 维向量完整打印出来（通常是一大串浮点数）</li>
+</ul>
+<hr>
+<p><strong>第四块：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> chromadb</span><br><span class="line"></span><br><span class="line">chromadb_client = chromadb.EphemeralClient()</span><br><span class="line">chromadb_collection = chromadb_client.get_or_create_collection(name=<span class="string">&quot;default&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">save_embeddings</span>(<span class="params">chunks: <span class="type">List</span>[<span class="built_in">str</span>], embeddings: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">float</span>]]</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">    <span class="keyword">for</span> i, (chunk, embedding) <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="built_in">zip</span>(chunks, embeddings)):</span><br><span class="line">        chromadb_collection.add(</span><br><span class="line">            documents=[chunk],</span><br><span class="line">            embeddings=[embedding],</span><br><span class="line">            ids=[<span class="built_in">str</span>(i)]</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">save_embeddings(chunks, embeddings)</span><br></pre></td></tr></table></figure>
+
+<p>解析：</p>
+<ul>
+<li><p>导入 <code>ChromaDB</code>，引入官方 Python 客户端 <code>chromadb</code>，用于在本地内存中创建、操作向量数据库</p>
+</li>
+<li><p>创建<strong>临时内存型</strong>客户端，<code>EphemeralClient()</code> 会启动一个<strong>只在当前进程生命周期内存在的轻量级服务器</strong>，数据全部存放在内存，进程退出后数据即消失，无需持久化文件</p>
+<blockquote>
+<p>适合一次性实验、<code>Jupyter Notebook</code> 或单元测试场景</p>
+</blockquote>
+</li>
+<li><p>获取或创建集合（Collection），在 <code>ChromaDB</code> 中，所有文档和向量都存放在<strong>集合</strong>里，<code>get_or_create_collection</code> 表示：</p>
+<ul>
+<li>如果已存在名为 <code>&quot;default&quot;</code> 的集合，就直接返回；</li>
+<li>否则新建一个空集合并返回。</li>
+</ul>
+<blockquote>
+<p>集合名可以自定义；这里用 <code>&quot;default&quot;</code> 作为示例</p>
+</blockquote>
+</li>
+<li><p>定义保存函数，函数接收两个列表：<code>chunks</code>（文本块）和 <code>embeddings</code>（向量）</p>
+<ul>
+<li><code>zip</code> 并行迭代，保证每个文本块与其向量一一对应。</li>
+<li>在循环里调用 <code>collection.add(...)</code> 把一条记录写入集合：<br>– <code>documents</code>：原始文本内容；<br>– <code>embeddings</code>：该文本对应的向量；<br>– <code>ids</code>：唯一主键，防止重复插入；这里直接把索引 <code>i</code> 转成字符串即可。</li>
+</ul>
+</li>
+<li><p>执行保存，将之前拆分好的文本块及其对应的向量批量写入内存中的 <code>&quot;default&quot;</code> 集合。<br>完成后，即可通过 <code>chromadb_collection.query(...)</code> 等方法做语义检索。</p>
+</li>
+</ul>
+<hr>
+<p><strong>第五块</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">query: <span class="built_in">str</span>, top_k: <span class="built_in">int</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">str</span>]:</span><br><span class="line">    query_embedding = embed_chunk(query)</span><br><span class="line">    results = chromadb_collection.query(</span><br><span class="line">        query_embeddings=[query_embedding],</span><br><span class="line">        n_results=top_k</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> results[<span class="string">&#x27;documents&#x27;</span>][<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">query = <span class="string">&quot;哆啦A梦使用的3个秘密道具分别是什么？&quot;</span></span><br><span class="line">retrieved_chunks = retrieve(query, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, chunk <span class="keyword">in</span> <span class="built_in">enumerate</span>(retrieved_chunks):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[<span class="subst">&#123;i&#125;</span>] <span class="subst">&#123;chunk&#125;</span>\n&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>定义检索函数，输入：</p>
+<ul>
+<li><code>query</code>：用户查询字符串</li>
+<li><code>top_k</code>：要返回的最相似文本块数量<br>输出：<code>List[str]</code>：按相似度从高到低排列的 <code>top_k</code> 个文本块</li>
+</ul>
+</li>
+<li><p>把查询文本转成向量，复用之前写好的 <code>embed_chunk</code>，把用户问题 <code>&quot;哆啦A梦使用的3个秘密道具分别是什么？&quot;</code> 变成 768 维向量</p>
+</li>
+<li><p>在 <code>ChromaDB</code> 中执行向量检索，<code>query_embeddings</code> 接受一个“列表”，所以即使只有一条查询，也要用 <code>[query_embedding]</code> 包一层。<code>n_results=top_k</code> 指定返回前 <code>top_k</code> 个最相似的文档</p>
+</li>
+<li><p><code>results</code> 是一个字典，格式大致为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&#x27;documents&#x27;</span>: [[chunk1, chunk2, ...]],  <span class="comment"># 两层列表</span></span><br><span class="line">    <span class="string">&#x27;distances&#x27;</span>: [[d1, d2, ...]],</span><br><span class="line">    <span class="string">&#x27;metadatas&#x27;</span>: [[...]],</span><br><span class="line">    <span class="string">&#x27;ids&#x27;</span>: [[...]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>取出文档列表并返回，<code>results[&#39;documents&#39;]</code> 是“列表的列表”，外层因为支持一次查多条 query；这里我们只查了一条，所以取 <code>[0]</code> 即可拿到对应的 <code>List[str]</code>。</p>
+</li>
+<li><p>调用并打印结果，用刚才的查询语句检索最相近的 5 个文本块。逐条打印，方便人工查看这些块里是否包含答案。</p>
+<p><strong>输出</strong></p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[0] <span class="params">#</span> 哆啦A梦与超级赛亚人：时空之战</span><br><span class="line"></span><br><span class="line">[1] 三件秘密道具分别是：可以临时赋予超级战力的“复制斗篷”，能暂停时间五秒的“时间停止手表”，以及可在一分钟中完成一年修行的“精神与时光屋便携版”。大雄被推进精神屋内，在其中接受密集的训练，虽然只有几分钟现实时间，他却经历了整整一年的苦修。刚开始他依旧软弱，想放弃、想逃跑，但当他想起静香、父母，还有哆啦A梦那坚定的眼神时，他终于咬牙坚持了下来。出来之后，他的身体与精神都焕然一新，眼神中多了一份成熟与自信。</span><br><span class="line"></span><br><span class="line">[2] 最终战在黑暗赛亚人的空中要塞前爆发，特兰克斯率先出击，释放全力与敌人正面对决。哆啦A梦则用任意门和道具支援，从各个方向制造混乱，尽量压制敌人的时空能力。但黑暗赛亚人太过强大，仅凭特兰克斯一人根本无法压制，更别说击败。就在特兰克斯即将被击倒之际，大雄披上复制斗篷、冲破恐惧从高空跃下。他的拳头燃烧着金色光焰，目标直指敌人心脏。</span><br><span class="line"></span><br><span class="line">[3] 战后，未来世界开始恢复，植物重新生长，人类重建家园。特兰克斯告别时紧紧握住大雄的手，说：“你是我见过最特别的战士。”哆啦A梦也为大雄感到骄傲，说他终于真正成长了一次。三人站在山丘上，看着远方重新明亮的地平线，心中感受到从未有过的安宁。随后，哆啦A梦与大雄乘坐时光机返回了属于他们的那个年代，一切仿佛又恢复平静。</span><br><span class="line"></span><br><span class="line">[4] 哆啦A梦与大雄听后大惊，但也从特兰克斯坚定的眼神中读出了不容拒绝的决心。特兰克斯解释说，未来的敌人并非普通反派，而是一个名叫“黑暗赛亚人”的存在，他由邪恶科学家复制了贝吉塔的基因并加以改造，实力超乎想象。这个敌人不仅拥有赛亚人战斗力，还能操纵扭曲的时间能量，几乎无人可敌。特兰克斯已经独自战斗多年，但每一次都以惨败告终。他说：“科技，是我那个时代唯一缺失的武器，而你们，正好拥有它。”</span><br></pre></td></tr></table></figure>
+
+<p><strong>可见，正确答案并不在第一个，而是在第二个。（仅当前场景，正确答案也有可能在第一个，也有可能在最后一个，取决于embedding模型）</strong></p>
+</li>
+</ul>
+<p><strong>第六块：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> CrossEncoder</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rerank</span>(<span class="params">query: <span class="built_in">str</span>, retrieved_chunks: <span class="type">List</span>[<span class="built_in">str</span>], top_k: <span class="built_in">int</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">str</span>]:</span><br><span class="line">    cross_encoder = CrossEncoder(<span class="string">&#x27;cross-encoder/mmarco-mMiniLMv2-L12-H384-v1&#x27;</span>)</span><br><span class="line">    pairs = [(query, chunk) <span class="keyword">for</span> chunk <span class="keyword">in</span> retrieved_chunks]</span><br><span class="line">    scores = cross_encoder.predict(pairs)</span><br><span class="line"></span><br><span class="line">    scored_chunks = <span class="built_in">list</span>(<span class="built_in">zip</span>(retrieved_chunks, scores))</span><br><span class="line">    scored_chunks.sort(key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> [chunk <span class="keyword">for</span> chunk, _ <span class="keyword">in</span> scored_chunks][:top_k]</span><br><span class="line"></span><br><span class="line">reranked_chunks = rerank(query, retrieved_chunks, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, chunk <span class="keyword">in</span> <span class="built_in">enumerate</span>(reranked_chunks):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[<span class="subst">&#123;i&#125;</span>] <span class="subst">&#123;chunk&#125;</span>\n&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>cross-encoder&#x2F;mmarco-mMiniLMv2-L12-H384-v1—&gt;Downloads last month:154,614</p>
+</blockquote>
+<p>解析：</p>
+<ul>
+<li><p>引入 Cross-Encoder，从 <code>sentence_transformers</code> 包中引入 <code>CrossEncoder</code>，用于加载“交叉编码器（cross-encoder）”模型。交叉编码器会把 <code>(query, document)</code> 拼成一条输入，直接输出相关性分数，相比纯向量检索更精准，但速度较慢</p>
+</li>
+<li><p>定义重排（rerank）函数，输入：</p>
+<ul>
+<li><code>query</code>：用户问题</li>
+<li><code>retrieved_chunks</code>：上一步向量检索返回的候选文本块列表</li>
+<li><code>top_k</code>：重排后真正返回的块数</li>
+</ul>
+<p>输出：列表</p>
+</li>
+<li><p>加载重排模型，指定 Hugging Face 上的 <code>cross-encoder/mmarco-mMiniLMv2-L12-H384-v1</code>（多语言 <code>MiniLM</code> 变体，384 维隐藏层，轻量且效果不错）。第一次运行会自动下载权重</p>
+</li>
+<li><p>构造 (query, chunk) 对并打分，</p>
+<ul>
+<li><code>pairs</code>：形如 <code>[(&quot;哆啦A梦使用的3个秘密道具分别是什么？&quot;, chunk1), (...)]</code> 的列表。</li>
+<li><code>predict</code> 返回一个 <code>NumPy</code> 数组，元素是每对 <code>(query, chunk)</code> 的相关性得分（值越高越相关）。</li>
+</ul>
+</li>
+<li><p>按得分排序并截取</p>
+<ul>
+<li><code>zip</code> 把文本块与其得分打包成元组。</li>
+<li><code>sort(..., reverse=True)</code> 按得分从高到低重排。</li>
+<li>最后切片 <code>[:top_k]</code>，只保留前 <code>top_k</code> 个文本块。</li>
+</ul>
+</li>
+<li><p>调用并打印结果，把上一步向量检索得到的 5 个候选块再做一次交叉编码器重排，最终只输出最相关的 3 个文本块，供下游阅读或抽取答案。</p>
+</li>
+</ul>
+<hr>
+<p><strong>第七块：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化 OpenAI 客户端，使用 DashScope 的 API</span></span><br><span class="line">client = OpenAI(</span><br><span class="line">    base_url=<span class="string">&quot;https://dashscope.aliyuncs.com/compatible-mode/v1&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate</span>(<span class="params">query: <span class="built_in">str</span>, chunks: <span class="type">List</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    prompt = <span class="string">f&quot;&quot;&quot;你是一位知识助手，请根据用户的问题和下列片段生成准确的回答。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">用户问题: <span class="subst">&#123;query&#125;</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">相关片段:</span></span><br><span class="line"><span class="string"><span class="subst">&#123;<span class="string">&quot;\n\n&quot;</span>.join(chunks)&#125;</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">请基于上述内容作答，不要编造信息。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;prompt&#125;</span>\n\n---\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用 chat.completions 推荐（Qwen 更适合 chat 接口）</span></span><br><span class="line">    response = client.chat.completions.create(</span><br><span class="line">        model=<span class="string">&quot;qwen-max&quot;</span>,  <span class="comment"># 可替换为 qwen-plus 或 qwen-turbo</span></span><br><span class="line">        messages=[</span><br><span class="line">            &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: prompt&#125;</span><br><span class="line">        ]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response.choices[<span class="number">0</span>].message.content</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">answer = generate(query, reranked_chunks)</span><br><span class="line"><span class="built_in">print</span>(answer)</span><br></pre></td></tr></table></figure>
+
+<p>解析：</p>
+<ul>
+<li>加载环境变量，读取项目根目录下的 <code>.env</code> 文件，把里面的 <code>OPENAI_API_KEY</code> 等变量注入到当前进程的环境变量中，避免把密钥写死在代码里</li>
+<li>初始化 <code>OpenAI</code> 兼容客户端，使用官方 <code>openai</code> 包，但把 <code>base_url</code> 指向阿里的 <code>OpenAI</code> 兼容端点，实现“零改动”调用通义千问系列模型</li>
+<li>需要确保本机已设置环境变量 <code>OPENAI_API_KEY=你的DashScope API-Key</code>，否则请求会 401 无权限</li>
+<li>定义答案生成函数，把用户问题 <code>query</code> 和重排后的最相关文本块 <code>chunks</code> 拼接成一个完整的 prompt。明确提示模型“不要编造信息”，降低幻觉概率。</li>
+<li>打印 prompt（调试用），方便在 Notebook 或日志里检查到底喂给了模型什么内容。</li>
+<li>调用 Chat 接口，<ul>
+<li><code>model=&quot;qwen-max&quot;</code> 可换成 <code>qwen-plus</code> 或 <code>qwen-turbo</code>，按成本&#x2F;效果权衡。</li>
+<li>使用 <code>chat.completions</code> 而不是旧的 <code>Completion</code>，与通义千问 Chat 模型对齐。</li>
+</ul>
+</li>
+<li>返回结果，取第一条回复的文本内容作为最终答案</li>
+<li>执行并输出，把重排后的 3 个最相关文本块连同原始问题一起交给大模型，打印生成的回答。</li>
+</ul>
+<p><strong>输出：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">你是一位知识助手，请根据用户的问题和下列片段生成准确的回答。</span><br><span class="line"></span><br><span class="line">用户问题: 哆啦A梦使用的<span class="number">3</span>个秘密道具分别是什么？</span><br><span class="line"></span><br><span class="line">相关片段:</span><br><span class="line">三件秘密道具分别是：可以临时赋予超级战力的“复制斗篷”，能暂停时间五秒的“时间停止手表”，以及可在一分钟中完成一年修行的“精神与时光屋便携版”。大雄被推进精神屋内，在其中接受密集的训练，虽然只有几分钟现实时间，他却经历了整整一年的苦修。刚开始他依旧软弱，想放弃、想逃跑，但当他想起静香、父母，还有哆啦A梦那坚定的眼神时，他终于咬牙坚持了下来。出来之后，他的身体与精神都焕然一新，眼神中多了一份成熟与自信。</span><br><span class="line"></span><br><span class="line">最终战在黑暗赛亚人的空中要塞前爆发，特兰克斯率先出击，释放全力与敌人正面对决。哆啦A梦则用任意门和道具支援，从各个方向制造混乱，尽量压制敌人的时空能力。但黑暗赛亚人太过强大，仅凭特兰克斯一人根本无法压制，更别说击败。就在特兰克斯即将被击倒之际，大雄披上复制斗篷、冲破恐惧从高空跃下。他的拳头燃烧着金色光焰，目标直指敌人心脏。</span><br><span class="line"></span><br><span class="line">战后，未来世界开始恢复，植物重新生长，人类重建家园。特兰克斯告别时紧紧握住大雄的手，说：“你是我见过最特别的战士。”哆啦A梦也为大雄感到骄傲，说他终于真正成长了一次。三人站在山丘上，看着远方重新明亮的地平线，心中感受到从未有过的安宁。随后，哆啦A梦与大雄乘坐时光机返回了属于他们的那个年代，一切仿佛又恢复平静。</span><br><span class="line"></span><br><span class="line">请基于上述内容作答，不要编造信息。</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">根据提供的片段，哆啦A梦使用的三个秘密道具分别是：“复制斗篷”（可以临时赋予超级战力）、“时间停止手表”（能暂停时间五秒）以及“精神与时光屋便携版”（可在一分钟中完成一年修行）。这些道具帮助大雄在面对挑战时获得了成长和胜利。</span><br></pre></td></tr></table></figure>
+
+<p>回答正确！</p>
+<p><strong>完整代码如下：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">split_into_chunks</span>(<span class="params">doc_file: <span class="built_in">str</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">str</span>]:</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(doc_file, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> file:</span><br><span class="line">        content = file.read()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> [chunk <span class="keyword">for</span> chunk <span class="keyword">in</span> content.split(<span class="string">&quot;\n\n&quot;</span>)]</span><br><span class="line"></span><br><span class="line">chunks = split_into_chunks(<span class="string">&quot;doc.md&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, chunk <span class="keyword">in</span> <span class="built_in">enumerate</span>(chunks):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[<span class="subst">&#123;i&#125;</span>] <span class="subst">&#123;chunk&#125;</span>\n&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"></span><br><span class="line">embedding_model = SentenceTransformer(<span class="string">&quot;shibing624/text2vec-base-chinese&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">embed_chunk</span>(<span class="params">chunk: <span class="built_in">str</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">float</span>]:</span><br><span class="line">    embedding = embedding_model.encode(chunk, normalize_embeddings=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">return</span> embedding.tolist()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">embedding = embed_chunk(<span class="string">&quot;测试内容&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">len</span>(embedding))</span><br><span class="line"><span class="built_in">print</span>(embedding)</span><br><span class="line"></span><br><span class="line">embeddings = [embed_chunk(chunk) <span class="keyword">for</span> chunk <span class="keyword">in</span> chunks]</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">len</span>(embeddings))</span><br><span class="line"><span class="built_in">print</span>(embeddings[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> chromadb</span><br><span class="line"></span><br><span class="line">chromadb_client = chromadb.EphemeralClient()</span><br><span class="line">chromadb_collection = chromadb_client.get_or_create_collection(name=<span class="string">&quot;default&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">save_embeddings</span>(<span class="params">chunks: <span class="type">List</span>[<span class="built_in">str</span>], embeddings: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">float</span>]]</span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">    <span class="keyword">for</span> i, (chunk, embedding) <span class="keyword">in</span> <span class="built_in">enumerate</span>(<span class="built_in">zip</span>(chunks, embeddings)):</span><br><span class="line">        chromadb_collection.add(</span><br><span class="line">            documents=[chunk],</span><br><span class="line">            embeddings=[embedding],</span><br><span class="line">            ids=[<span class="built_in">str</span>(i)]</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">save_embeddings(chunks, embeddings)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve</span>(<span class="params">query: <span class="built_in">str</span>, : <span class="built_in">int</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">str</span>]:</span><br><span class="line">    query_embedding = embed_chunk(query)</span><br><span class="line">    results = chromadb_collection.query(</span><br><span class="line">        query_embeddings=[query_embedding],</span><br><span class="line">        n_results=top_k</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> results[<span class="string">&#x27;documents&#x27;</span>][<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">query = <span class="string">&quot;哆啦A梦使用的3个秘密道具分别是什么？&quot;</span></span><br><span class="line">retrieved_chunks = retrieve(query, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, chunk <span class="keyword">in</span> <span class="built_in">enumerate</span>(retrieved_chunks):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[<span class="subst">&#123;i&#125;</span>] <span class="subst">&#123;chunk&#125;</span>\n&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> CrossEncoder</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">rerank</span>(<span class="params">query: <span class="built_in">str</span>, retrieved_chunks: <span class="type">List</span>[<span class="built_in">str</span>], top_k: <span class="built_in">int</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">str</span>]:</span><br><span class="line">    cross_encoder = CrossEncoder(<span class="string">&#x27;cross-encoder/mmarco-mMiniLMv2-L12-H384-v1&#x27;</span>)</span><br><span class="line">    pairs = [(query, chunk) <span class="keyword">for</span> chunk <span class="keyword">in</span> retrieved_chunks]</span><br><span class="line">    scores = cross_encoder.predict(pairs)</span><br><span class="line"></span><br><span class="line">    scored_chunks = <span class="built_in">list</span>(<span class="built_in">zip</span>(retrieved_chunks, scores))</span><br><span class="line">    scored_chunks.sort(key=<span class="keyword">lambda</span> x: x[<span class="number">1</span>], reverse=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> [chunk <span class="keyword">for</span> chunk, _ <span class="keyword">in</span> scored_chunks][:top_k]</span><br><span class="line"></span><br><span class="line">reranked_chunks = rerank(query, retrieved_chunks, <span class="number">3</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, chunk <span class="keyword">in</span> <span class="built_in">enumerate</span>(reranked_chunks):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;[<span class="subst">&#123;i&#125;</span>] <span class="subst">&#123;chunk&#125;</span>\n&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化 OpenAI 客户端，使用 DashScope 的 API</span></span><br><span class="line">client = OpenAI(</span><br><span class="line">    base_url=<span class="string">&quot;https://dashscope.aliyuncs.com/compatible-mode/v1&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate</span>(<span class="params">query: <span class="built_in">str</span>, chunks: <span class="type">List</span>[<span class="built_in">str</span>]</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    prompt = <span class="string">f&quot;&quot;&quot;你是一位知识助手，请根据用户的问题和下列片段生成准确的回答。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">用户问题: <span class="subst">&#123;query&#125;</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">相关片段:</span></span><br><span class="line"><span class="string"><span class="subst">&#123;<span class="string">&quot;\n\n&quot;</span>.join(chunks)&#125;</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">请基于上述内容作答，不要编造信息。&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;prompt&#125;</span>\n\n---\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用 chat.completions 推荐（Qwen 更适合 chat 接口）</span></span><br><span class="line">    response = client.chat.completions.create(</span><br><span class="line">        model=<span class="string">&quot;qwen-max&quot;</span>,  <span class="comment"># 可替换为 qwen-plus 或 qwen-turbo</span></span><br><span class="line">        messages=[</span><br><span class="line">            &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: prompt&#125;</span><br><span class="line">        ]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response.choices[<span class="number">0</span>].message.content</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">answer = generate(query, reranked_chunks)</span><br><span class="line"><span class="built_in">print</span>(answer)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文我们以尽量以纯Python方式实现了完整的RAG系统，帮助进一步理解RAG系统的原理。完整流程包括文本加载、分片、向量化、存储到向量数据库、将用户问题向量化，通过向量数据库提供的算法计算向量之间的“距离”以召回top_k个向量，再通过重排模型精筛top_n条chunk，最终将这top_n条chunk连同system prompt一起给<code>LLM</code>，让<code>LLM</code>总结。以上就是本篇内容。</p>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/MarkTechStation/VideoCode/tree/main/">https://github.com/MarkTechStation/VideoCode/tree/main/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1wc3izUEUb/?spm_id_from=333.1387.homepage.video_card.click&vd_source=075a061948e76c87e2ee8754e264056e">https://www.bilibili.com/video/BV1wc3izUEUb/?spm_id_from=333.1387.homepage.video_card.click&amp;vd_source=075a061948e76c87e2ee8754e264056e</a></li>
+<li><a target="_blank" rel="noopener" href="https://hellowac.github.io/uv-zh-cn/guides/integration/jupyter/">https://hellowac.github.io/uv-zh-cn/guides/integration/jupyter/</a></li>
+</ol>
+
     </div>
 
     
@@ -269,6 +491,9 @@
     
 
     <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rag/" rel="tag"># rag</a>
+          </div>
 
         
 
@@ -309,13 +534,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">359k</span>
+    <span title="站点总字数">365k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">21:45</span>
+    <span title="站点阅读时长">22:06</span>
   </span>
 </div>
 <div class="busuanzi-count">
