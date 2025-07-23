@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">88</span>
+          <span class="site-state-item-count">89</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -186,6 +186,110 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/06/17/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D%E5%89%8D%E7%AF%87%EF%BC%9A%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/06/17/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D%E5%89%8D%E7%AF%87%EF%BC%9A%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8/" class="post-title-link" itemprop="url">大模型应用开发之agent介绍前篇：工具调用</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-17 17:15:11" itemprop="dateCreated datePublished" datetime="2025-06-17T17:15:11+08:00">2025-06-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-06-18 16:48:57" itemprop="dateModified" datetime="2025-06-18T16:48:57+08:00">2025-06-18</time>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>16 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在写<a href="https://caihaoran-00.github.io/2025/02/10/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D/">大模型应用开发之agent介绍</a>时突然意识到还没好好介绍下工具&#x2F;函数调用（function calling），遂补上这篇博客介绍工具调用，同一功能将使用三种方式给出，本文目标是从最基础的讲解起，从入门到进阶，注意本文出现的工具仅用于讲解和体会工具调用，<strong>工具的定义不保证正确性和通用性</strong>：</p>
+<ul>
+<li>纯<code>python</code>(<code>requests</code>库)</li>
+<li><code>OpenAI库</code></li>
+<li><code>langgraph</code>库</li>
+</ul>
+<p>Let’s go！</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/06/17/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D%E5%89%8D%E7%AF%87%EF%BC%9A%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -564,7 +668,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-15 11:01:42" itemprop="dateModified" datetime="2025-07-15T11:01:42+08:00">2025-07-15</time>
+      <time title="修改时间：2025-07-22 17:01:55" itemprop="dateModified" datetime="2025-07-22T17:01:55+08:00">2025-07-22</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -583,14 +687,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>450</span>
+      <span>6.5k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>24 分钟</span>
     </span>
 </div>
 
@@ -603,10 +707,16 @@
     <div class="post-body" itemprop="articleBody">
           <h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
 <li><a href="#f1">列表推导式</a></li>
-<li><a href="#f2">sort</a></li>
-<li><a href="#f3">filter</a></li>
-<li><a href="#f4">map</a></li>
-<li><a href="#f5">lambda 表达式</a></li>
+<li><a href="#f2">lambda 表达式</a></li>
+<li><a href="#f3">zip</a></li>
+<li><a href="#f4">惰性迭代器</a></li>
+<li><a href="#f5">装饰器</a></li>
+<li><a href="#f6">_<em>init</em>_.py</a></li>
+<li><a href="#f7">_<em>main</em>_.py</a></li>
+<li><a href="#f8">生成器（Generators）与 yield</a></li>
+<li><a href="#f9">类型提示（Type Hints）&amp; typing</a></li>
+<li><a href="#f10">@dataclass</a></li>
+<li><a href="#f11">@contextmanager</a></li>
 </ul>
           <!--noindex-->
             <div class="post-button">
@@ -1183,113 +1293,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/06/04/PDF%E8%A7%A3%E6%9E%90%E5%BA%93%EF%BC%9Apdfplumber%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/06/04/PDF%E8%A7%A3%E6%9E%90%E5%BA%93%EF%BC%9Apdfplumber%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/" class="post-title-link" itemprop="url">PDF解析库：pdfplumber基础用法</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-06-04 09:31:48" itemprop="dateCreated datePublished" datetime="2025-06-04T09:31:48+08:00">2025-06-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-06-07 19:16:32" itemprop="dateModified" datetime="2025-06-07T19:16:32+08:00">2025-06-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>16k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>57 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在<a href="https://caihaoran-00.github.io/2025/05/29/LLM%E5%BA%94%E7%94%A8%EF%BC%9A%E7%BB%93%E6%9E%84%E5%8C%96%E6%8F%90%E5%8F%96%E5%8F%8A%E5%90%8E%E7%BB%AD%E6%80%9D%E8%B7%AF/#more">LLM应用：结构化提取及后续思路</a>一文中，我们使用<code>pdfplumber</code>的<code>.extract_text</code>方法，但这个方法会将全文（尤其指表格部分）当做普通文本按行读取，会完全丢失表格的格式，察觉<code>pdfplumber</code>库的用法有些学问，遂准备本文记录下<code>pdfplumber</code>的基础用法，目的是自动化的判别是普通文本还是表格，表格数据用表格提取的方式，普通文本用文本提取的方法。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/06/04/PDF%E8%A7%A3%E6%9E%90%E5%BA%93%EF%BC%9Apdfplumber%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1313,13 +1316,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">365k</span>
+    <span title="站点总字数">371k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">22:06</span>
+    <span title="站点阅读时长">22:30</span>
   </span>
 </div>
 <div class="busuanzi-count">
