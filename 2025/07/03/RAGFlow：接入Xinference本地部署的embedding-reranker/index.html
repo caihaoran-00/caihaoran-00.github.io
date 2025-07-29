@@ -39,7 +39,7 @@
 <meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i11.png">
 <meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i12.png">
 <meta property="article:published_time" content="2025-07-03T02:42:50.000Z">
-<meta property="article:modified_time" content="2025-07-29T02:02:50.910Z">
+<meta property="article:modified_time" content="2025-07-29T03:31:24.030Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="rag">
 <meta property="article:tag" content="ragflow">
@@ -249,7 +249,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-29 10:02:50" itemprop="dateModified" datetime="2025-07-29T10:02:50+08:00">2025-07-29</time>
+      <time title="修改时间：2025-07-29 11:31:24" itemprop="dateModified" datetime="2025-07-29T11:31:24+08:00">2025-07-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -298,36 +298,36 @@
 <hr>
 <h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">conda create -n xinference  </span><br><span class="line">conda activate xinference</span><br><span class="line"><span class="comment"># pip install &quot;xinference[all]&quot;  # 在安装vllm包时尝试了一个多小时😓</span></span><br><span class="line">pip install <span class="string">&quot;xinference[transformers]&quot;</span></span><br><span class="line">pip install sentence-transformers  <span class="comment"># 注意还需安装这个库，不然下面运行模型时会报错</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i1.png" alt="1"></p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i1.png" alt="i1"></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 拉起本地服务</span></span><br><span class="line">xinference-local --host 0.0.0.0 --port 9997</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行bge-m3</span></span><br><span class="line">xinference launch --model-name bge-m3 --model-type embedding</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行bge-reranker-v2-m3</span></span><br><span class="line">xinference launch --model-name bge-reranker-v2-m3 --model-type rerank</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行Qwen3-Embedding-0.6B</span></span><br><span class="line">xinference launch --model-name Qwen3-Embedding-0.6B --model-type embedding</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行Qwen3-Reranker-0.6B</span></span><br><span class="line">xinference launch --model-name Qwen3-Reranker-0.6B --model-type rerank</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出正在运行的模型</span></span><br><span class="line">xinference list</span><br></pre></td></tr></table></figure>
 
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i2.png" alt="2"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i2.png" alt="i2"></p>
 <p>如果不需要某个正在运行的模型，可以通过下面命令停止以释放资源：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># xinference terminate --model-uid &quot;uid&quot;</span></span><br><span class="line"><span class="comment"># 比如</span></span><br><span class="line">xinference terminate --model-uid <span class="string">&quot;Qwen3-Embedding-0.6B&quot;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="向RAGFlow中添加模型"><a href="#向RAGFlow中添加模型" class="headerlink" title="向RAGFlow中添加模型"></a>向RAGFlow中添加模型</h3><p>找到<code>RAGFlow</code>控制台的该位置：</p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i3.png" alt="3"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i3.png" alt="i3"></p>
 <p>点击<code>Xinference下方的添加模型</code>，对应添加下方内容：</p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i4.png" alt="4"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i4.png" alt="i4"></p>
 <p>点击确认后，即可看到模型被添加进去了，以相似方式添加<code>Qwen-Reranker-0.6B</code></p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i5.png" alt="5"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i5.png" alt="i5"></p>
 <p>接下来添加<code>embedding</code>模型，注意此时的<code>基础Url</code>的后缀截止到<code>v1</code>即可：</p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i6.png" alt="6"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i6.png" alt="i6"></p>
 <p>完全添加完毕后：</p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i7.png" alt="7"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i7.png" alt="i7"></p>
 <p>这时候再到<code>设置默认模型</code>中，即可选择我们刚才添加的模型：</p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i8.png" alt="8"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i8.png" alt="i8"></p>
 <p><strong>值得一提的是：</strong></p>
 <ul>
 <li><p>默认模型中不添加<code>Img2txt</code>模型会极大加快解析速度</p>
 </li>
 <li><p>批量处藏着解析选项，即可以批量解析</p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i9.png" alt="9"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i9.png" alt="i9"></p>
 </li>
 <li><p>prompt&#x2F;召回记录及时间&#x2F;token消耗信息</p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i10.png" alt="10"></p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i11.png" alt="11"></p>
-<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i12.png" alt="12"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i10.png" alt="i10"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i11.png" alt="i11"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/i12.png" alt="i12"></p>
 </li>
 </ul>
 <hr>
