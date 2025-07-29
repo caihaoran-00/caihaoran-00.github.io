@@ -26,25 +26,25 @@
 <meta property="og:site_name" content="Chr&#39;s Blog">
 <meta property="og:description" content="前言我们在RAG实战篇：RAGFlow介绍了RAGFlow的源码安装步骤并初步体验了效果，我们接下来会重点解析RAGFlow的关键技术和值得记录的使用方式，本文将就RAGFlow如何接入Xinference本地部署的embedding&#x2F;reranker模型进行展开，具体来说是bge-m3和bge-reranker-v2-m3。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/1.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/2.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/3.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/4.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/5.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/6.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/7.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/8.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/9.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/10.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/11.png">
-<meta property="og:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/12.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/1.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/2.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/3.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/4.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/5.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/6.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/7.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/8.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/9.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/10.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/11.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/12.png">
 <meta property="article:published_time" content="2025-07-03T02:42:50.000Z">
-<meta property="article:modified_time" content="2025-07-03T11:02:08.614Z">
+<meta property="article:modified_time" content="2025-07-29T01:51:13.098Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="rag">
 <meta property="article:tag" content="ragflow">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/1.png">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/1.png">
 
 
 <link rel="canonical" href="https://caihaoran-00.github.io/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/">
@@ -241,9 +241,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-07-03 10:42:50 / 修改时间：19:02:08" itemprop="dateCreated datePublished" datetime="2025-07-03T10:42:50+08:00">2025-07-03</time>
+      <time title="创建时间：2025-07-03 10:42:50" itemprop="dateCreated datePublished" datetime="2025-07-03T10:42:50+08:00">2025-07-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-07-29 09:51:13" itemprop="dateModified" datetime="2025-07-29T09:51:13+08:00">2025-07-29</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -292,46 +298,37 @@
 <hr>
 <h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">conda create -n xinference  </span><br><span class="line">conda activate xinference</span><br><span class="line"><span class="comment"># pip install &quot;xinference[all]&quot;  # 在安装vllm包时尝试了一个多小时😓</span></span><br><span class="line">pip install <span class="string">&quot;xinference[transformers]&quot;</span></span><br><span class="line">pip install sentence-transformers  <span class="comment"># 注意还需安装这个库，不然下面运行模型时会报错</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/1.png" class="" width="1">
-
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/1.png" alt="1"></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 拉起本地服务</span></span><br><span class="line">xinference-local --host 0.0.0.0 --port 9997</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行bge-m3</span></span><br><span class="line">xinference launch --model-name bge-m3 --model-type embedding</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行bge-reranker-v2-m3</span></span><br><span class="line">xinference launch --model-name bge-reranker-v2-m3 --model-type rerank</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行Qwen3-Embedding-0.6B</span></span><br><span class="line">xinference launch --model-name Qwen3-Embedding-0.6B --model-type embedding</span><br><span class="line"></span><br><span class="line"><span class="comment"># 运行Qwen3-Reranker-0.6B</span></span><br><span class="line">xinference launch --model-name Qwen3-Reranker-0.6B --model-type rerank</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出正在运行的模型</span></span><br><span class="line">xinference list</span><br></pre></td></tr></table></figure>
 
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/2.png" class="" width="2">
-
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/2.png" alt="2"></p>
 <p>如果不需要某个正在运行的模型，可以通过下面命令停止以释放资源：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># xinference terminate --model-uid &quot;uid&quot;</span></span><br><span class="line"><span class="comment"># 比如</span></span><br><span class="line">xinference terminate --model-uid <span class="string">&quot;Qwen3-Embedding-0.6B&quot;</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="向RAGFlow中添加模型"><a href="#向RAGFlow中添加模型" class="headerlink" title="向RAGFlow中添加模型"></a>向RAGFlow中添加模型</h3><p>找到<code>RAGFlow</code>控制台的该位置：</p>
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/3.png" class="" width="3">
-
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/3.png" alt="3"></p>
 <p>点击<code>Xinference下方的添加模型</code>，对应添加下方内容：</p>
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/4.png" class="" width="4">
-
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/4.png" alt="4"></p>
 <p>点击确认后，即可看到模型被添加进去了，以相似方式添加<code>Qwen-Reranker-0.6B</code></p>
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/5.png" class="" width="5">
-
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/5.png" alt="5"></p>
 <p>接下来添加<code>embedding</code>模型，注意此时的<code>基础Url</code>的后缀截止到<code>v1</code>即可：</p>
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/6.png" class="" width="6">
-
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/6.png" alt="6"></p>
 <p>完全添加完毕后：</p>
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/7.png" class="" width="7">
-
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/7.png" alt="7"></p>
 <p>这时候再到<code>设置默认模型</code>中，即可选择我们刚才添加的模型：</p>
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/8.png" class="" width="8">
-
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/8.png" alt="8"></p>
 <p><strong>值得一提的是：</strong></p>
 <ul>
 <li><p>默认模型中不添加<code>Img2txt</code>模型会极大加快解析速度</p>
 </li>
 <li><p>批量处藏着解析选项，即可以批量解析</p>
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/9.png" class="" width="9">
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/9.png" alt="9"></p>
 </li>
 <li><p>prompt&#x2F;召回记录及时间&#x2F;token消耗信息</p>
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/10.png" class="" width="10">
-
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/11.png" class="" width="11">
-
-<img src="/2025/07/03/RAGFlow%EF%BC%9A%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/12.png" class="" width="12"></li>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/10.png" alt="10"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/11.png" alt="11"></p>
+<p><img src="/RAGFlow-%E6%8E%A5%E5%85%A5Xinference%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%E7%9A%84embedding-reranker/12.png" alt="12"></p>
+</li>
 </ul>
 <hr>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们本文介绍了<code>Xinference</code>的安装与服务启动，目标是在<code>RAGFlow</code>中进行使用他们，具体来讲，我们运行了：</p>
@@ -409,13 +406,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">375k</span>
+    <span title="站点总字数">376k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">22:42</span>
+    <span title="站点阅读时长">22:46</span>
   </span>
 </div>
 <div class="busuanzi-count">
