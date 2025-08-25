@@ -27,7 +27,7 @@
 <meta property="og:description" content="前言最近在做从pdf中解析内容（给这个项目做的demo），然后扔给LLM，让LLM从中针对想要的字段提取结构化数据，简单做了个demo，思想是使用pdfplumber从pdf中解析内容，然后将内容扔给大模型，写好system_prompt让其去提取，再说仔细点就是让LLM1去提取招标文件的内容，LLM2提取招标公告的内容，LLM3将前两个LLM提取的结构化内容合并保存，目前只是简单做了一下，有一些">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-05-20T01:56:38.000Z">
-<meta property="article:modified_time" content="2025-05-21T02:06:43.120Z">
+<meta property="article:modified_time" content="2025-08-16T03:24:53.455Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="pdf">
 <meta name="twitter:card" content="summary">
@@ -139,7 +139,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E8%A7%88%E5%AF%B9%E6%AF%94%E8%A1%A8"><span class="nav-number">2.1.</span> <span class="nav-text">总览对比表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%90%E4%B8%AA%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.2.</span> <span class="nav-text">逐个详细介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-pdfplumber"><span class="nav-number">2.2.1.</span> <span class="nav-text">1. pdfplumber</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-pypdf"><span class="nav-number">2.3.</span> <span class="nav-text">2. pypdf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-PDFMiner-six"><span class="nav-number">2.4.</span> <span class="nav-text">3. PDFMiner.six</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-PyMuPDF-fitz"><span class="nav-number">2.5.</span> <span class="nav-text">4. PyMuPDF (fitz)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-pypdfium2"><span class="nav-number">2.6.</span> <span class="nav-text">5. pypdfium2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">如何选择？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E5%BB%BA%E8%AE%AE"><span class="nav-number">4.</span> <span class="nav-text">总结建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E8%B4%B4%E5%A3%AB"><span class="nav-number">5.</span> <span class="nav-text">小贴士</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -152,7 +152,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">92</span>
+          <span class="site-state-item-count">98</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -163,7 +163,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">104</span>
+        <span class="site-state-item-count">110</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -235,7 +235,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-05-21 10:06:43" itemprop="dateModified" datetime="2025-05-21T10:06:43+08:00">2025-05-21</time>
+      <time title="修改时间：2025-08-16 11:24:53" itemprop="dateModified" datetime="2025-08-16T11:24:53+08:00">2025-08-16</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -261,14 +261,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>312</span>
+      <span>1.3k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -284,23 +284,156 @@
 <li><code>pdfplumber</code>解析出来的内容（尤其是表格）是什么样子的，解析速度怎么样</li>
 <li>这个场景下<code>pdfplumber</code>是最优选择吗，其他<code>pdf</code>解析器的效果和速度怎么样</li>
 </ul>
-<p><code>LLM</code>方面：</p>
-<ul>
-<li>是选长下文（≥128 k）LLM，一把梭哈将数据扔进去让其去抽取信息还是切分数据使用普通上下文（32K）模型去抽取（现在是一把梭哈）</li>
-<li>不同模型的表现怎么量化</li>
-</ul>
 <span id="more"></span>
 
-<p>本文先只关注PDF解析库的速度和效果对比，对比的库包括：</p>
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>本文先只关注PDF解析库的速度和效果对比，对比的库包括：</p>
 <ul>
 <li><code>pdfplumber</code></li>
 <li><code>pypdf/PyPDF2</code></li>
 <li><code>PDFMiner.six</code></li>
 <li><code>PyMuPDF(fitz)</code></li>
+<li><code>pypdfium2</code></li>
 </ul>
-<ol>
-<li>参与公司</li>
-<li>公司报价</li>
+<hr>
+<p>在处理 PDF 文件时，选择合适的 Python 库至关重要。这些库在文本提取、表格处理、渲染和性能上各有侧重。本文基于最新基准数据（如 2025 年 py-pdf&#x2F;benchmarks 和 CSDN 文章），对比了五个常用库：pdfplumber、pypdf、PDFMiner.six、PyMuPDF（fitz）和 pypdfium2。无论你是提取数据、编辑文档还是渲染图像，本文将帮助你做出选择。</p>
+<h3 id="总览对比表"><a href="#总览对比表" class="headerlink" title="总览对比表"></a>总览对比表</h3><table>
+<thead>
+<tr>
+<th align="center">库名</th>
+<th align="center">主要用途</th>
+<th align="center">文本提取精度</th>
+<th align="center">图像&#x2F;表格支持</th>
+<th align="center">性能（1000页 PDF 文本提取）</th>
+<th align="center">易用性</th>
+<th align="center">依赖</th>
+<th align="center">推荐场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>pdfplumber</code></td>
+<td align="center">表格&#x2F;文本布局分析</td>
+<td align="center">⭐⭐⭐⭐☆</td>
+<td align="center">⭐⭐⭐⭐☆（表格强）</td>
+<td align="center">8.7s（中等）</td>
+<td align="center">⭐⭐⭐⭐☆</td>
+<td align="center"><code>PDFMiner.six</code></td>
+<td align="center">提取表格、发票&#x2F;报表分析</td>
+</tr>
+<tr>
+<td align="center"><code>pypdf</code></td>
+<td align="center">合并&#x2F;拆分&#x2F;水印</td>
+<td align="center">⭐⭐⭐☆☆</td>
+<td align="center">⭐☆☆☆☆</td>
+<td align="center">3.5s（中等）</td>
+<td align="center">⭐⭐⭐⭐☆</td>
+<td align="center">无（纯 Python）</td>
+<td align="center">简单文档操作</td>
+</tr>
+<tr>
+<td align="center"><code>PDFMiner.six</code></td>
+<td align="center">高精度文本提取</td>
+<td align="center">⭐⭐⭐⭐⭐（字级）</td>
+<td align="center">⭐⭐☆☆☆</td>
+<td align="center">12.4s（慢）</td>
+<td align="center">⭐⭐☆☆☆</td>
+<td align="center">无</td>
+<td align="center">学术&#x2F;法律文本分析</td>
+</tr>
+<tr>
+<td align="center"><code>PyMuPDF</code> (<code>fitz</code>)</td>
+<td align="center">全能型（文本&#x2F;图像&#x2F;OCR）</td>
+<td align="center">⭐⭐⭐⭐⭐</td>
+<td align="center">⭐⭐⭐⭐⭐</td>
+<td align="center">2.3s（极快）</td>
+<td align="center">⭐⭐⭐⭐☆</td>
+<td align="center">C 库（MuPDF）</td>
+<td align="center">高性能全能处理、PDF 编辑</td>
+</tr>
+<tr>
+<td align="center"><code>pypdfium2</code></td>
+<td align="center">高性能渲染与转换</td>
+<td align="center">⭐⭐⭐⭐⭐</td>
+<td align="center">⭐⭐⭐⭐☆</td>
+<td align="center">3.1s（快）</td>
+<td align="center">⭐⭐⭐☆☆</td>
+<td align="center">C 库（PDFium）</td>
+<td align="center">PDF 转图像、浏览器级渲染</td>
+</tr>
+</tbody></table>
+<p><em>数据来源：2025 年基准测试，基于 1000 页学术 PDF。</em></p>
+<hr>
+<h3 id="逐个详细介绍"><a href="#逐个详细介绍" class="headerlink" title="逐个详细介绍"></a>逐个详细介绍</h3><h4 id="1-pdfplumber"><a href="#1-pdfplumber" class="headerlink" title="1. pdfplumber"></a>1. pdfplumber</h4><p><strong>优势</strong>：基于 PDFMiner.six，提供友好 API；表格提取优秀，支持合并单元格和自定义规则；纯 Python，易调试；支持图像渲染。<br><strong>劣势</strong>：性能中等（依赖 Python 解析）；无PDF 修改。<br><strong>适合场景</strong>：财务报表数据挖掘、研究论文表格提取。<br><strong>示例代码</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pdfplumber</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> pdfplumber.<span class="built_in">open</span>(<span class="string">&quot;example.pdf&quot;</span>) <span class="keyword">as</span> pdf:</span><br><span class="line">    page = pdf.pages[<span class="number">0</span>]</span><br><span class="line">    table = page.extract_table()</span><br><span class="line">    <span class="built_in">print</span>(table)  <span class="comment"># 返回表格数据列表</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-pypdf"><a href="#2-pypdf" class="headerlink" title="2. pypdf"></a>2. pypdf</h3><p><strong>优势</strong>：纯 Python，无依赖；支持合并、拆分、加密和水印；API 简洁，兼容性好。<br><strong>劣势</strong>：文本提取精度中等（复杂布局易错）；无表格或图像支持。<br><strong>适合场景</strong>：简单 PDF 操作，如批量合并&#x2F;拆分或去除密码。<br><strong>示例代码</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pypdf <span class="keyword">import</span> PdfReader, PdfWriter</span><br><span class="line"></span><br><span class="line">reader = PdfReader(<span class="string">&quot;input.pdf&quot;</span>)</span><br><span class="line">writer = PdfWriter()</span><br><span class="line"><span class="keyword">for</span> page <span class="keyword">in</span> reader.pages:</span><br><span class="line">    writer.add_page(page)</span><br><span class="line">writer.write(<span class="string">&quot;output.pdf&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-PDFMiner-six"><a href="#3-PDFMiner-six" class="headerlink" title="3. PDFMiner.six"></a>3. PDFMiner.six</h3><p><strong>优势</strong>：字级文本提取精度最高，还原字体&#x2F;位置；支持复杂编码；纯 Python，适合自定义解析。<br><strong>劣势</strong>：API 复杂，性能慢；无内置表格或图像提取。<br><strong>适合场景</strong>：PDF 格式研究、法律文档安全分析。<br><strong>示例代码</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pdfminer.high_level <span class="keyword">import</span> extract_text</span><br><span class="line"></span><br><span class="line">text = extract_text(<span class="string">&quot;example.pdf&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(text)</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-PyMuPDF-fitz"><a href="#4-PyMuPDF-fitz" class="headerlink" title="4. PyMuPDF (fitz)"></a>4. PyMuPDF (fitz)</h3><p><strong>优势</strong>：C++ 底层（MuPDF），性能极高；全能支持文本&#x2F;图像&#x2F;表格提取、PDF 编辑&#x2F;创建、渲染和 OCR 集成；内存低（45MB）。<br><strong>劣势</strong>：表格提取需额外处理；安装可能需系统库。<br><strong>适合场景</strong>：大规模文档处理、PDF 编辑器开发、图像转换。<br><strong>示例代码</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> fitz</span><br><span class="line"></span><br><span class="line">doc = fitz.<span class="built_in">open</span>(<span class="string">&quot;example.pdf&quot;</span>)</span><br><span class="line">page = doc[<span class="number">0</span>]</span><br><span class="line">text = page.get_text()</span><br><span class="line">pix = page.get_pixmap()</span><br><span class="line">pix.save(<span class="string">&quot;page.png&quot;</span>)  <span class="comment"># 渲染为图像</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-pypdfium2"><a href="#5-pypdfium2" class="headerlink" title="5. pypdfium2"></a>5. pypdfium2</h3><p><strong>优势</strong>：基于 Google PDFium，渲染准确（接近 Chrome）；支持复杂布局、表单和注释；性能高（多线程）。<br><strong>劣势</strong>：无 PDF 创建&#x2F;编辑；社区较小，API 不如 PyMuPDF 成熟。<br><strong>适合场景</strong>：PDF 查看器开发、高质量打印预览。<br><strong>示例代码</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pypdfium2 <span class="keyword">as</span> pdfium</span><br><span class="line"></span><br><span class="line">pdf = pdfium.PdfDocument(<span class="string">&quot;example.pdf&quot;</span>)</span><br><span class="line">page = pdf.get_page(<span class="number">0</span>)</span><br><span class="line">bitmap = page.render(scale=<span class="number">2</span>)</span><br><span class="line">pil_image = bitmap.to_pil()</span><br><span class="line">pil_image.save(<span class="string">&quot;page.png&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="如何选择？"><a href="#如何选择？" class="headerlink" title="如何选择？"></a>如何选择？</h2><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>推荐库</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>表格提取（发票&#x2F;报表）</td>
+<td>pdfplumber</td>
+<td>内置精确支持，准确率 &gt;90%</td>
+</tr>
+<tr>
+<td>简单文档操作</td>
+<td>pypdf</td>
+<td>轻量、无依赖</td>
+</tr>
+<tr>
+<td>高精度文本提取</td>
+<td>PDFMiner.six 或 PyMuPDF</td>
+<td>字级 vs 段落级平衡</td>
+</tr>
+<tr>
+<td>全能处理（编辑&#x2F;渲染）</td>
+<td>PyMuPDF</td>
+<td>性能&#x2F;功能最佳，覆盖 90% 场景</td>
+</tr>
+<tr>
+<td>高质量渲染</td>
+<td>pypdfium2</td>
+<td>浏览器级准确</td>
+</tr>
+<tr>
+<td>OCR&#x2F;扫描 PDF</td>
+<td>PyMuPDF + Tesseract</td>
+<td>渲染后提取</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="总结建议"><a href="#总结建议" class="headerlink" title="总结建议"></a>总结建议</h2><p>PyMuPDF 是 2025 年综合首选（⭐⭐⭐⭐⭐），因其速度（2.3s&#x2F;1000页）和全能性领先。 pdfplumber 适合表格专注任务；pypdfium2 用于渲染；PDFMiner.six 和 pypdf 作为基础补充。纯 Python 需求优先 pypdf&#x2F;pdfplumber，避免 C 依赖。</p>
+<hr>
+<h2 id="小贴士"><a href="#小贴士" class="headerlink" title="小贴士"></a>小贴士</h2><ul>
+<li>优先测试 PyMuPDF，它几乎满足所有需求；</li>
+<li>对于扫描 PDF，先渲染图像再 OCR。</li>
+<li>MinerU用的是pdfminer和pypdfium2。</li>
+<li>deepdoc用的是pdfplumber和pypdf。</li>
+</ul>
+<blockquote>
+<p>Q：为什么PyMuPDF看起来这么好，这MinerU和deepdoc却没使用它？<br>A：我认为是PyMuPDF是最近才好起来的，所以那时候使用的是pdfplumber&#x2F;pdfminer。</p>
+</blockquote>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/engchina/article/details/149240467">https://blog.csdn.net/engchina/article/details/149240467</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/py-pdf/benchmarks?tab=readme-ov-file">https://github.com/py-pdf/benchmarks?tab=readme-ov-file</a></li>
+<li><a target="_blank" rel="noopener" href="https://pymupdf.readthedocs.io/en/latest/">https://pymupdf.readthedocs.io/en/latest/</a></li>
 </ol>
 
     </div>
@@ -356,13 +489,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">395k</span>
+    <span title="站点总字数">405k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">23:55</span>
+    <span title="站点阅读时长">24:31</span>
   </span>
 </div>
 <div class="busuanzi-count">

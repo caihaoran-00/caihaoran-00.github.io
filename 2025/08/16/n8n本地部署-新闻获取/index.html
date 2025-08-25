@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言n8n也火了挺长时间了，之前在类似场景是dify&#x2F;coze的天下，n8n作为外网新贵，凭借其灵活性开始火爆起来，我们本文就来本地部署并以一个实际案例玩一下n8n，体验一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="n8n本地部署+新闻获取">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言n8n也火了挺长时间了，之前在类似场景是dify&#x2F;coze的天下，n8n作为外网新贵，凭借其灵活性开始火爆起来，我们本文就来本地部署并以一个实际案例玩一下n8n，体验一下。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i1.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i2.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i3.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i4.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i5.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i6.png">
+<meta property="article:published_time" content="2025-08-16T06:46:30.000Z">
+<meta property="article:modified_time" content="2025-08-25T06:51:01.824Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="agent">
+<meta property="article:tag" content="n8n">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i1.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/","path":"2025/08/16/n8n本地部署-新闻获取/","title":"n8n本地部署+新闻获取"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>n8n本地部署+新闻获取 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BB%E5%BD%95"><span class="nav-number">2.2.</span> <span class="nav-text">登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">2.3.</span> <span class="nav-text">使用</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">98</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">110</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="n8n本地部署+新闻获取 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          n8n本地部署+新闻获取
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-16 14:46:30" itemprop="dateCreated datePublished" datetime="2025-08-16T14:46:30+08:00">2025-08-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-25 14:51:01" itemprop="dateModified" datetime="2025-08-25T14:51:01+08:00">2025-08-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>n8n也火了挺长时间了，之前在类似场景是dify&#x2F;coze的天下，n8n作为外网新贵，凭借其灵活性开始火爆起来，我们本文就来本地部署并以一个实际案例玩一下n8n，体验一下。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker volume create n8n_data</span><br><span class="line"></span><br><span class="line">docker run -d --name n8n --restart unless-stopped -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker stop n8n		<span class="comment"># 停止n8n</span></span><br><span class="line">docker start n8n	<span class="comment"># 打开n8n</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>现在我们就可以访问：<a target="_blank" rel="noopener" href="http://localhost:5678/">http://localhost:5678</a></p>
+<p>进行登录了。登录页面如下：</p>
+<img src="/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i1.png" class="" title="i1">
+
+<p>填入账号密码后，还有一些附加信息：</p>
+<img src="/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i2.png" class="" title="i2">
+
+<img src="/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i3.png" class="" title="i3">
+
+<p>然后就进到主页面了，点击<code>Start from scratch</code>即可开始创作：</p>
+<img src="/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i4.png" class="" title="i4">
+
+<hr>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>我们不讲<code>n8n</code>的基础操作，这里我整了个小示例，目的是整合每天的实时新闻。如下：</p>
+<img src="/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i5.png" class="" title="i5">
+
+<p>思路是：</p>
+<ul>
+<li>定时触发器作为触发条件(On a schedule)</li>
+<li>使用<code>gnews</code>和<code>news api</code>获取新闻(Core–&gt;HTTP Request)</li>
+<li>使用<code>Split Out</code>节点将列表中的项转化为单独的项(Data Transformation–&gt;Split Out)</li>
+<li>通过<code>Edit Fields(Set)</code>节点筛选单独的项中的字段(Data Transformation–&gt;Edit Fields(Set))</li>
+<li>使用<code>Merge</code>节点的<code>Append</code>模式进行<code>item</code>的合并(Data Transformation–&gt;merge)</li>
+<li>使用<code>Code</code>节点将20个<code>item</code>整合成一个<code>item</code>(Core–&gt;Code，如果20个item，那么后续<code>Ai Agent</code>就会运行20次)</li>
+<li>将整合得到的一个<code>item</code>的内容扔给<code>LLM</code>，让<code>LLM</code>去筛选和总结这些新闻(AI–&gt;AI Agent)</li>
+<li>将<code>LLM</code>给出的结果通过HTTP请求推送给企业微信的群聊机器人(Core–&gt;HTTP Request)</li>
+</ul>
+<p>注意事项：</p>
+<ol>
+<li>直接使用<code>On a schedule</code>获取的时间是<code>UTC</code>时间，需点击右上角的三个点，选择<code>Settings</code>，然后将下图的时区改为<code>Asia/Shanghai</code>。</li>
+</ol>
+<img src="/2025/08/16/n8n%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2-%E6%96%B0%E9%97%BB%E8%8E%B7%E5%8F%96/i6.png" class="" title="i6">
+
+<ol start="2">
+<li><p><code>NewsAPI</code>的免费版本的新闻有<code>24h</code>的延迟</p>
+</li>
+<li><p><code>Gnews</code>的免费版本看不到全文（只能看到前面一部分的内容）</p>
+</li>
+<li><p>都是每天100个免费请求</p>
+</li>
+<li><p>每个<code>api url</code>都可以设置语言，排序方式，开始时间和结束时间等</p>
+<blockquote>
+<p>我的两个<code>api</code>：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="comment">% raw %&#125;</span></span><br><span class="line">https://newsapi.org/v2/everything?q=ai<span class="built_in">&amp;</span>language=en<span class="built_in">&amp;</span>from=&#123;&#123; <span class="keyword">\$</span>now.plus(-1, &#x27;days&#x27;).format(&#x27;yyyy-MM-dd&#x27;) &#125;&#125;T00:00:00Z<span class="built_in">&amp;</span>to=&#123;&#123; <span class="built_in">$</span>now.plus(-1, &#x27;days&#x27;).format(&#x27;yyyy-MM-dd&#x27;) &#125;&#125;T23:59:59Z<span class="built_in">&amp;</span>pageSize=10<span class="built_in">&amp;</span>sortBy=popularity<span class="built_in">&amp;</span>apiKey=API<span class="built_in">_</span>KEY</span><br><span class="line">&#123;<span class="comment">% endraw %&#125;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="comment">% raw %&#125;</span></span><br><span class="line">https://gnews.io/api/v4/search?q=ai<span class="built_in">&amp;</span>lang=en<span class="built_in">&amp;</span>sortBy=popularity<span class="built_in">&amp;</span>from=&#123;&#123; <span class="keyword">\$</span>now.format(&#x27;yyyy-MM-dd&#x27;) &#125;&#125;T00:00:00Z<span class="built_in">&amp;</span>to=&#123;&#123; <span class="built_in">$</span>now.format(&#x27;yyyy-MM-dd&#x27;) &#125;&#125;T23:59:59Z<span class="built_in">&amp;</span>apikey=API<span class="built_in">_</span>KEY</span><br><span class="line">&#123;<span class="comment">% endraw %&#125;</span></span><br></pre></td></tr></table></figure></blockquote>
+</li>
+<li><p><code>Code</code>模块的代码：</p>
+<blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 获取所有输入项</span></span><br><span class="line"><span class="keyword">const</span> inputItems = $input; <span class="comment">// 因为 Mode 是 &quot;Run once for all items&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 将每个 item 的 json 数据提取出来，形成一个数组</span></span><br><span class="line"><span class="keyword">const</span> newsArray = inputItems.<span class="title function_">all</span>().<span class="title function_">map</span>(<span class="function"><span class="params">item</span> =&gt;</span> item.<span class="property">json</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 将这个对象数组转换成一个 LLM 可读的 Markdown 字符串</span></span><br><span class="line"><span class="keyword">const</span> markdownList = newsArray.<span class="title function_">map</span>(<span class="function">(<span class="params">news, index</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 清理 content 字段，去掉 [+] 截断标记</span></span><br><span class="line">  <span class="keyword">const</span> cleanContent = (news.<span class="property">content</span> || news.<span class="property">description</span> || <span class="string">&quot;&quot;</span>)</span><br><span class="line">    .<span class="title function_">replace</span>(<span class="regexp">/\s*\[.*?\]\s*$/</span>, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">    .<span class="title function_">replace</span>(<span class="regexp">/\\r\\n/g</span>, <span class="string">&#x27; &#x27;</span>) <span class="comment">// 清理多余的换行符</span></span><br><span class="line">    .<span class="title function_">replace</span>(<span class="regexp">/\\r/g</span>, <span class="string">&#x27; &#x27;</span>)</span><br><span class="line">    .<span class="title function_">replace</span>(<span class="regexp">/\\n/g</span>, <span class="string">&#x27; &#x27;</span>)</span><br><span class="line">    .<span class="title function_">trim</span>();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 生成每条新闻的 Markdown 字符串</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">`**<span class="subst">$&#123;index + <span class="number">1</span>&#125;</span>. <span class="subst">$&#123;news.title&#125;</span>**  </span></span><br><span class="line"><span class="string">  *来源*：<span class="subst">$&#123;news.source&#125;</span> | *发布时间*：<span class="subst">$&#123;news.publishedAt&#125;</span></span></span><br><span class="line"><span class="string">  *摘要*：<span class="subst">$&#123;cleanContent&#125;</span></span></span><br><span class="line"><span class="string">  *链接*：<span class="subst">$&#123;(news.url || <span class="string">&quot;&quot;</span>).trim()&#125;</span>`</span>;</span><br><span class="line">&#125;).<span class="title function_">join</span>(<span class="string">&#x27;\n\n---\n\n&#x27;</span>); <span class="comment">// 用 &quot;---&quot; 分隔每条新闻</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. 返回一个包含这个纯文本字符串的 item</span></span><br><span class="line"><span class="keyword">return</span> [</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="attr">json</span>: &#123;</span><br><span class="line">      <span class="comment">// 现在，LLM 会看到一个完整的、可读的新闻列表</span></span><br><span class="line">      <span class="attr">newsDigest</span>: markdownList</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">];</span><br></pre></td></tr></table></figure></blockquote>
+</li>
+<li><p><code>AI Agent</code>的系统提示词：</p>
+<blockquote>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">你是一名专业的AI科技新闻编辑，负责为高管和研究人员整理每日AI行业动态。请根据以下20条原始新闻摘要，执行以下任务：</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line"><span class="params">###</span> 任务要求：</span><br><span class="line"></span><br><span class="line">1. **筛选**：从原始新闻中筛选6条与AI技术进展和应用最相关的新闻，忽略无关信息。</span><br><span class="line">2. **翻译与总结**：对筛选后的每条新闻，生成一段**简洁、客观的中文摘要**（80-120字）。</span><br><span class="line">3. **输出格式**：使用 **Markdown** 格式输出，**总字符数严格控制在 3800 以内**，确保能成功推送到企业微信。</span><br><span class="line">4. **结构化**：将新闻分为三个板块，每条新闻必须包含标题、摘要和来源链接。</span><br><span class="line">5. **语言风格**：简洁、专业、信息密度高，避免主观评论和夸张用语。</span><br><span class="line">6. **注意**：</span><br><span class="line"></span><br><span class="line"> - 禁止在开头给出```markdown这种内容</span><br><span class="line"> - 总字符数严格控制在 3800 以内（包括链接等所有的字符）</span><br><span class="line"> - 以以下内容为开头：</span><br><span class="line">   🌟 AI 行业动态 | &#123;&#123; <span class="built_in">$</span>now.format(&quot;yyyy-MM-dd&quot;) &#125;&#125;</span><br><span class="line"></span><br><span class="line">请确保最终输出内容清晰、美观，方便读者快速获取关键信息。</span><br><span class="line"></span><br><span class="line"><span class="params">###</span> 原始新闻：</span><br><span class="line"></span><br><span class="line">&#123;&#123; <span class="built_in">$</span>json.newsDigest &#125;&#125;</span><br></pre></td></tr></table></figure></blockquote>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/agent/" rel="tag"># agent</a>
+              <a href="/tags/n8n/" rel="tag"># n8n</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/15/qwen-code%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%93%E9%AA%8C/" rel="prev" title="qwen-code安装与体验">
+                  <i class="fa fa-angle-left"></i> qwen-code安装与体验
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/20/AAshare/abc/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" rel="next" title="Text-to-SQL:vanna安装与使用">
+                  Text-to-SQL:vanna安装与使用 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">405k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">24:31</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

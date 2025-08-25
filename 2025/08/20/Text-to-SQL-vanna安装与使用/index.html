@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言一个完整的RAG（Retrieval-Augmented Generation，检索增强生成）系统，虽然其核心功能是“从外部知识库中检索信息 + 用大模型生成回答”，但在很多实际应用场景中，查询结构化数据库（如SQL数据库） 是其重要组成部分，甚至可以说是 RAG 系统在企业级应用中的“高级形态”之一。 企业在使用 RAG 时，往往不仅有文档类知识，还有大量结构化数据存储在数据库中，例如：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Text-to-SQL:vanna安装与使用">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言一个完整的RAG（Retrieval-Augmented Generation，检索增强生成）系统，虽然其核心功能是“从外部知识库中检索信息 + 用大模型生成回答”，但在很多实际应用场景中，查询结构化数据库（如SQL数据库） 是其重要组成部分，甚至可以说是 RAG 系统在企业级应用中的“高级形态”之一。 企业在使用 RAG 时，往往不仅有文档类知识，还有大量结构化数据存储在数据库中，例如：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i1.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i2.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i3.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i4.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i7.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i8.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i9.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i10.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i11.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i12.png">
+<meta property="article:published_time" content="2025-08-20T02:13:18.000Z">
+<meta property="article:modified_time" content="2025-08-22T11:34:59.769Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="text-to-sql">
+<meta property="article:tag" content="vanna">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i1.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/","path":"2025/08/20/Text-to-SQL-vanna安装与使用/","title":"Text-to-SQL:vanna安装与使用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Text-to-SQL:vanna安装与使用 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">2.2.</span> <span class="nav-text">使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E7%A4%BA%E4%BE%8B%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">2.2.1.</span> <span class="nav-text">连接示例数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E8%87%AA%E5%B7%B1%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">2.2.2.</span> <span class="nav-text">连接自己数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E5%A4%96%E6%8F%90%E4%BE%9BAPIflask"><span class="nav-number">2.2.3.</span> <span class="nav-text">对外提供API&lt;-&gt;flask</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E5%A4%96%E6%8F%90%E4%BE%9BAPIfastapi"><span class="nav-number">2.2.4.</span> <span class="nav-text">对外提供API&lt;-&gt;fastapi</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">98</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">110</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Text-to-SQL:vanna安装与使用 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Text-to-SQL:vanna安装与使用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-20 10:13:18" itemprop="dateCreated datePublished" datetime="2025-08-20T10:13:18+08:00">2025-08-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-22 19:34:59" itemprop="dateModified" datetime="2025-08-22T19:34:59+08:00">2025-08-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>20 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>一个完整的RAG（Retrieval-Augmented Generation，检索增强生成）系统，虽然其核心功能是“从外部知识库中检索信息 + 用大模型生成回答”，但在很多实际应用场景中，查询结构化数据库（如<code>SQL</code>数据库） 是其重要组成部分，甚至可以说是 RAG 系统在企业级应用中的“高级形态”之一。</p>
+<p>企业在使用 RAG 时，往往不仅有文档类知识，还有大量结构化数据存储在数据库中，例如： </p>
+<ul>
+<li>销售记录（订单、金额、时间）</li>
+<li>用户信息（姓名、等级、注册时间）</li>
+<li>库存数据</li>
+<li>日志表</li>
+</ul>
+<p>这些数据无法通过“向量检索”直接获取，必须通过 <code>SQL</code> 查询才能提取。所以<code>SQL</code>语句生成的准确性至关重要，实际的<code>Text-to-SQL</code>通常采用以下四种路径之一：</p>
+<ul>
+<li>直接调用强大的大模型</li>
+<li>结合RAG与更快速的模型</li>
+<li>基于智能体的系统用于错误恢复</li>
+<li>针对特定领域微调的<code>LLM</code>以提升准确性</li>
+</ul>
+<p>今天要介绍的<a target="_blank" rel="noopener" href="https://github.com/vanna-ai/vanna/tree/main">vanna</a>就是第二类，通过RAG技术实现更精确的<code>Text-to-SQL</code>。我们将从安装开始介绍，最终实现在<code>n8n</code>中建立一个工作流用于效果体验。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>在<a target="_blank" rel="noopener" href="https://vanna.ai/docs/postgres-openai-standard-chromadb/">这个页面</a>，选择你要使用的LLM，向量数据库和数据库，然后<code>Setup</code>节会给出对应的安装命令，这里我的是（不用运行，往下看）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install <span class="string">&#x27;vanna[chromadb,openai,postgres]&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们通过<code>uv</code>来进行包管理，依次运行下面命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> vanna</span><br><span class="line"><span class="built_in">cd</span> vanna</span><br><span class="line"></span><br><span class="line">uv venv</span><br><span class="line"><span class="comment"># conda deactivate   # 如果在conda的base环境下</span></span><br><span class="line"><span class="built_in">source</span> .venv/bin/activate</span><br><span class="line">uv pip install <span class="string">&#x27;vanna[chromadb,openai,postgres]&#x27;</span></span><br><span class="line">uv pip list</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><h4 id="连接示例数据库"><a href="#连接示例数据库" class="headerlink" title="连接示例数据库"></a>连接示例数据库</h4><p>参考<a target="_blank" rel="noopener" href="https://vanna.ai/docs/app/">这里</a>的<code>Quickstart With Sample Data</code>，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> vanna</span><br><span class="line"><span class="keyword">from</span> vanna.remote <span class="keyword">import</span> VannaDefault</span><br><span class="line">vn = VannaDefault(model=<span class="string">&#x27;chinook&#x27;</span>, api_key=vanna.get_api_key(<span class="string">&#x27;my-email@example.com&#x27;</span>))</span><br><span class="line">vn.connect_to_sqlite(<span class="string">&#x27;https://vanna.ai/Chinook.sqlite&#x27;</span>)</span><br><span class="line">vn.ask(<span class="string">&quot;What are the top 10 albums by sales?&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意需要将上面的<code>my-email@example.com</code>换成自己的email，运行代码后会给你的email账号发邮件，在垃圾箱里面找到并填进去即可：<br>Check your email for the code and enter it here: XXXXX</p>
+</blockquote>
+<p><strong>输出：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br></pre></td><td class="code"><pre><span class="line">SQL Prompt: [</span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;system&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: </span><br><span class="line"><span class="string">&quot;You are a SQLite expert. Please help to generate a SQL query to answer the question. Your response should ONLY be based on the given context and follow the response guidelines and format instructions. </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">===Tables </span></span><br><span class="line"><span class="string">CREATE TABLE [Album]</span></span><br><span class="line"><span class="string">(</span></span><br><span class="line"><span class="string">		[AlbumId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">        [Title] NVARCHAR(160)  NOT NULL,</span></span><br><span class="line"><span class="string">        [ArtistId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">        CONSTRAINT [PK_Album] PRIMARY KEY  ([AlbumId]),</span></span><br><span class="line"><span class="string">        FOREIGN KEY ([ArtistId]) REFERENCES [Artist] ([ArtistId]) </span></span><br><span class="line"><span class="string">            ON DELETE NO ACTION ON UPDATE NO ACTION</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">CREATE INDEX [IFK_AlbumArtistId] ON [Album] ([ArtistId])</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">CREATE INDEX [IFK_TrackAlbumId] ON [Track] ([AlbumId])</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">CREATE TABLE [Track]</span></span><br><span class="line"><span class="string">(</span></span><br><span class="line"><span class="string">	[TrackId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [Name] NVARCHAR(200)  NOT NULL,</span></span><br><span class="line"><span class="string">    [AlbumId] INTEGER,</span></span><br><span class="line"><span class="string">    [MediaTypeId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [GenreId] INTEGER,</span></span><br><span class="line"><span class="string">    [Composer] NVARCHAR(220),</span></span><br><span class="line"><span class="string">    [Milliseconds] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [Bytes] INTEGER,</span></span><br><span class="line"><span class="string">    [UnitPrice] NUMERIC(10,2)  NOT NULL,</span></span><br><span class="line"><span class="string">    CONSTRAINT [PK_Track] PRIMARY KEY  ([TrackId]),</span></span><br><span class="line"><span class="string">    FOREIGN KEY ([AlbumId]) REFERENCES [Album] ([AlbumId]) </span></span><br><span class="line"><span class="string">        ON DELETE NO ACTION ON UPDATE NO ACTION,</span></span><br><span class="line"><span class="string">        FOREIGN KEY ([GenreId]) REFERENCES [Genre] ([GenreId]) </span></span><br><span class="line"><span class="string">        ON DELETE NO ACTION ON UPDATE NO ACTION,</span></span><br><span class="line"><span class="string">        FOREIGN KEY ([MediaTypeId]) REFERENCES [MediaType] ([MediaTypeId]) </span></span><br><span class="line"><span class="string">        ON DELETE NO ACTION ON UPDATE NO ACTION</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">        </span></span><br><span class="line"><span class="string"> CREATE TABLE [Artist]</span></span><br><span class="line"><span class="string">(</span></span><br><span class="line"><span class="string">    [ArtistId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [Name] NVARCHAR(120),</span></span><br><span class="line"><span class="string">    CONSTRAINT [PK_Artist] PRIMARY KEY  ([ArtistId])</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">        </span></span><br><span class="line"><span class="string">CREATE TABLE [Playlist]</span></span><br><span class="line"><span class="string">(</span></span><br><span class="line"><span class="string">    [PlaylistId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [Name] NVARCHAR(120),</span></span><br><span class="line"><span class="string">    CONSTRAINT [PK_Playlist] PRIMARY KEY  ([PlaylistId])</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">CREATE TABLE [Genre]</span></span><br><span class="line"><span class="string">(</span></span><br><span class="line"><span class="string">    [GenreId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [Name] NVARCHAR(120),</span></span><br><span class="line"><span class="string">    CONSTRAINT [PK_Genre] PRIMARY KEY  ([GenreId])</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">CREATE TABLE [InvoiceLine]</span></span><br><span class="line"><span class="string">(</span></span><br><span class="line"><span class="string">    [InvoiceLineId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [InvoiceId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [TrackId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [UnitPrice] NUMERIC(10,2)  NOT NULL,</span></span><br><span class="line"><span class="string">    [Quantity] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    CONSTRAINT [PK_InvoiceLine] PRIMARY KEY  ([InvoiceLineId]),</span></span><br><span class="line"><span class="string">    FOREIGN KEY ([InvoiceId]) REFERENCES [Invoice] ([InvoiceId])</span></span><br><span class="line"><span class="string">    ON DELETE NO ACTION ON UPDATE NO ACTION,</span></span><br><span class="line"><span class="string">    FOREIGN KEY ([TrackId]) REFERENCES [Track] ([TrackId]) </span></span><br><span class="line"><span class="string">    ON DELETE NO ACTION ON UPDATE NO ACTION</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">CREATE INDEX [IFK_TrackGenreId] ON [Track] ([GenreId])</span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">CREATE TABLE [Customer]</span></span><br><span class="line"><span class="string">(</span></span><br><span class="line"><span class="string">    [CustomerId] INTEGER  NOT NULL,</span></span><br><span class="line"><span class="string">    [FirstName] NVARCHAR(40)  NOT NULL,</span></span><br><span class="line"><span class="string">    [LastName] NVARCHAR(20)  NOT NULL,</span></span><br><span class="line"><span class="string">    [Company] NVARCHAR(80),</span></span><br><span class="line"><span class="string">    [Address] NVARCHAR(70),</span></span><br><span class="line"><span class="string">    [City] NVARCHAR(40),</span></span><br><span class="line"><span class="string">    [State] NVARCHAR(40),</span></span><br><span class="line"><span class="string">    [Country] NVARCHAR(40),</span></span><br><span class="line"><span class="string">    [PostalCode] NVARCHAR(10),</span></span><br><span class="line"><span class="string">    [Phone] NVARCHAR(24),</span></span><br><span class="line"><span class="string">    [Fax] NVARCHAR(24),</span></span><br><span class="line"><span class="string">    [Email] NVARCHAR(60)  NOT NULL,</span></span><br><span class="line"><span class="string">    [SupportRepId] INTEGER,</span></span><br><span class="line"><span class="string">    CONSTRAINT [PK_Customer] PRIMARY KEY  ([CustomerId]),</span></span><br><span class="line"><span class="string">    FOREIGN KEY ([SupportRepId]) REFERENCES [Employee] ([EmployeeId]) </span></span><br><span class="line"><span class="string">    ON DELETE NO ACTION ON UPDATE NO ACTION</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">===Additional Context </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">This is a SQLite database. For dates rememeber to use SQLite syntax.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">===Response Guidelines </span></span><br><span class="line"><span class="string">1. If the provided context is sufficient, please generate a valid SQL query without any explanations for the question. </span></span><br><span class="line"><span class="string">2. If the provided context is almost sufficient but requires knowledge of a specific string in a particular column, please generate an intermediate SQL query to find the distinct strings in that column. Prepend the query with a comment saying intermediate_sql </span></span><br><span class="line"><span class="string">3. If the provided context is insufficient, please explain why it can&#x27;t be generated. </span></span><br><span class="line"><span class="string">4. Please use the most relevant table(s). </span></span><br><span class="line"><span class="string">5. If the question has been asked and answered before, please repeat the answer exactly as it was given before. </span></span><br><span class="line"><span class="string">6. Ensure that the output SQL is SQLite-compliant and executable, and free of syntax errors. &quot;</span></span><br><span class="line">&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 albums by sales?&#x27;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;</span></span><br><span class="line"><span class="string">SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalSales</span></span><br><span class="line"><span class="string">FROM Album a</span></span><br><span class="line"><span class="string">INNER JOIN Track t ON a.AlbumId = t.AlbumId</span></span><br><span class="line"><span class="string">INNER JOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">GROUP BY a.AlbumId, a.Title</span></span><br><span class="line"><span class="string">ORDER BY TotalSales DESC</span></span><br><span class="line"><span class="string">LIMIT 10;&#x27;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 most purchased albums?&#x27;</span>&#125;,</span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalPurchases</span></span><br><span class="line"><span class="string">FROM Album a</span></span><br><span class="line"><span class="string">JOIN Track t ON a.AlbumId = t.AlbumId</span></span><br><span class="line"><span class="string">JOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">GROUP BY a.AlbumId, a.Title</span></span><br><span class="line"><span class="string">ORDER BY TotalPurchases DESC</span></span><br><span class="line"><span class="string">LIMIT 10;&#x27;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 artists by sales?&#x27;</span>&#125;, </span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;</span></span><br><span class="line"><span class="string">SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales\nFROM Artist a</span></span><br><span class="line"><span class="string">INNER JOIN Album al ON a.ArtistId = al.ArtistId</span></span><br><span class="line"><span class="string">INNER JOIN Track t ON al.AlbumId = t.AlbumId</span></span><br><span class="line"><span class="string">INNER JOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">GROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC</span></span><br><span class="line"><span class="string">LIMIT 10;&#x27;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 Jazz artists by sales per year?&#x27;</span>&#125;, </span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&quot;</span></span><br><span class="line"><span class="string">SELECT a.ArtistId, a.Name, strftime(&#x27;%Y&#x27;, i.InvoiceDate) AS Year, SUM(il.Quantity) AS TotalSales</span></span><br><span class="line"><span class="string">FROM Artist a</span></span><br><span class="line"><span class="string">JOIN Album al ON a.ArtistId = al.ArtistId</span></span><br><span class="line"><span class="string">JOIN Track t ON al.AlbumId = t.AlbumId</span></span><br><span class="line"><span class="string">JOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">JOIN Invoice i ON il.InvoiceId = i.InvoiceId</span></span><br><span class="line"><span class="string">JOIN Genre g ON t.GenreId = g.GenreId</span></span><br><span class="line"><span class="string">WHERE g.Name = &#x27;Jazz&#x27;</span></span><br><span class="line"><span class="string">GROUP BY a.ArtistId, a.Name, Year</span></span><br><span class="line"><span class="string">ORDER BY TotalSales DESC\nLIMIT 10;&quot;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 jazz artists by sales?&#x27;</span>&#125;, </span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&quot;</span></span><br><span class="line"><span class="string">SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales</span></span><br><span class="line"><span class="string">FROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId</span></span><br><span class="line"><span class="string">JOIN Track t ON al.AlbumId = t.AlbumId\nJOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">JOIN Genre g ON t.GenreId = g.GenreId</span></span><br><span class="line"><span class="string">WHERE g.Name = &#x27;Jazz&#x27;</span></span><br><span class="line"><span class="string">GROUP BY a.ArtistId, a.Name</span></span><br><span class="line"><span class="string">ORDER BY TotalSales DESC</span></span><br><span class="line"><span class="string">LIMIT 10;&quot;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top-selling albums?&#x27;</span>&#125;, </span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;</span></span><br><span class="line"><span class="string">SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalSales</span></span><br><span class="line"><span class="string">FROM Album a\nJOIN Track t ON a.AlbumId = t.AlbumId</span></span><br><span class="line"><span class="string">JOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">GROUP BY a.AlbumId, a.Title</span></span><br><span class="line"><span class="string">ORDER BY TotalSales DESC;&#x27;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 artists by sales? 使用中文&#x27;</span>&#125;, </span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;</span></span><br><span class="line"><span class="string">SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales</span></span><br><span class="line"><span class="string">FROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId</span></span><br><span class="line"><span class="string">JOIN Track t ON al.AlbumId = t.AlbumId</span></span><br><span class="line"><span class="string">JOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">GROUP BY a.ArtistId, a.Name</span></span><br><span class="line"><span class="string">ORDER BY TotalSales DESC</span></span><br><span class="line"><span class="string">LIMIT 10;&#x27;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 Electronica/Dance artists by sales?&#x27;</span>&#125;, </span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&quot;</span></span><br><span class="line"><span class="string">SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales</span></span><br><span class="line"><span class="string">FROM Artist a</span></span><br><span class="line"><span class="string">JOIN Album al ON a.ArtistId = al.ArtistId</span></span><br><span class="line"><span class="string">JOIN Track t ON al.AlbumId = t.AlbumId</span></span><br><span class="line"><span class="string">JOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">JOIN Genre g ON t.GenreId = g.GenreId</span></span><br><span class="line"><span class="string">WHERE g.Name = &#x27;Electronica/Dance&#x27;</span></span><br><span class="line"><span class="string">GROUP BY a.ArtistId, a.Name</span></span><br><span class="line"><span class="string">ORDER BY TotalSales DESC</span></span><br><span class="line"><span class="string">LIMIT 10;&quot;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 11artists by sales?&#x27;</span>&#125;, </span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;</span></span><br><span class="line"><span class="string">SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales</span></span><br><span class="line"><span class="string">FROM Artist a\nJOIN Album al ON a.ArtistId = al.ArtistId</span></span><br><span class="line"><span class="string">JOIN Track t ON al.AlbumId = t.AlbumId</span></span><br><span class="line"><span class="string">JOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">GROUP BY a.ArtistId, a.Name\nORDER BY TotalSales DESC\nLIMIT 11;&#x27;</span>&#125;, </span><br><span class="line"></span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 7 artists by sales order by sales?&#x27;</span>&#125;, </span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;</span></span><br><span class="line"><span class="string">SELECT a.ArtistId, a.Name, SUM(il.Quantity) AS TotalSales</span></span><br><span class="line"><span class="string">FROM Artist a</span></span><br><span class="line"><span class="string">INNER JOIN Album al ON a.ArtistId = al.ArtistId</span></span><br><span class="line"><span class="string">INNER JOIN Track t ON al.AlbumId = t.AlbumId</span></span><br><span class="line"><span class="string">INNER JOIN InvoiceLine il ON t.TrackId = il.TrackId</span></span><br><span class="line"><span class="string">GROUP BY a.ArtistId, a.Name</span></span><br><span class="line"><span class="string">ORDER BY TotalSales DESC</span></span><br><span class="line"><span class="string">LIMIT 7;&#x27;</span>&#125;, </span><br><span class="line">&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 albums by sales?&#x27;</span>&#125;]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">LLM Response: SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalSales</span><br><span class="line">FROM Album a</span><br><span class="line">INNER JOIN Track t ON a.AlbumId = t.AlbumId</span><br><span class="line">INNER JOIN InvoiceLine il ON t.TrackId = il.TrackId</span><br><span class="line">GROUP BY a.AlbumId, a.Title</span><br><span class="line">ORDER BY TotalSales DESC</span><br><span class="line">LIMIT 10;</span><br><span class="line">Extracted SQL: SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalSales</span><br><span class="line">FROM Album a</span><br><span class="line">INNER JOIN Track t ON a.AlbumId = t.AlbumId</span><br><span class="line">INNER JOIN InvoiceLine il ON t.TrackId = il.TrackId</span><br><span class="line">GROUP BY a.AlbumId, a.Title</span><br><span class="line">ORDER BY TotalSales DESC</span><br><span class="line">LIMIT 10;</span><br><span class="line">SELECT a.AlbumId, a.Title, SUM(il.Quantity) AS TotalSales</span><br><span class="line">FROM Album a</span><br><span class="line">INNER JOIN Track t ON a.AlbumId = t.AlbumId</span><br><span class="line">INNER JOIN InvoiceLine il ON t.TrackId = il.TrackId</span><br><span class="line">GROUP BY a.AlbumId, a.Title</span><br><span class="line">ORDER BY TotalSales DESC</span><br><span class="line">LIMIT 10;</span><br><span class="line">   AlbumId                                     Title  TotalSales</span><br><span class="line">0       23                            Minha Historia          27</span><br><span class="line">1      141                             Greatest Hits          26</span><br><span class="line">2       73                                 Unplugged          25</span><br><span class="line">3      224                                  Acústico          22</span><br><span class="line">4       37                             Greatest Kiss          20</span><br><span class="line">5       21                              Prenda Minha          19</span><br><span class="line">6       55                         Chronicle, Vol. 2          19</span><br><span class="line">7      221  My Generation - The Very Best Of The Who          19</span><br><span class="line">8       39                   International Superhits          18</span><br><span class="line">9       54                         Chronicle, Vol. 1          18</span><br></pre></td></tr></table></figure>
+
+<p>我们可以<strong>看到：</strong></p>
+<ul>
+<li>系统提示词中给出表结构，给<code>LLM</code>基础信息</li>
+<li>多轮问答提供参考<code>SQL</code>语句（Few-shot）</li>
+<li>最终生成我们的问题对应的<code>SQL</code>语句，并且运行得到结果</li>
+</ul>
+<p><strong>关于多轮问答提供的<code>SQL</code>语句是哪来的：</strong></p>
+<p>这些“多轮问答”是 <strong>Vanna 在后台预先训练和积累的‘历史问答对’</strong>，它们不是临时生成的，而是通过 <strong>RAG（检索增强生成）技术</strong>，从一个“知识库”中<strong>自动检索出来</strong>，作为上下文插入到提示词中的。</p>
+<p>**为什么这么做？ **</p>
+<table>
+<thead>
+<tr>
+<th>✅ 提高准确性</th>
+<th>AI 有“参考答案”可模仿，不会瞎写</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ 处理同义问题</td>
+<td>“销量最高”、“最畅销”、“卖得最多”都能匹配到类似例子</td>
+</tr>
+<tr>
+<td>✅ 支持复杂查询</td>
+<td>通过例子教会 AI 如何 JOIN 多张表、如何 GROUP BY</td>
+</tr>
+<tr>
+<td>✅ 保持一致性</td>
+<td>相同问题返回相同 SQL</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>服务形式</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> vanna</span><br><span class="line"><span class="keyword">from</span> vanna.remote <span class="keyword">import</span> VannaDefault</span><br><span class="line">vn = VannaDefault(model=<span class="string">&#x27;chinook&#x27;</span>, api_key=vanna.get_api_key(<span class="string">&#x27;caihaoran00@gmail.com&#x27;</span>))</span><br><span class="line">vn.connect_to_sqlite(<span class="string">&#x27;https://vanna.ai/Chinook.sqlite&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> vanna.flask <span class="keyword">import</span> VannaFlaskApp</span><br><span class="line">VannaFlaskApp(vn).run()</span><br></pre></td></tr></table></figure>
+
+<p>进入：<a target="_blank" rel="noopener" href="http://localhost:8084/">http://localhost:8084</a></p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i1.png" class="" title="i1">
+
+<p><strong>打开Traning Data：</strong></p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i2.png" class="" title="i2">
+
+<p>点击右上角的<code>+ Add training data</code>：</p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i3.png" class="" title="i3">
+
+<p>可以通过这里从页面上添加”训练数据”，打开<code>Functions</code>：</p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i4.png" class="" title="i4">
+
+<p>目前是空的，也不知道这里有什么用，可能是提供预置的测试项？然后不用输入问题，只需要点击即可进行测试？</p>
+<hr>
+<h4 id="连接自己数据库"><a href="#连接自己数据库" class="headerlink" title="连接自己数据库"></a>连接自己数据库</h4><p>首先安装下<code>postgresql</code>数据库：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 更新包列表</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装 PostgreSQL 和常用插件</span></span><br><span class="line"><span class="built_in">sudo</span> apt install postgresql postgresql-contrib -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动 PostgreSQL</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl start postgresql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查是否成功启动</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl status postgresql	<span class="comment"># 会看到 Active: active (exited)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 也可以</span></span><br><span class="line"><span class="built_in">sudo</span> -u postgres psql -c <span class="string">&quot;SELECT 1;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 会看到</span></span><br><span class="line"><span class="comment">#could not change directory to &quot;/home/chr/桌面&quot;: 权限不够</span></span><br><span class="line"><span class="comment"># ?column? </span></span><br><span class="line"><span class="comment">#----------</span></span><br><span class="line"><span class="comment">#        1</span></span><br><span class="line"><span class="comment">#(1 row)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置密码</span></span><br><span class="line"><span class="built_in">sudo</span> -u postgres psql</span><br><span class="line">\password postgres</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置完成后退出</span></span><br><span class="line">\q</span><br></pre></td></tr></table></figure>
+
+<p>我们还是使用Chinook这个数据库，</p>
+<p>首先下载<code>Chinook</code>的<code>PostgreSQL</code> 脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_PostgreSql.sql</span><br></pre></td></tr></table></figure>
+
+<p>接着把数据导入<code>chinook</code>数据库：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建chinook数据库</span></span><br><span class="line"><span class="built_in">sudo</span> -u postgres createdb chinook</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入数据库</span></span><br><span class="line">psql -h localhost -U postgres -d chinook -f Chinook_PostgreSql.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>-h localhost：数据库地址</li>
+<li>-U postgres：用户名</li>
+<li>-d chinook：目标数据库</li>
+<li>-f Chinook_PostgreSql.sql：要执行的 SQL 文件</li>
+</ul>
+<blockquote>
+<p>输入命令后，会提示你输入密码（就是你之前设的 postgres 的密码）</p>
+<p>最上方报错：<br>psql:Chinook_PostgreSql.sql:19: ERROR:  cannot drop the currently open database<br>psql:Chinook_PostgreSql.sql:25: ERROR:  database “chinook” already exists<br>不用管。</p>
+</blockquote>
+<p><strong>验证数据是否可查：</strong></p>
+<p>终端运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql -h localhost -U postgres -d chinook -c <span class="string">&quot;SELECT Title, ArtistId FROM Album LIMIT 5;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>输出：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(base) chr@chr:~/桌面/vanna$ psql -h localhost -U postgres -d chinook -c <span class="string">&quot;SELECT title, artist_id FROM album LIMIT 5;&quot;</span></span><br><span class="line">Password <span class="keyword">for</span> user postgres: </span><br><span class="line">                 title                 | artist_id </span><br><span class="line">---------------------------------------+-----------</span><br><span class="line"> For Those About To Rock We Salute You |         1</span><br><span class="line"> Balls to the Wall                     |         2</span><br><span class="line"> Restless and Wild                     |         2</span><br><span class="line"> Let There Be Rock                     |         1</span><br><span class="line"> Big Ones                              |         3</span><br><span class="line">(5 rows)</span><br></pre></td></tr></table></figure>
+
+<p><strong>我们回到<code>vanna</code>中进行试验：</strong></p>
+<p><strong>极简代码：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> vanna.chromadb <span class="keyword">import</span> ChromaDB_VectorStore</span><br><span class="line"><span class="keyword">from</span> vanna.qianwen <span class="keyword">import</span> QianWenAI_Chat</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyVanna</span>(ChromaDB_VectorStore, QianWenAI_Chat):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, config=<span class="literal">None</span></span>):</span><br><span class="line">        ChromaDB_VectorStore.__init__(<span class="variable language_">self</span>, config=config)</span><br><span class="line">        QianWenAI_Chat.__init__(<span class="variable language_">self</span>, config=config)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vn = MyVanna(config=&#123;<span class="string">&#x27;api_key&#x27;</span>: <span class="string">&#x27;sk-...&#x27;</span>, <span class="string">&#x27;model&#x27;</span>: <span class="string">&#x27;qwen-max&#x27;</span>&#125;)</span><br><span class="line"></span><br><span class="line">vn.connect_to_postgres(</span><br><span class="line">    host=<span class="string">&#x27;localhost&#x27;</span>,</span><br><span class="line">    dbname=<span class="string">&#x27;chinook&#x27;</span>,</span><br><span class="line">    user=<span class="string">&#x27;postgres&#x27;</span>,</span><br><span class="line">    password=<span class="string">&#x27;123&#x27;</span>,  </span><br><span class="line">    port=<span class="number">5432</span></span><br><span class="line">)</span><br><span class="line">vn.ask(<span class="string">&quot;What are the top 10 albums by sales?&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># from vanna.flask import VannaFlaskApp</span></span><br><span class="line"><span class="comment"># app = VannaFlaskApp(vn)</span></span><br><span class="line"><span class="comment"># app.run()</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>去掉底部的注释，进入web页面会发现；</p>
+<p>在<code>Training Data</code>一栏中是没有内容的（因为我们并没有写入’训练’数据），显示：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Error</span><br><span class="line">No training data found.Please add some training data first.</span><br></pre></td></tr></table></figure></blockquote>
+<p><strong>输出：</strong></p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Failed to send telemetry event ClientStartEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event CollectionQueryEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event CollectionQueryEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event CollectionQueryEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">SQL Prompt: [&#123;&#x27;role&#x27;: &#x27;system&#x27;, &#x27;content&#x27;: &quot;You are a PostgreSQL expert. Please help to generate a SQL query to answer the question. Your response should ONLY be based on the given context and follow the response guidelines and format instructions. ===Response Guidelines <span class="keyword">\n</span>1. If the provided context is sufficient, please generate a valid SQL query without any explanations for the question. <span class="keyword">\n</span>2. If the provided context is almost sufficient but requires knowledge of a specific string in a particular column, please generate an intermediate SQL query to find the distinct strings in that column. Prepend the query with a comment saying intermediate<span class="built_in">_</span>sql <span class="keyword">\n</span>3. If the provided context is insufficient, please explain why it can&#x27;t be generated. <span class="keyword">\n</span>4. Please use the most relevant table(s). <span class="keyword">\n</span>5. If the question has been asked and answered before, please repeat the answer exactly as it was given before. <span class="keyword">\n</span>6. Ensure that the output SQL is PostgreSQL-compliant and executable, and free of syntax errors. <span class="keyword">\n</span>&quot;&#125;, &#123;&#x27;role&#x27;: &#x27;user&#x27;, &#x27;content&#x27;: &#x27;What are the top 10 albums by sales?&#x27;&#125;]</span><br><span class="line">Using model qwen-max for 246.75 tokens (approx)</span><br><span class="line">LLM Response: ```sql</span><br><span class="line">SELECT album<span class="built_in">_</span>name, total<span class="built_in">_</span>sales</span><br><span class="line">FROM albums</span><br><span class="line">ORDER BY total<span class="built_in">_</span>sales DESC</span><br><span class="line">LIMIT 10;</span><br><span class="line">```</span><br><span class="line">Extracted SQL: SELECT album<span class="built_in">_</span>name, total<span class="built_in">_</span>sales</span><br><span class="line">FROM albums</span><br><span class="line">ORDER BY total<span class="built_in">_</span>sales DESC</span><br><span class="line">LIMIT 10;</span><br><span class="line">SELECT album<span class="built_in">_</span>name, total<span class="built_in">_</span>sales</span><br><span class="line">FROM albums</span><br><span class="line">ORDER BY total<span class="built_in">_</span>sales DESC</span><br><span class="line">LIMIT 10;</span><br><span class="line">Couldn&#x27;t run sql:  relation &quot;albums&quot; does not exist</span><br><span class="line">LINE 2: FROM albums</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>上方的错误提示是Vanna 依赖的某个库（如 posthog 或自定义分析模块）版本不兼容， Vanna 框架在尝试发送使用数据（遥测 telemetry，比如“客户端启动”、“创建集合”等）时发生的错误。不用管。</li>
+</ul>
+</blockquote>
+<p>运行出错了，原因是：数据库里没有叫 albums 的表。从系统提示词中也可以看出未给<code>LLM</code>任何基础信息，那么就可以理解了，模型并不知道表结构，自然会大概率猜不对，那么如果加上表结构信息呢？</p>
+<p><strong>加上表结构信息：</strong></p>
+<p>给上方代码增加一些代码，完整代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> vanna.chromadb <span class="keyword">import</span> ChromaDB_VectorStore</span><br><span class="line"><span class="keyword">from</span> vanna.qianwen <span class="keyword">import</span> QianWenAI_Chat</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyVanna</span>(ChromaDB_VectorStore, QianWenAI_Chat):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, config=<span class="literal">None</span></span>):</span><br><span class="line">        ChromaDB_VectorStore.__init__(<span class="variable language_">self</span>, config=config)</span><br><span class="line">        QianWenAI_Chat.__init__(<span class="variable language_">self</span>, config=config)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vn = MyVanna(config=&#123;<span class="string">&#x27;api_key&#x27;</span>: <span class="string">&#x27;sk-xxxxxxxxxx&#x27;</span>, <span class="string">&#x27;model&#x27;</span>: <span class="string">&#x27;qwen-max&#x27;</span>&#125;)</span><br><span class="line"></span><br><span class="line">vn.connect_to_postgres(</span><br><span class="line">    host=<span class="string">&#x27;localhost&#x27;</span>,</span><br><span class="line">    dbname=<span class="string">&#x27;chinook&#x27;</span>,</span><br><span class="line">    user=<span class="string">&#x27;postgres&#x27;</span>,</span><br><span class="line">    password=<span class="string">&#x27;123&#x27;</span>,  </span><br><span class="line">    port=<span class="number">5432</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">#  关键步骤：训练 Vanna，让它学习数据库结构</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;正在学习数据库结构...&quot;</span>)</span><br><span class="line">df_info_schema = vn.run_sql(<span class="string">&quot;SELECT * FROM INFORMATION_SCHEMA.COLUMNS&quot;</span>)</span><br><span class="line">plan = vn.get_training_plan_generic(df_info_schema)</span><br><span class="line">vn.train(plan=plan)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;训练完成！&quot;</span>)</span><br><span class="line"></span><br><span class="line">vn.ask(<span class="string">&quot;What are the top 10 albums by sales?&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">(vanna) (base) chr@chr:~/桌面/vanna$ /home/chr/桌面/vanna/.venv/bin/python /home/chr/桌面/vanna/qwen_vanna_example.py</span><br><span class="line">Failed to send telemetry event ClientStartEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">正在学习数据库结构...</span><br><span class="line">Failed to send telemetry event CollectionAddEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">训练完成！</span><br><span class="line">Failed to send telemetry event CollectionQueryEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Number of requested results 10 is greater than number of elements <span class="keyword">in</span> index 1, updating n_results = 1</span><br><span class="line">Failed to send telemetry event CollectionQueryEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event CollectionQueryEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">SQL Prompt: [&#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;system&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&quot;You are a PostgreSQL expert. Please help to generate a SQL query to answer the question. Your response should ONLY be based on the given context and follow the response guidelines and format instructions. \n===Additional Context \n\nThe following columns are in the album table in the chinook database:\n\n|      | table_catalog   | table_schema   | table_name   | column_name   | data_type         |\n|-----:|:----------------|:---------------|:-------------|:--------------|:------------------|\n|  556 | chinook         | public         | album        | album_id      | integer           |\n|  558 | chinook         | public         | album        | artist_id     | integer           |\n| 1067 | chinook         | public         | album        | title         | character varying |\n\nThe following columns are in the album table in the chinook database:\n\n|    | table_catalog   | table_schema   | table_name   | column_name   | data_type         |\n|---:|:----------------|:---------------|:-------------|:--------------|:------------------|\n|  2 | chinook         | public         | album        | album_id      | integer           |\n|  3 | chinook         | public         | album        | artist_id     | integer           |\n| 36 | chinook         | public         | album        | title         | character varying |\n\nThe following columns are in the track table in the chinook database:\n\n|    | table_catalog   | table_schema   | table_name   | column_name   | data_type         |\n|---:|:----------------|:---------------|:-------------|:--------------|:------------------|\n| 13 | chinook         | public         | track        | track_id      | integer           |\n| 15 | chinook         | public         | track        | album_id      | integer           |\n| 16 | chinook         | public         | track        | media_type_id | integer           |\n| 17 | chinook         | public         | track        | genre_id      | integer           |\n| 19 | chinook         | public         | track        | milliseconds  | integer           |\n| 20 | chinook         | public         | track        | bytes         | integer           |\n| 21 | chinook         | public         | track        | unit_price    | numeric           |\n| 30 | chinook         | public         | track        | composer      | character varying |\n| 63 | chinook         | public         | track        | name          | character varying |\n\nThe following columns are in the track table in the chinook database:\n\n|      | table_catalog   | table_schema   | table_name   | column_name   | data_type         |\n|-----:|:----------------|:---------------|:-------------|:--------------|:------------------|\n|  557 | chinook         | public         | track        | unit_price    | numeric           |\n|  726 | chinook         | public         | track        | bytes         | integer           |\n|  728 | chinook         | public         | track        | milliseconds  | integer           |\n|  733 | chinook         | public         | track        | genre_id      | integer           |\n|  742 | chinook         | public         | track        | media_type_id | integer           |\n|  747 | chinook         | public         | track        | album_id      | integer           |\n|  748 | chinook         | public         | track        | track_id      | integer           |\n| 1195 | chinook         | public         | track        | name          | character varying |\n| 1196 | chinook         | public         | track        | composer      | character varying |\n\nThe following columns are in the playlist_track table in the chinook database:\n\n|    | table_catalog   | table_schema   | table_name     | column_name   | data_type   |\n|---:|:----------------|:---------------|:---------------|:--------------|:------------|\n| 24 | chinook         | public         | playlist_track | playlist_id   | integer     |\n| 25 | chinook         | public         | playlist_track | track_id      | integer     |\n\nThe following columns are in the playlist_track table in the chinook database:\n\n|     | table_catalog   | table_schema   | table_name     | column_name   | data_type   |\n|----:|:----------------|:---------------|:---------------|:--------------|:------------|\n| 751 | chinook         | public         | playlist_track | track_id      | integer     |\n| 789 | chinook         | public         | playlist_track | playlist_id   | integer     |\n\nThe following columns are in the artist table in the chinook database:\n\n|      | table_catalog   | table_schema   | table_name   | column_name   | data_type         |\n|-----:|:----------------|:---------------|:-------------|:--------------|:------------------|\n|  258 | chinook         | public         | artist       | artist_id     | integer           |\n| 1164 | chinook         | public         | artist       | name          | character varying |\n\nThe following columns are in the artist table in the chinook database:\n\n|    | table_catalog   | table_schema   | table_name   | column_name   | data_type         |\n|---:|:----------------|:---------------|:-------------|:--------------|:------------------|\n|  6 | chinook         | public         | artist       | artist_id     | integer           |\n| 35 | chinook         | public         | artist       | name          | character varying |\n\nThe following columns are in the pg_publication table in the chinook database:\n\n|      | table_catalog   | table_schema   | table_name     | column_name   | data_type   |\n|-----:|:----------------|:---------------|:---------------|:--------------|:------------|\n|  544 | chinook         | pg_catalog     | pg_publication | oid           | oid         |\n|  546 | chinook         | pg_catalog     | pg_publication | pubowner      | oid         |\n|  547 | chinook         | pg_catalog     | pg_publication | puballtables  | boolean     |\n|  548 | chinook         | pg_catalog     | pg_publication | pubinsert     | boolean     |\n|  549 | chinook         | pg_catalog     | pg_publication | pubupdate     | boolean     |\n|  550 | chinook         | pg_catalog     | pg_publication | pubdelete     | boolean     |\n|  551 | chinook         | pg_catalog     | pg_publication | pubtruncate   | boolean     |\n|  552 | chinook         | pg_catalog     | pg_publication | pubviaroot    | boolean     |\n| 1469 | chinook         | pg_catalog     | pg_publication | pubname       | name        |\n\nThe following columns are in the playlist table in the chinook database:\n\n|      | table_catalog   | table_schema   | table_name   | column_name   | data_type         |\n|-----:|:----------------|:---------------|:-------------|:--------------|:------------------|\n|  793 | chinook         | public         | playlist     | playlist_id   | integer           |\n| 1194 | chinook         | public         | playlist     | name          | character varying |\n\n===Response Guidelines \n1. If the provided context is sufficient, please generate a valid SQL query without any explanations for the question. \n2. If the provided context is almost sufficient but requires knowledge of a specific string in a particular column, please generate an intermediate SQL query to find the distinct strings in that column. Prepend the query with a comment saying intermediate_sql \n3. If the provided context is insufficient, please explain why it can&#x27;t be generated. \n4. Please use the most relevant table(s). \n5. If the question has been asked and answered before, please repeat the answer exactly as it was given before. \n6. Ensure that the output SQL is PostgreSQL-compliant and executable, and free of syntax errors. \n&quot;</span>&#125;, &#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 albums by sales?&#x27;</span>&#125;, &#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;assistant&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;SELECT a.title, SUM(il.quantity) AS total_sales\nFROM album a\nJOIN track t ON a.album_id = t.album_id\nJOIN invoice_line il ON t.track_id = il.track_id\nGROUP BY a.title\nORDER BY total_sales DESC\nLIMIT 10;&#x27;</span>&#125;, &#123;<span class="string">&#x27;role&#x27;</span>: <span class="string">&#x27;user&#x27;</span>, <span class="string">&#x27;content&#x27;</span>: <span class="string">&#x27;What are the top 10 albums by sales?&#x27;</span>&#125;]</span><br><span class="line">Using model qwen-max <span class="keyword">for</span> 1964.75 tokens (approx)</span><br><span class="line">LLM Response: SELECT a.title, SUM(il.quantity) AS total_sales</span><br><span class="line">FROM album a</span><br><span class="line">JOIN track t ON a.album_id = t.album_id</span><br><span class="line">JOIN invoice_line il ON t.track_id = il.track_id</span><br><span class="line">GROUP BY a.title</span><br><span class="line">ORDER BY total_sales DESC</span><br><span class="line">LIMIT 10;</span><br><span class="line">Extracted SQL: SELECT a.title, SUM(il.quantity) AS total_sales</span><br><span class="line">FROM album a</span><br><span class="line">JOIN track t ON a.album_id = t.album_id</span><br><span class="line">JOIN invoice_line il ON t.track_id = il.track_id</span><br><span class="line">GROUP BY a.title</span><br><span class="line">ORDER BY total_sales DESC</span><br><span class="line">LIMIT 10;</span><br><span class="line">SELECT a.title, SUM(il.quantity) AS total_sales</span><br><span class="line">FROM album a</span><br><span class="line">JOIN track t ON a.album_id = t.album_id</span><br><span class="line">JOIN invoice_line il ON t.track_id = il.track_id</span><br><span class="line">GROUP BY a.title</span><br><span class="line">ORDER BY total_sales DESC</span><br><span class="line">LIMIT 10;</span><br><span class="line">                                      title  total_sales</span><br><span class="line">0                            Minha Historia           27</span><br><span class="line">1                             Greatest Hits           26</span><br><span class="line">2                                 Unplugged           25</span><br><span class="line">3                                  Acústico           22</span><br><span class="line">4                             Greatest Kiss           20</span><br><span class="line">5  My Generation - The Very Best Of The Who           19</span><br><span class="line">6                         Chronicle, Vol. 2           19</span><br><span class="line">7                              Prenda Minha           19</span><br><span class="line">8                         Chronicle, Vol. 1           18</span><br><span class="line">9                   International Superhits           18</span><br><span class="line">Add of existing embedding ID: ac2c2ef7-2df4-50ff-84d8-fc76bbdfc1ae-sql</span><br><span class="line">Insert of existing embedding ID: ac2c2ef7-2df4-50ff-84d8-fc76bbdfc1ae-sql</span><br><span class="line">Failed to send telemetry event CollectionAddEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Using model qwen-max <span class="keyword">for</span> 210.5 tokens (approx)</span><br><span class="line">Gtk-Message: 19:11:31.278: Not loading module <span class="string">&quot;atk-bridge&quot;</span>: The functionality is provided by GTK natively. Please try to not load it.</span><br><span class="line">[212380, Main Thread] WARNING: GTK+ module /snap/firefox/6638/gnome-platform/usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.</span><br><span class="line">GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 <span class="keyword">in</span> the same process is not supported.: <span class="string">&#x27;glib warning&#x27;</span>, file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:201</span><br><span class="line"></span><br><span class="line">(firefox_firefox:212380): Gtk-WARNING **: 19:11:31.312: GTK+ module /snap/firefox/6638/gnome-platform/usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.</span><br><span class="line">GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 <span class="keyword">in</span> the same process is not supported.</span><br><span class="line">Gtk-Message: 19:11:31.312: Failed to load module <span class="string">&quot;canberra-gtk-module&quot;</span></span><br><span class="line">[212380, Main Thread] WARNING: GTK+ module /snap/firefox/6638/gnome-platform/usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.</span><br><span class="line">GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 <span class="keyword">in</span> the same process is not supported.: <span class="string">&#x27;glib warning&#x27;</span>, file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:201</span><br><span class="line"></span><br><span class="line">(firefox_firefox:212380): Gtk-WARNING **: 19:11:31.313: GTK+ module /snap/firefox/6638/gnome-platform/usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.</span><br><span class="line">GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 <span class="keyword">in</span> the same process is not supported.</span><br><span class="line">Gtk-Message: 19:11:31.313: Failed to load module <span class="string">&quot;canberra-gtk-module&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>可见此时输出了正确结果，让我们通过web方式体验下，将最后一行代码替换成：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> vanna.flask <span class="keyword">import</span> VannaFlaskApp</span><br><span class="line">app = VannaFlaskApp(vn)</span><br><span class="line">app.run()</span><br></pre></td></tr></table></figure>
+
+<p><strong>终端会输出：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">(vanna) (base) chr@chr:~/桌面/vanna$ /home/chr/桌面/vanna/.venv/bin/python /home/chr/桌面/vanna/qwen_vanna_example.py</span><br><span class="line">Failed to send telemetry event ClientStartEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">正在学习数据库结构...</span><br><span class="line">Add of existing embedding ID: 8d61031d-2c13-574b-bd73-526634a8a4e1-doc</span><br><span class="line">Insert of existing embedding ID: 8d61031d-2c13-574b-bd73-526634a8a4e1-doc</span><br><span class="line">Failed to send telemetry event CollectionAddEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Add of existing embedding ID: 36535543-f79e-5a52-ae3d-1edba77c1e0a-doc</span><br><span class="line">Insert of existing embedding ID: 36535543-f79e-5a52-ae3d-1edba77c1e0a-doc</span><br><span class="line">Add of existing embedding ID: 0ddee26c-d15c-5e4a-8588-763810f790bb-doc</span><br><span class="line">Insert of existing embedding ID: 0ddee26c-d15c-5e4a-8588-763810f790bb-doc</span><br><span class="line">Add of existing embedding ID: 96b92c38-1243-587d-abb2-54ac801a3ffa-doc</span><br><span class="line">Insert of existing embedding ID: 96b92c38-1243-587d-abb2-54ac801a3ffa-doc</span><br><span class="line">Add of existing embedding ID: 198df4f3-6b2c-5eaa-a0b6-8b3a917e3ce7-doc</span><br><span class="line">Insert of existing embedding ID: 198df4f3-6b2c-5eaa-a0b6-8b3a917e3ce7-doc</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>我们打开<a href="http://localhost:8084看看：">http://localhost:8084看看：</a></p>
+<p><code>Training Data</code>中有<strong>表的信息</strong>还有刚才的<code>What are the top 10 albums by sales?</code>。</p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i7.png" class="" title="i7">
+
+<p>在网页版上用中文问个问题：有哪些歌手</p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i8.png" class="" title="i8">
+
+<p>图片下方的<code>Summarization can be enabled if you set allow_llm_to_see_data=True</code>意思是：是否让<code>LLM</code>总结你查表的内容，默认为关闭。</p>
+<p>再下方的<code>Were the results correct?</code>意思是 结果是否正确，然后让你手动选择是或者否，如果选择是，也会将该条<code>SQL</code>语句添加到训练数据中。</p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i9.png" class="" title="i9">
+
+<hr>
+<h4 id="对外提供APIflask"><a href="#对外提供APIflask" class="headerlink" title="对外提供API&lt;-&gt;flask"></a>对外提供<code>API&lt;-&gt;flask</code></h4><p>克隆这个页面的仓库：</p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i10.png" class="" title="i10">
+
+<p>然后将以下三个文件&#x2F;文件夹拷贝到<code>vanna</code>目录下：</p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i11.png" class="" title="i11">
+
+<p>打开<code>app.py</code>，然后将代码中的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> vanna.remote <span class="keyword">import</span> VannaDefault</span><br><span class="line">vn = VannaDefault(model=os.environ[<span class="string">&#x27;VANNA_MODEL&#x27;</span>], api_key=os.environ[<span class="string">&#x27;VANNA_API_KEY&#x27;</span>])</span><br><span class="line"></span><br><span class="line">vn.connect_to_snowflake(</span><br><span class="line">    account=os.environ[<span class="string">&#x27;SNOWFLAKE_ACCOUNT&#x27;</span>],</span><br><span class="line">    username=os.environ[<span class="string">&#x27;SNOWFLAKE_USERNAME&#x27;</span>],</span><br><span class="line">    password=os.environ[<span class="string">&#x27;SNOWFLAKE_PASSWORD&#x27;</span>],</span><br><span class="line">    database=os.environ[<span class="string">&#x27;SNOWFLAKE_DATABASE&#x27;</span>],</span><br><span class="line">    warehouse=os.environ[<span class="string">&#x27;SNOWFLAKE_WAREHOUSE&#x27;</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><strong>替换成：</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> vanna.chromadb <span class="keyword">import</span> ChromaDB_VectorStore</span><br><span class="line"><span class="keyword">from</span> vanna.qianwen <span class="keyword">import</span> QianWenAI_Chat</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyVanna</span>(ChromaDB_VectorStore, QianWenAI_Chat):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, config=<span class="literal">None</span></span>):</span><br><span class="line">        ChromaDB_VectorStore.__init__(<span class="variable language_">self</span>, config=config)</span><br><span class="line">        QianWenAI_Chat.__init__(<span class="variable language_">self</span>, config=config)</span><br><span class="line"></span><br><span class="line">vn = MyVanna(config=&#123;<span class="string">&#x27;api_key&#x27;</span>: <span class="string">&#x27;sk-xxxxxx&#x27;</span>, <span class="string">&#x27;model&#x27;</span>: <span class="string">&#x27;qwen-max&#x27;</span>&#125;)</span><br><span class="line"></span><br><span class="line">vn.connect_to_postgres(</span><br><span class="line">    host=<span class="string">&#x27;localhost&#x27;</span>,</span><br><span class="line">    dbname=<span class="string">&#x27;chinook&#x27;</span>,</span><br><span class="line">    user=<span class="string">&#x27;postgres&#x27;</span>,</span><br><span class="line">    password=<span class="string">&#x27;123&#x27;</span>,  </span><br><span class="line">    port=<span class="number">5432</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以运行<code>app.py</code>了，输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Failed to send telemetry event ClientStartEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line"> * Serving Flask app <span class="string">&#x27;app&#x27;</span></span><br><span class="line"> * Debug mode: on</span><br><span class="line">WARNING: This is a development server. Do not use it <span class="keyword">in</span> a production deployment. Use a production WSGI server instead.</span><br><span class="line"> * Running on http://127.0.0.1:5000</span><br><span class="line">Press CTRL+C to quit</span><br><span class="line"> * Restarting with <span class="built_in">stat</span></span><br><span class="line">Failed to send telemetry event ClientStartEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line">Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given</span><br><span class="line"> * Debugger is active!</span><br><span class="line"> * Debugger PIN: 335-419-958</span><br></pre></td></tr></table></figure>
+
+<p><code>API</code>运行在<code>http://127.0.0.1:5000</code>，我们可以使用<code>postman</code>、<code>python</code>的<code>request</code>库、<code>curl</code>命令行或者直接浏览器中使用，我们直接浏览器中使用：</p>
+<img src="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/i12.png" class="" title="i12">
+
+<p>也可以直接访问<code>http://127.0.0.1:5000</code>查看后台，界面一致，不再赘述。</p>
+<hr>
+<h4 id="对外提供APIfastapi"><a href="#对外提供APIfastapi" class="headerlink" title="对外提供API&lt;-&gt;fastapi"></a>对外提供<code>API&lt;-&gt;fastapi</code></h4><p>好的，停下来想一想，目前存在的可优化点有哪些：</p>
+<ul>
+<li>生成一次<code>SQL</code>语句要使用2000个左右tokens（量上来后，调用接口的费用也不低）</li>
+<li>Embedding模型现在用的是<code>ONNXMiniLM_L6_V2</code>（没听说过）</li>
+<li>对外提供的<code>api</code>接口是使用flask框架</li>
+</ul>
+<p>那么本节想进行的动作是：</p>
+<ul>
+<li>使用本地部署的<code>LLM</code>（<code>vLLM/Ollama</code>）</li>
+<li>使用本地的Embedding模型（<code>Xinference/Ollama</code>）</li>
+<li>使用<code>fastapi</code>框架进行优化</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/text-to-sql/" rel="tag"># text-to-sql</a>
+              <a href="/tags/vanna/" rel="tag"># vanna</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/20/AAshare/abc/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" rel="prev" title="Text-to-SQL:vanna安装与使用">
+                  <i class="fa fa-angle-left"></i> Text-to-SQL:vanna安装与使用
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">405k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">24:31</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
