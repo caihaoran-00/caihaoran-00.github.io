@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言背景：小程序核心算法 目的：记录+理思路+分享">
+<meta property="og:type" content="article">
+<meta property="og:title" content="奇门遁甲核心算法调研与实现">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/08/29/%E5%A5%87%E9%97%A8%E9%81%81%E7%94%B2%E6%A0%B8%E5%BF%83%E7%AE%97%E6%B3%95%E8%B0%83%E7%A0%94%E4%B8%8E%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言背景：小程序核心算法 目的：记录+理思路+分享">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-08-29T01:50:12.000Z">
+<meta property="article:modified_time" content="2025-08-29T03:43:49.235Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="奇门遁甲">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/08/29/%E5%A5%87%E9%97%A8%E9%81%81%E7%94%B2%E6%A0%B8%E5%BF%83%E7%AE%97%E6%B3%95%E8%B0%83%E7%A0%94%E4%B8%8E%E5%AE%9E%E7%8E%B0/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/08/29/%E5%A5%87%E9%97%A8%E9%81%81%E7%94%B2%E6%A0%B8%E5%BF%83%E7%AE%97%E6%B3%95%E8%B0%83%E7%A0%94%E4%B8%8E%E5%AE%9E%E7%8E%B0/","path":"2025/08/29/奇门遁甲核心算法调研与实现/","title":"奇门遁甲核心算法调研与实现"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>奇门遁甲核心算法调研与实现 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AB%E5%AD%97%EF%BC%88%E5%9B%9B%E6%9F%B1%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">八字（四柱）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%B0%86%E5%85%AC%E5%8E%86%E6%97%A5%E6%9C%9F%E8%BD%AC%E6%8D%A2%E4%B8%BA%E5%86%9C%E5%8E%86%E5%B9%B2%E6%94%AF%E5%8E%86%E6%97%A5%E6%9C%9F"><span class="nav-number">2.1.1.</span> <span class="nav-text">第一步：将公历日期转换为农历干支历日期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E5%B9%B4%E6%9F%B1"><span class="nav-number">2.1.2.</span> <span class="nav-text">第二步：计算年柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%88%E6%9F%B1"><span class="nav-number">2.1.3.</span> <span class="nav-text">第三步：计算月柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%97%A5%E6%9F%B1"><span class="nav-number">2.1.4.</span> <span class="nav-text">第四步：计算日柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%97%B6%E6%9F%B1"><span class="nav-number">2.1.5.</span> <span class="nav-text">第五步：计算时柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C%EF%BC%9A"><span class="nav-number">2.1.6.</span> <span class="nav-text">最终结果：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%9A"><span class="nav-number">2.1.7.</span> <span class="nav-text">总结与注意事项：</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">98</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">113</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/08/29/%E5%A5%87%E9%97%A8%E9%81%81%E7%94%B2%E6%A0%B8%E5%BF%83%E7%AE%97%E6%B3%95%E8%B0%83%E7%A0%94%E4%B8%8E%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="奇门遁甲核心算法调研与实现 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          奇门遁甲核心算法调研与实现
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-08-29 09:50:12 / 修改时间：11:43:49" itemprop="dateCreated datePublished" datetime="2025-08-29T09:50:12+08:00">2025-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>11 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>背景：小程序核心算法</p>
+<p>目的：记录+理思路+分享</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="八字（四柱）"><a href="#八字（四柱）" class="headerlink" title="八字（四柱）"></a>八字（四柱）</h3><blockquote>
+<p>公历&#x3D;阳历（现代通用），</p>
+</blockquote>
+<p>八字（或称四柱），是中国传统命理学中的核心，顾名思义，就是八个字。这八个字分别代表了一个人出生时的<strong>年、月、日、时</strong>四个时间点的天干地支，每个时间点用一个<strong>天干</strong>和一个<strong>地支</strong>表示，合起来就是“四柱”（年柱、月柱、日柱、时柱），每柱两个字，共八个字。</p>
+<p><strong>核心概念：</strong></p>
+<ul>
+<li><strong>天干（10个）：</strong> 甲、乙、丙、丁、戊、己、庚、辛、壬、癸。</li>
+<li><strong>地支（12个）：</strong> 子、丑、寅、卯、辰、巳、午、未、申、酉、戌、亥。</li>
+<li><strong>组合规则：</strong> 天干和地支按顺序两两配对（阳干配阳支，阴干配阴支），从“甲子”开始，到“癸亥”结束，共有60种组合，称为“<strong>六十甲子</strong>”。</li>
+</ul>
+<hr>
+<h4 id="第一步：将公历日期转换为农历干支历日期"><a href="#第一步：将公历日期转换为农历干支历日期" class="headerlink" title="第一步：将公历日期转换为农历干支历日期"></a><strong>第一步：将公历日期转换为农历干支历日期</strong></h4><p>八字是基于中国的农历（干支历）计算的，而不是公历。所以第一步是转换。但现在我们不需要翻老黄历，可以通过已知的公式或规则来计算。</p>
+<p><strong>假设我们要计算：公历 1990年8月25日 上午10点 出生的人的八字。</strong></p>
+<hr>
+<h4 id="第二步：计算年柱"><a href="#第二步：计算年柱" class="headerlink" title="第二步：计算年柱"></a><strong>第二步：计算年柱</strong></h4><p>年柱的确定以<strong>立春</strong>为界，而非公历的1月1日或农历的正月初一。<br>1990年的立春是2月4日。因为8月25日在立春之后，所以年柱确定为<strong>1990年</strong>的干支。</p>
+<p><strong>计算1990年的干支：</strong><br>有一个简单的公式：</p>
+<ol>
+<li>取公历年份数，减去3。<br><code>1990 - 3 = 1987</code></li>
+<li>将得到的差除以60（因为六十甲子循环），取余数。<br><code>1987 ÷ 60 = 33 ... 余数为7</code></li>
+<li>用这个余数去对应“六十甲子”序数（余数为0则是第60位“癸亥”）。<br><strong>余数7</strong> 对应的天干地支是第7组：<strong>庚午</strong>。<ul>
+<li>天干算法：<code>余数7 % 10 = 7</code>。天干第7位是<strong>庚</strong> (甲1、乙2、丙3、丁4、戊5、己6、庚7)。</li>
+<li>地支算法：<code>余数7 % 12 = 7</code>。地支第7位是<strong>午</strong> (子1、丑2、寅3、卯4、辰5、巳6、午7)。</li>
+</ul>
+</li>
+</ol>
+<p>所以，<strong>年柱是：庚午</strong>。</p>
+<hr>
+<h4 id="第三步：计算月柱"><a href="#第三步：计算月柱" class="headerlink" title="第三步：计算月柱"></a><strong>第三步：计算月柱</strong></h4><p>二十四节气严格来说是由 <strong>“节”</strong> 和 <strong>“气”</strong> 交替组成的。在八字命理中，<strong>“节”</strong> 用于划分<strong>月份（月柱）</strong>，而 <strong>“气”</strong> 则更多用于气候、农事和部分高级命理分析（如调候、命局寒暖燥湿的判断）。</p>
+<p>二十四节气的<strong>公历日期不固定</strong>，但它的变化非常有规律，其背后依据的是<strong>纯粹的天文学</strong>，而非人为的历法规则。</p>
+<p>以下是完整的二十四节气列表，并按“节”和“气”进行了分类。</p>
+<table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>节气名称</th>
+<th>公历大致日期</th>
+<th>分类</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><strong>立春</strong></td>
+<td>2月3日-5日</td>
+<td><strong>节</strong></td>
+<td>春季开始</td>
+</tr>
+<tr>
+<td>2</td>
+<td>雨水</td>
+<td>2月18日-20日</td>
+<td>气</td>
+<td>降雨开始，雨量渐增</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>惊蛰</strong></td>
+<td>3月5日-6日</td>
+<td><strong>节</strong></td>
+<td>春雷惊醒蛰伏的动物</td>
+</tr>
+<tr>
+<td>4</td>
+<td>春分</td>
+<td>3月20日-22日</td>
+<td>气</td>
+<td>昼夜平分</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>清明</strong></td>
+<td>4月4日-6日</td>
+<td><strong>节</strong></td>
+<td>天气晴朗，草木繁茂</td>
+</tr>
+<tr>
+<td>6</td>
+<td>谷雨</td>
+<td>4月19日-21日</td>
+<td>气</td>
+<td>雨生百谷</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>立夏</strong></td>
+<td>5月5日-6日</td>
+<td><strong>节</strong></td>
+<td>夏季开始</td>
+</tr>
+<tr>
+<td>8</td>
+<td>小满</td>
+<td>5月20日-22日</td>
+<td>气</td>
+<td>麦类等夏熟作物籽粒开始饱满</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>芒种</strong></td>
+<td>6月5日-6日</td>
+<td><strong>节</strong></td>
+<td>麦类等有芒作物成熟</td>
+</tr>
+<tr>
+<td>10</td>
+<td>夏至</td>
+<td>6月21日-22日</td>
+<td>气</td>
+<td>炎热的夏天来临，白天最长</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>小暑</strong></td>
+<td>7月6日-8日</td>
+<td><strong>节</strong></td>
+<td>气候开始炎热</td>
+</tr>
+<tr>
+<td>12</td>
+<td>大暑</td>
+<td>7月22日-24日</td>
+<td>气</td>
+<td>一年中最热的时候</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>立秋</strong></td>
+<td>8月7日-8日</td>
+<td><strong>节</strong></td>
+<td>秋季开始</td>
+</tr>
+<tr>
+<td>14</td>
+<td>处暑</td>
+<td>8月22日-24日</td>
+<td>气</td>
+<td>炎热的暑天结束</td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>白露</strong></td>
+<td>9月7日-8日</td>
+<td><strong>节</strong></td>
+<td>天气转凉，露凝而白</td>
+</tr>
+<tr>
+<td>16</td>
+<td>秋分</td>
+<td>9月22日-24日</td>
+<td>气</td>
+<td>昼夜平分</td>
+</tr>
+<tr>
+<td>17</td>
+<td><strong>寒露</strong></td>
+<td>10月8日-9日</td>
+<td><strong>节</strong></td>
+<td>露水已寒，将要结冰</td>
+</tr>
+<tr>
+<td>18</td>
+<td>霜降</td>
+<td>10月23日-24日</td>
+<td>气</td>
+<td>开始有霜</td>
+</tr>
+<tr>
+<td>19</td>
+<td><strong>立冬</strong></td>
+<td>11月7日-8日</td>
+<td><strong>节</strong></td>
+<td>冬季开始</td>
+</tr>
+<tr>
+<td>20</td>
+<td>小雪</td>
+<td>11月22日-23日</td>
+<td>气</td>
+<td>开始下雪</td>
+</tr>
+<tr>
+<td>21</td>
+<td><strong>大雪</strong></td>
+<td>12月6日-8日</td>
+<td><strong>节</strong></td>
+<td>降雪量增多</td>
+</tr>
+<tr>
+<td>22</td>
+<td>冬至</td>
+<td>12月21日-23日</td>
+<td>气</td>
+<td>寒冷的冬天来临，白天最短</td>
+</tr>
+<tr>
+<td>23</td>
+<td><strong>小寒</strong></td>
+<td>1月5日-6日</td>
+<td><strong>节</strong></td>
+<td>气候开始寒冷</td>
+</tr>
+<tr>
+<td>24</td>
+<td>大寒</td>
+<td>1月20日-21日</td>
+<td>气</td>
+<td>一年中最冷的时候</td>
+</tr>
+</tbody></table>
+<p>月柱的确定同样以<strong>节气</strong>为分界，而不是农历的每月初一。</p>
+<p>每个月由一個“节”开始，<strong>“节”是划分八字月柱的唯一标准</strong>，也称为“月令”或“节气”。一年从立春开始，共12个节：</p>
+<ol>
+<li><strong>立春</strong> （寅月开始）</li>
+<li><strong>惊蛰</strong> （卯月开始）</li>
+<li><strong>清明</strong> （辰月开始）</li>
+<li><strong>立夏</strong> （巳月开始）</li>
+<li><strong>芒种</strong> （午月开始）</li>
+<li><strong>小暑</strong> （未月开始）</li>
+<li><strong>立秋</strong> （申月开始）</li>
+<li><strong>白露</strong> （酉月开始）</li>
+<li><strong>寒露</strong> （戌月开始）</li>
+<li><strong>立冬</strong> （亥月开始）</li>
+<li><strong>大雪</strong> （子月开始）</li>
+<li><strong>小寒</strong> （丑月开始）</li>
+</ol>
+<p>1990年8月25日，处在<strong>立秋（8月8日）和白露（9月8日）之间</strong>，所以是<strong>申月</strong>，这是地支，称为月支。</p>
+<p><strong>月柱的天干需要根据年柱的天干来推算，有一套固定的规则，称为“五虎遁”口诀：</strong></p>
+<blockquote>
+<p>“甲己之年丙作首，乙庚之岁戊为头。<br>丙辛必定寻庚起，丁壬壬位顺行流。<br>若问戊癸何方发，甲寅之上好追求。”</p>
+</blockquote>
+<p>“五虎遁”里的 <strong>“虎”</strong>，指的就是地支 <strong>“寅”</strong>（因为寅虎）。所以“五虎遁”就是 <strong>“怎么找寅月天干”</strong> 的方法。</p>
+<table>
+<thead>
+<tr>
+<th>如果年份天干是…</th>
+<th>口诀（密码）</th>
+<th>那么正月（寅月）的天干就是…</th>
+<th>正月就是…</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>甲</strong> 或 <strong>己</strong></td>
+<td>甲己之年 <strong>丙</strong>作首</td>
+<td><strong>丙</strong></td>
+<td><strong>丙寅</strong>月</td>
+</tr>
+<tr>
+<td><strong>乙</strong> 或 <strong>庚</strong></td>
+<td>乙庚之岁 <strong>戊</strong>为头</td>
+<td><strong>戊</strong></td>
+<td><strong>戊寅</strong>月</td>
+</tr>
+<tr>
+<td><strong>丙</strong> 或 <strong>辛</strong></td>
+<td>丙辛必定 <strong>庚</strong>起</td>
+<td><strong>庚</strong></td>
+<td><strong>庚寅</strong>月</td>
+</tr>
+<tr>
+<td><strong>丁</strong> 或 <strong>壬</strong></td>
+<td>丁壬 <strong>壬</strong>位顺行流</td>
+<td><strong>壬</strong></td>
+<td><strong>壬寅</strong>月</td>
+</tr>
+<tr>
+<td><strong>戊</strong> 或 <strong>癸</strong></td>
+<td>戊癸何方发，<strong>甲</strong>寅之上好追求</td>
+<td><strong>甲</strong></td>
+<td><strong>甲寅</strong>月</td>
+</tr>
+</tbody></table>
+<p>我们的年干是<strong>庚</strong>（属于“乙庚”年），根据“乙庚之岁戊为头”，意思是乙年或庚年的正月（寅月）的月干是“戊”。</p>
+<p>天干有10个：甲、乙、丙、丁、<strong>戊</strong>、己、庚、辛、壬、癸<br>地支有12个：子、丑、<strong>寅</strong>、卯、辰、巳、午、未、申、酉、戌、亥</p>
+<p>我们已经有了正月（寅月）：<strong>戊寅</strong></p>
+<p>现在，我们像数数一样，一个月一个月往下顺推（天干和地支都移到下一个）：</p>
+<ol>
+<li><strong>正月（寅月）</strong>：<strong>戊寅</strong> （这是我们的起点）</li>
+<li><strong>二月（卯月）</strong>：天干“戊”的下一个是“<strong>己</strong>”，地支“寅”的下一个是“<strong>卯</strong>”。所以二月是 <strong>己卯</strong>。</li>
+<li><strong>三月（辰月）</strong>：天干“己”的下一个是“<strong>庚</strong>”，地支“卯”的下一个是“<strong>辰</strong>”。所以三月是 <strong>庚辰</strong>。</li>
+<li><strong>四月（巳月）</strong>：天干“庚”的下一个是“<strong>辛</strong>”，地支“辰”的下一个是“<strong>巳</strong>”。所以四月是 <strong>辛巳</strong>。</li>
+<li><strong>五月（午月）</strong>：天干“辛”的下一个是“<strong>壬</strong>”，地支“巳”的下一个是“<strong>午</strong>”。所以五月是 <strong>壬午</strong>。</li>
+<li><strong>六月（未月）</strong>：天干“壬”的下一个是“<strong>癸</strong>”，地支“午”的下一个是“<strong>未</strong>”。所以六月是 <strong>癸未</strong>。</li>
+<li><strong>七月（申月）</strong>：天干“癸”的下一个是“<strong>甲</strong>”（因为癸完了又从头循环到甲），地支“未”的下一个是“<strong>申</strong>”。所以七月（申月）就是 <strong>甲申</strong>。</li>
+</ol>
+<p><strong>推导过程可视化：</strong></p>
+<table>
+<thead>
+<tr>
+<th>月支</th>
+<th>寅</th>
+<th>-&gt;</th>
+<th>卯</th>
+<th>-&gt;</th>
+<th>辰</th>
+<th>-&gt;</th>
+<th>巳</th>
+<th>-&gt;</th>
+<th>午</th>
+<th>-&gt;</th>
+<th>未</th>
+<th>-&gt;</th>
+<th><strong>申</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>月干</td>
+<td>戊</td>
+<td>-&gt;</td>
+<td>己</td>
+<td>-&gt;</td>
+<td>庚</td>
+<td>-&gt;</td>
+<td>辛</td>
+<td>-&gt;</td>
+<td>壬</td>
+<td>-&gt;</td>
+<td>癸</td>
+<td>-&gt;</td>
+<td><strong>甲</strong></td>
+</tr>
+<tr>
+<td>月柱</td>
+<td><strong>戊寅</strong></td>
+<td></td>
+<td><strong>己卯</strong></td>
+<td></td>
+<td><strong>庚辰</strong></td>
+<td></td>
+<td><strong>辛巳</strong></td>
+<td></td>
+<td><strong>壬午</strong></td>
+<td></td>
+<td><strong>癸未</strong></td>
+<td></td>
+<td><strong>甲申</strong></td>
+</tr>
+</tbody></table>
+<p>现在到了月支的申，其对应的的<strong>甲</strong>就是我们要找的月干。</p>
+<p>所以，<strong>月柱是：甲申</strong>。</p>
+<hr>
+<h4 id="第四步：计算日柱"><a href="#第四步：计算日柱" class="headerlink" title="第四步：计算日柱"></a><strong>第四步：计算日柱</strong></h4><p>这是计算中最复杂的一步，需要借助公式或直接查万年历。这里介绍一个适用于1900-1999年的公式。</p>
+<p><strong>计算公历1990年8月25日的日干支：</strong></p>
+<ol>
+<li><p><strong>基础计算</strong>：</p>
+<ul>
+<li><p><code>[(年尾二位数+3)*5 + 55 + (年尾二位数-1)/4] mod 60</code></p>
+<blockquote>
+<p>2000年 - 2099年的将+55换成+15即可。</p>
+</blockquote>
+</li>
+<li><p>代入：年尾二位数是 <code>90</code></p>
+</li>
+<li><p><code>[(90+3)*5 + 55 + (90-1)/4] mod 60</code></p>
+</li>
+<li><p><code>[93*5 + 55 + 89/4] mod 60</code></p>
+</li>
+<li><p><code>[465 + 55 + 22.25] mod 60</code> (取整数商22)</p>
+</li>
+<li><p><code>[542] mod 60</code> (取余数)</p>
+</li>
+<li><p><code>542 ÷ 60 = 9 ... 余数2</code></p>
+</li>
+</ul>
+</li>
+<li><p><strong>计算当年第几天</strong>：</p>
+<ul>
+<li>1990年是平年（1990不能被4整除），2月有28天。</li>
+<li>1月(31) + 2月(28) + 3月(31) + 4月(30) + 5月(31) + 6月(30) + 7月(31) + 8月(25) &#x3D; 31+28+31+30+31+30+31+25 &#x3D; <strong>237天</strong></li>
+</ul>
+</li>
+<li><p><strong>总和并取余</strong>：</p>
+<ul>
+<li>将第1步的余数 <code>2</code> 和第2步的天数 <code>237</code> 相加：<code>2 + 237 = 239</code></li>
+<li><code>239 mod 60</code> (除以60取余数)</li>
+<li><code>239 ÷ 60 = 3 ... 余数59</code></li>
+</ul>
+</li>
+<li><p><strong>对应干支</strong>：</p>
+<ul>
+<li>余数59对应六十甲子第59位。天干：<code>59 ÷ 10 = 5 ... 余数为 9</code> (0是癸，9是壬)。</li>
+<li>地支<code>59 ÷ 12 = 4 ... 余数为 11</code>(0是亥，11是戌)</li>
+<li>实际上，<strong>余数59对应的干支是“壬戌”</strong>。</li>
+<li>天干第9位是<strong>壬</strong> (1甲,2乙,3丙,4丁,5戊,6己,7庚,8辛,9壬,10癸或0癸)。</li>
+<li>地支第11位是<strong>戌</strong> (1子,2丑,3寅,4卯,5辰,6巳,7午,8未,9申,10酉,11戌,12亥或0亥)。</li>
+</ul>
+</li>
+</ol>
+<p><strong>所以，日柱是：壬戌</strong>。</p>
+<hr>
+<h4 id="第五步：计算时柱"><a href="#第五步：计算时柱" class="headerlink" title="第五步：计算时柱"></a><strong>第五步：计算时柱</strong></h4><p>时柱由<strong>日柱的天干</strong>和出生的<strong>时辰</strong>共同决定。一天分为12个时辰，每个时辰2小时。</p>
+<ul>
+<li>上午10点属于 <strong>巳时</strong> (上午9点至11点)。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>时辰</th>
+<th>地支</th>
+<th>现代时间</th>
+<th>别名 &amp; 说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>夜半</strong></td>
+<td><strong>子 (zǐ)</strong></td>
+<td><strong>23:00 - 01:00</strong></td>
+<td>子夜、三更天，是一天的开始</td>
+</tr>
+<tr>
+<td><strong>鸡鸣</strong></td>
+<td><strong>丑 (chǒu)</strong></td>
+<td><strong>01:00 - 03:00</strong></td>
+<td>四更天</td>
+</tr>
+<tr>
+<td><strong>平旦</strong></td>
+<td><strong>寅 (yín)</strong></td>
+<td><strong>03:00 - 05:00</strong></td>
+<td>黎明、五更天</td>
+</tr>
+<tr>
+<td><strong>日出</strong></td>
+<td><strong>卯 (mǎo)</strong></td>
+<td><strong>05:00 - 07:00</strong></td>
+<td>又名“日始”、“破晓”</td>
+</tr>
+<tr>
+<td><strong>食时</strong></td>
+<td><strong>辰 (chén)</strong></td>
+<td><strong>07:00 - 09:00</strong></td>
+<td>古人吃早饭的时间</td>
+</tr>
+<tr>
+<td><strong>隅中</strong></td>
+<td><strong>巳 (sì)</strong></td>
+<td><strong>09:00 - 11:00</strong></td>
+<td>临近中午</td>
+</tr>
+<tr>
+<td><strong>日中</strong></td>
+<td><strong>午 (wǔ)</strong></td>
+<td><strong>11:00 - 13:00</strong></td>
+<td>正午、中午</td>
+</tr>
+<tr>
+<td><strong>日昳</strong></td>
+<td><strong>未 (wèi)</strong></td>
+<td><strong>13:00 - 15:00</strong></td>
+<td>又名“日跌”，午后</td>
+</tr>
+<tr>
+<td><strong>哺时</strong></td>
+<td><strong>申 (shēn)</strong></td>
+<td><strong>15:00 - 17:00</strong></td>
+<td>古人吃第二顿饭的时间</td>
+</tr>
+<tr>
+<td><strong>日入</strong></td>
+<td><strong>酉 (yǒu)</strong></td>
+<td><strong>17:00 - 19:00</strong></td>
+<td>日落、傍晚</td>
+</tr>
+<tr>
+<td><strong>黄昏</strong></td>
+<td><strong>戌 (xū)</strong></td>
+<td><strong>19:00 - 21:00</strong></td>
+<td>一更天</td>
+</tr>
+<tr>
+<td><strong>人定</strong></td>
+<td><strong>亥 (hài)</strong></td>
+<td><strong>21:00 - 23:00</strong></td>
+<td>二更天，该安歇睡觉了</td>
+</tr>
+</tbody></table>
+<p><strong>时柱的地支固定为“巳”。时柱的天干需要根据日柱的天干来推算，有一套“五鼠遁”口诀：</strong></p>
+<blockquote>
+<p>“甲己还加甲，乙庚丙作初。<br>丙辛从戊起，丁壬庚子居。<br>戊癸何方发，壬子是真途。”</p>
+</blockquote>
+<p>我们的日干是<strong>壬</strong>（属于“丁壬”日），根据“丁壬庚子居”，意思是丁日或壬日的子时（23:00-1:00）的时干是“庚”。<br>所以：</p>
+<ul>
+<li>子时 (23-1): 庚子</li>
+<li>丑时 (1-3): 辛丑</li>
+<li>寅时 (3-5): 壬寅</li>
+<li>卯时 (5-7): 癸卯</li>
+<li><strong>辰时 (7-9): 甲辰</strong></li>
+<li><strong>巳时 (9-11): 乙巳</strong></li>
+</ul>
+<p>所以，<strong>时柱是：乙巳</strong>。</p>
+<hr>
+<h4 id="最终结果："><a href="#最终结果：" class="headerlink" title="最终结果："></a><strong>最终结果：</strong></h4><p>将以上四柱汇总，这个出生于<strong>公历1990年8月25日上午10点</strong>的人的八字（四柱）是：</p>
+<ul>
+<li><strong>年柱：庚午</strong></li>
+<li><strong>月柱：甲申</strong></li>
+<li><strong>日柱：壬戌</strong></li>
+<li><strong>时柱：乙巳</strong></li>
+</ul>
+<p><strong>所以他的八字就是：庚午 甲申 壬戌 乙巳</strong></p>
+<hr>
+<h4 id="总结与注意事项："><a href="#总结与注意事项：" class="headerlink" title="总结与注意事项："></a><strong>总结与注意事项：</strong></h4><ol>
+<li><strong>节气的重要性</strong>：年和月的分界严格依据<strong>立春</strong>和<strong>节气</strong>，绝对不能按公历或农历的月初年底简单划分。</li>
+<li><strong>日柱计算的复杂性</strong>：日柱的公式计算较为繁琐，且1900年之前和2000年之后的公式有修正。</li>
+<li><strong>时区问题</strong>：八字采用的都是<strong>北京时间（东八区时间）</strong>。如果出生在其他时区，需要进行换算。例如，新疆出生的人可能需要将当地时间换算为北京时间后再排盘（命理学界对此有不同看法，但传统以北京时间为准）。</li>
+<li><strong>夏令时</strong>：如果出生在实行夏令时的时期（1986-1991年），需要将表上的时间<strong>减去1小时</strong>后再计算时辰。1990年有夏令时，上午10点实际上是标准时间上午9点，那么时辰就应该是<strong>辰时（7-9点）</strong>，时柱就变成了<strong>甲辰</strong>。这一点非常重要且常被忽略！</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%A5%87%E9%97%A8%E9%81%81%E7%94%B2/" rel="tag"># 奇门遁甲</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/20/Text-to-SQL-vanna%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8/" rel="prev" title="Text-to-SQL:vanna安装与使用">
+                  <i class="fa fa-angle-left"></i> Text-to-SQL:vanna安装与使用
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">411k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">24:55</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
