@@ -19,15 +19,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="前言背景：小程序核心算法 目的：记录+理思路+分享">
+    <meta name="description" content="前言背景：小程序核心算法 目的：记录+理思路+分享 开源地址：https:&#x2F;&#x2F;github.com&#x2F;caihaoran-00&#x2F;qimenpaipan">
 <meta property="og:type" content="article">
 <meta property="og:title" content="奇门遁甲核心算法调研与实现">
 <meta property="og:url" content="https://caihaoran-00.github.io/2025/08/29/%E5%A5%87%E9%97%A8%E9%81%81%E7%94%B2%E6%A0%B8%E5%BF%83%E7%AE%97%E6%B3%95%E8%B0%83%E7%A0%94%E4%B8%8E%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="Chr&#39;s Blog">
-<meta property="og:description" content="前言背景：小程序核心算法 目的：记录+理思路+分享">
+<meta property="og:description" content="前言背景：小程序核心算法 目的：记录+理思路+分享 开源地址：https:&#x2F;&#x2F;github.com&#x2F;caihaoran-00&#x2F;qimenpaipan">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-08-29T01:50:12.000Z">
-<meta property="article:modified_time" content="2025-08-29T07:54:47.549Z">
+<meta property="article:modified_time" content="2025-08-30T02:27:21.644Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="奇门遁甲">
 <meta name="twitter:card" content="summary">
@@ -139,7 +139,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AB%E5%AD%97%EF%BC%88%E5%9B%9B%E6%9F%B1%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">八字（四柱）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%B0%86%E5%85%AC%E5%8E%86%E6%97%A5%E6%9C%9F%E8%BD%AC%E6%8D%A2%E4%B8%BA%E5%86%9C%E5%8E%86%E5%B9%B2%E6%94%AF%E5%8E%86%E6%97%A5%E6%9C%9F"><span class="nav-number">2.1.1.</span> <span class="nav-text">第一步：将公历日期转换为农历干支历日期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E5%B9%B4%E6%9F%B1"><span class="nav-number">2.1.2.</span> <span class="nav-text">第二步：计算年柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%88%E6%9F%B1"><span class="nav-number">2.1.3.</span> <span class="nav-text">第三步：计算月柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%97%A5%E6%9F%B1"><span class="nav-number">2.1.4.</span> <span class="nav-text">第四步：计算日柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%97%B6%E6%9F%B1"><span class="nav-number">2.1.5.</span> <span class="nav-text">第五步：计算时柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C"><span class="nav-number">2.1.6.</span> <span class="nav-text">最终结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E4%B8%80%E7%AE%97"><span class="nav-number">2.2.</span> <span class="nav-text">算一算</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%EF%BC%9A"><span class="nav-number">2.2.1.</span> <span class="nav-text">总结与注意事项：</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AB%E5%AD%97%EF%BC%88%E5%9B%9B%E6%9F%B1%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">八字（四柱）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%B0%86%E5%85%AC%E5%8E%86%E6%97%A5%E6%9C%9F%E8%BD%AC%E6%8D%A2%E4%B8%BA%E5%86%9C%E5%8E%86%E5%B9%B2%E6%94%AF%E5%8E%86%E6%97%A5%E6%9C%9F"><span class="nav-number">2.1.1.</span> <span class="nav-text">第一步：将公历日期转换为农历干支历日期</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E5%B9%B4%E6%9F%B1"><span class="nav-number">2.1.2.</span> <span class="nav-text">第二步：计算年柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%9C%88%E6%9F%B1"><span class="nav-number">2.1.3.</span> <span class="nav-text">第三步：计算月柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%97%A5%E6%9F%B1"><span class="nav-number">2.1.4.</span> <span class="nav-text">第四步：计算日柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E8%AE%A1%E7%AE%97%E6%97%B6%E6%9F%B1"><span class="nav-number">2.1.5.</span> <span class="nav-text">第五步：计算时柱</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C"><span class="nav-number">2.1.6.</span> <span class="nav-text">最终结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%97%E4%B8%80%E7%AE%97"><span class="nav-number">2.1.7.</span> <span class="nav-text">算一算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">2.1.8.</span> <span class="nav-text">总结与注意事项</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -227,9 +227,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-08-29 09:50:12 / 修改时间：15:54:47" itemprop="dateCreated datePublished" datetime="2025-08-29T09:50:12+08:00">2025-08-29</time>
+      <time title="创建时间：2025-08-29 09:50:12" itemprop="dateCreated datePublished" datetime="2025-08-29T09:50:12+08:00">2025-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-30 10:27:21" itemprop="dateModified" datetime="2025-08-30T10:27:21+08:00">2025-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -274,10 +280,13 @@
     
     <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>背景：小程序核心算法</p>
 <p>目的：记录+理思路+分享</p>
+<p>开源地址：<a target="_blank" rel="noopener" href="https://github.com/caihaoran-00/qimenpaipan">https://github.com/caihaoran-00/qimenpaipan</a></p>
 <span id="more"></span>
 
 <hr>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="八字（四柱）"><a href="#八字（四柱）" class="headerlink" title="八字（四柱）"></a>八字（四柱）</h3><blockquote>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>本核心算法的目标是实现奇门遁甲排盘，但目前只在八字方面查阅了实现原理，其余方面暂未查阅。</p>
+<hr>
+<h3 id="八字（四柱）"><a href="#八字（四柱）" class="headerlink" title="八字（四柱）"></a>八字（四柱）</h3><blockquote>
 <p>公历&#x3D;阳历（现代通用），</p>
 </blockquote>
 <p>八字（或称四柱），是中国传统命理学中的核心，顾名思义，就是八个字。这八个字分别代表了一个人出生时的<strong>年、月、日、时</strong>四个时间点的天干地支，每个时间点用一个<strong>天干</strong>和一个<strong>地支</strong>表示，合起来就是“四柱”（年柱、月柱、日柱、时柱），每柱两个字，共八个字。</p>
@@ -617,7 +626,7 @@
 <p>现在到了月支的申，其对应的的<strong>甲</strong>就是我们要找的月干。</p>
 <p>所以，<strong>月柱是：甲申</strong>。</p>
 <hr>
-<h4 id="第四步：计算日柱"><a href="#第四步：计算日柱" class="headerlink" title="第四步：计算日柱"></a><strong>第四步：计算日柱</strong></h4><p>这是计算中最复杂的一步，需要借助公式或直接查万年历。这里介绍一个适用于1900-2000年的公式。</p>
+<h4 id="第四步：计算日柱"><a href="#第四步：计算日柱" class="headerlink" title="第四步：计算日柱"></a><strong>第四步：计算日柱</strong></h4><p>这是计算中最复杂的一步，需要借助公式或直接查万年历。这里介绍一个适用于1901-2000年的公式。</p>
 <p><strong>计算公历1990年8月25日的日干支：</strong></p>
 <ol>
 <li><p><strong>基础计算</strong>：</p>
@@ -771,7 +780,7 @@
 </ul>
 <p><strong>所以他的八字就是：庚午 甲申 壬戌 乙巳</strong></p>
 <hr>
-<h3 id="算一算"><a href="#算一算" class="headerlink" title="算一算"></a>算一算</h3><p>咱们来手动算算<code>2025-08-20 17:43</code>的八字：</p>
+<h4 id="算一算"><a href="#算一算" class="headerlink" title="算一算"></a>算一算</h4><p>咱们来手动算算<code>2025-08-20 17:43</code>的八字：</p>
 <ul>
 <li>首先肯定过了立春了，按2025年算</li>
 <li>2025-3&#x3D;2022,2022÷60&#x3D;33 … 余42，42 % 10 &#x3D; 2 –&gt;天干：乙，42 % 12 &#x3D; 6—&gt;地支：巳（已巳）</li>
@@ -787,7 +796,7 @@
 <li>时柱：丁酉</li>
 </ul>
 <hr>
-<h4 id="总结与注意事项："><a href="#总结与注意事项：" class="headerlink" title="总结与注意事项："></a><strong>总结与注意事项：</strong></h4><ol>
+<h4 id="总结与注意事项"><a href="#总结与注意事项" class="headerlink" title="总结与注意事项"></a><strong>总结与注意事项</strong></h4><ol>
 <li><strong>节气的重要性</strong>：年和月的分界严格依据<strong>立春</strong>和<strong>节气</strong>，绝对不能按公历或农历的月初年底简单划分。</li>
 <li><strong>日柱计算的复杂性</strong>：日柱的公式计算较为繁琐，且1900年之前和2000年之后的公式有修正。</li>
 <li><strong>时区问题</strong>：八字采用的都是<strong>北京时间（东八区时间）</strong>。如果出生在其他时区，需要进行换算。例如，新疆出生的人可能需要将当地时间换算为北京时间后再排盘（命理学界对此有不同看法，但传统以北京时间为准）。</li>
@@ -850,7 +859,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">24:55</span>
+    <span title="站点阅读时长">24:56</span>
   </span>
 </div>
 <div class="busuanzi-count">

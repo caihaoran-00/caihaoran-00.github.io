@@ -19,17 +19,17 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="前言本文梳理一些常用的git命令，以使用场景为切入点进行git指令介绍。">
+    <meta name="description" content="前言本文梳理一些常用的git命令，以使用场景为切入点进行git指令介绍。先写结论：  以本地文件夹为起点 123456789101112131415161. 初始化Git仓库cd &lt;目标文件夹&gt;git init2. 添加所有文件到暂存区git add .3. 提交初始版本git commit -m &quot;Initial commit: &lt;描述信息&gt;&quot;4. 在">
 <meta property="og:type" content="article">
 <meta property="og:title" content="git常用命令">
 <meta property="og:url" content="https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/index.html">
 <meta property="og:site_name" content="Chr&#39;s Blog">
-<meta property="og:description" content="前言本文梳理一些常用的git命令，以使用场景为切入点进行git指令介绍。">
+<meta property="og:description" content="前言本文梳理一些常用的git命令，以使用场景为切入点进行git指令介绍。先写结论：  以本地文件夹为起点 123456789101112131415161. 初始化Git仓库cd &lt;目标文件夹&gt;git init2. 添加所有文件到暂存区git add .3. 提交初始版本git commit -m &quot;Initial commit: &lt;描述信息&gt;&quot;4. 在">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20250205113431936.png">
 <meta property="og:image" content="https://caihaoran-00.github.io/2025/01/23/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20250205113617249.png">
 <meta property="article:published_time" content="2025-01-23T07:18:22.000Z">
-<meta property="article:modified_time" content="2025-02-05T08:15:49.371Z">
+<meta property="article:modified_time" content="2025-08-30T02:21:28.867Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="git">
 <meta name="twitter:card" content="summary">
@@ -238,7 +238,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-05 16:15:49" itemprop="dateModified" datetime="2025-02-05T16:15:49+08:00">2025-02-05</time>
+      <time title="修改时间：2025-08-30 10:21:28" itemprop="dateModified" datetime="2025-08-30T10:21:28+08:00">2025-08-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -264,7 +264,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>2.1k</span>
+      <span>2.3k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -281,9 +281,21 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文梳理一些常用的git命令，以<strong>使用场景</strong>为切入点进行git指令介绍。</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文梳理一些常用的git命令，以<strong>使用场景</strong>为切入点进行git指令介绍。先写结论：</p>
+<ol>
+<li><p>以本地文件夹为起点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">1. 初始化Git仓库</span><br><span class="line"><span class="built_in">cd</span> &lt;目标文件夹&gt;</span><br><span class="line">git init</span><br><span class="line"></span><br><span class="line">2. 添加所有文件到暂存区</span><br><span class="line">git add .</span><br><span class="line"></span><br><span class="line">3. 提交初始版本</span><br><span class="line">git commit -m <span class="string">&quot;Initial commit: &lt;描述信息&gt;&quot;</span></span><br><span class="line"></span><br><span class="line">4. 在Github上创建仓库并关联本地仓库</span><br><span class="line">git remote add origin https://github.com/...</span><br><span class="line"></span><br><span class="line">5. 推送到Github</span><br><span class="line">git branch -M main</span><br><span class="line">git push -u origin main</span><br></pre></td></tr></table></figure></li>
+</ol>
 <span id="more"></span>
 
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">后续更改项目后再提交</span><br><span class="line">1. 添加文件并提交</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Update: &lt;描述信息&gt;&quot;</span></span><br><span class="line"></span><br><span class="line">2. 推送到Github</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol start="2">
+<li><p>以Github远程仓库为起点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1. 创建Github仓库并克隆到本地</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/...</span><br><span class="line"></span><br><span class="line">2. 增加/创建文件</span><br><span class="line"></span><br><span class="line">3.添加文件+提交+推送</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">&quot;Initial commit: add README and main.py&quot;</span></span><br><span class="line">git push</span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
 <h2 id="一、本地仓库-远程仓库"><a href="#一、本地仓库-远程仓库" class="headerlink" title="一、本地仓库-&gt;远程仓库"></a>一、本地仓库-&gt;远程仓库</h2><h3 id="1-初始化本地仓库"><a href="#1-初始化本地仓库" class="headerlink" title="1.初始化本地仓库"></a>1.初始化本地仓库</h3><ul>
 <li><p>创建一个项目文件夹，比如我创建了一个<code>agent_langgraph</code>文件夹</p>
 </li>
@@ -317,14 +329,14 @@
 <p>输出：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[master (root-commit) e1b1d5b] Initial commit: add README and main.py</span><br><span class="line"> 2 files changed, 2 insertions(+)</span><br><span class="line"> create mode 100644 README.md</span><br><span class="line"> create mode 100644 main.py</span><br></pre></td></tr></table></figure>
 
-<p>注意，到这里只是在<strong>本地创建和管理</strong>这个Git仓库，并没有把项目上传到<code>Github</code>上。如果想让项目出现在你的<code>Github</code>账户里，还需要执行一些额外步骤，将本地仓库推送到Github。</p>
+<p>注意，到这里只是在<strong>本地创建和管理</strong>这个Git仓库，并没有把项目上传到<code>Github</code>上。如果想让项目出现在你的<code>Github</code>账户里，还需要执行一些额外步骤，将本地仓库推送到<code>Github</code>。</p>
 <h3 id="3-本地仓库-远程仓库"><a href="#3-本地仓库-远程仓库" class="headerlink" title="3. 本地仓库-&gt;远程仓库"></a>3. 本地仓库-&gt;远程仓库</h3><p>先在<code>Github</code>上创建一个远程仓库：</p>
 <ul>
 <li>登录你的<code>Github</code>账户，点击右上角的<code>+</code>按钮，选择<code>New repository</code></li>
-<li>填写项目名称，如<code>agent_langgraph</code>，可在此界面添加项目描述(Description)，选择项目是公开可见(Public)还是仅你指定的人可见(Private)，选择初始化仓库时是否增加README文件，选择是否添加<code>.gitignore</code>模板，用于模板列表中选择不跟踪的文件，这里选择<code>Python</code>，最后还可以选择许可证(license)。、</li>
+<li>填写项目名称，如<code>agent_langgraph</code>，可在此界面添加项目描述(Description)，选择项目是公开可见(Public)还是仅你指定的人可见(Private)，选择初始化仓库时是否增加<code>README</code>文件，选择是否添加<code>.gitignore</code>模板，用于模板列表中选择不跟踪的文件，这里选择<code>Python</code>，最后还可以选择许可证(license)。、</li>
 <li>点击<code>Create repository</code>以创建仓库</li>
 </ul>
-<p>现在就可以将本地仓库与Github远程仓库关联了，在你的本地项目目录下运行:</p>
+<p>现在就可以将本地仓库与<code>Github</code>远程仓库关联了，在你的本地项目目录下运行:</p>
 <figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://github.com/&lt;your_username&gt;/agent_langgraph.git</span><br><span class="line"></span><br><span class="line">如</span><br><span class="line"></span><br><span class="line">git remote add origin https://github.com/caihaoran-<span class="number">00</span>/agent_langgraph</span><br></pre></td></tr></table></figure>
 
 <p>检查关联是否成功：</p>
@@ -479,7 +491,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">24:55</span>
+    <span title="站点阅读时长">24:56</span>
   </span>
 </div>
 <div class="busuanzi-count">
