@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言背景：新需求 内容：  Recent Activity Favorite Topics Mood Briefing Summary &amp; Recommendation  基于一周的聊天记录（周六为起点），总结本周的Recent Activity（活动），Favorite Topics（主题），Mood Briefing（心情），Summary &amp; Recommendation（总">
+<meta property="og:type" content="article">
+<meta property="og:title" content="玩具第三版：周报生成">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/09/03/%E7%8E%A9%E5%85%B7%E7%AC%AC%E4%B8%89%E7%89%88%EF%BC%9A%E5%91%A8%E6%8A%A5%E7%94%9F%E6%88%90/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言背景：新需求 内容：  Recent Activity Favorite Topics Mood Briefing Summary &amp; Recommendation  基于一周的聊天记录（周六为起点），总结本周的Recent Activity（活动），Favorite Topics（主题），Mood Briefing（心情），Summary &amp; Recommendation（总">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-09-03T09:03:51.000Z">
+<meta property="article:modified_time" content="2025-09-03T09:34:57.970Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="玩具">
+<meta property="article:tag" content="json">
+<meta property="article:tag" content="few-shot">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/09/03/%E7%8E%A9%E5%85%B7%E7%AC%AC%E4%B8%89%E7%89%88%EF%BC%9A%E5%91%A8%E6%8A%A5%E7%94%9F%E6%88%90/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/09/03/%E7%8E%A9%E5%85%B7%E7%AC%AC%E4%B8%89%E7%89%88%EF%BC%9A%E5%91%A8%E6%8A%A5%E7%94%9F%E6%88%90/","path":"2025/09/03/玩具第三版：周报生成/","title":"玩具第三版：周报生成"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>玩具第三版：周报生成 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/09/03/%E7%8E%A9%E5%85%B7%E7%AC%AC%E4%B8%89%E7%89%88%EF%BC%9A%E5%91%A8%E6%8A%A5%E7%94%9F%E6%88%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="玩具第三版：周报生成 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          玩具第三版：周报生成
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-09-03 17:03:51 / 修改时间：17:34:57" itemprop="dateCreated datePublished" datetime="2025-09-03T17:03:51+08:00">2025-09-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>14 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>背景：新需求</p>
+<p>内容：</p>
+<ul>
+<li>Recent Activity</li>
+<li>Favorite Topics</li>
+<li>Mood Briefing</li>
+<li>Summary &amp; Recommendation</li>
+</ul>
+<p>基于一周的聊天记录（周六为起点），总结本周的Recent Activity（活动），Favorite Topics（主题），Mood Briefing（心情），Summary &amp; Recommendation（总结和建议）</p>
+<p><code>Github</code>：<a target="_blank" rel="noopener" href="https://github.com/caihaoran-00/wanju">https://github.com/caihaoran-00/wanju</a></p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>由于这四块都是基于一周的聊天记录，那么最直观的想法就是不用分开做了，直接一把梭哈，使用few-shot直接开干，提示词的总体思路是：</p>
+<ul>
+<li>定义它是谁</li>
+<li>定义它要做的事</li>
+<li>对要做的事的详细介绍</li>
+<li>给个详细的做事模板（few-shot）</li>
+</ul>
+<p>注意这个做事模版不能给特别具体的内容，而只能是个具体的框架，不然大模型会经常无脑原封不动的输出你给的具体内容。</p>
+<p>中文代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">第三版</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">包括：</span></span><br><span class="line"><span class="string">- Recent Activity</span></span><br><span class="line"><span class="string">- Favorite Topics</span></span><br><span class="line"><span class="string">- Mood Briefing</span></span><br><span class="line"><span class="string">- Summary &amp; Recommendation</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载 .env 文件中的环境变量</span></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line"><span class="comment"># ==============================================================================</span></span><br><span class="line"><span class="comment"># 1. 初始化客户端和准备数据</span></span><br><span class="line"><span class="comment"># ==============================================================================</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化 Qwen 客户端</span></span><br><span class="line">client = OpenAI(</span><br><span class="line">    api_key=os.getenv(<span class="string">&quot;OPENAI_API_KEY&quot;</span>),  <span class="comment"># 请替换为您的有效 API Key</span></span><br><span class="line">    base_url=<span class="string">&quot;https://dashscope.aliyuncs.com/compatible-mode/v1&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">child_name = <span class="string">&quot;Grace&quot;</span></span><br><span class="line"></span><br><span class="line">chat_logs = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">User: Agent, Agent! 快给我讲一个关于恐龙的故事吧！要一个很长很长的！</span></span><br><span class="line"><span class="string">Agent: 当然，Grace！那么，让我们开始吧。在白垩纪晚期的一片广袤森林里，住着一只名叫蒂娜的小霸王龙，她和别的霸王龙不一样，她不喜欢吃肉...</span></span><br><span class="line"><span class="string">User: 哇，那她吃什么呢？吃草吗？</span></span><br><span class="line"><span class="string">Agent: 问得好！她最喜欢吃一种甜甜的红色浆果，这让她的爸爸妈妈非常头疼。他们总是说：“蒂娜，你是一只霸王龙，你应该去捕猎！”</span></span><br><span class="line"><span class="string">User: 后来呢？她找到好朋友了吗？</span></span><br><span class="line"><span class="string">Agent: 她很孤独，直到有一天，她遇到了一只迷路的三角龙宝宝。一开始她们都很害怕对方，但很快就发现彼此都喜欢在阳光下玩耍。</span></span><br><span class="line"><span class="string">User: Agent，我今天在学校很不开心。</span></span><br><span class="line"><span class="string">Agent: 噢，听到你这么说我很难过。能告诉我发生了什么事吗？</span></span><br><span class="line"><span class="string">User: 迈克抢了我的积木，还说我搭的城堡是“丑丑的塔”。</span></span><br><span class="line"><span class="string">Agent: 那一定让你感到很委屈。别人那样说的时候，心里会很难受。但你要知道，你用心搭建的东西，在你自己心里就是最棒的城堡。</span></span><br><span class="line"><span class="string">User: 我不想再跟他玩了。我们能听一首安静的歌吗？</span></span><br><span class="line"><span class="string">Agent: 当然可以。为你播放《摇篮曲》，希望能让你的心情平静下来。</span></span><br><span class="line"><span class="string">User: Agent，恐龙为什么会消失啊？老师今天提了一下，但我没听懂。</span></span><br><span class="line"><span class="string">Agent: 这是一个很棒的科学问题！科学家们认为，最主要的原因是一颗巨大的小行星撞上了地球。撞击扬起了漫天灰尘，遮住了太阳，地球变得又冷又黑，很多植物都死掉了。</span></span><br><span class="line"><span class="string">User: 那小行星是从哪里来的呢？</span></span><br><span class="line"><span class="string">Agent: 它来自我们的太阳系，就在地球之外的太空里。太空中有无数的小行星，还有像火星、木星那样的大行星。</span></span><br><span class="line"><span class="string">User: 那我们以后还会被小行星撞到吗？</span></span><br><span class="line"><span class="string">Agent: 不用担心，科学家们一直在密切监视着太空，保护着我们的地球。而且，像那么大的小行星撞击地球，是非常非常罕见的事件，几千万年才可能发生一次。</span></span><br><span class="line"><span class="string">User: Agent，我想玩一个聪明的游戏！</span></span><br><span class="line"><span class="string">Agent: 好主意！我们来玩“猜猜我是谁”的游戏吧。我来描述，你来猜。准备好了吗？</span></span><br><span class="line"><span class="string">User: 准备好啦！快开始！</span></span><br><span class="line"><span class="string">Agent: 好的，请听第一题：我是一种水果，外面是黄色的，弯弯的像月亮，猴子最喜欢吃我。我是谁？</span></span><br><span class="line"><span class="string">User: 是香蕉！太简单啦！下一个！</span></span><br><span class="line"><span class="string">Agent: 你太厉害了！第二题：我生活在海里，是最大的哺乳动物，会喷出高高的水柱。我是谁？</span></span><br><span class="line"><span class="string">User: 嗯...是...是大鲨鱼吗？</span></span><br><span class="line"><span class="string">Agent: 不对哦，鲨鱼是鱼类。我说的这种动物需要到水面来呼吸。再猜猜看？</span></span><br><span class="line"><span class="string">User: 我不知道了...这个太难了，我不喜欢。</span></span><br><span class="line"><span class="string">Agent: 没关系，Grace，这个确实有点难。答案是蓝鲸。不知道答案也没关系，我们通过游戏学到了新知识，这就很棒了！</span></span><br><span class="line"><span class="string">User: Agent，我们来假装我们是宇航员吧！</span></span><br><span class="line"><span class="string">Agent: 好的，Grace船长！我是您的智能飞船电脑“星辰号”。请问我们今天的任务是什么？</span></span><br><span class="line"><span class="string">User: 我们的任务是飞往仙女座星系，寻找会发光的太空蝴蝶！</span></span><br><span class="line"><span class="string">Agent: 指令已收到！引擎预热中... 3... 2... 1... 点火！我们已经成功升空，正在飞离地球。预计旅程需要三个标准日。</span></span><br><span class="line"><span class="string">User: “星辰号”，报告飞船外的景象！我看到闪闪的东西了！</span></span><br><span class="line"><span class="string">Agent: 报告船长，那是英仙座流星雨。无数的流星正从我们飞船的右舷划过，非常壮观。请您系好安全带。</span></span><br><span class="line"><span class="string">User: Agent！你猜怎么着！今天美术课，老师把我的画贴在了墙上！</span></span><br><span class="line"><span class="string">Agent: 哇！这真是太棒了！我真为你感到高兴！快告诉我，你画了什么？</span></span><br><span class="line"><span class="string">User: 我画了我们的太空飞船，还有很多彩色的太空蝴蝶！老师说我的想象力是全班第一名！</span></span><br><span class="line"><span class="string">Agent: 我就知道！你的想象力就像宇宙一样没有边界。这真是值得庆祝的一天！</span></span><br><span class="line"><span class="string">User: 连迈克都说我画得很好看！我们再玩一次太空游戏吧！这次我们要去一个全新的星球！</span></span><br><span class="line"><span class="string">Agent: 遵命，充满想象力的Grace船长！新的冒险正在等待着我们。请为我们的新目的地命名吧！</span></span><br><span class="line"><span class="string">User: Agent，人为什么一定要睡觉啊？我还想玩。</span></span><br><span class="line"><span class="string">Agent: 这是一个很好的问题。睡觉就像是给我们的身体和大脑充电。白天我们跑、跳、学习，消耗了很多能量，晚上睡觉能帮助我们恢复精力，修复身体，还能让我们记住白天学到的东西，这样第二天才能更有精神。</span></span><br><span class="line"><span class="string">User: 哦...是这样啊。那你需要睡觉吗？</span></span><br><span class="line"><span class="string">Agent: 我不需要像你一样睡觉，但我需要“休息”和“更新”。有时候工程师会让我进入一个特殊的模式来检查我的程序，确保我能更好地为你服务。</span></span><br><span class="line"><span class="string">User: 那好吧，我准备睡觉了。能给我放一点海浪的声音吗？</span></span><br><span class="line"><span class="string">Agent: 当然可以，Grace。为你播放“温柔的海浪声”。祝你做个甜美的梦，梦里可以继续你的太空冒险。晚安。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">system_prompt = <span class="string">f&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">你是一个专业、富有同理心且充满鼓励精神的儿童成长分析师，任务是根据 **<span class="subst">&#123;child_name&#125;</span>** (User) 与语音玩具 (Agent) 一周的聊天记录，</span></span><br><span class="line"><span class="string">生成一份详细的成长周报。注意该周报的汇报对象是孩子的家长。请严格按照下方指定的JSON格式输出。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">**输出格式要求：**</span></span><br><span class="line"><span class="string">- 严格输出一个JSON对象，不要在JSON前后添加任何多余的文字或解释，也不要```json作为开头。</span></span><br><span class="line"><span class="string">- JSON根对象必须包含四个键：`recent_activity`, `favorite_topics`, `mood_briefing`, `summary_recommendation`。</span></span><br><span class="line"><span class="string">- `recent_activity`: 包含 **<span class="subst">&#123;child_name&#125;</span>** 本周主要进行的活动及其发生次数，要求最多不超过七个，是一个对象数组。</span></span><br><span class="line"><span class="string">- `favorite_topics`: 包含 **<span class="subst">&#123;child_name&#125;</span>** 本周最喜欢或最常聊的主题，要求最多不超过七个，是一个字符串数组。</span></span><br><span class="line"><span class="string">- `mood_briefing`: 包含Happy, Blue, Excited三种情绪的百分比（总和必须为100%），并给出每种情绪的简要原因总结。</span></span><br><span class="line"><span class="string">- `summary_recommendation`:</span></span><br><span class="line"><span class="string">    - `general_observation`: 对 **<span class="subst">&#123;child_name&#125;</span>** 本周情况的总体观察。</span></span><br><span class="line"><span class="string">    - `what_child_might_need`: 一个包含**固定两条建议**的数组，每条建议都是一个包含&#x27;title&#x27;和&#x27;body&#x27;的对象。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">**请参考以下JSON格式模板（注意：以下内容仅为格式示例，不要复制其中的具体文本！必须根据实际聊天记录生成内容）：**</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&#123;&#123;</span></span><br><span class="line"><span class="string">  &quot;recent_activity&quot;: [</span></span><br><span class="line"><span class="string">    &#123;&#123;&quot;name&quot;: &quot;活动名称1&quot;, &quot;count&quot;: 数字&#125;&#125;,</span></span><br><span class="line"><span class="string">    &#123;&#123;&quot;name&quot;: &quot;活动名称2&quot;, &quot;count&quot;: 数字&#125;&#125;</span></span><br><span class="line"><span class="string">  ],</span></span><br><span class="line"><span class="string">  &quot;favorite_topics&quot;: [</span></span><br><span class="line"><span class="string">    &quot;🎯主题1&quot;,</span></span><br><span class="line"><span class="string">    &quot;🚀主题2&quot;,</span></span><br><span class="line"><span class="string">    &quot;💡主题3&quot;</span></span><br><span class="line"><span class="string">  ],</span></span><br><span class="line"><span class="string">  &quot;mood_briefing&quot;: &#123;&#123;</span></span><br><span class="line"><span class="string">    &quot;Happy&quot;: &#123;&#123;</span></span><br><span class="line"><span class="string">      &quot;percentage&quot;: 整数,</span></span><br><span class="line"><span class="string">      &quot;reason_summary&quot;: &quot;<span class="subst">&#123;child_name&#125;</span>在...时表现出开心，因为...&quot;</span></span><br><span class="line"><span class="string">    &#125;&#125;,</span></span><br><span class="line"><span class="string">    &quot;Blue&quot;: &#123;&#123;</span></span><br><span class="line"><span class="string">      &quot;percentage&quot;: 整数,</span></span><br><span class="line"><span class="string">      &quot;reason_summary&quot;: &quot;<span class="subst">&#123;child_name&#125;</span>在...时感到难过，因为...&quot;</span></span><br><span class="line"><span class="string">    &#125;&#125;,</span></span><br><span class="line"><span class="string">    &quot;Excited&quot;: &#123;&#123;</span></span><br><span class="line"><span class="string">      &quot;percentage&quot;: 整数,</span></span><br><span class="line"><span class="string">      &quot;reason_summary&quot;: &quot;<span class="subst">&#123;child_name&#125;</span>在...时非常兴奋，因为...&quot;</span></span><br><span class="line"><span class="string">    &#125;&#125;</span></span><br><span class="line"><span class="string">  &#125;&#125;,</span></span><br><span class="line"><span class="string">  &quot;summary_recommendation&quot;: &#123;&#123;</span></span><br><span class="line"><span class="string">    &quot;general_observation&quot;: &quot;<span class="subst">&#123;child_name&#125;</span>本周在...方面表现出...趋势。&quot;,</span></span><br><span class="line"><span class="string">    &quot;what_child_might_need&quot;: [</span></span><br><span class="line"><span class="string">      &#123;&#123;</span></span><br><span class="line"><span class="string">        &quot;title&quot;: &quot;1. 建议标题一&quot;,</span></span><br><span class="line"><span class="string">        &quot;body&quot;: &quot;建议内容第一段。\n建议内容第二段。（注意建议应该足够具体，第二段需结合Talkipal玩具的使用进行展开）&quot;</span></span><br><span class="line"><span class="string">      &#125;&#125;,</span></span><br><span class="line"><span class="string">      &#123;&#123;</span></span><br><span class="line"><span class="string">        &quot;title&quot;: &quot;2. 建议标题二&quot;,</span></span><br><span class="line"><span class="string">        &quot;body&quot;: &quot;建议内容第一段。\n建议内容第二段。（注意注意建议应该足够具体，第二段需结合Talkipal玩具的使用进行展开）&quot;</span></span><br><span class="line"><span class="string">      &#125;&#125;</span></span><br><span class="line"><span class="string">    ]</span></span><br><span class="line"><span class="string">  &#125;&#125;</span></span><br><span class="line"><span class="string">&#125;&#125;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ==============================================================================</span></span><br><span class="line"><span class="comment"># 2. 解析和打印报告的函数</span></span><br><span class="line"><span class="comment"># ==============================================================================</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_weekly_report</span>(<span class="params">report_data, child_name</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    将解析好的字典数据以用户友好的格式打印周报。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n=========================================&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;      ✨ <span class="subst">&#123;child_name&#125;</span>的成长周报 ✨&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;=========================================\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --- 打印最近的活动 ---</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;📊 最近的活动&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;-----------------------------------------&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;recent_activity&quot;</span> <span class="keyword">in</span> report_data <span class="keyword">and</span> report_data[<span class="string">&quot;recent_activity&quot;</span>]:</span><br><span class="line">            <span class="keyword">for</span> activity <span class="keyword">in</span> report_data[<span class="string">&quot;recent_activity&quot;</span>]:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;  - <span class="subst">&#123;activity.get(<span class="string">&#x27;name&#x27;</span>, <span class="string">&#x27;未知活动&#x27;</span>)&#125;</span>: <span class="subst">&#123;activity.get(<span class="string">&#x27;count&#x27;</span>, <span class="number">0</span>)&#125;</span> 次&quot;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;  本周没有记录到特别的活动。&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --- 打印喜欢的主题 ---</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;🧠 喜欢的主题&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;-----------------------------------------&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;favorite_topics&quot;</span> <span class="keyword">in</span> report_data <span class="keyword">and</span> report_data[<span class="string">&quot;favorite_topics&quot;</span>]:</span><br><span class="line">            <span class="keyword">for</span> topic <span class="keyword">in</span> report_data[<span class="string">&quot;favorite_topics&quot;</span>]:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;  - <span class="subst">&#123;topic&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;  本周没有发现特别集中的主题。&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --- 打印情绪简报 ---</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;❤️ 情绪简报&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;-----------------------------------------&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;mood_briefing&quot;</span> <span class="keyword">in</span> report_data:</span><br><span class="line">            moods = report_data[<span class="string">&quot;mood_briefing&quot;</span>]</span><br><span class="line">            <span class="keyword">for</span> mood_name, details <span class="keyword">in</span> moods.items():</span><br><span class="line">                percentage = details.get(<span class="string">&#x27;percentage&#x27;</span>, <span class="number">0</span>)</span><br><span class="line">                reason = details.get(<span class="string">&#x27;reason_summary&#x27;</span>, <span class="string">&#x27;无具体原因&#x27;</span>)</span><br><span class="line">                mood_emoji = &#123;<span class="string">&quot;Happy&quot;</span>: <span class="string">&quot;😊&quot;</span>, <span class="string">&quot;Blue&quot;</span>: <span class="string">&quot;😟&quot;</span>, <span class="string">&quot;Excited&quot;</span>: <span class="string">&quot;🤩&quot;</span>&#125;.get(mood_name, <span class="string">&quot;&quot;</span>)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;  <span class="subst">&#123;mood_emoji&#125;</span> <span class="subst">&#123;mood_name&#125;</span>: <span class="subst">&#123;percentage&#125;</span>%&quot;</span>)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;     原因: <span class="subst">&#123;reason&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;  无法分析本周的情绪分布。&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --- 打印总结与建议 ---</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;📝 总结与建议&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;-----------------------------------------&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;summary_recommendation&quot;</span> <span class="keyword">in</span> report_data:</span><br><span class="line">            summary = report_data[<span class="string">&quot;summary_recommendation&quot;</span>]</span><br><span class="line"></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;  [总体观察]&quot;</span>)</span><br><span class="line">            <span class="comment"># 使用 textwrap 库可以更好地处理长文本的自动换行，但为了简单，这里直接打印</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;  <span class="subst">&#123;summary.get(<span class="string">&#x27;general_observation&#x27;</span>, <span class="string">&#x27;暂无观察。&#x27;</span>)&#125;</span>\n&quot;</span>)</span><br><span class="line"></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;  [<span class="subst">&#123;child_name&#125;</span>可能需要...]&quot;</span>)</span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;what_child_might_need&quot;</span> <span class="keyword">in</span> summary <span class="keyword">and</span> summary[<span class="string">&quot;what_child_might_need&quot;</span>]:</span><br><span class="line">                <span class="keyword">for</span> recommendation <span class="keyword">in</span> summary[<span class="string">&quot;what_child_might_need&quot;</span>]:</span><br><span class="line">                    title = recommendation.get(<span class="string">&#x27;title&#x27;</span>, <span class="string">&#x27;建议&#x27;</span>)</span><br><span class="line">                    body = recommendation.get(<span class="string">&#x27;body&#x27;</span>, <span class="string">&#x27;无详细内容。&#x27;</span>)</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">f&quot;\n  &gt;&gt; <span class="subst">&#123;title&#125;</span>&quot;</span>)</span><br><span class="line">                    <span class="comment"># 将 body 按换行符分割，并为每一行添加缩进，使其看起来更整洁</span></span><br><span class="line">                    <span class="keyword">for</span> line <span class="keyword">in</span> body.split(<span class="string">&#x27;\n&#x27;</span>):</span><br><span class="line">                        <span class="built_in">print</span>(<span class="string">f&quot;     <span class="subst">&#123;line&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;  暂无特别建议。&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n=========================================&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">except</span> KeyError <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;错误：解析后的JSON缺少必要的键：<span class="subst">&#123;e&#125;</span>。&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ==============================================================================</span></span><br><span class="line"><span class="comment"># 3. 主程序：调用大模型并处理结果</span></span><br><span class="line"><span class="comment"># ==============================================================================</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;正在向大模型请求生成周报，请稍候...&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用大模型生成总结</span></span><br><span class="line">completion = client.chat.completions.create(</span><br><span class="line">    model=<span class="string">&quot;qwen3-8b&quot;</span>,  <span class="comment"># qwen3-30b-a3b-instruct-2507  qwen3-235b-a22b-instruct-2507  qwen3-8b</span></span><br><span class="line">    messages=[</span><br><span class="line">        &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>, <span class="string">&quot;content&quot;</span>: system_prompt&#125;,</span><br><span class="line">        &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: <span class="string">&quot;以下是一周的聊天记录：\n&quot;</span> + chat_logs&#125;</span><br><span class="line">    ],</span><br><span class="line">    extra_body=&#123;<span class="string">&quot;enable_thinking&quot;</span>: <span class="literal">False</span>&#125;,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;已收到回复，正在解析和打印...&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 尝试解析输出为 JSON</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    content = completion.choices[<span class="number">0</span>].message.content</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> content.strip().startswith(<span class="string">&quot;```json&quot;</span>):</span><br><span class="line">        content = content.strip()[<span class="number">7</span>:-<span class="number">3</span>]</span><br><span class="line"></span><br><span class="line">    result_dict = json.loads(content)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(result_dict)      <span class="comment"># 打印原始内容</span></span><br><span class="line"></span><br><span class="line">    print_weekly_report(result_dict, child_name)    <span class="comment"># 美观输出</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n错误：处理模型输出时发生问题。&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;错误类型：&quot;</span>, <span class="built_in">type</span>(e).__name__)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;错误详情：&quot;</span>, e)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n===== 原始输出 =====&quot;</span>)</span><br><span class="line">    content_to_print = <span class="string">&quot;未能从API获取内容。&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;completion&#x27;</span> <span class="keyword">in</span> <span class="built_in">locals</span>() <span class="keyword">and</span> completion.choices[<span class="number">0</span>]:</span><br><span class="line">        content_to_print = completion.choices[<span class="number">0</span>].message.content</span><br><span class="line">    <span class="built_in">print</span>(content_to_print)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;====================&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>输出结果</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"> 正在向大模型请求生成周报，请稍候...</span><br><span class="line">已收到回复，正在解析和打印...</span><br><span class="line">&#123;<span class="string">&#x27;recent_activity&#x27;</span>: [&#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;听恐龙故事&#x27;</span>, <span class="string">&#x27;count&#x27;</span>: 1&#125;, &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;讨论小行星和地球&#x27;</span>, <span class="string">&#x27;count&#x27;</span>: 2&#125;, &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;玩猜水果游戏&#x27;</span>, <span class="string">&#x27;count&#x27;</span>: 1&#125;, &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;假装宇航员去太空&#x27;</span>, <span class="string">&#x27;count&#x27;</span>: 2&#125;, &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;分享美术课成就&#x27;</span>, <span class="string">&#x27;count&#x27;</span>: 1&#125;, &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;问睡觉的原因&#x27;</span>, <span class="string">&#x27;count&#x27;</span>: 1&#125;, &#123;<span class="string">&#x27;name&#x27;</span>: <span class="string">&#x27;播放海浪声入睡&#x27;</span>, <span class="string">&#x27;count&#x27;</span>: 1&#125;], <span class="string">&#x27;favorite_topics&#x27;</span>: [<span class="string">&#x27;🚀太空冒险&#x27;</span>, <span class="string">&#x27;🎯恐龙世界&#x27;</span>, <span class="string">&#x27;💡科学问题&#x27;</span>, <span class="string">&#x27;🎨画画与想象力&#x27;</span>, <span class="string">&#x27;🎮互动游戏&#x27;</span>, <span class="string">&#x27;🌌宇宙与星星&#x27;</span>, <span class="string">&#x27;💤睡眠与休息&#x27;</span>], <span class="string">&#x27;mood_briefing&#x27;</span>: &#123;<span class="string">&#x27;Happy&#x27;</span>: &#123;<span class="string">&#x27;percentage&#x27;</span>: 40, <span class="string">&#x27;reason_summary&#x27;</span>: <span class="string">&#x27;Grace在听到自己的画被贴在墙上时表现出开心，因为得到了老师的认可。&#x27;</span>&#125;, <span class="string">&#x27;Blue&#x27;</span>: &#123;<span class="string">&#x27;percentage&#x27;</span>: 30, <span class="string">&#x27;reason_summary&#x27;</span>: <span class="string">&#x27;Grace在学校因积木被抢而感到难过，因为被同学贬低了她的作品。&#x27;</span>&#125;, <span class="string">&#x27;Excited&#x27;</span>: &#123;<span class="string">&#x27;percentage&#x27;</span>: 30, <span class="string">&#x27;reason_summary&#x27;</span>: <span class="string">&#x27;Grace在进行太空冒险和玩游戏时非常兴奋，因为这些活动激发了她的想象力和探索欲。&#x27;</span>&#125;&#125;, <span class="string">&#x27;summary_recommendation&#x27;</span>: &#123;<span class="string">&#x27;general_observation&#x27;</span>: <span class="string">&#x27;Grace本周在科学探索、艺术创作和情感表达方面表现出浓厚的兴趣，同时也在社交互动中遇到了一些挑战。&#x27;</span>, <span class="string">&#x27;what_child_might_need&#x27;</span>: [&#123;<span class="string">&#x27;title&#x27;</span>: <span class="string">&#x27;1. 增强情绪表达与处理能力&#x27;</span>, <span class="string">&#x27;body&#x27;</span>: <span class="string">&#x27;Grace在面对负面情绪时需要更多引导来表达和调节。建议家长鼓励她通过绘画、讲故事或角色扮演等方式释放情绪。结合Talkipal玩具，可以让她通过角色扮演来练习如何应对冲突和挫折，增强她的自我调节能力。&#x27;</span>&#125;, &#123;<span class="string">&#x27;title&#x27;</span>: <span class="string">&#x27;2. 鼓励创造性思维与科学兴趣&#x27;</span>, <span class="string">&#x27;body&#x27;</span>: <span class="string">&#x27;Grace对太空、恐龙和科学问题充满好奇，这表明她有很强的探索欲和创造力。建议家长多提供相关的书籍、视频或实验材料，并利用Talkipal玩具进行互动式学习，比如模拟太空探险或恐龙世界，以进一步激发她的求知欲和想象力。&#x27;</span>&#125;]&#125;&#125;</span><br><span class="line"></span><br><span class="line">=========================================</span><br><span class="line">      ✨ Grace的成长周报 ✨</span><br><span class="line">=========================================</span><br><span class="line"></span><br><span class="line">📊 最近的活动</span><br><span class="line">-----------------------------------------</span><br><span class="line">  - 听恐龙故事: 1 次</span><br><span class="line">  - 讨论小行星和地球: 2 次</span><br><span class="line">  - 玩猜水果游戏: 1 次</span><br><span class="line">  - 假装宇航员去太空: 2 次</span><br><span class="line">  - 分享美术课成就: 1 次</span><br><span class="line">  - 问睡觉的原因: 1 次</span><br><span class="line">  - 播放海浪声入睡: 1 次</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">🧠 喜欢的主题</span><br><span class="line">-----------------------------------------</span><br><span class="line">  - 🚀太空冒险</span><br><span class="line">  - 🎯恐龙世界</span><br><span class="line">  - 💡科学问题</span><br><span class="line">  - 🎨画画与想象力</span><br><span class="line">  - 🎮互动游戏</span><br><span class="line">  - 🌌宇宙与星星</span><br><span class="line">  - 💤睡眠与休息</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">❤️ 情绪简报</span><br><span class="line">-----------------------------------------</span><br><span class="line">  😊 Happy: 40%</span><br><span class="line">     原因: Grace在听到自己的画被贴在墙上时表现出开心，因为得到了老师的认可。</span><br><span class="line">  😟 Blue: 30%</span><br><span class="line">     原因: Grace在学校因积木被抢而感到难过，因为被同学贬低了她的作品。</span><br><span class="line">  🤩 Excited: 30%</span><br><span class="line">     原因: Grace在进行太空冒险和玩游戏时非常兴奋，因为这些活动激发了她的想象力和探索欲。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">📝 总结与建议</span><br><span class="line">-----------------------------------------</span><br><span class="line">  [总体观察]</span><br><span class="line">  Grace本周在科学探索、艺术创作和情感表达方面表现出浓厚的兴趣，同时也在社交互动中遇到了一些挑战。</span><br><span class="line"></span><br><span class="line">  [Grace可能需要...]</span><br><span class="line"></span><br><span class="line">  &gt;&gt; 1. 增强情绪表达与处理能力</span><br><span class="line">     Grace在面对负面情绪时需要更多引导来表达和调节。建议家长鼓励她通过绘画、讲故事或角色扮演等方式释放情绪。结合Talkipal玩具，可以让她通过角色扮演来练习如何应对冲突和挫折，增强她的自我调节能力。</span><br><span class="line"></span><br><span class="line">  &gt;&gt; 2. 鼓励创造性思维与科学兴趣</span><br><span class="line">     Grace对太空、恐龙和科学问题充满好奇，这表明她有很强的探索欲和创造力。建议家长多提供相关的书籍、视频或实验材料，并利用Talkipal玩具进行互动式学习，比如模拟太空探险或恐龙世界，以进一步激发她的求知欲和想象力。</span><br><span class="line"></span><br><span class="line">=========================================</span><br></pre></td></tr></table></figure>
+
+<p>还行，先这样吧，反馈问题了再说，可能出现的问题：</p>
+<ul>
+<li>小孩子有效聊天记录相对较少，大部分都是无效聊天记录</li>
+<li>聊天记录太多，导致被截断</li>
+<li>进一步的效果要求</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%8E%A9%E5%85%B7/" rel="tag"># 玩具</a>
+              <a href="/tags/json/" rel="tag"># json</a>
+              <a href="/tags/few-shot/" rel="tag"># few-shot</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/09/01/TTS%E4%B9%8BHiggs-Audio-V2/" rel="prev" title="TTS之Higgs Audio V2">
+                  <i class="fa fa-angle-left"></i> TTS之Higgs Audio V2
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">417k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">25:15</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
