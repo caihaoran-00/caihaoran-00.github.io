@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-count">105</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -186,6 +186,553 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/15/TTS%E4%B9%8Bfish-speech/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/15/TTS%E4%B9%8Bfish-speech/" class="post-title-link" itemprop="url">TTS之fish-speech</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-15 15:14:47" itemprop="dateCreated datePublished" datetime="2025-03-15T15:14:47+08:00">2025-03-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-28 15:20:20" itemprop="dateModified" datetime="2025-04-28T15:20:20+08:00">2025-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>353</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>碎碎念：之前一直使用的是GSV（GPT-Sovits） V2版本，主要是因为它能满足我的基本需求（速度快，模仿情绪的能力，而且有音色融合的功能，但0样本克隆的效果也就那样吧，真想音色像得微调），可是呢，之前没正经使用过音色融合的功能，昨天试了下，发现webui版本的音色融合是以右侧的参考音频（音色融合音频）为准（音色融合音频只放一个的情况下，放多个将会将多个音频的音色进行融合，无论放一个还是放多个，音色都与左侧的参考音频的音色无关，但是呢，我做实验的时候都是用webui进行的实验，再转移到api_v2上进行使用，当我实验好，转移到api_v2上发现，api_v2的效果与webui的不一样，api_v2会将左侧的参考音频的音色融合起来，我觉得这是个bug，待会提下issue吧）。所以，还是得多玩玩其他家的TTS，以备不时之需，看了下fish-speech和F5-TTS的github首页，决定先宠幸fish-speech😏。</p>
+<p><strong>项目地址：<a target="_blank" rel="noopener" href="https://github.com/fishaudio/fish-speech">https://github.com/fishaudio/fish-speech</a></strong></p>
+<p><strong>在线Demo：<a target="_blank" rel="noopener" href="https://fish.audio/zh-CN/">https://fish.audio/zh-CN/</a></strong></p>
+<p><strong>文档：<a target="_blank" rel="noopener" href="https://speech.fish.audio/">https://speech.fish.audio/</a></strong></p>
+<p><strong>快速开始本地推理：<a target="_blank" rel="noopener" href="https://github.com/fishaudio/fish-speech/blob/main/inference.ipynb">https://github.com/fishaudio/fish-speech/blob/main/inference.ipynb</a></strong></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/15/TTS%E4%B9%8Bfish-speech/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">论文：Qwen2.5VL</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-11 11:21:48" itemprop="dateCreated datePublished" datetime="2025-03-11T11:21:48+08:00">2025-03-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-28 15:08:22" itemprop="dateModified" datetime="2025-04-28T15:08:22+08:00">2025-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>14k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>53 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>说来惭愧，玩了这么久LLM，还没正经看过LLM的论文，最近要好好玩玩Qwen2.5 VL，目的是探索能基于它做什么应用（主要看能不能做到实时检测），这里先看一下论文，有个原理上的认识，再去微调Qwen2.5 VL。</p>
+<p><strong>论文名：Qwen2.5-VL Technical Report</strong></p>
+<p><strong>作者：Qwen Team, Alibaba Group</strong></p>
+<p><strong>论文地址：</strong> <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2502.13923">https://arxiv.org/abs/2502.13923</a></p>
+<p><strong>Qwen Chat:</strong> <a target="_blank" rel="noopener" href="https://chat.qwenlm.ai/">https://chat.Qwenlm.ai</a></p>
+<p><strong>Hugging face:</strong> <a target="_blank" rel="noopener" href="https://huggingface.co/Qwen">https://huggingface.co/Qwen</a></p>
+<p><strong>ModelScope:</strong> <a target="_blank" rel="noopener" href="https://modelscope.cn/organization/Qwen">https://modelscope.cn/organization/Qwen</a></p>
+<p><strong>Github:</strong> <a target="_blank" rel="noopener" href="https://github.com/QwenLM/Qwen2.5-VL">https://github.com/QwenLM/Qwen2.5-VL</a></p>
+<p><em><strong>年份：2025</strong></em></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/11/Qwen2-5VL%E8%AE%BA%E6%96%87%E7%BF%BB%E8%AF%91%E4%B8%8E%E6%80%BB%E7%BB%93/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">TTS之Spark-TTS介绍与使用</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-07 19:15:52" itemprop="dateCreated datePublished" datetime="2025-03-07T19:15:52+08:00">2025-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-28 15:07:39" itemprop="dateModified" datetime="2025-04-28T15:07:39+08:00">2025-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>近日（2025-3-7），香港科技大学、出门问问、西北工业大学、上海交通大学、南洋理工大学等研究机构，重磅推出新一代语音生成模型 Spark-TTS。该模型完全基于Qwen2.5架构，摒弃额外生成模型辅助，以单阶段、单流方式实现 TTS 生成，具备超自然的语音克隆与跨语种生成能力，还支持用户根据需求定制专属声音。目前，Spark-TTS已经在开源社区SparkAudio发布，迅速登上Hugging Face趋势榜TTS第二，目前仍在持续攀升中。</p>
+<p><strong>论文题目：Spark-TTS: An Efficient LLM-Based Text-to-Speech Model with Single-Stream Decoupled Speech Tokens</strong></p>
+<p><strong>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2503.01710">https://arxiv.org/pdf/2503.01710</a></strong></p>
+<p><strong>样例展示：<a target="_blank" rel="noopener" href="https://sparkaudio.github.io/spark-tts/">https://sparkaudio.github.io/spark-tts/</a></strong></p>
+<p><strong>项目地址：<a target="_blank" rel="noopener" href="https://github.com/SparkAudio/Spark-TTS">https://github.com/SparkAudio/Spark-TTS</a></strong></p>
+<p><strong>模型地址：<a target="_blank" rel="noopener" href="https://huggingface.co/SparkAudio/Spark-TTS-0.5B">https://huggingface.co/SparkAudio/Spark-TTS-0.5B</a></strong></p>
+<p><strong>试用地址：<a target="_blank" rel="noopener" href="https://huggingface.co/spaces/Mobvoi/Offical-Spark-TTS">https://huggingface.co/spaces/Mobvoi/Offical-Spark-TTS</a></strong></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/07/TTS%E4%B9%8BSpark-TTS%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">TTS之GPT-Sovits介绍与使用</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-06 09:38:40" itemprop="dateCreated datePublished" datetime="2025-03-06T09:38:40+08:00">2025-03-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-04-28 15:15:28" itemprop="dateModified" datetime="2025-04-28T15:15:28+08:00">2025-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>12 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面已经使用了GPT-Sovits V2做了有趣的应用，但关于GPT-Sovits的介绍与使用教程并没有写，且目前遇到了一个问题，使用中文进行微调后（后面发现与使用中文语音微调关系不大，主要取决于参考音频），再使用中文作为参考音频，使用该微调模型说英语则会很别扭（中文口音），故在此补上实验过程，目的在于得到英语流畅的模型，且融合音色防止版权问题。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/06/TTS%E4%B9%8BGPT-Sovits%E4%BB%8B%E7%BB%8D%E4%B8%8E%E4%BD%BF%E7%94%A8/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/03/05/%E7%AB%AF%E4%BE%A7%E5%AE%9E%E6%97%B6%E4%BA%A4%E4%BA%92%E6%95%B0%E5%AD%97%E4%BA%BA%E8%B0%83%E7%A0%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/03/05/%E7%AB%AF%E4%BE%A7%E5%AE%9E%E6%97%B6%E4%BA%A4%E4%BA%92%E6%95%B0%E5%AD%97%E4%BA%BA%E8%B0%83%E7%A0%94/" class="post-title-link" itemprop="url">端侧实时交互数字人调研</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-03-05 11:22:41 / 修改时间：16:45:12" itemprop="dateCreated datePublished" datetime="2025-03-05T11:22:41+08:00">2025-03-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>64</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面做了些AI智能聊天机器人的工作，那能不能和数字人结合起来呢，给聊天机器人赋予形象，本文即为端侧（安卓端）可运行的数字人调研记录。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/03/05/%E7%AB%AF%E4%BE%A7%E5%AE%9E%E6%97%B6%E4%BA%A4%E4%BA%92%E6%95%B0%E5%AD%97%E4%BA%BA%E8%B0%83%E7%A0%94/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -736,547 +1283,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">MobaXterm连接公司服务器部署ASR环境</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-17 18:32:06" itemprop="dateCreated datePublished" datetime="2025-02-17T18:32:06+08:00">2025-02-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-28 15:11:46" itemprop="dateModified" datetime="2025-04-28T15:11:46+08:00">2025-04-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>942</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>由于目前ASR服务是部署在我的ubuntu主机上的，我司的测试人员已完成基本的功能测试，接下来要进行压力测试，故需要在压测环境（与线上正式环境配置一致）上部署该服务，很多年前用的是Xshell，搜了下SSH工具，现在貌似<strong>MobaXterm</strong>较为主流，看看这个工具怎么样吧。本文介绍使用MobaXterm连接公司服务器部署FunASR环境。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/17/MobaXterm%E8%BF%9E%E6%8E%A5%E5%85%AC%E5%8F%B8%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%83%A8%E7%BD%B2ASR%E7%8E%AF%E5%A2%83/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/" class="post-title-link" itemprop="url">说话人确认之CAM++</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-11 17:24:14" itemprop="dateCreated datePublished" datetime="2025-02-11T17:24:14+08:00">2025-02-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-05-22 16:59:44" itemprop="dateModified" datetime="2025-05-22T16:59:44+08:00">2025-05-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>3.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>13 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>说话人确认，又名说话人验证（SV, Speaker Verification）、声纹认证、语音认证、说话人认证，是声纹识别的一个子任务，主要用于确认某个人的身份，即<strong>这个人是不是那个人</strong>。验证采用<strong>1:1对比</strong>，即用户提供的语音与已注册的声纹模版进行匹配，以决定是否通过认证。</p>
-<p>本文以3D-speaker中的CAM++（ERES2Net V2也类似）为例，实验说话人确认效果。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/11/%E8%AF%B4%E8%AF%9D%E4%BA%BA%E7%A1%AE%E8%AE%A4%E4%B9%8BCAM/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/10/langgraph%E4%BB%8B%E7%BB%8D%E5%8F%8Ademo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/10/langgraph%E4%BB%8B%E7%BB%8D%E5%8F%8Ademo/" class="post-title-link" itemprop="url">langgraph介绍及demo</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-10 17:14:33" itemprop="dateCreated datePublished" datetime="2025-02-10T17:14:33+08:00">2025-02-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-04-28 15:18:21" itemprop="dateModified" datetime="2025-04-28T15:18:21+08:00">2025-04-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>8.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>31 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在现代大模型应用开发中，构建能够处理复杂任务和多步骤推理的 Agent 是一个重要需求。<strong>LangGraph</strong> 是一个基于 LangChain 的框架，专门设计用于构建和编排复杂的 Agent 工作流。它通过图（Graph）结构定义任务流程，支持循环、分支、并行等复杂逻辑，是开发高效、灵活 Agent 应用的理想选择。</p>
-<p>本文将介绍 LangGraph 的核心概念，并通过几个基础示例展示如何使用它构建 Agent 应用。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/10/langgraph%E4%BB%8B%E7%BB%8D%E5%8F%8Ademo/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/10/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/10/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D/" class="post-title-link" itemprop="url">大模型应用开发之agent介绍</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-10 10:08:58" itemprop="dateCreated datePublished" datetime="2025-02-10T10:08:58+08:00">2025-02-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-06-17 17:13:43" itemprop="dateModified" datetime="2025-06-17T17:13:43+08:00">2025-06-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>955</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="什么是Agent"><a href="#什么是Agent" class="headerlink" title="什么是Agent"></a>什么是Agent</h2><p>Agent（智能体，代理），是指一种能够模拟人类思考和行为来自动执行程序，以解决复杂问题的程序或系统。在大模型应用开发中，Agent是指能够感知环境、做出决策并执行动作的智能实体。通常基于大模型构建，具备自然语言处理、推理、规划等能力。Agent的核心目标是通过与环境的交互完成特定任务或解决复杂问题。OpenAI将AI Agent定义为“以大语言模型为大脑驱动的系统，具备<strong>自主理解</strong>、<strong>感受</strong>、<strong>规划</strong>、<strong>记忆</strong>和<strong>使用工具</strong>的能力，能够自动化执行完成复杂任务的系统。”</p>
-<p>Agent与LLM的区别：可以把LLM理解为人的大脑，LLM思考方案，agent最终使用工具完成特定任务。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/10/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91%E4%B9%8Bagent%E4%BB%8B%E7%BB%8D/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/02/07/silerovadonnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/07/silerovadonnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/" class="post-title-link" itemprop="url">silero_vad onnx方式使用示例</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-07 14:21:34" itemprop="dateCreated datePublished" datetime="2025-02-07T14:21:34+08:00">2025-02-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-08 10:39:17" itemprop="dateModified" datetime="2025-02-08T10:39:17+08:00">2025-02-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>871</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>语音活动检测（VAD, Voice Activity Detection）是语音处理中的重要技术，它用于检测音频流中是否存在语音信号。VAD 在语音识别、语音通信、语音增强等应用中起到了关键作用。例如，在语音助手、语音转写、降噪等任务中，VAD 可以帮助系统忽略无声片段，提高处理效率。</p>
-<p><strong>Silero VAD</strong> 是一个轻量级、性能优异的 VAD 模型，它基于深度学习，可高效检测实时音频中的语音活动。本文将介绍如何使用 <strong>Silero VAD</strong> 进行实时语音检测，并给出一个简单的实现示例。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/07/silerovadonnx%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/10/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/10/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1298,13 +1306,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">417k</span>
+    <span title="站点总字数">446k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">25:15</span>
+    <span title="站点阅读时长">27:01</span>
   </span>
 </div>
 <div class="busuanzi-count">

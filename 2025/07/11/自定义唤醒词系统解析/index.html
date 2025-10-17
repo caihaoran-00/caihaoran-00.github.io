@@ -27,7 +27,7 @@
 <meta property="og:description" content="前言我们在前面简单体验了下通义灵码的效果，现在我们将一起解析下自定义唤醒词系统，目的是加深认识并发掘其可优化的点。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-07-11T06:20:06.000Z">
-<meta property="article:modified_time" content="2025-07-29T06:20:18.485Z">
+<meta property="article:modified_time" content="2025-09-11T12:54:31.038Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="kws">
 <meta property="article:tag" content="通义灵码">
@@ -140,7 +140,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%94%A4%E9%86%92%E8%AF%8D%E6%8F%90%E4%BA%A4%E6%8E%A5%E5%8F%A3%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">唤醒词提交接口定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#execute-training-job"><span class="nav-number">2.2.</span> <span class="nav-text">execute_training_job</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E9%9F%B3%E9%A2%91%E5%A2%9E%E5%BC%BA%E7%AD%96%E7%95%A5"><span class="nav-number">2.3.</span> <span class="nav-text">设置音频增强策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E9%A2%91%E8%B0%B1%E5%9B%BE%E5%B9%B6%E5%AD%98%E5%82%A8%E4%B8%BA-mmap-%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.4.</span> <span class="nav-text">生成频谱图并存储为 mmap 格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%94%81-%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="nav-number">2.5.</span> <span class="nav-text">🔁 数据流示意图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AE%AD%E7%BB%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.6.</span> <span class="nav-text">生成训练配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E"><span class="nav-number">2.6.0.1.</span> <span class="nav-text">字段说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA-feature-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">2.6.0.2.</span> <span class="nav-text">多个 feature 的作用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.7.</span> <span class="nav-text">开始训练模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#model-train-eval"><span class="nav-number">2.7.1.</span> <span class="nav-text">model_train_eval</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mixednet-model-parameters-parser-mixednet"><span class="nav-number">2.7.2.</span> <span class="nav-text">mixednet.model_parameters(parser_mixednet)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#load-config"><span class="nav-number">2.7.3.</span> <span class="nav-text">load_config()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FeatureHandler-config"><span class="nav-number">2.7.4.</span> <span class="nav-text">.FeatureHandler(config)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83"><span class="nav-number">2.7.5.</span> <span class="nav-text">训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%EF%BC%9A"><span class="nav-number">2.7.6.</span> <span class="nav-text">参数说明：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%9C%85-train-train-model-config-data-processor"><span class="nav-number">2.7.7.</span> <span class="nav-text">✅ train.train(model, config, data_processor)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#min-signal-remaining-out-scale"><span class="nav-number">3.1.</span> <span class="nav-text">min_signal_remaining &amp; out_scale</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#slide-frames"><span class="nav-number">3.2.</span> <span class="nav-text">slide_frames</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AE%AD%E7%BB%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A1%A5%E5%85%85%E4%BF%A1%E6%81%AF"><span class="nav-number">3.3.</span> <span class="nav-text">生成训练配置文件补充信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#train-train-%E2%80%A6"><span class="nav-number">3.4.</span> <span class="nav-text">train.train(…)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#validate-nonstreaming"><span class="nav-number">3.5.</span> <span class="nav-text">validate_nonstreaming</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%94%A4%E9%86%92%E8%AF%8D%E6%8F%90%E4%BA%A4%E6%8E%A5%E5%8F%A3%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">唤醒词提交接口定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#execute-training-job"><span class="nav-number">2.2.</span> <span class="nav-text">execute_training_job</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E9%9F%B3%E9%A2%91%E5%A2%9E%E5%BC%BA%E7%AD%96%E7%95%A5"><span class="nav-number">2.3.</span> <span class="nav-text">设置音频增强策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E9%A2%91%E8%B0%B1%E5%9B%BE%E5%B9%B6%E5%AD%98%E5%82%A8%E4%B8%BA-mmap-%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.4.</span> <span class="nav-text">生成频谱图并存储为 mmap 格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%94%81-%E6%95%B0%E6%8D%AE%E6%B5%81%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="nav-number">2.5.</span> <span class="nav-text">🔁 数据流示意图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AE%AD%E7%BB%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.6.</span> <span class="nav-text">生成训练配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E"><span class="nav-number">2.6.1.</span> <span class="nav-text">字段说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA-feature-%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">2.6.2.</span> <span class="nav-text">多个 feature 的作用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.7.</span> <span class="nav-text">开始训练模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#model-train-eval"><span class="nav-number">2.7.1.</span> <span class="nav-text">model_train_eval</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#mixednet-model-parameters-parser-mixednet"><span class="nav-number">2.7.2.</span> <span class="nav-text">mixednet.model_parameters(parser_mixednet)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#load-config"><span class="nav-number">2.7.3.</span> <span class="nav-text">load_config()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FeatureHandler-config"><span class="nav-number">2.7.4.</span> <span class="nav-text">.FeatureHandler(config)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83"><span class="nav-number">2.7.5.</span> <span class="nav-text">训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E%EF%BC%9A"><span class="nav-number">2.7.6.</span> <span class="nav-text">参数说明：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%9C%85-train-train-model-config-data-processor"><span class="nav-number">2.7.7.</span> <span class="nav-text">✅ train.train(model, config, data_processor)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#min-signal-remaining-out-scale"><span class="nav-number">3.1.</span> <span class="nav-text">min_signal_remaining &amp; out_scale</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#slide-frames"><span class="nav-number">3.2.</span> <span class="nav-text">slide_frames</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%AE%AD%E7%BB%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A1%A5%E5%85%85%E4%BF%A1%E6%81%AF"><span class="nav-number">3.3.</span> <span class="nav-text">生成训练配置文件补充信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#train-train-%E2%80%A6"><span class="nav-number">3.4.</span> <span class="nav-text">train.train(…)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#validate-nonstreaming"><span class="nav-number">3.5.</span> <span class="nav-text">validate_nonstreaming</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -153,7 +153,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-count">105</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -164,7 +164,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -236,7 +236,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-29 14:20:18" itemprop="dateModified" datetime="2025-07-29T14:20:18+08:00">2025-07-29</time>
+      <time title="修改时间：2025-09-11 20:54:31" itemprop="dateModified" datetime="2025-09-11T20:54:31+08:00">2025-09-11</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -619,7 +619,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;features&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;features_dir&quot;</span>: os.path.abspath(output_dir_features),</span><br><span class="line">        <span class="string">&quot;sampling_weight&quot;</span>: <span class="number">2.0</span>, <span class="string">&quot;penalty_weight&quot;</span>: <span class="number">1.0</span>, <span class="string">&quot;truth&quot;</span>: <span class="literal">True</span>,</span><br><span class="line">        <span class="string">&quot;truncation_strategy&quot;</span>: <span class="string">&quot;truncate_start&quot;</span>, <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mmap&quot;</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment"># ... 其他非唤醒词样本 ...</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
 
 <p>这部分定义了训练时使用的特征数据源，采用列表形式支持多源输入。每项是一个字典，描述一组特征数据的路径和行为。</p>
-<h5 id="字段说明"><a href="#字段说明" class="headerlink" title="字段说明"></a>字段说明</h5><table>
+<h4 id="字段说明"><a href="#字段说明" class="headerlink" title="字段说明"></a>字段说明</h4><table>
 <thead>
 <tr>
 <th align="left">字段名</th>
@@ -658,7 +658,7 @@
 <td align="left"><code>&quot;mmap&quot;</code> 表示使用内存映射文件格式</td>
 </tr>
 </tbody></table>
-<h5 id="多个-feature-的作用"><a href="#多个-feature-的作用" class="headerlink" title="多个 feature 的作用"></a>多个 feature 的作用</h5><ul>
+<h4 id="多个-feature-的作用"><a href="#多个-feature-的作用" class="headerlink" title="多个 feature 的作用"></a>多个 feature 的作用</h4><ul>
 <li>第一项是 <strong>唤醒词样本</strong>（如 “<code>Hey Siri</code>”）；</li>
 <li>后续几项是 <strong>非唤醒词样本</strong>（如普通语音、环境噪音、空白音频）；</li>
 <li>通过不同 <code>sampling_weight</code> 控制正负样本的平衡；</li>
@@ -1650,13 +1650,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">417k</span>
+    <span title="站点总字数">446k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">25:15</span>
+    <span title="站点阅读时长">27:01</span>
   </span>
 </div>
 <div class="busuanzi-count">

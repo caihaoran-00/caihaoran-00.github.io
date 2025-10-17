@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言这两天这了解焊接检测相关的东西，目前在以这个项目为起点进行研究。本人对该项目做了略微的修改，本文作为对本项目的一些知识补充，主要是YOLO相关。本文用于记录和分享。 guithub: https:&#x2F;&#x2F;github.com&#x2F;caihaoran-00&#x2F;welding-defect">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于YOLO V8的焊接缺陷检测说明及代码">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/10/17/%E5%9F%BA%E4%BA%8EYOLO-V8%E7%9A%84%E7%84%8A%E6%8E%A5%E7%BC%BA%E9%99%B7%E6%A3%80%E6%B5%8B%E8%AF%B4%E6%98%8E%E5%8F%8A%E4%BB%A3%E7%A0%81/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言这两天这了解焊接检测相关的东西，目前在以这个项目为起点进行研究。本人对该项目做了略微的修改，本文作为对本项目的一些知识补充，主要是YOLO相关。本文用于记录和分享。 guithub: https:&#x2F;&#x2F;github.com&#x2F;caihaoran-00&#x2F;welding-defect">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-17T09:19:17.000Z">
+<meta property="article:modified_time" content="2025-10-17T09:20:51.264Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="缺陷检测">
+<meta property="article:tag" content="YOLO">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/10/17/%E5%9F%BA%E4%BA%8EYOLO-V8%E7%9A%84%E7%84%8A%E6%8E%A5%E7%BC%BA%E9%99%B7%E6%A3%80%E6%B5%8B%E8%AF%B4%E6%98%8E%E5%8F%8A%E4%BB%A3%E7%A0%81/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/10/17/%E5%9F%BA%E4%BA%8EYOLO-V8%E7%9A%84%E7%84%8A%E6%8E%A5%E7%BC%BA%E9%99%B7%E6%A3%80%E6%B5%8B%E8%AF%B4%E6%98%8E%E5%8F%8A%E4%BB%A3%E7%A0%81/","path":"2025/10/17/基于YOLO-V8的焊接缺陷检测说明及代码/","title":"基于YOLO V8的焊接缺陷检测说明及代码"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>基于YOLO V8的焊接缺陷检测说明及代码 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.1.</span> <span class="nav-text">基本介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95%E5%8F%8A%E8%AF%B4%E6%98%8E"><span class="nav-number">2.2.</span> <span class="nav-text">项目目录及说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%90%AF%E5%8A%A8%E8%AE%AD%E7%BB%83"><span class="nav-number">2.3.</span> <span class="nav-text">如何启动训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">2.4.</span> <span class="nav-text">训练参数说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E8%BE%93%E5%87%BA%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%E8%AF%B4%E6%98%8E"><span class="nav-number">2.5.</span> <span class="nav-text">训练输出目录结构说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%96%87%E4%BB%B6%E8%AF%B4%E6%98%8E"><span class="nav-number">2.6.</span> <span class="nav-text">主要文件说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E6%89%B9%E6%AC%A1%E5%9B%BE%E5%83%8F%E6%96%87%E4%BB%B6"><span class="nav-number">2.7.</span> <span class="nav-text">训练批次图像文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/10/17/%E5%9F%BA%E4%BA%8EYOLO-V8%E7%9A%84%E7%84%8A%E6%8E%A5%E7%BC%BA%E9%99%B7%E6%A3%80%E6%B5%8B%E8%AF%B4%E6%98%8E%E5%8F%8A%E4%BB%A3%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="基于YOLO V8的焊接缺陷检测说明及代码 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基于YOLO V8的焊接缺陷检测说明及代码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-10-17 17:19:17 / 修改时间：17:20:51" itemprop="dateCreated datePublished" datetime="2025-10-17T17:19:17+08:00">2025-10-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这两天这了解焊接检测相关的东西，目前在以<a target="_blank" rel="noopener" href="https://github.com/Sengathir24/Ideathon_team_BATMEN]">这个项目</a>为起点进行研究。本人对该项目做了略微的修改，本文作为对本项目的一些知识补充，主要是<code>YOLO</code>相关。本文用于记录和分享。</p>
+<p><code>guithub</code>: <a target="_blank" rel="noopener" href="https://github.com/caihaoran-00/welding-defect">https://github.com/caihaoran-00/welding-defect</a></p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h3><p>这个项目使用的是<code>YOLO V8n</code>这个小模型，包含两个训练文件（training.py对应的是粗训练,improve_training.py对应的是正经训练）使用的数据集来自<a target="_blank" rel="noopener" href="https://www.kaggle.com/datasets/sukmaadhiwijaya/weld-quality-inspection-instance-segmentation">这里</a>（注意原项目中的标签是空的，这个问题我已修复），</p>
+<p>数据集大小：</p>
+<ul>
+<li>训练集: 2218 张图片</li>
+<li>验证集: 382 张图片</li>
+<li>测试集: 89 张图片</li>
+</ul>
+<p>数据集的分布：</p>
+<ul>
+<li>16298 个 飞溅 (Spatters)</li>
+<li>5686 个 气孔 (Porosity)</li>
+<li>2439 个 余高过量 (Excess Reinforcement)</li>
+<li>45 个 裂纹 (Crack)</li>
+<li>25 个 坏焊 (Bad Welding)</li>
+<li>22 个 好焊 (Good Welding)</li>
+</ul>
+<p>可见数据存在较为明显的类别不均衡问题。但作为体验来说也无伤大雅。</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>training.py (旧脚本)</th>
+<th>improve_training.py (新脚本)</th>
+<th>变化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mAP50-95</td>
+<td>0.289</td>
+<td>0.291</td>
+<td>~持平</td>
+</tr>
+<tr>
+<td>mAP50</td>
+<td>0.499</td>
+<td>0.516</td>
+<td>+3.4%</td>
+</tr>
+<tr>
+<td>Precision (精确率)</td>
+<td>0.593</td>
+<td>0.613</td>
+<td>+3.4%</td>
+</tr>
+<tr>
+<td>Recall (召回率)</td>
+<td>0.493</td>
+<td>0.498</td>
+<td>+1.0%</td>
+</tr>
+</tbody></table>
+<p><strong>training.py训练得到的最佳模型在验证集上的表现：</strong></p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Images</th>
+<th>Instances</th>
+<th>Box (P)</th>
+<th>Box (R)</th>
+<th>mAP50</th>
+<th>mAP50-95</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>all</strong></td>
+<td>191</td>
+<td>1837</td>
+<td>0.576</td>
+<td>0.495</td>
+<td>0.504</td>
+<td>0.297</td>
+</tr>
+<tr>
+<td>Bad Welding</td>
+<td>32</td>
+<td>36</td>
+<td>0.693</td>
+<td>0.528</td>
+<td>0.550</td>
+<td>0.377</td>
+</tr>
+<tr>
+<td>Crack</td>
+<td>53</td>
+<td>63</td>
+<td>0.680</td>
+<td>0.707</td>
+<td>0.695</td>
+<td>0.419</td>
+</tr>
+<tr>
+<td>Excess Reinforcement</td>
+<td>29</td>
+<td>138</td>
+<td>0.374</td>
+<td>0.246</td>
+<td>0.226</td>
+<td>0.092</td>
+</tr>
+<tr>
+<td>Good Welding</td>
+<td>43</td>
+<td>55</td>
+<td>0.563</td>
+<td>0.636</td>
+<td>0.647</td>
+<td>0.457</td>
+</tr>
+<tr>
+<td>Porosity</td>
+<td>52</td>
+<td>639</td>
+<td>0.513</td>
+<td>0.505</td>
+<td>0.464</td>
+<td>0.225</td>
+</tr>
+<tr>
+<td>Spatters</td>
+<td>31</td>
+<td>906</td>
+<td>0.634</td>
+<td>0.349</td>
+<td>0.443</td>
+<td>0.213</td>
+</tr>
+</tbody></table>
+<p><strong>improve_training.py训练得到的最佳模型在验证集上的表现：</strong></p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Images</th>
+<th>Instances</th>
+<th>Box (P)</th>
+<th>Box (R)</th>
+<th>mAP50</th>
+<th>mAP50-95</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>all</strong></td>
+<td>191</td>
+<td>1837</td>
+<td>0.596</td>
+<td>0.479</td>
+<td>0.512</td>
+<td>0.302</td>
+</tr>
+<tr>
+<td>Bad Welding</td>
+<td>32</td>
+<td>36</td>
+<td>0.595</td>
+<td>0.444</td>
+<td>0.497</td>
+<td>0.312</td>
+</tr>
+<tr>
+<td>Crack</td>
+<td>53</td>
+<td>63</td>
+<td>0.643</td>
+<td>0.619</td>
+<td>0.664</td>
+<td>0.389</td>
+</tr>
+<tr>
+<td>Excess Reinforcement</td>
+<td>29</td>
+<td>138</td>
+<td>0.421</td>
+<td>0.259</td>
+<td>0.243</td>
+<td>0.104</td>
+</tr>
+<tr>
+<td>Good Welding</td>
+<td>43</td>
+<td>55</td>
+<td>0.629</td>
+<td>0.587</td>
+<td>0.589</td>
+<td>0.430</td>
+</tr>
+<tr>
+<td>Porosity</td>
+<td>52</td>
+<td>639</td>
+<td>0.589</td>
+<td>0.545</td>
+<td>0.531</td>
+<td>0.285</td>
+</tr>
+<tr>
+<td>Spatters</td>
+<td>31</td>
+<td>906</td>
+<td>0.698</td>
+<td>0.422</td>
+<td>0.549</td>
+<td>0.292</td>
+</tr>
+</tbody></table>
+<blockquote>
+<ul>
+<li><code>Box (P)</code> &#x3D; Precision（精确率）</li>
+<li><code>Box (R)</code> &#x3D; Recall（召回率）</li>
+<li><code>mAP50</code> &#x3D; IoU&#x3D;0.5 时的平均精度</li>
+<li><code>mAP50-95</code> &#x3D; IoU 从 0.5 到 0.95 的平均精度</li>
+<li><strong>IoU（Intersection over Union，交并比）</strong> 是目标检测任务中<strong>衡量预测框（Predicted Bounding Box）与真实框（Ground Truth）重合程度</strong>的核心指标。</li>
+</ul>
+</blockquote>
+<p>**整体性能对比（<code>all</code> 行） **</p>
+<table>
+<thead>
+<tr>
+<th><strong>mAP50</strong></th>
+<th>0.504</th>
+<th>0.512</th>
+<th><strong>+1.6%</strong></th>
+<th>整体检测精度小幅提升</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>mAP50-95</strong></td>
+<td>0.297</td>
+<td>0.302</td>
+<td><strong>+1.7%</strong></td>
+<td>严格指标也有改善</td>
+</tr>
+<tr>
+<td><strong>Precision</strong></td>
+<td>0.576</td>
+<td>0.596</td>
+<td><strong>+3.5%</strong></td>
+<td>误检减少，预测更准</td>
+</tr>
+<tr>
+<td><strong>Recall</strong></td>
+<td>0.495</td>
+<td>0.479</td>
+<td><strong>-3.2%</strong></td>
+<td>⚠️ 漏检略有增加</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>✅ <strong>结论</strong>：优化策略<strong>提升了精确率和整体 mAP</strong>，但<strong>牺牲了少量召回率</strong>，说明模型变得更“保守”——宁可漏掉一些缺陷，也不愿误报。 </p>
+</blockquote>
+<p>**关键缺陷类别对比（重点关注） **</p>
+<table>
+<thead>
+<tr>
+<th><strong>Crack（裂缝）</strong></th>
+<th>mAP50</th>
+<th>0.695</th>
+<th><strong>0.664</strong></th>
+<th>❌ -4.5%</th>
+<th><strong>性能下降！</strong> 裂缝是高危缺陷，此退化需警惕</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td>Recall</td>
+<td>0.707</td>
+<td><strong>0.619</strong></td>
+<td>❌ -12.4%</td>
+<td>漏检大幅增加，可能因增强策略或损失权重不当</td>
+</tr>
+<tr>
+<td><strong>Bad Welding</strong></td>
+<td>mAP50</td>
+<td>0.550</td>
+<td><strong>0.497</strong></td>
+<td>❌ -9.6%</td>
+<td>识别能力明显变差</td>
+</tr>
+<tr>
+<td><strong>Porosity（气孔）</strong></td>
+<td>mAP50</td>
+<td>0.464</td>
+<td><strong>0.531</strong></td>
+<td>✅ +14.4%</td>
+<td>表现显著提升，模型更擅长识别多数类</td>
+</tr>
+<tr>
+<td><strong>Spatters（飞溅）</strong></td>
+<td>mAP50</td>
+<td>0.443</td>
+<td><strong>0.549</strong></td>
+<td>✅ +24.0%</td>
+<td>改进效果最显著</td>
+</tr>
+<tr>
+<td><strong>Good Welding</strong></td>
+<td>mAP50</td>
+<td>0.647</td>
+<td><strong>0.589</strong></td>
+<td>❌ -9.0%</td>
+<td>“良好焊缝”识别能力下降</td>
+</tr>
+</tbody></table>
+<p><strong>估计主要原因还是前文提到的数据集分布不均衡。</strong></p>
+<hr>
+<h3 id="项目目录及说明"><a href="#项目目录及说明" class="headerlink" title="项目目录及说明"></a>项目目录及说明</h3><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span>home<span class="operator">/</span>chr<span class="operator">/</span>桌面<span class="operator">/</span>Ideathon_team_BATMEN<span class="symbol">/</span></span><br><span class="line">├── data<span class="symbol">/</span>                  <span class="comment"># 存放原始数据集</span></span><br><span class="line">│   └── Weld<span class="symbol">/</span></span><br><span class="line">├── src<span class="symbol">/</span>                   <span class="comment"># 存放所有 Python 源代码</span></span><br><span class="line">│   ├── __init__.py</span><br><span class="line">│   ├── improve_training.py</span><br><span class="line">│   ├── run_inference.py</span><br><span class="line">│   ├── training.py</span><br><span class="line">│   └── video.py</span><br><span class="line">├── outputs<span class="symbol">/</span>               <span class="comment"># 存放所有的输出结果</span></span><br><span class="line">│   ├── inference_results<span class="symbol">/</span> <span class="comment"># 存放推理结果图</span></span><br><span class="line">│   └── training_runs<span class="symbol">/</span>     <span class="comment"># 存放所有训练实验</span></span><br><span class="line">├── models<span class="symbol">/</span>                <span class="comment"># 存放预训练模型权重</span></span><br><span class="line">│   ├── yolo11n.pt</span><br><span class="line">│   └── yolov8n.pt</span><br><span class="line">├── config<span class="symbol">/</span>                <span class="comment"># 存放配置文件</span></span><br><span class="line">│   └── custom_data.yaml</span><br><span class="line">├── buchong.md</span><br><span class="line">├── LICENSE</span><br><span class="line">├── README.md</span><br><span class="line">└── requirements.txt</span><br></pre></td></tr></table></figure>
+
+<p><strong>主要文件和文件夹说明</strong></p>
+<ul>
+<li><strong><code>README.md</code></strong>: 项目的核心文档，详细说明了项目的背景、如何安装依赖、以及如何运行训练和测试脚本。</li>
+<li><strong><code>requirements.txt</code></strong>: 定义了项目所需的所有 Python 依赖包，方便一键安装。</li>
+<li><strong><code>src/</code></strong>: 存放所有 Python 源代码的目录。<ul>
+<li><code>improve_training.py</code>: 经过优化的主要训练脚本。</li>
+<li><code>training.py</code>: 项目的初始训练脚本，可看作是粗训练（预热）步骤。</li>
+<li><code>run_inference.py</code>: 用于推理和可视化的脚本，其结果保存在 <code>outputs/inference_results/</code> 中。</li>
+</ul>
+</li>
+<li><strong><code>outputs/</code></strong>: 存放所有输出结果的目录。<ul>
+<li><code>training_runs/</code>: 存放 YOLOv8 训练过程的输出，每一个子文件夹代表一次完整的训练实验。</li>
+<li><code>inference_results/</code>: 存放 <code>run_inference.py</code> 生成的预测图和真实标签图。</li>
+</ul>
+</li>
+<li><strong><code>data/</code></strong>: 存放所有数据集的根目录。<ul>
+<li><code>data/Weld/</code>: 焊接缺陷数据集的核心文件夹，内含 <code>train</code>、<code>valid</code> 和 <code>test</code> 子集。</li>
+</ul>
+</li>
+<li><strong><code>models/</code></strong>: 存放预训练模型权重文件的目录。<ul>
+<li><code>.pt</code> 文件: <code>yolov8n.pt</code> 是从 Ultralytics 官方下载的预训练模型。<code>best.pt</code> (位于 <code>outputs/training_runs/*/weights/</code> 目录下) 是我们自己训练出的最佳模型。</li>
+</ul>
+</li>
+<li><strong><code>config/</code></strong>: 存放配置文件的目录。<ul>
+<li><code>custom_data.yaml</code>: 数据集配置文件，告诉 YOLOv8 数据在哪里以及类别信息。</li>
+</ul>
+</li>
+<li><strong><code>.venv/</code></strong>: Python 的虚拟环境文件夹。</li>
+</ul>
+<hr>
+<h3 id="如何启动训练"><a href="#如何启动训练" class="headerlink" title="如何启动训练"></a>如何启动训练</h3><p>确保您已经激活了虚拟环境 (<code>source .venv/bin/activate</code>)，然后运行以下命令即可开始训练：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python src/improve_training.py</span><br></pre></td></tr></table></figure>
+
+<p>该命令会执行我们优化后的训练脚本，训练过程的日志会实时显示在终端，所有结果（包括模型权重和性能图表）都会保存在 <code>outputs/training_runs/gpu_training_optimized/</code> 目录中。</p>
+<hr>
+<h3 id="训练参数说明"><a href="#训练参数说明" class="headerlink" title="训练参数说明"></a>训练参数说明</h3><p>在 <code>improve_training.py</code> 中，<code>model.train()</code> 函数包含了大量的超参数，下面对这些参数进行详细说明：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>data</td>
+<td>指向 data.yaml 配置文件的路径</td>
+<td>定义训练、验证、测试数据集路径及类别信息</td>
+</tr>
+<tr>
+<td>epochs</td>
+<td>训练轮数</td>
+<td>200 轮，增加轮数以获得更好的收敛效果</td>
+</tr>
+<tr>
+<td>imgsz</td>
+<td>输入图像的大小</td>
+<td>640x640像素，平衡分辨率和显存使用</td>
+</tr>
+<tr>
+<td>batch</td>
+<td>每批处理的图像数量</td>
+<td>8，为6GB显存显卡优化的批量大小</td>
+</tr>
+<tr>
+<td>device</td>
+<td>训练设备</td>
+<td>指定使用GPU或CPU</td>
+</tr>
+<tr>
+<td>workers</td>
+<td>数据加载的CPU线程数</td>
+<td>4，加速数据预处理和加载</td>
+</tr>
+<tr>
+<td>project</td>
+<td>训练结果保存项目根目录</td>
+<td>指定输出目录为 outputs&#x2F;training_runs</td>
+</tr>
+<tr>
+<td>name</td>
+<td>训练任务名称</td>
+<td>保存为 ‘gpu_training_optimized’ 子目录</td>
+</tr>
+<tr>
+<td>val</td>
+<td>验证开关</td>
+<td>启用，训练过程中同时进行验证</td>
+</tr>
+<tr>
+<td>augment</td>
+<td>数据增强开关</td>
+<td>启用，提高模型泛化能力</td>
+</tr>
+<tr>
+<td>cache</td>
+<td>图像缓存策略</td>
+<td>‘disk’，硬盘缓存以获得确定性的训练</td>
+</tr>
+<tr>
+<td>amp</td>
+<td>混合精度训练</td>
+<td>启用，使用 float16 + float32 提升训练速度和精度</td>
+</tr>
+<tr>
+<td>lr0</td>
+<td>初始学习率</td>
+<td>0.001，训练起始时的学习率</td>
+</tr>
+<tr>
+<td>lrf</td>
+<td>最终学习率</td>
+<td>0.01，训练结束时的学习率（相对于lr0的倍数）</td>
+</tr>
+<tr>
+<td>cos_lr</td>
+<td>余弦学习率衰减</td>
+<td>启用，实现更平滑的学习率变化</td>
+</tr>
+<tr>
+<td>optimizer</td>
+<td>优化器类型</td>
+<td>AdamW，具有更好的泛化性能</td>
+</tr>
+<tr>
+<td>momentum</td>
+<td>动量</td>
+<td>0.937，SGD优化器的动量参数</td>
+</tr>
+<tr>
+<td>weight_decay</td>
+<td>权重衰减</td>
+<td>0.0005，L2正则化防止过拟合</td>
+</tr>
+<tr>
+<td>close_mosaic</td>
+<td>关闭马赛克增强的轮次</td>
+<td>10，最后10轮关闭马赛克增强</td>
+</tr>
+<tr>
+<td>mosaic</td>
+<td>马赛克增强</td>
+<td>1.0，完全启用马赛克数据增强</td>
+</tr>
+<tr>
+<td>mixup</td>
+<td>Mixup增强概率</td>
+<td>0.1，混合两张图像进行数据增强</td>
+</tr>
+<tr>
+<td>copy_paste</td>
+<td>复制粘贴增强概率</td>
+<td>0.1，随机复制粘贴对象进行数据增强</td>
+</tr>
+<tr>
+<td>hsv_h</td>
+<td>HSV色相增强</td>
+<td>0.015，微小的色相变化</td>
+</tr>
+<tr>
+<td>hsv_s</td>
+<td>HSV饱和度增强</td>
+<td>0.7，较大的饱和度变化</td>
+</tr>
+<tr>
+<td>hsv_v</td>
+<td>HSV明度增强</td>
+<td>0.4，中等程度的明度变化</td>
+</tr>
+<tr>
+<td>degrees</td>
+<td>随机旋转角度</td>
+<td>10度，随机旋转图像</td>
+</tr>
+<tr>
+<td>translate</td>
+<td>随机平移比例</td>
+<td>0.1，图像随机平移最大10%</td>
+</tr>
+<tr>
+<td>scale</td>
+<td>随机缩放比例</td>
+<td>0.5，图像随机缩放范围为0.5倍</td>
+</tr>
+<tr>
+<td>shear</td>
+<td>随机剪切</td>
+<td>0.0，不启用剪切变换</td>
+</tr>
+<tr>
+<td>perspective</td>
+<td>透视变换</td>
+<td>0.0，不启用透视变换</td>
+</tr>
+<tr>
+<td>flipud</td>
+<td>垂直翻转概率</td>
+<td>0.0，不启用垂直翻转</td>
+</tr>
+<tr>
+<td>fliplr</td>
+<td>水平翻转概率</td>
+<td>0.5，50%的概率水平翻转</td>
+</tr>
+</tbody></table>
+<h3 id="训练输出目录结构说明"><a href="#训练输出目录结构说明" class="headerlink" title="训练输出目录结构说明"></a>训练输出目录结构说明</h3><p><code>outputs/training_runs/gpu_training_optimized/</code> 目录包含训练过程中的所有输出文件，具体说明如下：</p>
+<h3 id="主要文件说明"><a href="#主要文件说明" class="headerlink" title="主要文件说明"></a>主要文件说明</h3><table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>args.yaml</td>
+<td>训练时使用的超参数配置文件，包含所有训练参数的详细设置</td>
+</tr>
+<tr>
+<td>results.csv</td>
+<td>训练过程中的指标记录文件，包含每轮的训练损失、验证精度等数据</td>
+</tr>
+<tr>
+<td>results.png</td>
+<td>训练过程可视化图表，展示各项指标随训练轮次的变化情况</td>
+</tr>
+<tr>
+<td>weights&#x2F;</td>
+<td>模型权重保存目录</td>
+</tr>
+<tr>
+<td>- best.pt</td>
+<td>在验证集上表现最好的模型权重文件</td>
+</tr>
+<tr>
+<td>- last.pt</td>
+<td>训练结束时的最终模型权重文件</td>
+</tr>
+<tr>
+<td>BoxP_curve.png</td>
+<td>精确率(Precision)曲线图</td>
+</tr>
+<tr>
+<td>BoxR_curve.png</td>
+<td>召回率(Recall)曲线图</td>
+</tr>
+<tr>
+<td>BoxF1_curve.png</td>
+<td>F1分数曲线图</td>
+</tr>
+<tr>
+<td>BoxPR_curve.png</td>
+<td>PR曲线图（精确率-召回率曲线）</td>
+</tr>
+<tr>
+<td>confusion_matrix.png</td>
+<td>混淆矩阵图（非归一化）</td>
+</tr>
+<tr>
+<td>confusion_matrix_normalized.png</td>
+<td>混淆矩阵图（归一化）</td>
+</tr>
+</tbody></table>
+<h3 id="训练批次图像文件"><a href="#训练批次图像文件" class="headerlink" title="训练批次图像文件"></a>训练批次图像文件</h3><table>
+<thead>
+<tr>
+<th>文件名模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>train_batch*.jpg</td>
+<td>训练数据批次可视化图像，显示训练数据增强后的效果</td>
+</tr>
+<tr>
+<td>val_batch*_labels.jpg</td>
+<td>验证批次的真实标签图像</td>
+</tr>
+<tr>
+<td>val_batch*_pred.jpg</td>
+<td>验证批次的模型预测结果图像</td>
+</tr>
+<tr>
+<td>labels.jpg</td>
+<td>数据集标签分布可视化图像</td>
+</tr>
+</tbody></table>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/Sengathir24/Ideathon_team_BATMEN">https://github.com/Sengathir24/Ideathon_team_BATMEN</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.kaggle.com/datasets/sukmaadhiwijaya/weld-quality-inspection-instance-segmentation">https://www.kaggle.com/datasets/sukmaadhiwijaya/weld-quality-inspection-instance-segmentation</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BC%BA%E9%99%B7%E6%A3%80%E6%B5%8B/" rel="tag"># 缺陷检测</a>
+              <a href="/tags/YOLO/" rel="tag"># YOLO</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/09/24/%E8%81%8A%E5%A4%A9%E5%8E%86%E5%8F%B2%E7%AE%A1%E7%90%86-MemU%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" rel="prev" title="聊天历史管理&MemU原理解析">
+                  <i class="fa fa-angle-left"></i> 聊天历史管理&MemU原理解析
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">446k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">27:01</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言目前玩具的讲故事机制处于萌芽阶段，现在的方案是让LLM即兴创作，会有一个比较严重问题：生成的故事的AI味很重，无论什么故事感觉都一个套路，现在就这个问题进行优化，目前的思路是将故事存到数据库中（本文用sqlite），然后通过text2sql技术实现自然语言到数据库查询的链接。更具体的流程是：小朋友让讲个故事（或者讲个关于什么什么的故事），大模型识别到是让讲故事，就调用讲故事的工具，这个讲故事的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对话玩具故事机">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/09/15/%E5%AF%B9%E8%AF%9D%E7%8E%A9%E5%85%B7%E6%95%85%E4%BA%8B%E6%9C%BA/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言目前玩具的讲故事机制处于萌芽阶段，现在的方案是让LLM即兴创作，会有一个比较严重问题：生成的故事的AI味很重，无论什么故事感觉都一个套路，现在就这个问题进行优化，目前的思路是将故事存到数据库中（本文用sqlite），然后通过text2sql技术实现自然语言到数据库查询的链接。更具体的流程是：小朋友让讲个故事（或者讲个关于什么什么的故事），大模型识别到是让讲故事，就调用讲故事的工具，这个讲故事的">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-09-15T02:17:08.000Z">
+<meta property="article:modified_time" content="2025-09-17T03:15:40.640Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="text2sql">
+<meta property="article:tag" content="玩具">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="sqlite">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/09/15/%E5%AF%B9%E8%AF%9D%E7%8E%A9%E5%85%B7%E6%95%85%E4%BA%8B%E6%9C%BA/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/09/15/%E5%AF%B9%E8%AF%9D%E7%8E%A9%E5%85%B7%E6%95%85%E4%BA%8B%E6%9C%BA/","path":"2025/09/15/对话玩具故事机/","title":"对话玩具故事机"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>对话玩具故事机 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80"><span class="nav-number">2.1.</span> <span class="nav-text">数据库基础</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/09/15/%E5%AF%B9%E8%AF%9D%E7%8E%A9%E5%85%B7%E6%95%85%E4%BA%8B%E6%9C%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="对话玩具故事机 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          对话玩具故事机
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-15 10:17:08" itemprop="dateCreated datePublished" datetime="2025-09-15T10:17:08+08:00">2025-09-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-09-17 11:15:40" itemprop="dateModified" datetime="2025-09-17T11:15:40+08:00">2025-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>12 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>目前玩具的讲故事机制处于萌芽阶段，现在的方案是让<code>LLM</code>即兴创作，会有一个比较严重问题：生成的故事的AI味很重，无论什么故事感觉都一个套路，现在就这个问题进行优化，目前的思路是将故事存到数据库中（本文用<code>sqlite</code>），然后通过<code>text2sql</code>技术实现自然语言到数据库查询的链接。更具体的流程是：小朋友让讲个故事（或者讲个关于什么什么的故事），大模型识别到是让讲故事，就调用讲故事的工具，这个讲故事的工具是一个基于<code>LLM</code>的<code>text2sql</code>工具，将小朋友的自然语言指令翻译成<code>sql</code>指令进行数据库的查询，然后查询到的故事返回给最初的<code>LLM</code>，实现<code>LLM</code>基于素材库讲故事而不是完全即兴讲故事，当然如果数据库中没有小朋友想听的故事，那么依旧即兴创作。</p>
+<p>本文将从数据库基础讲起，逐步实现上述功能。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="数据库基础"><a href="#数据库基础" class="headerlink" title="数据库基础"></a>数据库基础</h3><ul>
+<li><p><strong>数据库（Database）</strong>：一个专门用来放很多结构化数据的大柜子（<code>stories.db</code> 就是一个柜子文件）。</p>
+</li>
+<li><p><strong>表（Table）</strong>：柜子里的抽屉（比如 <code>stories</code> 抽屉），抽屉里装的是同类的记录。</p>
+</li>
+<li><p><strong>行 &#x2F; 记录（Row &#x2F; Record）</strong>：抽屉里的每一份文件（一条故事）。</p>
+</li>
+<li><p><strong>列 &#x2F; 字段（Column &#x2F; Field）</strong>：每份文件的标签（比如 <code>title</code>、<code>content</code>），每个标签有固定的类型或规则。</p>
+</li>
+<li><p><strong>主键（PRIMARY KEY）</strong>：用来唯一标识每份文件的编号（类似身份证号）。</p>
+</li>
+</ul>
+<p><code>SQLite</code> 的存储类型只有几种“存储类”：</p>
+<ul>
+<li><code>NULL</code>、<code>INTEGER</code>（整数）、<code>REAL</code>（浮点数）、<code>TEXT</code>（文本）、<code>BLOB</code>（二进制）<br> 注意：<code>SQLite</code> 的类型是“灵活类型（type affinity）”，你声明 <code>TEXT</code>&#x2F;<code>INTEGER</code> 是对数据做建议，<code>SQLite</code> 仍能存别的东西（但按规则尝试转换）。</li>
+</ul>
+<p>看个实际的创建表的例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS stories (</span><br><span class="line">    id INTEGER PRIMARY KEY AUTOINCREMENT,</span><br><span class="line">    title TEXT NOT NULL,</span><br><span class="line">    theme TEXT,</span><br><span class="line">    keywords TEXT,</span><br><span class="line">    content TEXT NOT NULL,</span><br><span class="line">    origin TEXT,</span><br><span class="line">    language TEXT DEFAULT &#x27;en&#x27;,</span><br><span class="line">    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</span><br><span class="line">    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>逐项解释：</p>
+<ol>
+<li><code>CREATE TABLE</code><ul>
+<li>含义：创建一张表（抽屉）。</li>
+<li>等价中文：<strong>创建表格</strong>。</li>
+</ul>
+</li>
+<li><code>IF NOT EXISTS</code><ul>
+<li>含义：只有当该表还不存在时才创建，如果已存在就不报错。</li>
+<li>作用：避免重复建表时报错（方便脚本多次运行）。</li>
+</ul>
+</li>
+<li><code>stories</code><ul>
+<li>含义：表名（你抽屉的名字）。由字母&#x2F;数字&#x2F;下划线组成，大小写通常不敏感。</li>
+</ul>
+</li>
+<li><code>(</code> 与 <code>)</code> 与逗号 <code>,</code><ul>
+<li>括号内列出了每一列（字段）的定义。每列定义之间用逗号分隔。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<p>接下来按列逐个详细拆解：</p>
+<p><code>id INTEGER PRIMARY KEY AUTOINCREMENT,</code></p>
+<ul>
+<li><code>id</code><ul>
+<li>列名（字段名）。你可以把它当作“label &#x3D; id”。</li>
+</ul>
+</li>
+<li><code>INTEGER</code><ul>
+<li>声明的数据类型（整数）。在 <code>SQLite</code> 中表示<strong>整数字段或带整形亲和力</strong>。</li>
+</ul>
+</li>
+<li><code>PRIMARY KEY</code><ul>
+<li>约束（constraint）。表示这个列是表的<strong>主键</strong>，每一行必须唯一地由这个字段识别。</li>
+<li>在 <code>SQLite</code> 中，<strong>如果主键是 <code>INTEGER PRIMARY KEY</code>，它会变成表的 <code>rowid</code> 的别名</strong>（也就是底层的行号&#x2F;唯一 id，<code>SQLite</code> 内部特殊处理，性能最好）。</li>
+</ul>
+</li>
+<li><code>AUTOINCREMENT</code><ul>
+<li>修饰词（keyword）。告诉 <code>SQLite</code> 每插入一行时，自动分配一个比之前最大的 <code>id</code> 更大的整数。</li>
+<li><strong>注意区别</strong>：<ul>
+<li><code>SQLite</code> 如果你写 <code>INTEGER PRIMARY KEY</code>（<strong>不加</strong> <code>AUTOINCREMENT</code>），它也会自动给你一个自增的 <code>rowid</code>（通常是上一最大值 + 1）。</li>
+<li><code>AUTOINCREMENT</code> 会<strong>额外保证</strong>不会重用以前使用过的 <code>rowid</code>（即使表里有删除过的行），并且让分配策略更严格（记录在 <code>sqlite_sequence</code> 表）。但它也带来一点性能&#x2F;空间代价，所以<strong>多数情况下 <code>INTEGER PRIMARY KEY</code> 就够了</strong>，只有需要“绝对不重用历史 id 且保证严格单调递增”时才用 <code>AUTOINCREMENT</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>总结一句话：<br> <code>id INTEGER PRIMARY KEY AUTOINCREMENT</code> 的含义是：</p>
+<blockquote>
+<p>列名叫 <code>id</code>，它是整数类型、表的唯一标识（主键），并且让数据库自动分配递增的数值作为 id。</p>
+</blockquote>
+<hr>
+<p><code>title TEXT NOT NULL,</code></p>
+<ul>
+<li><code>title</code>：字段名（故事标题）</li>
+<li><code>TEXT</code>：文本类型</li>
+<li><code>NOT NULL</code>：约束，表示该字段<strong>不能为空</strong>（插入时必须提供值）</li>
+</ul>
+<p><code>theme TEXT,</code></p>
+<ul>
+<li><code>theme</code>：字段名（主题）</li>
+<li><code>TEXT</code>：可以存文本</li>
+<li>（没有 <code>NOT NULL</code>，因此允许为空）</li>
+</ul>
+<p><code>keywords TEXT,</code></p>
+<ul>
+<li><code>keywords</code>：字段名。关键字用逗号分隔存在这列（例：”兔子，乌龟，赛跑”）。</li>
+<li>注意：这是一种简单做法，方便但不利于做复杂检索（更复杂的做法是建立关联表）。</li>
+</ul>
+<p><code>content TEXT NOT NULL,</code></p>
+<ul>
+<li><code>content</code>：故事正文</li>
+<li><code>TEXT</code>：文本</li>
+<li><code>NOT NULL</code>：必填</li>
+</ul>
+<p><code>origin TEXT,</code></p>
+<ul>
+<li><code>origin</code>：来源（例如“伊索寓言“，“原创”）</li>
+</ul>
+<p><code>language TEXT DEFAULT &#39;zh&#39;,</code></p>
+<ul>
+<li><code>language</code>：语言字段</li>
+<li><code>TEXT</code>：文本</li>
+<li><code>DEFAULT &#39;en&#39;</code>：如果插入时没有提供 <code>language</code> 值，默认就插入 <code>&#39;zh&#39;</code>（即中文）。<code>DEFAULT</code> 可以是字符串、数字或像 <code>CURRENT_TIMESTAMP</code> 这样的关键字（取决字段）</li>
+</ul>
+<p><code>created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</code></p>
+<ul>
+<li><code>created_at</code>：创建时间</li>
+<li><code>TIMESTAMP</code>：在 <code>SQLite</code> 中这其实是一种“语义上的类型名”（底层仍以 TEXT&#x2F;NUMERIC 存），但它表达你的意图：这是时间戳字段。</li>
+<li><code>DEFAULT CURRENT_TIMESTAMP</code>：如果插入时不提供值，<code>SQLite</code> 会把当前时间（<code>UTC</code>）写入（格式通常是 <code>YYYY-MM-DD HH:MM:SS</code>）。<ul>
+<li><strong>注意</strong>：<code>DEFAULT</code> 只在 <strong>插入（INSERT）时</strong>生效，之后该列不会自动变化（要自动更新时间需在 UPDATE 时显式设置或由应用&#x2F;触发器处理）。</li>
+</ul>
+</li>
+</ul>
+<p><code>updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</code></p>
+<ul>
+<li>同 <code>created_at</code>，但语义是记录最后更新时间。通常你需要在每次修改（UPDATE）记录时把 <code>updated_at</code> 更新为 <code>CURRENT_TIMESTAMP</code>，这可以由程序代码在执行 <code>UPDATE</code> 时带上，或用 DB 的触发器（trigger）实现自动更新。</li>
+</ul>
+<hr>
+<p>结合简单的Python 代码进行讲解</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sqlite3</span><br><span class="line"></span><br><span class="line"><span class="comment"># 连接数据库（不存在则自动创建）</span></span><br><span class="line">conn = sqlite3.connect(<span class="string">&quot;stories.db&quot;</span>)</span><br><span class="line">cursor = conn.cursor()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建表：stories</span></span><br><span class="line">cursor.execute(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">CREATE TABLE IF NOT EXISTS stories (</span></span><br><span class="line"><span class="string">    id INTEGER PRIMARY KEY AUTOINCREMENT,</span></span><br><span class="line"><span class="string">    title TEXT NOT NULL,</span></span><br><span class="line"><span class="string">    theme TEXT,</span></span><br><span class="line"><span class="string">    keywords TEXT,</span></span><br><span class="line"><span class="string">    content TEXT NOT NULL,</span></span><br><span class="line"><span class="string">    origin TEXT,</span></span><br><span class="line"><span class="string">    language TEXT DEFAULT &#x27;en&#x27;,</span></span><br><span class="line"><span class="string">    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</span></span><br><span class="line"><span class="string">    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 插入示例故事</span></span><br><span class="line">cursor.execute(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">INSERT INTO stories (title, theme, keywords, content, origin, language)</span></span><br><span class="line"><span class="string">VALUES (?, ?, ?, ?, ?, ?)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span>, (</span><br><span class="line">    <span class="string">&quot;龟兔赛跑&quot;</span>,</span><br><span class="line">    <span class="string">&quot;坚持&quot;</span>,</span><br><span class="line">    <span class="string">&quot;兔子,乌龟,赛跑&quot;</span>,</span><br><span class="line">    <span class="string">&quot;从前有一只兔子，喜欢嘲笑行动缓慢的乌龟。有一天他们决定赛跑...&quot;</span>,</span><br><span class="line">    <span class="string">&quot;伊索寓言&quot;</span>,</span><br><span class="line">    <span class="string">&quot;zh&quot;</span></span><br><span class="line">))</span><br><span class="line"></span><br><span class="line">conn.commit()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 示例查询：按关键词检索</span></span><br><span class="line">keyword = <span class="string">&quot;乌龟&quot;</span></span><br><span class="line">cursor.execute(<span class="string">&quot;SELECT title, content FROM stories WHERE keywords LIKE ?&quot;</span>, (<span class="string">&#x27;%&#x27;</span> + keyword + <span class="string">&#x27;%&#x27;</span>,))</span><br><span class="line">results = cursor.fetchall()</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;查询结果：&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> row <span class="keyword">in</span> results:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;标题: <span class="subst">&#123;row[<span class="number">0</span>]&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;内容: <span class="subst">&#123;row[<span class="number">1</span>][:<span class="number">50</span>]&#125;</span>...&quot;</span>)  <span class="comment"># 只显示前50个字</span></span><br><span class="line"></span><br><span class="line">conn.close()</span><br></pre></td></tr></table></figure>
+
+<p>逐行说明（重要行）：</p>
+<ul>
+<li><code>import sqlite3</code><ul>
+<li>加载 Python 自带的 <code>SQLite3</code> 模块，用来操作 <code>SQLite</code> 数据库文件。</li>
+</ul>
+</li>
+<li><code>conn = sqlite3.connect(&quot;stories.db&quot;)</code><ul>
+<li>连接或创建数据库文件 <code>stories.db</code>（相对路径，文件在当前工作目录）。</li>
+<li>返回 <code>Connection</code> 对象 <code>conn</code>。</li>
+<li>你也可以用 <code>&quot;:memory:&quot;</code> 创建临时内存数据库（程序结束就没了）。</li>
+</ul>
+</li>
+<li><code>cursor = conn.cursor()</code><ul>
+<li>创建一个 <code>Cursor</code> 对象，用它来执行 <code>SQL</code> 语句并取回结果。</li>
+</ul>
+</li>
+<li><code>cursor.execute(&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS stories (...)&quot;&quot;&quot;)</code><ul>
+<li>执行建表语句（把前面逐词解释的语句传给 DB 引擎）。</li>
+<li>多行字符串用 <code>&quot;&quot;&quot;...&quot;&quot;&quot;</code>。</li>
+</ul>
+</li>
+<li><code>cursor.execute(&quot;&quot;&quot;INSERT INTO stories (...) VALUES (?, ?, ?, ?, ?, ?)&quot;&quot;&quot;, (...))</code><ul>
+<li><code>?</code> 是参数占位符（参数化查询）。</li>
+<li>第二个参数是一个元组，按顺序对应每个 <code>?</code>。</li>
+<li><strong>为什么用 <code>?</code> 而不是把字符串拼起来？</strong> —— 用 <code>?</code> 可以防止 <strong><code>SQL</code> 注入攻击</strong>，并且让 <code>sqlite3</code> 模块做好适当的转义与类型转换。</li>
+<li>例如 <code>(&quot;龟兔赛跑&quot;, &quot;坚持&quot;, ...)</code> 会被安全地插入。</li>
+</ul>
+</li>
+<li><code>conn.commit()</code><ul>
+<li>把当前连接的事务提交（写入磁盘）。</li>
+<li>如果你不 <code>commit()</code>，在多数情况下当连接关闭时会回滚（不保存），所以写操作后必须 <code>commit()</code>。</li>
+</ul>
+</li>
+<li><code>cursor.execute(&quot;SELECT title, content FROM stories WHERE keywords LIKE ?&quot;, (&#39;%&#39; + keyword + &#39;%&#39;,))</code><ul>
+<li><code>SELECT</code>：查询语句。</li>
+<li><code>keywords LIKE ?</code>：<code>LIKE</code> 是模糊匹配运算符，<code>%</code> 在 <code>SQL</code> 中是任意数量字符的通配符。<code>&#39;%乌龟%&#39;</code> 表示关键词中包含“乌龟”的行。</li>
+<li>第二个参数 <code>(&#39;%&#39; + keyword + &#39;%&#39;,)</code> 是传给 <code>?</code> 的实际值。</li>
+</ul>
+</li>
+<li><code>results = cursor.fetchall()</code><ul>
+<li><code>fetchall()</code> 返回所有查询结果，类型是 <code>list</code>，每个元素是 <code>tuple</code>（对应 SELECT 列顺序）。</li>
+<li>例如 <code>results = [(&#39;龟兔赛跑&#39;, &#39;从前有...&#39;), (...)]</code></li>
+</ul>
+</li>
+<li><code>conn.close()</code><ul>
+<li>关闭数据库连接（释放资源）。在脚本结束前最好显式关闭。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>额外重要知识点（实际使用时很关键）</p>
+<ol>
+<li><p><strong>事务（Transaction）</strong></p>
+<ul>
+<li>写操作（INSERT&#x2F;UPDATE&#x2F;DELETE）通常在事务中执行。<code>commit()</code> 提交事务；<code>rollback()</code> 回退。</li>
+<li>Python 的 <code>sqlite3</code> 默认会自动在你执行写操作时隐含 START TRANSACTION（事务），直到你 <code>commit()</code>。</li>
+</ul>
+</li>
+<li><p><strong>参数化查询 &amp; 安全</strong></p>
+<ul>
+<li>永远使用参数 (<code>?</code>)，不要把用户输入直接拼进 <code>SQL</code> 字符串（会导致注入风险）。</li>
+</ul>
+</li>
+<li><p><strong>索引（Index）</strong></p>
+<ul>
+<li><code>CREATE INDEX idx_theme ON stories(theme);</code></li>
+<li>索引能加速按该列查询（WHERE theme&#x3D;…），但会稍微增加写入时的开销和占用空间。</li>
+<li>建议对常用过滤字段建立索引（但别给每列都建索引）。</li>
+</ul>
+</li>
+<li><p><strong><code>LIKE</code> 的大小写</strong></p>
+<ul>
+<li>在 <code>SQLite</code> 中 <code>LIKE</code> 对 ASCII 字符通常不区分大小写；可以用 <code>COLLATE NOCASE</code> 做更多控制。</li>
+</ul>
+</li>
+<li><p><strong><code>DEFAULT CURRENT_TIMESTAMP</code> 的时区</strong></p>
+<ul>
+<li><code>SQLite</code> 的 <code>CURRENT_TIMESTAMP</code> 返回 <strong><code>UTC</code></strong> 的时间字符串 <code>YYYY-MM-DD HH:MM:SS</code>。</li>
+<li>如果你需要本地时区（如 <code>+08:00</code>），在应用层处理时间字符串或在插入时用 Python 的本地时间。</li>
+</ul>
+</li>
+<li><p><strong><code>updated_at</code> 的自动更新</strong></p>
+<ul>
+<li><p><code>DEFAULT</code> 只在插入时填值；<code>updated_at</code> 不会自动在 <code>UPDATE</code> 时变化。</p>
+</li>
+<li><p>做法：</p>
+<ul>
+<li>在应用层每次 <code>UPDATE</code> 时带上 <code>updated_at=CURRENT_TIMESTAMP</code>；</li>
+<li>或者在数据库写 <code>TRIGGER</code>（触发器）自动赋值（触发器语法更复杂，需要小心）。</li>
+</ul>
+</li>
+<li><p>简单示范（应用层做法）：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cursor</span>.<span class="keyword">execute</span>(&quot;UPDATE stories SET content=?, updated_at=CURRENT_TIMESTAMP WHERE id=?&quot;, (new_content, story_id))</span><br><span class="line">conn.<span class="keyword">commit</span>()</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>如何查看和调试数据库文件</strong></p>
+<ul>
+<li>命令行：<code>sqlite3 stories.db</code> 然后 <code>.tables</code> 查看表，执行 <code>SQL</code>。</li>
+<li>可视化工具：<code>DB Browser for SQLite</code>（开源）可以直接浏览、编辑 <code>stories.db</code>。</li>
+</ul>
+</li>
+<li><p><strong>性能与拆表建议</strong></p>
+<ul>
+<li>现在把 <code>keywords</code> 存为逗号分隔的字符串（简单）。如果将来要做复杂检索或标签统计，建议做<strong>一对多</strong>的关联表（<code>story_keywords</code>）或使用向量检索 &#x2F; RAG 等方式。</li>
+</ul>
+</li>
+</ol>
+<p>六、常见错误与如何避免</p>
+<ul>
+<li>忘记 <code>conn.commit()</code> → 写入没有保存。</li>
+<li>把用户输入直接拼接进 <code>SQL</code> → <code>SQL</code> 注入漏洞。</li>
+<li>以为 <code>DEFAULT</code> 会在每次 <code>UPDATE</code> 自动刷新 → 不会，需显式 <code>UPDATE</code>。</li>
+<li>误用 <code>AUTOINCREMENT</code>：通常不必要且会增加开销。</li>
+</ul>
+<p>七、速查（最常用的 <code>SQL</code> 小抄）</p>
+<ul>
+<li><p><strong>① CREATE TABLE</strong></p>
+<p>作用：新建一张表，用来存放数据。</p>
+<p>语法：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CREATE <span class="selector-tag">TABLE</span> IF NOT EXISTS 表名 (</span><br><span class="line">    列名<span class="number">1</span> 数据类型 <span class="selector-attr">[约束]</span>,</span><br><span class="line">    列名<span class="number">2</span> 数据类型 <span class="selector-attr">[约束]</span>,</span><br><span class="line">    ...</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> stories (</span><br><span class="line">    id <span class="type">INTEGER</span> <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    title <span class="type">TEXT</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    theme <span class="type">TEXT</span>,</span><br><span class="line">    keywords <span class="type">TEXT</span>,</span><br><span class="line">    content <span class="type">TEXT</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">    origin <span class="type">TEXT</span>,</span><br><span class="line">    <span class="keyword">language</span> <span class="type">TEXT</span> <span class="keyword">DEFAULT</span> <span class="string">&#x27;en&#x27;</span>,</span><br><span class="line">    created_at <span class="type">TIMESTAMP</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span>,</span><br><span class="line">    updated_at <span class="type">TIMESTAMP</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>逐词解释：</p>
+<ul>
+<li><code>CREATE TABLE</code>：创建一张表。</li>
+<li><code>IF NOT EXISTS</code>：如果这张表已经存在，就忽略，不会报错。</li>
+<li><code>stories</code>：表名，表示存放“故事”的表。</li>
+<li><code>id INTEGER PRIMARY KEY</code>：<code>id</code> 列，类型是整数（<code>INTEGER</code>），是主键（<code>PRIMARY KEY</code>，唯一标识一行数据）。</li>
+<li><code>title TEXT NOT NULL</code>：<code>title</code> 列，类型是文本（<code>TEXT</code>），不能为空（<code>NOT NULL</code>）。</li>
+<li><code>theme TEXT</code>：主题，可以是文本，但允许为空。</li>
+<li><code>keywords TEXT</code>：关键词，文本。</li>
+<li><code>content TEXT NOT NULL</code>：正文，必须有内容。</li>
+<li><code>origin TEXT</code>：来源（例如“伊索寓言”）。</li>
+<li><code>language TEXT DEFAULT &#39;en&#39;</code>：语言，默认值是 <code>&#39;en&#39;</code>。</li>
+<li><code>created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</code>：创建时间，默认存当前时间。</li>
+<li><code>updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</code>：更新时间，默认存当前时间。</li>
+</ul>
+</li>
+<li><p><strong>② INSERT</strong></p>
+<p>作用：往表里加一行数据。</p>
+<p>语法：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">INSERT</span> INTO 表名 (列<span class="number">1</span>, 列<span class="number">2</span>, 列<span class="number">3</span>, ...)</span><br><span class="line"><span class="attribute">VALUES</span> (值<span class="number">1</span>, 值<span class="number">2</span>, 值<span class="number">3</span>, ...);</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> stories (<span class="built_in">title</span>, theme, content)</span><br><span class="line"><span class="keyword">VALUES</span> (<span class="string">&#x27;龟兔赛跑&#x27;</span>, <span class="string">&#x27;坚持&#x27;</span>, <span class="string">&#x27;从前有一只兔子...&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>逐词解释：</p>
+<ul>
+<li><code>INSERT INTO</code>：插入到某个表里。</li>
+<li><code>stories</code>：表名。</li>
+<li><code>(title, theme, content)</code>：指定要填哪些列。</li>
+<li><code>VALUES</code>：对应的值。</li>
+</ul>
+<hr>
+<p><strong>③ SELECT</strong></p>
+<p>作用：从表里查数据。</p>
+<p>语法：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> 列<span class="number">1</span>, 列<span class="number">2</span> <span class="keyword">FROM</span> 表名 <span class="keyword">WHERE</span> 条件;</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">title</span>, content <span class="keyword">FROM</span> stories <span class="keyword">WHERE</span> theme = <span class="string">&#x27;坚持&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>逐词解释：</p>
+<ul>
+<li><code>SELECT</code>：选择要看的列。</li>
+<li><code>title, content</code>：要看的列名。</li>
+<li><code>FROM stories</code>：从 <code>stories</code> 这张表里查。</li>
+<li><code>WHERE theme = &#39;坚持&#39;</code>：条件（只要主题是“坚持”的）。</li>
+</ul>
+<hr>
+<p><strong>④ UPDATE</strong></p>
+<p>作用：修改表里已有的数据。</p>
+<p>语法：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPDATE 表名 <span class="built_in">SET</span> 列<span class="attribute">1</span>=新值1, 列<span class="attribute">2</span>=新值2 WHERE 条件;</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> stories <span class="keyword">SET</span> theme = <span class="string">&#x27;努力&#x27;</span> <span class="keyword">WHERE</span> <span class="built_in">title</span> = <span class="string">&#x27;龟兔赛跑&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>逐词解释：</p>
+<ul>
+<li><code>UPDATE stories</code>：更新 <code>stories</code> 表。</li>
+<li><code>SET theme = &#39;努力&#39;</code>：把 <code>theme</code> 这一列改为“努力”。</li>
+<li><code>WHERE title = &#39;龟兔赛跑&#39;</code>：只改标题等于“龟兔赛跑”的那一行</li>
+</ul>
+<hr>
+<p><strong>⑤ CREATE INDEX</strong></p>
+<p>作用：给某一列加“目录”，提高搜索效率。</p>
+<p>语法：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> 索引名 <span class="keyword">ON</span> 表名(列名);</span><br></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> idx_title <span class="keyword">ON</span> stories(<span class="built_in">title</span>);</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> idx_keywords <span class="keyword">ON</span> stories(keywords);</span><br></pre></td></tr></table></figure>
+
+<p>逐词解释：</p>
+<ul>
+<li><code>CREATE INDEX</code>：创建索引。</li>
+<li><code>IF NOT EXISTS</code>：如果索引已经存在，就忽略，不会报错。</li>
+<li><code>idx_title</code>：索引的名字（一般写成 <code>idx_列名</code>）。</li>
+<li><code>ON stories(title)</code>：表示在 <code>stories</code> 表的 <code>title</code> 列上建索引。</li>
+<li><code>ON stories(keywords)</code>：在 <code>keywords</code> 列上建索引。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p><strong>更改后的代码</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sqlite3</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 连接数据库</span></span><br><span class="line">conn = sqlite3.connect(<span class="string">&quot;stories.db&quot;</span>)</span><br><span class="line">cursor = conn.cursor()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 建表</span></span><br><span class="line">cursor.execute(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">CREATE TABLE IF NOT EXISTS stories (</span></span><br><span class="line"><span class="string">    id INTEGER PRIMARY KEY,</span></span><br><span class="line"><span class="string">    title TEXT NOT NULL,</span></span><br><span class="line"><span class="string">    theme TEXT,</span></span><br><span class="line"><span class="string">    keywords TEXT,</span></span><br><span class="line"><span class="string">    content TEXT NOT NULL,</span></span><br><span class="line"><span class="string">    origin TEXT,</span></span><br><span class="line"><span class="string">    language TEXT DEFAULT &#x27;en&#x27;,</span></span><br><span class="line"><span class="string">    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</span></span><br><span class="line"><span class="string">    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span></span><br><span class="line"><span class="string">)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 建索引</span></span><br><span class="line">cursor.execute(<span class="string">&quot;CREATE INDEX IF NOT EXISTS idx_title ON stories(title)&quot;</span>)</span><br><span class="line">cursor.execute(<span class="string">&quot;CREATE INDEX IF NOT EXISTS idx_keywords ON stories(keywords)&quot;</span>)</span><br><span class="line">cursor.execute(<span class="string">&quot;CREATE INDEX IF NOT EXISTS idx_theme ON stories(theme)&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 批量插入故事</span></span><br><span class="line"><span class="keyword">for</span> story <span class="keyword">in</span> stories_data:</span><br><span class="line">    <span class="comment"># 先判断是否已存在（避免重复插入）</span></span><br><span class="line">    cursor.execute(<span class="string">&quot;SELECT COUNT(*) FROM stories WHERE title = ?&quot;</span>, (story[<span class="string">&#x27;title&#x27;</span>],))</span><br><span class="line">    exists = cursor.fetchone()[<span class="number">0</span>]</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> exists == <span class="number">0</span>:</span><br><span class="line">        cursor.execute(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        INSERT INTO stories (title, theme, keywords, content, origin, language)</span></span><br><span class="line"><span class="string">        VALUES (?, ?, ?, ?, ?, ?)</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span>, (</span><br><span class="line">            story[<span class="string">&#x27;title&#x27;</span>],</span><br><span class="line">            story.get(<span class="string">&#x27;theme&#x27;</span>),</span><br><span class="line">            story.get(<span class="string">&#x27;keywords&#x27;</span>),</span><br><span class="line">            story[<span class="string">&#x27;content&#x27;</span>],</span><br><span class="line">            story.get(<span class="string">&#x27;origin&#x27;</span>),</span><br><span class="line">            story.get(<span class="string">&#x27;language&#x27;</span>, <span class="string">&#x27;en&#x27;</span>)</span><br><span class="line">        ))</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;已插入故事：<span class="subst">&#123;story[<span class="string">&#x27;title&#x27;</span>]&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;故事《<span class="subst">&#123;story[<span class="string">&#x27;title&#x27;</span>]&#125;</span>》已存在，跳过插入。&quot;</span>)</span><br><span class="line"></span><br><span class="line">conn.commit()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 示例查询：按关键词搜索“狼”</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\n=== 查询包含‘狼’的故事 ===&quot;</span>)</span><br><span class="line">keyword = <span class="string">&quot;狼&quot;</span></span><br><span class="line">cursor.execute(<span class="string">&quot;SELECT title, content FROM stories WHERE keywords LIKE ?&quot;</span>, (<span class="string">&#x27;%&#x27;</span> + keyword + <span class="string">&#x27;%&#x27;</span>,))</span><br><span class="line">rows = cursor.fetchall()</span><br><span class="line"><span class="keyword">for</span> row <span class="keyword">in</span> rows:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;标题: <span class="subst">&#123;row[<span class="number">0</span>]&#125;</span>, 内容开头: <span class="subst">&#123;row[<span class="number">1</span>][:<span class="number">50</span>]&#125;</span>...&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. 关闭数据库</span></span><br><span class="line">conn.close()</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/text2sql/" rel="tag"># text2sql</a>
+              <a href="/tags/%E7%8E%A9%E5%85%B7/" rel="tag"># 玩具</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+              <a href="/tags/sqlite/" rel="tag"># sqlite</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/09/11/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E5%86%8D%E5%87%BA%E5%8F%91/" rel="prev" title="自定义唤醒词系统再出发">
+                  <i class="fa fa-angle-left"></i> 自定义唤醒词系统再出发
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/09/19/%E6%8A%96%E9%9F%B3%E6%8E%A5%E6%94%B6%E4%B8%8E%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%EF%BC%88%E5%BC%B9%E5%B9%95%E8%AF%84%E8%AE%BA%E7%9B%B8%E5%85%B3%EF%BC%89%E8%B0%83%E7%A0%94/" rel="next" title="抖音接收与发送消息（弹幕评论相关）调研">
+                  抖音接收与发送消息（弹幕评论相关）调研 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">446k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">27:01</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

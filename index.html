@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">100</span>
+          <span class="site-state-item-count">105</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">116</span>
+        <span class="site-state-item-count">124</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -186,6 +186,531 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/10/17/%E5%9F%BA%E4%BA%8EYOLO-V8%E7%9A%84%E7%84%8A%E6%8E%A5%E7%BC%BA%E9%99%B7%E6%A3%80%E6%B5%8B%E8%AF%B4%E6%98%8E%E5%8F%8A%E4%BB%A3%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/10/17/%E5%9F%BA%E4%BA%8EYOLO-V8%E7%9A%84%E7%84%8A%E6%8E%A5%E7%BC%BA%E9%99%B7%E6%A3%80%E6%B5%8B%E8%AF%B4%E6%98%8E%E5%8F%8A%E4%BB%A3%E7%A0%81/" class="post-title-link" itemprop="url">基于YOLO V8的焊接缺陷检测说明及代码</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-10-17 17:19:17 / 修改时间：17:20:51" itemprop="dateCreated datePublished" datetime="2025-10-17T17:19:17+08:00">2025-10-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>这两天这了解焊接检测相关的东西，目前在以<a target="_blank" rel="noopener" href="https://github.com/Sengathir24/Ideathon_team_BATMEN]">这个项目</a>为起点进行研究。本人对该项目做了略微的修改，本文作为对本项目的一些知识补充，主要是<code>YOLO</code>相关。本文用于记录和分享。</p>
+<p><code>guithub</code>: <a target="_blank" rel="noopener" href="https://github.com/caihaoran-00/welding-defect">https://github.com/caihaoran-00/welding-defect</a></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/10/17/%E5%9F%BA%E4%BA%8EYOLO-V8%E7%9A%84%E7%84%8A%E6%8E%A5%E7%BC%BA%E9%99%B7%E6%A3%80%E6%B5%8B%E8%AF%B4%E6%98%8E%E5%8F%8A%E4%BB%A3%E7%A0%81/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/09/24/%E8%81%8A%E5%A4%A9%E5%8E%86%E5%8F%B2%E7%AE%A1%E7%90%86-MemU%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/24/%E8%81%8A%E5%A4%A9%E5%8E%86%E5%8F%B2%E7%AE%A1%E7%90%86-MemU%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">聊天历史管理&MemU原理解析</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-24 10:29:48" itemprop="dateCreated datePublished" datetime="2025-09-24T10:29:48+08:00">2025-09-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-09-30 18:27:10" itemprop="dateModified" datetime="2025-09-30T18:27:10+08:00">2025-09-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>22k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1:22</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>随着玩具的不断优化迭代，认为对聊天历史的管理需要下些功夫。目前并没有对长期记忆做文章，只有短期记忆（使用最近的五轮对话），导致的最大的问题是每次新对话都是没有任何记忆的，是“从0开始”的，本文将记录对记忆系统的思考以及对<code>MemU</code>的原理解析，目标包括两方面，一是怎么科学经济的管理聊天历史，二是<code>MemU</code>的原理有可借鉴的地方吗。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/24/%E8%81%8A%E5%A4%A9%E5%8E%86%E5%8F%B2%E7%AE%A1%E7%90%86-MemU%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/09/19/%E6%8A%96%E9%9F%B3%E6%8E%A5%E6%94%B6%E4%B8%8E%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%EF%BC%88%E5%BC%B9%E5%B9%95%E8%AF%84%E8%AE%BA%E7%9B%B8%E5%85%B3%EF%BC%89%E8%B0%83%E7%A0%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/19/%E6%8A%96%E9%9F%B3%E6%8E%A5%E6%94%B6%E4%B8%8E%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%EF%BC%88%E5%BC%B9%E5%B9%95%E8%AF%84%E8%AE%BA%E7%9B%B8%E5%85%B3%EF%BC%89%E8%B0%83%E7%A0%94/" class="post-title-link" itemprop="url">抖音接收与发送消息（弹幕评论相关）调研</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-19 11:55:04" itemprop="dateCreated datePublished" datetime="2025-09-19T11:55:04+08:00">2025-09-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-10-17 17:55:30" itemprop="dateModified" datetime="2025-10-17T17:55:30+08:00">2025-10-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>521</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近某房地产公司那边关于营销方面有个需求，大致是抖音，小红书，视频号方面想检测用户评论，并分析用户的购房意向，对有意向的用户引导到私域（加微信），细节暂时不展，本文主要想解决抖音弹幕&#x2F;抖音视频评论区的监控与消息获取，弹幕&#x2F;评论的发布。也许有实现不了的功能，本文按调研顺序进行整理介绍。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/19/%E6%8A%96%E9%9F%B3%E6%8E%A5%E6%94%B6%E4%B8%8E%E5%8F%91%E9%80%81%E6%B6%88%E6%81%AF%EF%BC%88%E5%BC%B9%E5%B9%95%E8%AF%84%E8%AE%BA%E7%9B%B8%E5%85%B3%EF%BC%89%E8%B0%83%E7%A0%94/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/09/15/%E5%AF%B9%E8%AF%9D%E7%8E%A9%E5%85%B7%E6%95%85%E4%BA%8B%E6%9C%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/15/%E5%AF%B9%E8%AF%9D%E7%8E%A9%E5%85%B7%E6%95%85%E4%BA%8B%E6%9C%BA/" class="post-title-link" itemprop="url">对话玩具故事机</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-15 10:17:08" itemprop="dateCreated datePublished" datetime="2025-09-15T10:17:08+08:00">2025-09-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-09-17 11:15:40" itemprop="dateModified" datetime="2025-09-17T11:15:40+08:00">2025-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>12 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>目前玩具的讲故事机制处于萌芽阶段，现在的方案是让<code>LLM</code>即兴创作，会有一个比较严重问题：生成的故事的AI味很重，无论什么故事感觉都一个套路，现在就这个问题进行优化，目前的思路是将故事存到数据库中（本文用<code>sqlite</code>），然后通过<code>text2sql</code>技术实现自然语言到数据库查询的链接。更具体的流程是：小朋友让讲个故事（或者讲个关于什么什么的故事），大模型识别到是让讲故事，就调用讲故事的工具，这个讲故事的工具是一个基于<code>LLM</code>的<code>text2sql</code>工具，将小朋友的自然语言指令翻译成<code>sql</code>指令进行数据库的查询，然后查询到的故事返回给最初的<code>LLM</code>，实现<code>LLM</code>基于素材库讲故事而不是完全即兴讲故事，当然如果数据库中没有小朋友想听的故事，那么依旧即兴创作。</p>
+<p>本文将从数据库基础讲起，逐步实现上述功能。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/15/%E5%AF%B9%E8%AF%9D%E7%8E%A9%E5%85%B7%E6%95%85%E4%BA%8B%E6%9C%BA/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/09/11/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E5%86%8D%E5%87%BA%E5%8F%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/11/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E5%86%8D%E5%87%BA%E5%8F%91/" class="post-title-link" itemprop="url">自定义唤醒词系统再出发</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-09-11 20:51:25 / 修改时间：21:13:20" itemprop="dateCreated datePublished" datetime="2025-09-11T20:51:25+08:00">2025-09-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>219</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在前面的<a href="https://caihaoran-00.github.io/2025/07/11/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E8%A7%A3%E6%9E%90/">自定义唤醒词系统解析</a>一文中对目前的系统进行了整体解析，最近在优化误唤醒的问题，打算先在测试程序上下点功夫，目前的想法是以文件作为测试程序的输入，然后测试程序打印文件中所出现唤醒词的时间范围以及对该时间范围的音频进行单独保存以确认是什么样子的语音导致了误唤醒，但实际操作下来发现这测试程序没那么好写（结果总是不对，估计原因在于对该系统的原理掌握的还不是那么透彻），借此机会，我们对上次未重点关注的点再继续深挖，企图得到写对这个测试程序的目的。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/11/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%94%A4%E9%86%92%E8%AF%8D%E7%B3%BB%E7%BB%9F%E5%86%8D%E5%87%BA%E5%8F%91/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -551,7 +1076,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-26 09:58:03" itemprop="dateModified" datetime="2025-08-26T09:58:03+08:00">2025-08-26</time>
+      <time title="修改时间：2025-09-15 10:20:43" itemprop="dateModified" datetime="2025-09-15T10:20:43+08:00">2025-09-15</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -736,532 +1261,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/08/15/qwen-code%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%93%E9%AA%8C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/08/15/qwen-code%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%93%E9%AA%8C/" class="post-title-link" itemprop="url">qwen-code安装与体验</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2025-08-15 15:25:25 / 修改时间：17:34:50" itemprop="dateCreated datePublished" datetime="2025-08-15T15:25:25+08:00">2025-08-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>399</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>从看到<code>qwen-code</code>每天2,000次免费请求的消息已经挺久了，以前一段时间一直使用的是通义灵码，其最大的问题有两个，一个是卡，二是随着修改轮次的增多，改着改着他给改回去了，相当影响体验，在官方通义千问交流群中，官方就没提过通义灵码，可能官方对通义灵码的关注&#x2F;投入没那么高吧，那么我们现在就安装和体验下这个代码智能体任务的命令行工具：<code>Qwen Code</code>。官方介绍：该工具 fork 自 Gemini Code，并针对 <code>Qwen3-Coder</code> 进行了定制优化，能充分发挥模型能力。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/08/15/qwen-code%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%93%E9%AA%8C/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/08/14/PDF%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%EF%BC%9AMinerU2%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%93%E9%AA%8C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/08/14/PDF%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%EF%BC%9AMinerU2%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%93%E9%AA%8C/" class="post-title-link" itemprop="url">PDF解析工具：MinerU2安装与体验</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2025-08-14 16:17:02 / 修改时间：20:17:58" itemprop="dateCreated datePublished" datetime="2025-08-14T16:17:02+08:00">2025-08-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.5k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>6 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在前面<a href="https://caihaoran-00.github.io/2025/05/30/PDF%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%EF%BC%9AMinerU%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%BF%E7%94%A8">安装和体验了MinerU</a>，最近<code>MinerU2</code>也是出来了，还有实验版本的<code>VLM</code>方式，我们今天就来本地部署下并实际玩玩，后续也会对其代码流程进行解析，以学习其基本原理。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/08/14/PDF%E8%A7%A3%E6%9E%90%E5%B7%A5%E5%85%B7%EF%BC%9AMinerU2%E5%AE%89%E8%A3%85%E4%B8%8E%E4%BD%93%E9%AA%8C/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/08/12/PDF%EF%BC%9Amineru-2-VLM%E3%80%81dots-ocr%E4%B8%8ETextIn%E4%BD%93%E9%AA%8C%E8%AE%B0%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/08/12/PDF%EF%BC%9Amineru-2-VLM%E3%80%81dots-ocr%E4%B8%8ETextIn%E4%BD%93%E9%AA%8C%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">PDF：mineru 2 VLM、dots.ocr与TextIn体验记录</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-08-12 17:44:31" itemprop="dateCreated datePublished" datetime="2025-08-12T17:44:31+08:00">2025-08-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-13 10:15:43" itemprop="dateModified" datetime="2025-08-13T10:15:43+08:00">2025-08-13</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>437</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>随着客户需求的细化及明确，发觉原来的纯<code>pdfplumber</code>进行信息抽取可能有些不够用，遂针对最近比较出名的两款基于视觉模型的<code>pdf</code>解析工具进行体验，看看目前开源工具与商业工具<code>TextIn</code>的差距，注意我并未观察到<code>TextIn</code>的什么缺陷，只发现了一次左右不对应的现象，所以下面只针对两开源工具进行对比。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/08/12/PDF%EF%BC%9Amineru-2-VLM%E3%80%81dots-ocr%E4%B8%8ETextIn%E4%BD%93%E9%AA%8C%E8%AE%B0%E5%BD%95/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/08/06/Python%EF%BC%9A%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/08/06/Python%EF%BC%9A%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="post-title-link" itemprop="url">Python：正则表达式</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-08-06 19:08:37" itemprop="dateCreated datePublished" datetime="2025-08-06T19:08:37+08:00">2025-08-06</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-28 11:49:54" itemprop="dateModified" datetime="2025-08-28T11:49:54+08:00">2025-08-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.9k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>7 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><strong>背景</strong>：结构化提取项目中要用到</p>
-<p><strong>本文目的</strong>：系统学习、整理与速查</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/08/06/Python%EF%BC%9A%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/08/04/RAGFlow%EF%BC%9A%E5%8D%87%E7%BA%A7%E4%B8%8Eagentic-workflow%E4%BD%93%E9%AA%8C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/08/04/RAGFlow%EF%BC%9A%E5%8D%87%E7%BA%A7%E4%B8%8Eagentic-workflow%E4%BD%93%E9%AA%8C/" class="post-title-link" itemprop="url">RAGFlow：升级与agentic workflow体验</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-08-04 15:59:40" itemprop="dateCreated datePublished" datetime="2025-08-04T15:59:40+08:00">2025-08-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-08-06 15:34:11" itemprop="dateModified" datetime="2025-08-06T15:34:11+08:00">2025-08-06</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>915</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>3 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今天上午（2025-8-4），<code>RAGFlow</code>社区群中通知<code>RAGFlow 0.20.0</code>发布了，看了下，主要是对Agent部分进行重构了，完成了从<code>workdlow</code>到<code>agrntic workflow</code>的跨越，完整公告内容见下图。本文我们将一起升级并体验下他的Agent模板的效果。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/08/04/RAGFlow%EF%BC%9A%E5%8D%87%E7%BA%A7%E4%B8%8Eagentic-workflow%E4%BD%93%E9%AA%8C/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
@@ -1283,13 +1284,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">417k</span>
+    <span title="站点总字数">446k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">25:15</span>
+    <span title="站点阅读时长">27:01</span>
   </span>
 </div>
 <div class="busuanzi-count">
