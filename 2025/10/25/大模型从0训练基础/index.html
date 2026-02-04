@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言前面我们一起从零训练大模型系列之ChatLM-mini-Chinese，由于该项目使用的是T5模型，该模型是encoder-decoder结构，而现在的主流LLM都是decoder-only结构（GPT, Llama, Qwen, DeepSeek等），遂未对其进行深入的代码解析。本文将针对大模型的基础知识进行整理，后续将从新从0训练decoder-only-minimind模型，并对其进行代">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大模型从0训练之基础知识">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/10/25/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BB%8E0%E8%AE%AD%E7%BB%83%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言前面我们一起从零训练大模型系列之ChatLM-mini-Chinese，由于该项目使用的是T5模型，该模型是encoder-decoder结构，而现在的主流LLM都是decoder-only结构（GPT, Llama, Qwen, DeepSeek等），遂未对其进行深入的代码解析。本文将针对大模型的基础知识进行整理，后续将从新从0训练decoder-only-minimind模型，并对其进行代">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-25T03:35:16.000Z">
+<meta property="article:modified_time" content="2025-11-07T08:14:41.261Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="llm">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/10/25/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BB%8E0%E8%AE%AD%E7%BB%83%E5%9F%BA%E7%A1%80/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/10/25/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BB%8E0%E8%AE%AD%E7%BB%83%E5%9F%BA%E7%A1%80/","path":"2025/10/25/大模型从0训练基础/","title":"大模型从0训练之基础知识"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>大模型从0训练之基础知识 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Encoder-Decoder-VS-Decoder-Only"><span class="nav-number">2.1.</span> <span class="nav-text">Encoder-Decoder VS Decoder-Only</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BERT-%E3%80%81-BART-%E3%80%81GPT-Qwen"><span class="nav-number">2.2.</span> <span class="nav-text">BERT 、 BART 、GPT &#x2F; Qwen</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LLM%E8%AE%AD%E7%BB%83%E6%B5%81%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">LLM训练流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tokenizer-%E9%80%89%E6%8B%A9%E4%B8%8E%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82%EF%BC%88%E4%B8%AD%E6%96%87%E5%9C%BA%E6%99%AF%EF%BC%89"><span class="nav-number">2.4.</span> <span class="nav-text">Tokenizer 选择与实现细节（中文场景）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pretrain-%E6%95%B0%E6%8D%AE%E6%9D%A5%E6%BA%90%E4%B8%8E%E8%B4%A8%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">2.5.</span> <span class="nav-text">Pretrain 数据来源与质量控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SFT-%E6%95%B0%E6%8D%AE%E6%A0%BC%E5%BC%8F%E4%B8%8E%E6%9E%84%E9%80%A0%E6%8A%80%E5%B7%A7"><span class="nav-number">2.6.</span> <span class="nav-text">SFT 数据格式与构造技巧</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DPO-%E5%8E%9F%E7%90%86%E7%AE%80%E8%BF%B0%EF%BC%9A%E4%B8%BA%E4%BD%95%E6%AF%94-RLHF-%E6%9B%B4%E5%8F%8B%E5%A5%BD%EF%BC%9F"><span class="nav-number">2.7.</span> <span class="nav-text">DPO 原理简述：为何比 RLHF 更友好？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E8%B5%84%E6%BA%90%E4%B8%8E%E7%A1%AC%E4%BB%B6%E4%BC%B0%E7%AE%97"><span class="nav-number">2.8.</span> <span class="nav-text">训练资源与硬件估算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">132</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/10/25/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BB%8E0%E8%AE%AD%E7%BB%83%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="大模型从0训练之基础知识 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          大模型从0训练之基础知识
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-10-25 11:35:16" itemprop="dateCreated datePublished" datetime="2025-10-25T11:35:16+08:00">2025-10-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-11-07 16:14:41" itemprop="dateModified" datetime="2025-11-07T16:14:41+08:00">2025-11-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>15 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前面我们一起<a href="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese">从零训练大模型系列之ChatLM-mini-Chinese</a>，由于该项目使用的是T5模型，该模型是encoder-decoder结构，而现在的主流LLM都是decoder-only结构（GPT, Llama, Qwen, DeepSeek等），遂未对其进行深入的代码解析。本文将针对大模型的基础知识进行整理，后续将从新从0训练decoder-only-<a target="_blank" rel="noopener" href="https://github.com/jingyaogong/minimind">minimind</a>模型，并对其进行代码的深入解析。</p>
+<blockquote>
+<p><strong>敬请期待——《大模型从0训练之MiniMind》</strong></p>
+</blockquote>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="Encoder-Decoder-VS-Decoder-Only"><a href="#Encoder-Decoder-VS-Decoder-Only" class="headerlink" title="Encoder-Decoder VS Decoder-Only"></a><strong>Encoder-Decoder</strong> VS <strong>Decoder-Only</strong></h3><p><strong><code>T5</code>（Text-to-Text Transfer Transformer）</strong> 由 Google 在 2019 年提出，明确采用标准的 <strong>Encoder-Decoder</strong> 架构，其中<strong>Encoder</strong> 负责“读”输入（比如“翻译：Hello”），<strong>Decoder</strong> 负责“写”输出（比如“你好”）。<code> T5</code> 的设计初衷是通用多任务学习，适合需要“理解+生成”的场景（如摘要、翻译、问答）。</p>
+<p><strong>当前主流大语言模型（LLM）是 Decoder-Only 结构</strong>，自 <strong>GPT 系列</strong>（尤其是 GPT-3, GPT-3.5, GPT-4）成功以来，<strong>Decoder-only 架构成为 LLM 主流</strong>，原因包括：</p>
+<table>
+<thead>
+<tr>
+<th align="center">优势</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>训练简单</strong></td>
+<td align="center">只需语言建模（next-token prediction），无需设计 encoder-decoder 对齐</td>
+</tr>
+<tr>
+<td align="center"><strong>推理高效</strong></td>
+<td align="center">生成时只需前向 pass，无需 encoder 缓存（除 prompt 外）</td>
+</tr>
+<tr>
+<td align="center"><strong>更适合自回归生成</strong></td>
+<td align="center">聊天、写作、代码生成等任务天然符合“一个接一个生成 token”</td>
+</tr>
+<tr>
+<td align="center"><strong>Scaling 更有效</strong></td>
+<td align="center">实践证明，Decoder-only 模型在大规模数据+参数下表现极佳</td>
+</tr>
+</tbody></table>
+<p><strong>适用场景对比</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">代表模型</th>
+<th align="center">适合任务</th>
+<th align="center">是否主流LLM</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>Encoder-Decoder</strong></td>
+<td align="center">T5, BART, FLAN-T5, UL2</td>
+<td align="center">翻译、摘要、问答（输入输出长度差异大）</td>
+<td align="center">❌ 非主流（用于特定任务）</td>
+</tr>
+<tr>
+<td align="center"><strong>Decoder-Only</strong></td>
+<td align="center">GPT, Llama, Qwen, DeepSeek,</td>
+<td align="center">聊天、代码、创作、推理</td>
+<td align="center">✅<strong>当前绝对主流</strong></td>
+</tr>
+</tbody></table>
+<p><strong>补充说明</strong></p>
+<ul>
+<li><strong>Encoder-only 模型</strong>（如 BERT）主要用于<strong>理解类任务</strong>（分类、NER），不能生成文本，已基本退出 LLM 主流。</li>
+<li><strong>Decoder-only 模型通过 prompt engineering</strong>（如“摘要以下文本：…”）也能完成翻译、摘要等任务，<strong>灵活性强</strong>，因此逐渐取代 Encoder-Decoder。</li>
+<li>不过，在<strong>专业生成任务</strong>（如机器翻译、长文档摘要）中，Encoder-Decoder 仍有优势，但通常<strong>不被称为“大语言模型（LLM）”</strong>，而属于“序列到序列（Seq2Seq）模型”。</li>
+</ul>
+<hr>
+<p><strong>Decoder-only能完全替代Encoder-Decoder？</strong></p>
+<p><strong>并不能完全替代</strong>，但<strong>在大多数实际场景中，Decoder-only 模型可以通过提示工程（prompting）模拟 T5 的功能</strong>。</p>
+<p>T5 是 <strong>Encoder-Decoder 结构</strong>，天然适合：</p>
+<ul>
+<li><strong>输入一段文本 → 输出另一段不同长度&#x2F;格式的文本</strong></li>
+<li>典型任务：翻译、摘要、问答、文本改写、填空等</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入（<span class="type">Encoder</span>）：<span class="comment">&quot;translate English to Chinese: Hello&quot;</span></span><br><span class="line">输出（<span class="type">Decoder</span>）：<span class="comment">&quot;你好&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>Encoder 全面理解输入，Decoder 专注生成输出，两者分工明确。</p>
+<hr>
+<p>Decoder-only 模型只有 Decoder，<strong>只能做“词语接龙”</strong>：给定前面的词，预测下一个词。</p>
+<p>但它可以通过 <strong>设计 prompt</strong> 来“假装”有 Encoder：</p>
+<p>例如：</p>
+<figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：<span class="comment">&quot;translate English to Chinese: Hello →&quot;</span></span><br><span class="line">模型接龙：<span class="comment">&quot;你好&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>只要训练数据里有大量这种“指令 + 答案”的样本（即 SFT 数据），它就能学会模仿 T5 的行为。</p>
+<hr>
+<p> 但 Decoder-only 有局限：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>T5（Encoder-Decoder）</th>
+<th>Decoder-only</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>长输入 + 短输出</strong>（如长文档摘要）</td>
+<td>✅ Encoder 可高效编码全文</td>
+<td>❌ 需把全文塞进上下文，显存压力大</td>
+</tr>
+<tr>
+<td><strong>输入输出完全无关格式</strong></td>
+<td>✅ 天然支持</td>
+<td>⚠️ 依赖 prompt 设计，容易出错</td>
+</tr>
+<tr>
+<td><strong>并行训练效率</strong></td>
+<td>✅ Encoder 可并行处理输入</td>
+<td>❌ 自回归生成，训练&#x2F;推理更慢</td>
+</tr>
+<tr>
+<td><strong>多轮复杂推理</strong></td>
+<td>⚠️ 一般</td>
+<td>✅ 更擅长（因训练数据多为对话）</td>
+</tr>
+</tbody></table>
+<hr>
+<p>实际结论：</p>
+<ul>
+<li><p><strong>对于聊天、问答、代码生成、简单翻译&#x2F;摘要</strong>：<strong>Decoder-only 完全够用，甚至更好</strong>（因为训练数据更丰富）。</p>
+</li>
+<li><p><strong>对于专业级长文本摘要、机器翻译、结构化生成</strong>： <strong>Encoder-Decoder（如 T5、BART）仍有优势</strong>，尤其在资源受限或需要高精度时。</p>
+</li>
+</ul>
+<hr>
+<p><strong>一句话总结：</strong></p>
+<blockquote>
+<p><strong>Decoder-only 模型能“模仿”T5 的大部分功能，但不是“原生支持”；在资源充足、prompt 设计得当的情况下，效果接近；但在长输入、高精度任务上（摘要、关键信息抽取、翻译、结构化生成、数据提取、表格生成、训练数据有限，但任务明确），T5 类模型仍有不可替代的优势。</strong></p>
+<p> <strong>简单记</strong>： </p>
+<ul>
+<li>如果任务是 <strong>“读一篇长文，写一句总结”</strong> → 选 <strong>Encoder-Decoder</strong>；</li>
+<li>如果任务是 <strong>“接着写故事、聊天、写代码”</strong> → 选 <strong>Decoder-only</strong>。</li>
+</ul>
+</blockquote>
+<hr>
+<h3 id="BERT-、-BART-、GPT-Qwen"><a href="#BERT-、-BART-、GPT-Qwen" class="headerlink" title="BERT 、 BART 、GPT &#x2F; Qwen"></a>BERT 、 BART 、GPT &#x2F; Qwen</h3><p><strong>三类模型的本质区别</strong></p>
+<table>
+<thead>
+<tr>
+<th>模型类型</th>
+<th>代表</th>
+<th>结构</th>
+<th>核心能力</th>
+<th>是否能生成文本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Encoder-only</strong></td>
+<td>BERT</td>
+<td>只有 Transformer Encoder</td>
+<td><strong>理解语言</strong>（分类、抽取、问答）</td>
+<td>❌ 不能生成新内容</td>
+</tr>
+<tr>
+<td><strong>Encoder-Decoder</strong></td>
+<td>BART, T5</td>
+<td>Encoder + Decoder</td>
+<td><strong>理解 + 生成</strong>（输入→输出）</td>
+<td>✅ 能生成，但格式固定</td>
+</tr>
+<tr>
+<td><strong>Decoder-only</strong></td>
+<td>GPT、Llama、Qwen、</td>
+<td>只有 Transformer Decoder</td>
+<td><strong>自回归生成</strong>（接龙式创作）</td>
+<td>✅ 擅长自由生成</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>详细说明与典型场景</strong></p>
+<ol>
+<li><strong>BERT（Encoder-only）——“语言理解专家”</strong></li>
+</ol>
+<ul>
+<li><strong>预训练方式</strong>：完形填空（Masked Language Model）</li>
+<li><strong>特点</strong>：<ul>
+<li>能同时看到词的左右上下文（双向）</li>
+<li>输出是对输入的“深度理解”，不是新句子</li>
+</ul>
+</li>
+<li><strong>典型使用场景</strong>：<ul>
+<li>客服工单自动分类（退货&#x2F;咨询&#x2F;投诉）</li>
+<li>情感分析（好评&#x2F;差评）</li>
+<li>命名实体识别（从病历中抽“药品名”“疾病名”）</li>
+<li>问答系统（从文档中找出答案片段）</li>
+</ul>
+</li>
+<li><strong>不适合</strong>：写故事、聊天、写代码等生成任务</li>
+</ul>
+<blockquote>
+<p>BERT 是“阅读理解高手”，但不会“创作”。适用于<strong>任何从固定选项或原文中“选出答案”的任务</strong>，主要用于分类（classification）和抽取（extraction）类任务。</p>
+</blockquote>
+<hr>
+<ol start="2">
+<li><strong>BART &#x2F; T5（Encoder-Decoder）——“专业编辑”</strong></li>
+</ol>
+<ul>
+<li><strong>预训练方式</strong>：破坏输入 → 还原原文（如删词、打乱）</li>
+<li><strong>特点</strong>：<ul>
+<li>Encoder 全面理解输入</li>
+<li>Decoder 专注生成输出</li>
+<li>输入和输出可以完全不同（如英文→中文）</li>
+</ul>
+</li>
+<li><strong>典型使用场景</strong>：<ul>
+<li>新闻摘要（长文 → 短摘要）</li>
+<li>机器翻译（中 ↔ 英）</li>
+<li>文本纠错（“工司” → “公司”）</li>
+<li>结构化生成（合同 → JSON）</li>
+</ul>
+</li>
+<li><strong>优势</strong>：在<strong>输入输出差异大、要求高保真</strong>的任务中表现稳定、高效、低成本</li>
+</ul>
+<blockquote>
+<p>BART 是“修复+重写专家”，适合专业级生成，但不适合自由聊天。</p>
+</blockquote>
+<hr>
+<ol start="3">
+<li><strong>GPT &#x2F; Qwen &#x2F; MiniMind（Decoder-only）——“即兴创作人”</strong></li>
+</ol>
+<ul>
+<li><strong>预训练方式</strong>：词语接龙（Next Token Prediction）</li>
+<li><strong>特点</strong>：<ul>
+<li>只能从左到右生成（单向）</li>
+<li>通过 prompt 模拟各种任务（如“请总结：…”）</li>
+<li>支持多轮对话、代码、创作等开放任务</li>
+</ul>
+</li>
+<li><strong>典型使用场景</strong>：<ul>
+<li>智能语音玩具（讲故事、唱歌、查天气）</li>
+<li>聊天机器人（客服、陪伴、教育）</li>
+<li>代码生成（写 Python、调试）</li>
+<li>思维链推理（“先想再答”）</li>
+</ul>
+</li>
+<li><strong>优势</strong>：灵活、拟人、适合交互；可通过 Function Calling 调用工具</li>
+<li><strong>劣势</strong>：长输入处理弱、结构化输出易出错、成本高</li>
+</ul>
+<blockquote>
+<p>GPT&#x2F;Qwen 是“万能聊天伙伴”，靠 prompt 和微调模拟一切，但不是所有任务都最优。</p>
+</blockquote>
+<hr>
+<p><strong>如何选择–&gt;看任务类型</strong></p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>推荐模型类型</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>分类、抽取、理解</strong>（如客服分类）</td>
+<td>✅ BERT</td>
+<td>快、准、便宜、稳定</td>
+</tr>
+<tr>
+<td><strong>输入→输出转换</strong>（如摘要、翻译）</td>
+<td>✅ BART&#x2F;T5</td>
+<td>天然结构匹配，效果好</td>
+</tr>
+<tr>
+<td><strong>聊天、创作、代码、语音玩具</strong></td>
+<td>✅ GPT&#x2F;Qwen&#x2F;Deepseek</td>
+<td>自然、灵活、支持多轮对话</td>
+</tr>
+<tr>
+<td><strong>高精度专业系统</strong></td>
+<td>✅ BERT + BART 组合</td>
+<td>稳定可靠，工业首选</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>现实中的趋势</strong></p>
+<ul>
+<li><strong>BERT</strong>：仍是企业后台“理解模块”的主力（如搜索、风控）</li>
+<li><strong>BART&#x2F;T5</strong>：在专业生成（摘要、翻译）中不可替代</li>
+<li><strong>GPT&#x2F;Qwen&#x2F;Deepseek</strong>：主导<strong>用户直接交互</strong>的场景（App、玩具、助手）</li>
+</ul>
+<hr>
+<p><strong>终极总结（一句话记住）</strong>：</p>
+<blockquote>
+<ul>
+<li><strong>BERT 看懂你的话</strong> → 适合分类、抽取  </li>
+<li><strong>BART 改写你的话</strong> → 适合摘要、翻译  </li>
+<li><strong>GPT&#x2F;Qwen 接着你的话聊</strong> → 适合聊天、创作、语音玩具  </li>
+<li>想自由生成？需Decoder（Decoder 或 Encoder-Decoder；BERT 永远不行）</li>
+<li>短文本（2000 字）摘要可用 Decoder-only；长文档摘要优先考虑 Encoder-Decoder。</li>
+</ul>
+</blockquote>
+<p>三者不是谁取代谁，而是<strong>各司其职，按需选用</strong>。</p>
+<hr>
+<h3 id="LLM训练流程"><a href="#LLM训练流程" class="headerlink" title="LLM训练流程"></a>LLM训练流程</h3><p>整个训练过程可分为 <strong>5 个核心阶段</strong>：</p>
+<ol>
+<li><strong>Tokenizer 训练（分词器构建）</strong>  </li>
+<li><strong>Pretrain（预训练）</strong>  </li>
+<li><strong>SFT（监督微调）</strong>  </li>
+<li><strong>RLHF &#x2F; DPO（偏好对齐）</strong>  </li>
+<li><strong>Knowledge Distillation（知识蒸馏，可选）</strong></li>
+</ol>
+<blockquote>
+<p>💡 所有阶段都围绕同一个目标：<br><strong>让模型从“会词语接龙” → “会聊天” → “会礼貌聊天” → “会像专家一样思考”</strong></p>
+</blockquote>
+<hr>
+<p><strong>分阶段详解</strong></p>
+<p>1️⃣ Tokenizer 训练（分词器构建）</p>
+<p><strong>作用</strong>：把人类语言（如“你好世界”）转换成模型能理解的数字（token ID）。</p>
+<ul>
+<li>输入：原始文本（如 <code>&#123;&quot;text&quot;: &quot;人工智能很神奇&quot;&#125;</code>）</li>
+<li>输出：词表（vocabulary） + 分词规则（如 <code>&quot;人&quot;→123, &quot;工&quot;→456...</code>）</li>
+<li><strong>为什么重要</strong>？<ul>
+<li>词表大小直接影响模型体积（MiniMind 用 6400 词表 → 模型仅 26M）</li>
+<li>好的 tokenizer 能减少 OOV（未登录词），提升压缩率</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>✅ <strong>MiniMind 做法</strong>：自研 tokenizer，控制词表为 6400，避免 embedding 层过大。</p>
+</blockquote>
+<p>2️⃣ Pretrain（预训练）——“学知识”</p>
+<p><strong>作用</strong>：让模型学会“词语接龙”，掌握世界知识。</p>
+<ul>
+<li>任务：给定前文，预测下一个 token（语言建模）</li>
+<li>输入：纯文本（如 <code>&quot;秦始皇是中国第一位皇帝...&quot;</code>）</li>
+<li>输出：基础语言模型（如 <code>pretrain_768.pth</code>）</li>
+<li><strong>关键特点</strong>：<ul>
+<li><strong>无监督</strong>：不需要人工标注</li>
+<li><strong>数据量大</strong>：MiniMind 用 1.6GB 高质量中文语料（≈4B tokens）</li>
+<li><strong>目标单一</strong>：只学“语言规律”，不学“怎么聊天”</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>✅ <strong>结果</strong>：模型会接龙，但不会对话（比如你问“你好吗？”，它可能接“你好吗？今天天气不错…”）</p>
+</blockquote>
+<p>3️⃣ SFT（监督微调，Supervised Fine-Tuning）——“学对话”</p>
+<p><strong>作用</strong>：教会模型按人类习惯聊天（user&#x2F;assistant 格式）。</p>
+<ul>
+<li>任务：模仿人类对话</li>
+<li>输入：指令数据（如 <code>&#123;&quot;user&quot;: &quot;讲个故事&quot;, &quot;assistant&quot;: &quot;从前有只小猫...&quot;&#125;</code>）</li>
+<li>输出：具备对话能力的模型（如 <code>full_sft_768.pth</code>）</li>
+<li><strong>关键特点</strong>：<ul>
+<li><strong>有监督</strong>：依赖高质量对话数据（MiniMind 用 <code>sft_mini_512.jsonl</code>）</li>
+<li><strong>格式约束</strong>：模型学会“用户说→我回答”的交互模式</li>
+<li><strong>可定制</strong>：加入医疗、法律等垂域数据，打造专业模型</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>✅ <strong>结果</strong>：模型能正确响应“讲故事”“查天气”等指令。</p>
+</blockquote>
+<p>4️⃣ RLHF &#x2F; DPO（偏好对齐）——“学礼貌”</p>
+<p><strong>作用</strong>：让模型更符合人类偏好（选好答案，拒坏答案）。</p>
+<ul>
+<li>任务：从“能答” → “答得好”</li>
+<li>输入：偏好数据（<code>chosen</code> vs <code>rejected</code> 回复对）</li>
+<li>算法：<ul>
+<li><strong>DPO（Direct Preference Optimization）</strong>：MiniMind 采用，无需奖励模型，显存友好</li>
+<li><strong>PPO</strong>：需训练奖励模型，复杂但效果强</li>
+</ul>
+</li>
+<li><strong>关键特点</strong>：<ul>
+<li>减少有害、无礼、胡说八道的回答</li>
+<li>提升安全性、有用性、一致性</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>⚠️ <strong>注意</strong>：RLHF 不提升“智力”，只提升“礼貌”；MiniMind 测试显示，RLHF 后模型更啰嗦但更安全。</p>
+</blockquote>
+<p>5️⃣ Knowledge Distillation（知识蒸馏，可选）——“向老师学习”</p>
+<p><strong>作用</strong>：用大模型（如 DeepSeek-R1）教小模型推理能力。</p>
+<ul>
+<li>任务：模仿大模型的“思考过程”</li>
+<li>输入：大模型生成的带思维链数据（如 <code>&lt;think&gt;...&lt;answer&gt;...</code>）</li>
+<li>输出：具备推理能力的小模型（如 <code>reason_768.pth</code>）</li>
+<li><strong>两种方式</strong>：<ul>
+<li><strong>黑盒蒸馏</strong>：只用大模型输出（等同于 SFT）</li>
+<li><strong>白盒蒸馏</strong>：模仿大模型中间层激活（MiniMind 实现了，但需教师模型）</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>✅ <strong>MiniMind 做法</strong>：用 <code>r1_mix_1024.jsonl</code> 蒸馏 DeepSeek-R1 的推理能力。</p>
+</blockquote>
+<p>🔄 完整流程图</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">原始文本</span><br><span class="line">   ↓</span><br><span class="line"><span class="selector-attr">[Tokenizer]</span> → token IDs（数字序列）</span><br><span class="line">   ↓</span><br><span class="line"><span class="selector-attr">[Pretrain]</span> → 学语言规律（词语接龙） → pretrain<span class="selector-class">.pth</span></span><br><span class="line">   ↓</span><br><span class="line"><span class="selector-attr">[SFT]</span>      → 学对话格式（user/assistant） → full_sft<span class="selector-class">.pth</span></span><br><span class="line">   ↓</span><br><span class="line"><span class="selector-attr">[DPO]</span>      → 学人类偏好（选好答案） → rlhf<span class="selector-class">.pth</span></span><br><span class="line">   ↓</span><br><span class="line"><span class="selector-attr">[蒸馏]</span>     → 学推理能力（可选） → reason<span class="selector-class">.pth</span></span><br><span class="line">   ↓</span><br><span class="line"><span class="selector-attr">[推理]</span>     → 聊天、讲故事、查天气...</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>Tokenizer 是翻译官，Pretrain 是读书，SFT 是学说话，DPO 是学礼貌，蒸馏 是拜名师。</strong><br>五个阶段层层递进，最终让一个“词语接龙机”变成“智能对话伙伴”。</p>
+</blockquote>
+<hr>
+<h3 id="Tokenizer-选择与实现细节（中文场景）"><a href="#Tokenizer-选择与实现细节（中文场景）" class="headerlink" title="Tokenizer 选择与实现细节（中文场景）"></a><strong>Tokenizer 选择与实现细节（中文场景）</strong></h3><p>在中文大模型训练中，Tokenizer 的选择至关重要。不同于英文等以空格分隔的语言，中文没有天然的词边界，因此需要特别考虑：</p>
+<p><strong>Byte vs Char 级 BPE 选择</strong>：</p>
+<ul>
+<li><strong>字符级 BPE（<code>char</code>）</strong>：将每个汉字、标点视为独立单元，如”你好”→[“你”,”好”]。<strong>适合中文场景</strong>，可读性强，能保留语义完整性，不易产生乱码。</li>
+<li><strong>字节级 BPE（<code>byte</code>）</strong>：按 UTF-8 字节编码，”你好”可能被拆为 <code>[&quot;\xe4\xbd\xa0&quot;, &quot;\xe5\xa5\xbd&quot;]</code>。优势是<strong>永远不会出现 OOV</strong>（未登录词），但可读性差，中文会被过度拆分。</li>
+</ul>
+<p><strong>词表大小权衡</strong>：</p>
+<ul>
+<li>小词表（如 MiniMind 的 6400）：减少 embedding 层参数，适合小模型，但可能降低表达能力</li>
+<li>大词表（如 ChatLM-mini 的 40961）：覆盖更多词汇组合，提升性能，但增加显存压力</li>
+</ul>
+<blockquote>
+<p>💡 <strong>实操建议</strong>：中文为主的项目，<strong>优先选择字符级 BPE</strong>（<code>char</code>），词表大小根据模型参数量调整：100M 以下模型用 5k-10k，1B 以上模型用 30k-50k。</p>
+</blockquote>
+<hr>
+<h3 id="Pretrain-数据来源与质量控制"><a href="#Pretrain-数据来源与质量控制" class="headerlink" title="Pretrain 数据来源与质量控制"></a><strong>Pretrain 数据来源与质量控制</strong></h3><p>预训练数据是大模型的”知识源泉”。高质量中文语料通常来自：</p>
+<p><strong>主流中文语料来源</strong>：</p>
+<ul>
+<li><strong>维基百科</strong>（zhwiki）：高质量结构化知识，需用 WikiExtractor 提取</li>
+<li><strong>Common Crawl</strong>：海量网页，但需严格过滤（广告、乱码、非中文）</li>
+<li><strong>百科类</strong>：百度百科、互动百科（注意版权）</li>
+<li><strong>书籍语料</strong>：中文小说、古籍、专业书籍（需清洗格式）</li>
+<li><strong>社区问答</strong>：知乎、百度知道（webtext2019zh 数据集）</li>
+</ul>
+<p><strong>数据清洗关键步骤</strong>：</p>
+<ol>
+<li><strong>HTML&#x2F;格式清理</strong>：移除标签、JavaScript、CSS</li>
+<li><strong>语言过滤</strong>：保留中文占比 &gt;90% 的文本</li>
+<li><strong>去重</strong>：文档级&#x2F;句子级去重（MinHash + LSH）</li>
+<li><strong>质量评分</strong>：基于困惑度、标点比例、句子长度过滤低质内容</li>
+<li><strong>敏感内容过滤</strong>：涉政、暴力、色情内容识别与移除</li>
+</ol>
+<blockquote>
+<p>💡 <strong>MiniMind 实践</strong>：我们使用 1.6GB 高质量中文语料（约 4B tokens），通过多轮清洗确保数据纯净度。<strong>质量远胜于数量</strong>——1GB 精心清洗的语料，效果远好于 10GB 未清洗的脏数据。</p>
+</blockquote>
+<hr>
+<h3 id="SFT-数据格式与构造技巧"><a href="#SFT-数据格式与构造技巧" class="headerlink" title="SFT 数据格式与构造技巧"></a><strong>SFT 数据格式与构造技巧</strong></h3><p>SFT（监督微调）是让模型学会对话的关键阶段，数据格式直接影响效果：</p>
+<p><strong>标准 SFT 数据格式（JSONL）</strong>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;conversations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">  <span class="punctuation">&#123;</span><span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;user&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span> <span class="string">&quot;讲个童话故事&quot;</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="punctuation">&#123;</span><span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;assistant&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span> <span class="string">&quot;从前有只小兔子，它住在一个美丽的森林里...&quot;</span><span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">]</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>构造高质量 SFT 数据的技巧</strong>：</p>
+<ul>
+<li><strong>指令多样性</strong>：覆盖”总结&#x2F;解释&#x2F;对比&#x2F;生成&#x2F;推理”等不同类型指令</li>
+<li><strong>输出控制</strong>：<ul>
+<li>长度控制：单轮回答 ≤512 tokens（避免小模型生成失控）</li>
+<li>质量标注：人工审核或大模型过滤低质样本</li>
+</ul>
+</li>
+<li><strong>领域平衡</strong>：确保通用知识（60%）+ 垂类知识（40%，如医疗、法律）</li>
+<li><strong>思维链（CoT）样本</strong>：10-20% 的数据包含推理步骤，如：<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&quot;用户：17乘以24等于多少？</span></span><br><span class="line">助手：<span class="symbol">&lt;think&gt;</span><span class="number">17</span>×<span class="number">24</span> = <span class="number">17</span>×(<span class="number">20</span>+<span class="number">4</span>) = <span class="number">340</span>+<span class="number">68</span> = <span class="number">408</span>&lt;/think&gt; 答案是<span class="number">408</span>。<span class="comment">&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<blockquote>
+<p>💡 <strong>避坑指南</strong>：避免在 SFT 数据中混入”复读机式”对话（如”你好→你好”），这会导致模型学会重复输出。ChatLM-mini 项目中，我们使用 Belle 0.4M 数据集，清洗后保留 32 万高质量样本。</p>
+</blockquote>
+<hr>
+<h3 id="DPO-原理简述：为何比-RLHF-更友好？"><a href="#DPO-原理简述：为何比-RLHF-更友好？" class="headerlink" title="DPO 原理简述：为何比 RLHF 更友好？"></a><strong>DPO 原理简述：为何比 RLHF 更友好？</strong></h3><p>DPO（Direct Preference Optimization）是 RLHF 的高效替代方案，2023 年由斯坦福团队提出：</p>
+<p><strong>核心思想</strong>：</p>
+<blockquote>
+<p>DPO 绕过了传统 RLHF 中复杂的奖励模型训练和 PPO 优化，将偏好学习直接转化为一个<strong>监督学习问题</strong>。它通过一个数学变换，将 RLHF 目标函数重写为仅依赖于偏好对（chosen&#x2F;rejected）的形式，无需显式建模奖励函数。</p>
+</blockquote>
+<p><strong>优势对比</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>RLHF (PPO)</th>
+<th>DPO</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>复杂度</td>
+<td>高（需训练奖励模型+策略模型）</td>
+<td>低（单阶段优化）</td>
+</tr>
+<tr>
+<td>显存占用</td>
+<td>高（需同时加载两个模型）</td>
+<td>低（仅需一个模型）</td>
+</tr>
+<tr>
+<td>收敛速度</td>
+<td>慢（需多轮迭代）</td>
+<td>快（通常 1-3 epochs 足够）</td>
+</tr>
+<tr>
+<td>实现难度</td>
+<td>高（需调多个超参）</td>
+<td>低（仅需调整 beta 参数）</td>
+</tr>
+</tbody></table>
+<p><strong>DPO 损失函数</strong>：<br>$$\mathcal{L}<em>{DPO} &#x3D; -\log \sigma\left(\beta \log \frac{\pi</em>\theta(y^+|x)}{\pi_{ref}(y^+|x)} - \beta \log \frac{\pi_\theta(y^-|x)}{\pi_{ref}(y^-|x)}\right)$$<br>其中 $\beta$ 控制优化强度（通常 0.1-0.5），$\pi_{ref}$ 是参考策略（通常为 SFT 模型）。</p>
+<hr>
+<h3 id="训练资源与硬件估算"><a href="#训练资源与硬件估算" class="headerlink" title="训练资源与硬件估算"></a><strong>训练资源与硬件估算</strong></h3><p>大模型训练对硬件要求高，以下是 decoder-only 架构的实测参考（基于 NVIDIA GPU）：</p>
+<p><strong>全流程时间估算</strong>（单卡 RTX 3090）：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>26M 模型</th>
+<th>104M 模型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tokenizer</td>
+<td>0.5 h</td>
+<td>0.5 h</td>
+<td>与模型大小无关</td>
+</tr>
+<tr>
+<td>Pretrain</td>
+<td>1.1 h</td>
+<td>3.9 h</td>
+<td>取决于 tokens 数量</td>
+</tr>
+<tr>
+<td>sft_mini_512</td>
+<td>1 h</td>
+<td>3.3 h</td>
+<td>通常 3-5 万样本</td>
+</tr>
+<tr>
+<td>sft_512</td>
+<td>6 h</td>
+<td>20 h</td>
+<td></td>
+</tr>
+<tr>
+<td>sft_1024</td>
+<td>4.58 h</td>
+<td>15 h</td>
+<td></td>
+</tr>
+<tr>
+<td>sft_2048</td>
+<td>7.5 h</td>
+<td>25 h</td>
+<td></td>
+</tr>
+<tr>
+<td>DPO</td>
+<td>1 h</td>
+<td>3 h</td>
+<td>通常 5-8 万偏好对</td>
+</tr>
+</tbody></table>
+<p><strong>成本优化技巧</strong>：</p>
+<ul>
+<li><strong>梯度累积</strong>：小 batch 但多步累积再更新，等效大 batch</li>
+<li><strong>混合精度</strong>：AMP (Automatic Mixed Precision) 降低 40% 显存</li>
+<li><strong>激活重计算</strong>：用时间换空间，降低 30% 显存</li>
+<li><strong>ZeRO 优化</strong>：DeepSpeed 的 ZeRO-1 可单卡训 700M 模型</li>
+</ul>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese">https://caihaoran-00.github.io/2025/03/20/%E4%BB%8E%E9%9B%B6%E8%AE%AD%E7%BB%83%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%B3%BB%E7%BB%9F%E4%B9%8BChatLM-mini-Chinese</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/llm/" rel="tag"># llm</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/10/17/%E5%9F%BA%E4%BA%8EYOLO-V8%E7%9A%84%E7%84%8A%E6%8E%A5%E7%BC%BA%E9%99%B7%E6%A3%80%E6%B5%8B%E8%AF%B4%E6%98%8E%E5%8F%8A%E4%BB%A3%E7%A0%81/" rel="prev" title="基于YOLO V8的焊接缺陷检测说明及代码">
+                  <i class="fa fa-angle-left"></i> 基于YOLO V8的焊接缺陷检测说明及代码
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/" rel="next" title="某房地产企业演示demo问题整理">
+                  某房地产企业演示demo问题整理 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">482k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29:14</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

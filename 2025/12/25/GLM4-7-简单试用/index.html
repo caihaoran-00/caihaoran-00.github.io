@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言最近在做的智能体项目，由于安全管控，需要挂着客户的vpn软件在HiAgent平台（类似于dify&#x2F;coze，也是字节的产品，但主打私有化和运维托管）进行工作流&#x2F;智能体的搭建，直接导致我挂不了别的vpn进行gemini-3pro（或者chatgpt）的访问，而国产qwen和deepseek在代码方面的表现在我的使用场景下表现的不太好（Kimi也使用过，回答风格我不太习惯，具体">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GLM4.7-简单试用">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/12/25/GLM4-7-%E7%AE%80%E5%8D%95%E8%AF%95%E7%94%A8/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言最近在做的智能体项目，由于安全管控，需要挂着客户的vpn软件在HiAgent平台（类似于dify&#x2F;coze，也是字节的产品，但主打私有化和运维托管）进行工作流&#x2F;智能体的搭建，直接导致我挂不了别的vpn进行gemini-3pro（或者chatgpt）的访问，而国产qwen和deepseek在代码方面的表现在我的使用场景下表现的不太好（Kimi也使用过，回答风格我不太习惯，具体">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-12-25T02:43:13.000Z">
+<meta property="article:modified_time" content="2025-12-25T03:49:12.043Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="llm">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/12/25/GLM4-7-%E7%AE%80%E5%8D%95%E8%AF%95%E7%94%A8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/12/25/GLM4-7-%E7%AE%80%E5%8D%95%E8%AF%95%E7%94%A8/","path":"2025/12/25/GLM4-7-简单试用/","title":"GLM4.7-简单试用"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>GLM4.7-简单试用 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#glm-4-6%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93"><span class="nav-number">2.1.</span> <span class="nav-text">glm-4.6使用总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#glm-4-7-%E4%BD%BF%E7%94%A8%E4%BD%93%E9%AA%8C"><span class="nav-number">2.2.</span> <span class="nav-text">glm-4.7 使用体验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">4.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E5%8D%9A%E5%8E%9F%E6%96%87"><span class="nav-number">4.1.</span> <span class="nav-text">微博原文</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">132</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/12/25/GLM4-7-%E7%AE%80%E5%8D%95%E8%AF%95%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="GLM4.7-简单试用 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GLM4.7-简单试用
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-12-25 10:43:13 / 修改时间：11:49:12" itemprop="dateCreated datePublished" datetime="2025-12-25T10:43:13+08:00">2025-12-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>9.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>33 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在做的智能体项目，由于安全管控，需要挂着客户的<code>vpn</code>软件在<code>HiAgent</code>平台（类似于<code>dify</code>&#x2F;<code>coze</code>，也是字节的产品，但主打私有化和运维托管）进行工作流&#x2F;智能体的搭建，直接导致我挂不了别的<code>vpn</code>进行<code>gemini-3pro</code>（或者<code>chatgpt</code>）的访问，而国产<code>qwen</code>和<code>deepseek</code>在代码方面的表现在我的使用场景下表现的不太好（Kimi也使用过，回答风格我不太习惯，具体的代码表现如何没细究），剩下的国产大模型还有<code>glm</code>和<code>minimax</code>，我先体验了下<code>glm</code>，之前还是<code>glm-4.6</code>，昨天突然发现变成<code>glm-4.7</code>了，又看到了一篇量子位的博客，<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/AwYgbzPU6Gix61NpEMXezw">用编程大模型登顶开源第一后，智谱GLM团队被拷问了3小时</a>，感觉是时候把这段时间的<code>glm-4.6</code>的体验总结下并体验下<code>glm-4.7</code>了。</p>
+<blockquote>
+<p>强烈推荐看下附录的智谱首席科学家唐杰的微博原文。</p>
+</blockquote>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="glm-4-6使用总结"><a href="#glm-4-6使用总结" class="headerlink" title="glm-4.6使用总结"></a>glm-4.6使用总结</h3><p>优点：</p>
+<ul>
+<li>代码风格简洁，非代码时的回答内容也不像<code>deepseek</code>那样简单问题也回答一大段</li>
+<li>给出的系统提示词与代码都比较好用</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>上下文长度长一些时（长代码的场景下，大概三四轮对话），回答的质量就急剧下降了，甚至听不懂人话了，这时候需要新开个对话</li>
+</ul>
+<p>这个缺点确实有点麻烦，但瑕不掩瑜，我愿称之为<code>gemini</code>的平替。</p>
+<hr>
+<h3 id="glm-4-7-使用体验"><a href="#glm-4-7-使用体验" class="headerlink" title="glm-4.7 使用体验"></a>glm-4.7 使用体验</h3><p>我这里的体验只是问些总结性&#x2F;常识性的问题，不涉及代码以及系统提示词相关的东西。</p>
+<p>前言中提到的博客，<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/AwYgbzPU6Gix61NpEMXezw">用编程大模型登顶开源第一后，智谱GLM团队被拷问了3小时</a>中截取了智谱首席科学家唐杰在<code>GLM-4.7</code>发布之际对于大模型发展的一些观点。那么就针对这个观点，让<code>glm-4.7</code>解释并评价下其观点。</p>
+<p><a target="_blank" rel="noopener" href="https://weibo.com/2126427211/QjIYhCmfq">微博全文</a></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">Q:</span><br><span class="line">最近的一些感悟，分享一下，希望对大家有用。</span><br><span class="line">-预训练使得大模型已经掌握世界常识知识，并且具备简单推理能力。更多数据、更大参数和更饱和的计算仍然是scaling基座模型最高效的办法。</span><br><span class="line">-激活对齐和增强推理能力，尤其是激活更全面的长尾能力是保证模型效果的另一关键，通用benchmark的出现一方面评测了模型通用效果，但也可能使得很多模型过拟合。真实场景下是如何让模型更快、更好的对齐长尾的真实场景，增强实际体感。mid和post training使得更多场景的快速对齐和强推理能力成为可能。</span><br><span class="line">-agent是模型能力扩展的一个里程碑，也是体现ai模型进入人类真实(虚拟/物理)世界的关键。没有agent能力，大模型将停留在(理论学习)阶段，就类似一个人不断学习，哪怕学习到博士，也只是知识积累，还没有转化为生产力。原来的agent是通过模型应用来实现，现在模型已经可以直接将agent数据集成到训练过程，增强了模型的通用性，其实难题还是不同agent环境的泛化和迁移并不是那么容易，因此最简单办法也只有不断增加不同agent环境的数据和针对不同环境的强化学习。</span><br><span class="line"></span><br><span class="line">解释下该段中包含的专业术语，然后再评价下（兼具正反面）他这端观点</span><br><span class="line"></span><br><span class="line">A:</span><br><span class="line">这份感悟主要涵盖了当前大模型（LLM）发展的核心技术路径、对齐策略以及应用形态的演变。下面我将首先解释其中包含的专业术语，然后对该段观点进行正反两方面的评价。</span><br><span class="line"><span class="section">### 第一部分：专业术语解释</span></span><br><span class="line"><span class="strong">**1. 预训练**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解释**</span>：这是大模型训练的第一阶段。让模型在海量未标注的文本数据上进行无监督学习（如预测下一个词），目的是让模型通过海量数据“压缩”人类的知识，掌握语言的语法、语义以及关于世界的基础常识。</span><br><span class="line"><span class="strong">**2. Scaling基座模型 / Scaling Laws (缩放定律)**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解释**</span>：指大模型领域的一种核心规律，即随着模型参数量、数据量和计算资源的增加，模型的性能会呈现可预测的提升。“基座模型”指在此基础上可以开发各种应用的基础大模型（如GPT-4, Llama 3）。文中意指目前提升模型能力最稳妥的办法依然是“大力出奇迹”。</span><br><span class="line"><span class="strong">**3. 激活对齐**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解释**</span>：这里的“激活”更多指在特定场景或任务下“唤醒”模型内部相关的知识或能力。相比于传统的让模型回答符合人类价值观（如不作恶），这里的“对齐”更侧重于功能性——即在用户提问时，模型能精准地调用内部相关的知识区，而不是答非所问。</span><br><span class="line"><span class="strong">**4. 长尾能力**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解释**</span>：指那些发生频率低、但种类繁多、难度各异的知识或技能。例如，模型能熟练回答“美国总统是谁”（头部知识），但可能不知道某种生僻的古代烹饪方法（长尾知识）。提升长尾能力意味着模型要能处理更广泛、更边缘的真实问题。</span><br><span class="line"><span class="strong">**5. Mid and Post Training (中期与后期训练)**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解释**</span>：将模型训练过程划分阶段。</span><br><span class="line"><span class="bullet">    *</span>   <span class="strong">**Mid Training**</span>：通常指在预训练之后、大规模对齐之前的中间阶段，可能涉及持续预训练特定领域数据。</span><br><span class="line"><span class="bullet">    *</span>   <span class="strong">**Post Training**</span>：指预训练后的阶段，主要包括有监督微调（SFT）和强化学习（RLHF），用于塑形模型的具体能力和交互风格。</span><br><span class="line"><span class="strong">**6. 过拟合**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解释**</span>：机器学习术语。指模型在训练数据（或Benchmark测试题）上表现极好，但在从未见过的真实数据上表现很差。文中指如果模型只为了刷高分而针对通用考试题集进行优化，它可能就失去了处理真实复杂问题的灵活性。</span><br><span class="line"><span class="strong">**7. Benchmark (基准测试)**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解释**</span>：一套标准化的测试题集（如MMLU, GSM8K），用于量化评估模型的智力水平（逻辑推理、编程、数学等）。</span><br><span class="line"><span class="strong">**8. Agent (智能体)**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解释**</span>：一种超越单纯对话的AI系统形态。Agent不仅能理解语言，还能使用工具（如联网、查代码、控制机械臂）、规划任务步骤并执行目标。它被视为AI从“大脑”进化为“行动者”的关键。</span><br><span class="line"><span class="strong">**9. 泛化和迁移**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解释**</span>：</span><br><span class="line"><span class="bullet">    *</span>   <span class="strong">**泛化**</span>：模型在面对没见过的数据时也能正确表现的能力。</span><br><span class="line"><span class="section">    *   <span class="strong">**迁移**</span>：将在一个环境（如虚拟游戏）中学到的能力，应用到另一个完全不同的环境（如真实机器人控制）中的能力。</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"><span class="section">### 第二部分：观点评价（正反面分析）</span></span><br><span class="line">这段感悟非常具有行业洞察力，基本符合当前大模型发展的主流技术共识，同时也敏锐地指出了当前面临的一些瓶颈。</span><br><span class="line"><span class="section">#### <span class="strong">**正面评价（言之有理、切中肯綮）**</span></span></span><br><span class="line"><span class="bullet">1.</span>  <span class="strong">**对“大力出奇迹”的清醒认知**</span>：作者强调数据、参数和计算量仍是Scaling最高效的办法，这点非常务实。尽管业界在探索MoE（混合专家）等架构，但目前要突破智力天花板，最核心的驱动力依然是算力和规模。</span><br><span class="line"><span class="bullet">2.</span>  <span class="strong">**深刻指出了“Benchmark刷分”的弊端**</span>：作者提到的“通用Benchmark可能导致过拟合”是一个非常敏锐的观点。目前很多模型为了在排行榜（如LMSYS Chatbot Arena）上好看，针对特定考题“背答案”，导致在实际工业应用中效果反而不如榜单分数低的模型。强调“真实场景体感”回归了技术的商业本质。</span><br><span class="line"><span class="bullet">3.</span>  <span class="strong">**将Agent上升到“生产力转化”的高度**</span>：将Agent比作从“博士生（理论）”到“工作者（生产力）”的转化，这个比喻非常精准。它揭示了仅仅训练一个聪明的“大脑”是不够的，必须让AI具备行动能力（手和脚），才能真正产生经济价值。</span><br><span class="line"><span class="bullet">4.</span>  <span class="strong">**对训练阶段的精细化划分**</span>：提到Mid/Post Training对于激活长尾能力的重要性，这符合当前工程界的实践。通过后期的高质量指令微调和RL，确实可以用较少的数据成本撬动模型在特定垂类或长尾场景下的巨大潜力。</span><br><span class="line"><span class="section">#### <span class="strong">**反面/批判性评价（局限性与挑战）**</span></span></span><br><span class="line"><span class="bullet">1.</span>  <span class="strong">**对Scaling Law的过度依赖可能掩盖创新不足**</span>：虽然承认Scaling高效，但这可能是一种路径依赖。如果仅仅依靠堆算力，边际效应会递减，且成本极高。未来可能需要算法层面的质变（如新的Transformer替代架构），而不仅仅是量的堆叠。</span><br><span class="line"><span class="bullet">2.</span>  <span class="strong">**对Agent“泛化”难点的解决方案略显悲观**</span>：作者认为解决Agent泛化的“最简单办法”是增加数据和做强化学习。但这在工程上并不简单，甚至是极其昂贵的。收集物理世界的真实交互数据成本极高，且不仅数据量问题，还有Sim2Real（仿真到现实）的巨大鸿沟。仅靠堆数据可能无法解决Agent在新环境下的零样本适应问题。</span><br><span class="line"><span class="bullet">3.</span>  <span class="strong">**忽视了“推理”的内在机制差异**</span>：文中将推理能力简单归因于数据量和后期训练。但当前前沿研究（如OpenAI o1）表明，通过<span class="strong">**思维链**</span>和<span class="strong">**搜索算法**</span>改变推理时的计算分配，可能比单纯“训练进去”更关键。文中观点似乎还是偏向于“训练时注入知识”，而非“推理时展开思考”。</span><br><span class="line"><span class="bullet">4.</span>  <span class="strong">**关于“激活对齐”的定义模糊且具有挑战性**</span>：如何精准地“激活”长尾能力而不引发其他能力的遗忘（灾难性遗忘）是巨大的技术挑战。文中虽然指出了目标，但低估了实现“精准控制”模型内部神经元激活的难度。</span><br><span class="line"><span class="section">### 总结</span></span><br><span class="line">这段观点是一位<span class="strong">**深度的技术实践者**</span>的感悟。他不仅理解大模型的基础原理，更关注工程落地和商业价值。他没有被炒作的概念带偏，依然看重Scaling Law的基石作用，同时也敏锐地指出了Benchmark泡沫和Agent落地的真实难点。唯一的不足在于，对于解决Agent泛化难题的描述稍显线性思维（认为堆数据就能解决），而实际上那可能需要范式的革新。</span><br></pre></td></tr></table></figure>
+
+<p>大家觉得回答的怎么样，我认为这里的反面&#x2F;批判性评价（局限性与挑战）更像没茬硬找（变相说明原观点很对？）</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">Q:</span><br><span class="line">关于Mid and Post Training我不太明白，我只知道SFT和RLHF，你能再详细的给我科普一下吗</span><br><span class="line"></span><br><span class="line">A:</span><br><span class="line">这是一个非常好的问题。通常我们在媒体上听到的都是“预训练”之后的“微调”，这其实是一个笼统的概念。在实际的大模型研发流程中，为了把模型打磨成一个既聪明又听话的产品，这两个阶段有着非常明确的分工。</span><br><span class="line"><span class="section">为了让你更清晰地理解，我们可以把大模型的训练比作<span class="strong">**“培养一个博士生”**</span>的过程：</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"><span class="section">### 第一部分：Mid Training (中期训练) —— <span class="strong">**“选修课与知识补完”**</span></span></span><br><span class="line"><span class="strong">**简单来说**</span>：这是在预训练（小学到大学通识教育）结束后，正式进入职场前的<span class="strong">**“定向强化”**</span>阶段。</span><br><span class="line">在这个阶段，模型已经学会了语言和世界常识，但它可能在某个专业领域（比如代码、数学、医疗或特定行业）还不够强，或者它的世界知识截止日期过早。这时候我们不希望立刻改变它说话的方式，只想先往它的脑子里<span class="strong">**塞更多、更专业的干货**</span>。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**核心特点**</span>：</span><br><span class="line"><span class="bullet">    *</span>   <span class="strong">**形式上像预训练**</span>：依然是让模型“读大量文本”并预测下一个字，不需要人类手把手教它怎么问答。</span><br><span class="line"><span class="bullet">    *</span>   <span class="strong">**目的性强**</span>：不是为了聊天，而是为了<span class="strong">**提升特定领域的智力上限**</span>。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**具体场景举例**</span>：</span><br><span class="line"><span class="bullet">    *</span>   <span class="strong">**持续预训练**</span>：比如通用的GPT-4物理不好，我就拿几百万条的物理论文和教科书继续“喂”它，让它在这个领域变成专家。</span><br><span class="line"><span class="bullet">    *</span>   <span class="strong">**知识更新**</span>：预训练数据是2021年的，Mid阶段就喂2023、2024年的新新闻和百科，让它知道最近发生了什么。</span><br><span class="line"><span class="bullet">    *</span>   <span class="strong">**语言/格式适配**</span>：让模型习惯看某种特殊的数据格式（比如JSON代码块），方便以后写API。</span><br><span class="line"><span class="section"><span class="strong">**比喻**</span>：博士生通过了入学考试（预训练），但导师觉得他的量子力学基础不牢，于是扔给他十本量子力学专著让他闭关修炼两周。这个修炼的过程就是 <span class="strong">**Mid Training**</span>。</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"><span class="section">### 第二部分：Post Training (后期训练) —— <span class="strong">**“职场培训与情商管理”**</span></span></span><br><span class="line"><span class="strong">**简单来说**</span>：这就是你熟悉的 <span class="strong">**SFT + RLHF**</span> 阶段。这是在模型已经足够聪明（智商达标）之后，教它如何<span class="strong">**听懂人话、遵守规矩、变得有用**</span>的阶段。</span><br><span class="line">这个阶段不再关注“知识量”的增加，而是关注“行为模式”的改变。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**包含两个核心步骤**</span>：</span><br><span class="line"><span class="code">    **1. SFT (Supervised Fine-Tuning，有监督微调) —— “模仿范文”**</span></span><br><span class="line"><span class="code">    *   **做法**：人工精选大量高质量的问答（比如：用户问“怎么写Python爬虫？”，人工写出完美的回答）。让模型以此为例进行学习。</span></span><br><span class="line"><span class="code">    *   **目的**：让模型学会**“指令遵循”**（Instruction Following）。即：用户问，你答；用户要代码，你给代码；用户要总结，你给总结。</span></span><br><span class="line"><span class="code">    *   **比喻**：导师给学生看历届优秀毕业论文的范例，告诉他：“看，这就是标准的论文格式和语气，照着这个样子的逻辑去写。”</span></span><br><span class="line"><span class="code">    **2. RLHF (Reinforcement Learning from Human Feedback，人类反馈强化学习) —— “奖惩训练”**</span></span><br><span class="line"><span class="code">    *   **做法**：让模型生成几个回答，人类打分（A比B好）。然后训练一个奖励模型，用这个奖励模型去告诉大模型：“刚才那样回答有奖，那样回答扣分”。</span></span><br><span class="line"><span class="code">    *   **目的**：**对齐人类价值观**。让模型不说脏话、不造谣、不产生有害信息，并且尽量让回答符合人类的审美和喜好。</span></span><br><span class="line"><span class="code">    *   **比喻**：导师在旁边盯着学生干活。学生要是写错了字或者态度不好，导师就拿尺子打手心（负反馈）；学生要是回答得漂亮，导师就给颗糖（正反馈）。久而久之，学生就知道“该做什么，不该做什么”。</span></span><br><span class="line"><span class="code">---</span></span><br><span class="line"><span class="code">### 总结对比</span></span><br><span class="line"><span class="code">为了帮你彻底理清关系，我们可以用一个表格来对比：</span></span><br><span class="line"><span class="code">| 阶段 | 英文名 | 核心目的 | 训练数据的样子 | 比喻 (博士生培养) |</span></span><br><span class="line"><span class="code">| :--- | :--- | :--- | :--- | :--- |</span></span><br><span class="line"><span class="code">| **基座** | **Pre-training** | **学常识** (建立智商基础) | 海量互联网文本 (书本) | 从小学读到大学，学习通识知识。 |</span></span><br><span class="line"><span class="code">| **中期** | **Mid Training** | **补短板** (定向提升智力) | 领域专著、新知识、代码库 | 研一阶段，针对特定课题深读文献，补齐专业知识。 |</span></span><br><span class="line"><span class="code">| **后期** | **Post Training** | **学做人** (适应社会规则) | 1. 优质问答对 (SFT)&lt;br&gt;2. 人类打分偏好 (RLHF) | 研二/求职阶段，学习面试技巧、职场礼仪，学会怎么与人沟通协作。 |</span></span><br><span class="line"><span class="code">**回到你最初引用的那段话：**</span></span><br><span class="line"><span class="code">原文提到：*“Mid and Post training使得更多场景的快速对齐和强推理能力成为可能。”*</span></span><br><span class="line"><span class="code">这意味着：</span></span><br><span class="line"><span class="code">*   通过 **Mid Training**，我们可以快速把新行业的数据喂给模型，让它能懂那个行业的行话（快速对齐长尾知识）；</span></span><br><span class="line"><span class="code">*   通过 **Post Training** (特别是RLHF)，我们可以激发模型更深入的思考能力（比如通过奖励模型奖励那些“推理步骤正确”的回答），从而增强强推理能力。</span></span><br><span class="line"><span class="code">希望这个解释能帮你建立起完整的训练流水线概念！</span></span><br></pre></td></tr></table></figure>
+
+<p>回答的不错，我觉得比<code>qwen</code>和<code>deepseek</code>的回答风格更能让我接受。</p>
+<hr>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line">Q:</span><br><span class="line">我有几点不太明白：</span><br><span class="line"><span class="bullet">1.</span> 为什么叫scaling，这个词是什么意思，在这个场景下又指的是什么</span><br><span class="line"><span class="bullet">2.</span> 什么叫快速对齐和强推理能力</span><br><span class="line"></span><br><span class="line">A:</span><br><span class="line"><span class="section">这两个问题问得非常到位，它们直接触及了大模型发展的核心逻辑。我们逐一拆解，用最通俗的语言讲透。</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"><span class="section">### 问题 1：为什么叫 Scaling？在这个场景下指什么？</span></span><br><span class="line"><span class="section">#### 1. 词的本义</span></span><br><span class="line"><span class="strong">**Scaling**</span> 的英文原意是“攀登、称重、（按比例）缩放/伸缩”。</span><br><span class="line">在物理世界，比如你在地图上把一个城市缩小100倍画在纸上，这叫 <span class="strong">**Scale down**</span>（缩小）；你把一个乐高模型放大100倍做成实物，这叫 <span class="strong">**Scale up**</span>（放大）。</span><br><span class="line"><span class="section">#### 2. 在大模型场景下的含义：规模定律</span></span><br><span class="line">在大模型领域，Scaling 通常是 <span class="strong">**Scaling Up**</span>（向上扩展/规模扩大）的简称。</span><br><span class="line">这里的“Scaling”指的是<span class="strong">**通过成倍地增加关键资源（算力、数据、参数量），来获得模型性能的线性甚至超线性提升**</span>。</span><br><span class="line">具体来说，它指的是这样一个过程：</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**Parameter Scaling（参数缩放）**</span>：把模型的脑子做大。比如从70亿个参数（7B）做到 1750亿个参数（175B），再到万亿参数。这就好比把神经元的连接数量增加了上千倍。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**Data Scaling（数据缩放）**</span>：把“书”读多。训练数据从TB级别上升到PB级别。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**Compute Scaling（算力缩放）**</span>：把显卡堆多。为了算得动上面的大模型和数据，需要成千上万张H100显卡一起跑。</span><br><span class="line"><span class="strong">**为什么大家信奉 Scaling？**</span></span><br><span class="line">因为在很长一段时间里，科学家发现了一个惊人的规律（即 <span class="strong">**Scaling Laws**</span>）：</span><br><span class="line"><span class="quote">&gt; 只要你把模型变大、数据变多、算力变足，模型的智商就会<span class="strong">**稳定地、可预测地**</span>变强。</span></span><br><span class="line"><span class="quote">&gt; <span class="strong">**这种“大力出奇迹”且效果稳定的现象，就叫 Scaling。**</span></span></span><br><span class="line"><span class="section">就像造摩天大楼，只要你地基打得够深、材料用得够多、高度堆得够高，它一定能比平房看得远。简单粗暴，但极度有效。</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"><span class="section">### 问题 2：什么叫“快速对齐”和“强推理能力”？</span></span><br><span class="line">这两个词通常出现在 Post-training（后期训练）阶段的语境中。</span><br><span class="line"><span class="section">#### 2.1 什么是“快速对齐”？</span></span><br><span class="line">这里的“对齐”不是指让两个物体对齐，而是指 <span class="strong">**Aligning with Human Intent/Real World Scenarios（对齐人类意图或真实场景）**</span>。</span><br><span class="line"><span class="strong">**通俗解释：**</span></span><br><span class="line">模型虽然读了很多书（预训练），但它是个“书呆子”。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**不对齐的情况**</span>：你问它“怎么做番茄炒蛋？”，它可能给你输出一篇《番茄炒蛋的营养价值分析》的学术论文。它虽然没说错，但<span class="strong">**不是你想要的**</span>。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**对齐**</span>：让模型明白，你要的是菜谱，不是论文。让模型的输出格式、语气、侧重点跟你的需求严丝合缝。</span><br><span class="line"><span class="strong">**什么是“快速”对齐？**</span></span><br><span class="line">在原文语境下，指的是利用 <span class="strong">**Mid/Post Training**</span> 技术，不需要重新从头训练整个模型（那样太慢、太贵），而是用少量特定场景的数据（比如几百条医疗问诊的对话），微调一下模型，就能让它迅速适应这个新场景。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**举例**</span>：</span><br><span class="line"><span class="bullet">    *</span>   通用的GPT-4什么都知道，但不懂你们公司的黑话。</span><br><span class="line"><span class="bullet">    *</span>   拿你们公司内部的历史客服记录（Mid/Post Training 数据）稍微训练一下。</span><br><span class="line"><span class="bullet">    *</span>   哪怕只训练了一小时，模型立马就能用你们公司的语气和逻辑回答客户问题。这种<span class="strong">**用低成本、短时间让模型适应特定细分场景**</span>的能力，就叫“快速对齐”。</span><br><span class="line"><span class="section">#### 2.2 什么是“强推理能力”？</span></span><br><span class="line"><span class="strong">**推理**</span> 是AI最核心的智力体现。<span class="strong">**强**</span>推理是指模型不仅仅是靠“记忆”回答问题，而是能够进行<span class="strong">**逻辑推演**</span>。</span><br><span class="line"><span class="strong">**分层级理解：**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**Level 1：记忆/检索（弱推理/无推理）**</span></span><br><span class="line"><span class="bullet">    *</span>   <span class="emphasis">*问*</span>：“中国的首都在哪里？”</span><br><span class="line"><span class="bullet">    *</span>   <span class="emphasis">*答*</span>：“北京。”</span><br><span class="line"><span class="bullet">    *</span>   <span class="emphasis">*原理*</span>：这不需要推理，这是背诵，查字典就行。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**Level 2：简单推理**</span></span><br><span class="line"><span class="bullet">    *</span>   <span class="emphasis">*问*</span>：“小红有3个苹果，吃了一个，又买了2个，现在有几个？”</span><br><span class="line"><span class="bullet">    *</span>   <span class="emphasis">*原理*</span>：模型需要理解“吃”是减法，“买”是加法，并计算出 $3-1+2=4$。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**Level 3：强推理**</span></span><br><span class="line"><span class="bullet">    *</span>   <span class="emphasis">*场景*</span>：这通常涉及<span class="strong">**多步骤**</span>、<span class="strong">**复杂逻辑**</span>、甚至<span class="strong">**反思**</span>的过程。</span><br><span class="line"><span class="bullet">    *</span>   <span class="emphasis">*举例（奥数题或代码调试）*</span>：</span><br><span class="line"><span class="bullet">        *</span>   “这段Python代码报错了，虽然语法没问题，但逻辑在第15行会导致死循环，请分析原因并修改，同时解释为什么你的修改能解决这个问题。”</span><br><span class="line"><span class="bullet">    *</span>   <span class="emphasis">*强推理的表现*</span>：</span><br><span class="line"><span class="bullet">        1.</span>  <span class="strong">**思维链**</span>：模型不会直接蹦答案，而是像人一样一步步想：“首先看第15行...这里变量没更新...所以会死循环...”</span><br><span class="line"><span class="bullet">        2.</span>  <span class="strong">**举一反三**</span>：能把学过的原理应用到完全没见过的复杂新问题上。</span><br><span class="line"><span class="strong">**原文中的含义：**</span></span><br><span class="line">原文说 Post training 可以增强“强推理能力”，意思是通过 RLHF（人类反馈强化学习），可以“逼”出模型的潜能。</span><br><span class="line"><span class="section">比如，当我们奖励那些“思考过程严密”的回答，惩罚那些“瞎蒙对答案”的回答，模型就会慢慢学会：<span class="strong">**原来我要一步步深入思考，才能得高分**</span>。这就把它的“强推理”能力给激活并强化了。</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"><span class="section">### 总结一下</span></span><br><span class="line"><span class="bullet">1.</span>  <span class="strong">**Scaling**</span>：就是<span class="strong">**“堆料”**</span>（更多数据、更大参数、更多显卡），相信只要规模够大，智力自然就高。</span><br><span class="line"><span class="bullet">2.</span>  <span class="strong">**快速对齐**</span>：就是<span class="strong">**“岗前培训”**</span>，用很少的数据让模型迅速适应某个特定行业或场景，不说外行话。</span><br><span class="line"><span class="bullet">3.</span>  <span class="strong">**强推理能力**</span>：就是<span class="strong">**“脑子转得快”**</span>，不只是背书，而是能像侦探一样通过逻辑分析解决没见过的新难题。</span><br><span class="line"></span><br><span class="line">Q:</span><br><span class="line">大厂开源的模型，对于同一个参数量的同款模型，一般会开源两个模型吧，一个是基座模型（只预训练了的），另一个是经过后训练的？那如果想基于它的模型进行微调，是使用哪个模型呢?</span><br><span class="line"></span><br><span class="line">A:</span><br><span class="line">你的观察非常准确。大厂（如Meta、Llama、Mistral、Qwen、DeepSeek等）在开源时，为了满足不同开发者的需求，通常会针对同一个参数规模发布多个版本。</span><br><span class="line">最常见的通常是这三个：</span><br><span class="line"><span class="bullet">1.</span>  <span class="strong">**Base（基座模型）**</span>：只做了预训练。</span><br><span class="line"><span class="bullet">2.</span>  <span class="strong">**Instruct（指令模型/对话模型）**</span>：经过了SFT（有监督微调）和部分RLHF（人类反馈强化学习）。这是大家日常聊天最常用的版本。</span><br><span class="line"><span class="bullet">3.</span>  <span class="strong">**Chat（同Instruct，有时叫Chat）**</span>：侧重于多轮对话体验。</span><br><span class="line"><span class="strong">**核心问题来了：如果你想做微调，该选哪个？**</span></span><br><span class="line">答案是：<span class="strong">**99% 的情况下，你应该选 “Instruct” 版本（即经过后训练的那个），而不是 “Base” 版本。**</span></span><br><span class="line"><span class="section">原因非常现实，主要取决于你的<span class="strong">**数据质量**</span>和<span class="strong">**训练目的**</span>：</span></span><br><span class="line"><span class="section">---</span></span><br><span class="line"><span class="section">### 1. 为什么首选 Instruct 版本？</span></span><br><span class="line"><span class="strong">**原因：它已经学会了“好好说话”**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**继承交互能力**</span>：Instruct 模型已经经过了大量的SFT训练，它学会了“听懂指令”。比如它知道当你问“总结一下”时，它该输出总结，而不是继续补全文本；它知道用Markdown格式写代码，知道用分段回答问题。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**防止“退化”**</span>：如果你拿 Base 模型来微调，你的数据必须极其巨大且极其高质量。如果你的数据只有几千条、几万条，很容易把 Base 模型“教傻”或者“教偏”。而 Instruct 模型本身就像一个受过良好教育的大学生，你只需要针对你的特定场景（比如医疗、法律、写代码）给它做个“岗前培训”即可，它会保留原本的通用语言能力。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**省事**</span>：大部分开源微调框架（如LLaMA-Factory, Axolotl）的默认模版和超参数设置，都是针对 Instruct 模型优化的。</span><br><span class="line"><span class="section">### 2. 什么时候必须用 Base 版本？</span></span><br><span class="line">虽然很少见，但在以下特殊场景下，你需要用 Base 模型：</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**场景一：你想做“领域预训练”（继续预训练）**</span></span><br><span class="line"><span class="bullet">    *</span>   如果你的数据不是“对话”，而是大量的<span class="strong">**书本、论文、财报、代码库**</span>等原始文本。</span><br><span class="line"><span class="bullet">    *</span>   你的目的不是让模型“聊天”，而是让它<span class="strong">**“吞入”这些知识**</span>，扩充它的脑子。</span><br><span class="line"><span class="bullet">    *</span>   这种情况下，你应该用 Base 模型跑 Mid-Training（如持续预训练）。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**场景二：你有极其海量的高质量指令数据（且不仅是通用任务）**</span></span><br><span class="line"><span class="bullet">    *</span>   如果你是Google或Meta这种级别的公司，拥有几千万条甚至上亿条高质量、清洗过的专用指令数据，你可能会从 Base 开始训，以免 Instruct 模型原有的通用偏好限制了你专用模型的发挥上限。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**场景三：特殊任务（文本续写）**</span></span><br><span class="line"><span class="bullet">    *</span>   如果你需要的不是问答，而是像写小说一样，给它开头让它续写，Base 模型的效果通常比 Instruct 好。因为 Instruct 模型被训练成“回答完问题就闭嘴”，而 Base 模型被训练成“无限生成文本”。</span><br><span class="line"><span class="section">### 3. 一个特殊的坑：RLHF 的副作用</span></span><br><span class="line">虽然 Instruct 是首选，但你要注意一点：</span><br><span class="line">有些开源模型（特别是国外的，如Llama 2/3的官方Instruct版）经过了很强的<span class="strong">**RLHF（人类反馈强化学习）**</span>。这会导致它<span class="strong">**“过于听话”**</span>或<span class="strong">**“过于安全”**</span>。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**现象**</span>：你让它写一个关于黑客的故事，它可能会拒绝：“我不可以生成非法内容。”</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**如果你的微调目标是写小说、搞创意，或者需要模型稍微“大胆”一点**</span>：这种强对齐的 Instruct 模型反而很难训。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**解决方案**</span>：</span><br><span class="line"><span class="bullet">    *</span>   找开源社区发布的 <span class="strong">**“Uncensored”**</span>（未审查）版本的 Instruct 模型。</span><br><span class="line"><span class="bullet">    *</span>   或者找那些只做了 SFT（监督微调）但<span class="strong">**没怎么做 RLHF**</span> 的模型（比如很多国内的模型或 DeepSeek 的某些版本），这类模型通常更适合做垂直领域的深度微调。</span><br><span class="line"><span class="section">### 总结建议</span></span><br><span class="line"><span class="bullet">1.</span>  <span class="strong">**新手/通用场景/垂直行业问答**</span>：直接下载 <span class="strong">**`xxx-Instruct`**</span> 或 <span class="strong">**`xxx-Chat`**</span> 模型进行微调（SFT）。这是性价比最高、成功率最高的路子。</span><br><span class="line"><span class="bullet">2.</span>  <span class="strong">**需要注入大量新知识（喂书）**</span>：先拿 <span class="strong">**`xxx-Base`**</span> 做持续预训练（Mid-training），然后再拿这个训练后的 checkpoint 继续做 SFT（或者干脆直接加载 Instruct 接着训，虽然这在学术上不严谨，但在工程上往往效果不错）。</span><br><span class="line"><span class="strong">**简单记：除非你要把书喂给模型吃，否则就选 Instruct。**</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Q:</span><br><span class="line">那Base版本有没有经过MId Training</span><br><span class="line"></span><br><span class="line">A：</span><br><span class="line"><span class="strong">**通常没有。**</span></span><br><span class="line">在开源模型发布时的标准定义里，<span class="strong">**Base 模型 = 纯粹的 Pre-training（预训练）产物**</span>。</span><br><span class="line">为了让你更清楚地理解它们的关系，我们可以把这个过程想象成“盖楼”：</span><br><span class="line"><span class="bullet">1.</span>  <span class="strong">**Pre-training（预训练）**</span>：这是打地基和盖主体结构。这一步出来的就是 <span class="strong">**Base 模型**</span>。此时它只是一个毛坯房，通了水电（懂语言），有了框架（懂常识），但没法住人。</span><br><span class="line"><span class="bullet">2.</span>  <span class="strong">**Mid-training（中期训练）**</span>：这是在毛坯房基础上的<span class="strong">**精装修准备**</span>。通常是大厂内部为了提升某些特定能力（如代码、数学、长文本）而额外加的一个步骤。</span><br><span class="line"><span class="bullet">3.</span>  <span class="strong">**Post-training（后期训练/SFT/RLHF）**</span>：这是<span class="strong">**软装和入住**</span>。经过这一步，变成了<span class="strong">**Instruct 模型**</span>，可以直接拎包入住（给用户用）。</span><br><span class="line"><span class="section">### 开源厂的“骚操作”：Base 到底是啥？</span></span><br><span class="line">虽然理论上 Base 就是预训练结束的样子，但大厂为了在排行榜上好看，往往会把<span class="strong">**内部做了一部分 Mid-training 的模型**</span>作为 Base 发布。</span><br><span class="line"><span class="strong">**这里有一个关键区别：**</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**狭义的 Base（教科书定义）**</span>：只读过通用的互联网数据（维基百科、网页抓取等）。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**广义的 Base（大厂实际发布的）**</span>：读完了通用数据 <span class="strong">**+**</span> 读了很多代码数据 <span class="strong">**+**</span> 读了很多高密度知识数据。</span><br><span class="line"><span class="strong">**举个例子（假设场景）：**</span></span><br><span class="line">Meta（Facebook）在开发 Llama 3 时：</span><br><span class="line"><span class="bullet">1.</span>  先用 15T 的通用数据训练，得到 checkpoint A。</span><br><span class="line"><span class="bullet">2.</span>  觉得代码能力不够，又用了 2T 的代码数据继续训练，得到 checkpoint B。</span><br><span class="line"><span class="bullet">3.</span>  最后发布时，他们可能会把 <span class="strong">**checkpoint B 直接命名为 `Llama-3-Base`**</span> 发布给大众。</span><br><span class="line"><span class="strong">**所以：**</span></span><br><span class="line"><span class="bullet">*</span>   当你下载一个开源的 <span class="code">`Base`</span> 模型时，它很可能<span class="strong">**在出厂前已经内部做过一些 Mid-training（比如专门增强了代码或逻辑）了**</span>。</span><br><span class="line"><span class="bullet">*</span>   但是，<span class="strong">**对于开发者（用户）来说，我们不需要在这个 Base 上再做 Mid-training**</span>。除非你手里有大量的、它没见过的<span class="strong">**全新领域的私有数据**</span>（比如你们公司内部的 50 年的绝密档案）。</span><br><span class="line"><span class="section">### 总结</span></span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**Base 模型**</span>理论上只包含 Pre-training。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**Mid-training**</span> 是大厂内部为了提升 Base 质量而吃的“小灶”。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**你拿到手的 Base**</span>，其实很可能已经吃过小灶了。</span><br><span class="line"><span class="bullet">*</span>   <span class="strong">**你的任务**</span>：通常只需要基于这个 Base（或者更好的选择是基于 Instruct）做最后的 <span class="strong">**SFT（微调）**</span>，让它学会你的特定任务即可。没必要自己去复刻 Mid-training 的过程。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>不知各位看官如何认为，博主认为<code>glm</code>比<code>qwen</code>和<code>deepseek</code>使用起来更顺手以及回答风格更容易接受。</p>
+<hr>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="微博原文"><a href="#微博原文" class="headerlink" title="微博原文"></a>微博原文</h3><figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">最近的一些感悟，分享一下，希望对大家有用。</span><br><span class="line"></span><br><span class="line">-预训练使得大模型已经掌握世界常识知识，并且具备简单推理能力。更多数据、更大参数和更饱和的计算仍然是scaling基座模型最高效的办法。</span><br><span class="line">-激活对齐和增强推理能力，尤其是激活更全面的长尾能力是保证模型效果的另一关键，通用benchmark的出现一方面评测了模型通用效果，但也可能使得很多模型过拟合。真实场景下是如何让模型更快、更好的对齐长尾的真实场景，增强实际体感。mid和post training使得更多场景的快速对齐和强推理能力成为可能。</span><br><span class="line">-agent是模型能力扩展的一个里程碑，也是体现ai模型进入人类真实（虚拟/物理）世界的关键。没有agent能力，大模型将停留在（理论学习）阶段，就类似一个人不断学习，哪怕学习到博士，也只是知识积累，还没有转化为生产力。原来的agent是通过模型应用来实现，现在模型已经可以直接将agent数据集成到训练过程，增强了模型的通用性，其实难题还是不同agent环境的泛化和迁移并不是那么容易，因此最简单办法也只有不断增加不同agent环境的数据和针对不同环境的强化学习。</span><br><span class="line">-实现模型记忆成为一个必须做的事情，这也是一个模型应用到真实环境必须有的能力。人类记忆分为短期（前额叶）、中期（海马体）、长期（分布式大脑皮层）、人类历史（wiki或史书）四个阶段。大模型如何实现不同阶段的记忆是个关键，context、rag、模型参数可能分别对应了人类的不同记忆阶段，但如何实现是个关键，一种办法是压缩记忆，简单存在context，如果大模型可以支持足够长的context，那基本有可能实现短中长期的记忆。但如何迭代模型知识，更改模型参数这还是个难题。</span><br><span class="line">-在线学习与自我评估。有了记忆机理，在线学习成为一个重点，目前的大模型定时重新训练，这有几个问题：模型无法真正的自我迭代，但模型的自学习自迭代一定会是下一个阶段必然具有的能力；重新训练还比较浪费，同时也会丢掉很多交互数据。因此如何实现在线学习是个关键，自我评估是在线学习的一个关键点，要想模型自我学习，模型首先要知道自己对还是不对，如果知道了（哪怕概率知道）模型就知道了优化目标，能够自我改进。因此构建模型自我评价机制是个难题。这也可能是下一个scaling范式。continual learning/real time learning/online learning？</span><br><span class="line">-最后，大模型的发展越来越端到端，不可避免的要把模型研发和模型应用结合起来。ai模型应用的第一性不应该是创造新的app，他的本质是agi替代人类工作，因此研发替代不同工种的ai是应用的关键。chat部分替代了搜索，部分其实融合了情感交互。明年将是ai替代不同工种的爆发年。</span><br><span class="line">-写在最后的是多模态和具身。多模态肯定是个未来也很有前景，当下的问题是多模态不大能帮助到agi的智能上界，而通用agi的智能上界到底在哪儿还不知道。可能最有效的方式还是分开发展，文本、多模态、多模态生成。当然适度的探索这三者的结合肯定能发现一些很不一样的能力，这需要勇气和雄厚的资本支持。</span><br><span class="line">同理，如果看懂了agent就知道具身的痛在哪里了，太难通用了（也不一定），但至少少样本去激活通用具身能力基本不可能。那怎么办呢，采数据，或者合成数据，都不是那么容易，也贵。但反之一旦数据规模上去了，通用能力出来了自然会形成门槛。当然这只是智能方面的难题，对于具身，机器人本身也是个问题，不稳定，故障频繁都限制了具身智能的发展。2026年这些都将取得长足进步。</span><br><span class="line">-也讨论一下领域大模型和大模型应用。我一直认为领域大模型就是个伪命题，都agi了哪有什么domain-specific agi……但，agi还没实现，领域模型会长时间存在（多长，不好说，ai发展实在太快了）。领域模型的存在本质上是应用企业不愿意在ai企业面前认输，希望构建领域know how的护城河，不希望ai入侵，希望把ai驯化为工具。而ai的本质是海啸，走到哪里都将一切卷了进去，一定有一些领域公司走出护城河，自然就卷进了agi的世界。简而言之，领域的数据、流程、agent数据慢慢的都会进入主模型。</span><br><span class="line">而大模型的应用也要回到第一性原理，ai不需要创建新的应用。ai的本质是模拟人或者代替人或者帮助人实现人类的某些必须要做到事（某些工种）。可能就是两种，一种就是ai化以前的软件，原来需要人参与的改成ai，另一种就是创造对齐人类某个工种的ai软件，替代人类工作。所以大模型应用需要帮助到人、创造新的价值。如果做一个ai软件没人用，不能产生价值，那这个ai软件肯定没有生命力。</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/llm/" rel="tag"># llm</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/12/19/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/" rel="prev" title="二阶段AI课程：第一次作业">
+                  <i class="fa fa-angle-left"></i> 二阶段AI课程：第一次作业
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/" rel="next" title="Agent Skill基础：从使用到原理">
+                  Agent Skill基础：从使用到原理 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">482k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29:14</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

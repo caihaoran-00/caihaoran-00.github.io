@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言最近Agent Skill这个专业术语相当火爆，了解了下，还是Anthropic推出的行业标准。顾名思义，Agent Skill就是给Agent使用&#x2F;赋予的技能，它的核心思想是渐进式披露（progressive disclosure），即按需取用&#x2F;加载，而不是像工具调用或mcp那样把工具描述Schema完整放入系统提示词（导致即使问一个很简单的问题也会消耗大量token）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Agent Skill基础：从使用到原理">
+<meta property="og:url" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言最近Agent Skill这个专业术语相当火爆，了解了下，还是Anthropic推出的行业标准。顾名思义，Agent Skill就是给Agent使用&#x2F;赋予的技能，它的核心思想是渐进式披露（progressive disclosure），即按需取用&#x2F;加载，而不是像工具调用或mcp那样把工具描述Schema完整放入系统提示词（导致即使问一个很简单的问题也会消耗大量token）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127114531289.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127144536540.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127144827501.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127145018460.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127115656272.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127152358152.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127152732998.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127154302672.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127155740294.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128103329516.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128103649127.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128104800017.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128105335336.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128110625570.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128113415268.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128113534025.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128113922987.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128114016112.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128115151772.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128114708305.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128143538873.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128151846439.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128162125228.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128165628362.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128171109138.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128171615300.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128171852188.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128172656037.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128172724966.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128173124380.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128173142598.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128174304487.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128174642314.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128175147174.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128175230617.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128180749909.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128181910767.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128183815652.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128183951262.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260129103649596.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260129103750495.png">
+<meta property="article:published_time" content="2026-01-26T03:16:11.000Z">
+<meta property="article:modified_time" content="2026-01-29T02:49:15.016Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="agent skill">
+<meta property="article:tag" content="coze">
+<meta property="article:tag" content="opencode">
+<meta property="article:tag" content="mcp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127114531289.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/","path":"2026/01/26/Agent-Skill基础：从使用到原理/","title":"Agent Skill基础：从使用到原理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Agent Skill基础：从使用到原理 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B1%EF%BC%88coze-2-0%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">示例1（coze 2.0）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#16-%E4%B8%AA%E6%8A%80%E8%83%BD%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.</span> <span class="nav-text">16 个技能介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-algorithmic-art%EF%BC%88%E7%AE%97%E6%B3%95%E8%89%BA%E6%9C%AF%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">1. algorithmic-art（算法艺术）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-brand-guidelines%EF%BC%88%E5%93%81%E7%89%8C%E6%8C%87%E5%8D%97%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">2. brand-guidelines（品牌指南）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-canvas-design%EF%BC%88%E7%94%BB%E5%B8%83%E8%AE%BE%E8%AE%A1%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">3. canvas-design（画布设计）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-doc-coauthoring%EF%BC%88%E6%96%87%E6%A1%A3%E5%8D%8F%E4%BD%9C%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">4. doc-coauthoring（文档协作）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-docx%EF%BC%88Word-%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86%EF%BC%89"><span class="nav-number">3.5.</span> <span class="nav-text">5. docx（Word 文档处理）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-frontend-design%EF%BC%88%E5%89%8D%E7%AB%AF%E8%AE%BE%E8%AE%A1%EF%BC%89"><span class="nav-number">3.6.</span> <span class="nav-text">6. frontend-design（前端设计）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-internal-comms%EF%BC%88%E5%86%85%E9%83%A8%E6%B2%9F%E9%80%9A%EF%BC%89"><span class="nav-number">3.7.</span> <span class="nav-text">7. internal-comms（内部沟通）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-mcp-builder%EF%BC%88MCP-%E6%9E%84%E5%BB%BA%E5%99%A8%EF%BC%89"><span class="nav-number">3.8.</span> <span class="nav-text">8. mcp-builder（MCP 构建器）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-pdf%EF%BC%88PDF-%E5%A4%84%E7%90%86%EF%BC%89"><span class="nav-number">3.9.</span> <span class="nav-text">9. pdf（PDF 处理）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-pptx%EF%BC%88PowerPoint-%E6%BC%94%E7%A4%BA%E6%96%87%E7%A8%BF%EF%BC%89"><span class="nav-number">3.10.</span> <span class="nav-text">10. pptx（PowerPoint 演示文稿）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-skill-creator%EF%BC%88%E6%8A%80%E8%83%BD%E5%88%9B%E5%BB%BA%E5%99%A8%EF%BC%89"><span class="nav-number">3.11.</span> <span class="nav-text">11. skill-creator（技能创建器）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-slack-gif-creator%EF%BC%88Slack-GIF-%E5%88%9B%E5%BB%BA%E5%99%A8%EF%BC%89"><span class="nav-number">3.12.</span> <span class="nav-text">12. slack-gif-creator（Slack GIF 创建器）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#13-theme-factory%EF%BC%88%E4%B8%BB%E9%A2%98%E5%B7%A5%E5%8E%82%EF%BC%89"><span class="nav-number">3.13.</span> <span class="nav-text">13. theme-factory（主题工厂）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14-web-artifacts-builder%EF%BC%88Web-%E4%BA%A7%E7%89%A9%E6%9E%84%E5%BB%BA%E5%99%A8%EF%BC%89"><span class="nav-number">3.14.</span> <span class="nav-text">14. web-artifacts-builder（Web 产物构建器）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#15-webapp-testing%EF%BC%88Web-%E5%BA%94%E7%94%A8%E6%B5%8B%E8%AF%95%EF%BC%89"><span class="nav-number">3.15.</span> <span class="nav-text">15. webapp-testing（Web 应用测试）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#16-xlsx%EF%BC%88%E7%94%B5%E5%AD%90%E8%A1%A8%E6%A0%BC%E5%A4%84%E7%90%86%EF%BC%89"><span class="nav-number">3.16.</span> <span class="nav-text">16. xlsx（电子表格处理）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%8F%E7%BB%931"><span class="nav-number">3.17.</span> <span class="nav-text">小结1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B2%EF%BC%88OpenCode%EF%BC%89"><span class="nav-number">3.18.</span> <span class="nav-text">示例2（OpenCode）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E6%B5%81skill%E5%BA%93-%E5%95%86%E5%BA%97"><span class="nav-number">3.19.</span> <span class="nav-text">主流skill库&#x2F;商店</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Agent-Skill-VS-MCP"><span class="nav-number">3.20.</span> <span class="nav-text">Agent Skill VS MCP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">132</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Agent Skill基础：从使用到原理 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Agent Skill基础：从使用到原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-26 11:16:11" itemprop="dateCreated datePublished" datetime="2026-01-26T11:16:11+08:00">2026-01-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-01-29 10:49:15" itemprop="dateModified" datetime="2026-01-29T10:49:15+08:00">2026-01-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>19 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近<code>Agent Skill</code>这个专业术语相当火爆，了解了下，还是Anthropic推出的行业标准。顾名思义，<code>Agent Skill</code>就是给Agent使用&#x2F;赋予的技能，它的核心思想是渐进式披露（progressive disclosure），即按需取用&#x2F;加载，而不是像工具调用或<code>mcp</code>那样把工具描述Schema完整放入系统提示词（导致即使问一个很简单的问题也会消耗大量token）。本文我们将一起看下<code>Agent Skill</code>的使用和原理（融入<code>coze</code>和<code>opencode</code>），最后还将比较<code>Agent Skill</code>与<code>mcp</code>的区别。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="示例1（coze-2-0）"><a href="#示例1（coze-2-0）" class="headerlink" title="示例1（coze 2.0）"></a>示例1（coze 2.0）</h3><p>第一个示例从<a target="_blank" rel="noopener" href="https://www.coze.cn/">coze</a>看起，打开网页后在输入框内输入<code>@</code>符号，你将看到：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127114531289.png" class="" title="image-20260127114531289">
+
+<p>我们一起看下播客这个skill，可以选择音色，也可以选择一键优化：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127144536540.png" class="" title="image-20260127144536540">
+
+<p>一键优化后，发送出去，就开始工作了：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127144827501.png" class="" title="image-20260127144827501">
+
+<p>等了两分钟的样子，就完成了：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127145018460.png" class="" title="image-20260127145018460">
+
+<p>我听下内容：</p>
+<ul>
+<li>音色与选择的音色不是完全一致（我选择的情感电台的音色，温柔听着犯困），而且音色的稳定性也有些问题（突然大了小了的）</li>
+<li>生成的内容有些问题，全部是策划，没有各个环节的细节</li>
+</ul>
+<p>得嘞，反正生成了（笑哭.jpg）</p>
+<hr>
+<p>如果不满足于这几个自带技能，那么可以点击左侧的技能商店，可看到：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127115656272.png" class="" title="image-20260127115656272">
+
+<p>安装下花叔的自动化写作看看：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127152358152.png" class="" title="image-20260127152358152">
+
+<p>让它简单写个关于Agent Skill的科普类文章：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127152732998.png" class="" title="image-20260127152732998">
+
+<p>大概八九分钟，生成完毕，看了下，感觉还是挺有AI味的（但内容的正确性感觉没啥问题）</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127154302672.png" class="" title="image-20260127154302672">
+
+<hr>
+<p>好的，现在玩了两个Skill了（虽然都貌似差点意思，但作为体验来说足够了），现在我们创建个Skill玩玩，这里右上角有个<strong>创建技能</strong>：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260127155740294.png" class="" title="image-20260127155740294">
+
+<p>点击之后到下面页面了：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128103329516.png" class="" title="image-20260128103329516">
+
+<p>输入栏中的提示为：欢迎使用扣子编程，可以在此输入你的要求。也就意味这我们可以通过输入自然语言使其生成Skill，我们一起尝试下：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128103649127.png" class="" title="image-20260128103649127">
+
+<p>6m20s后生成完毕，生成过程中coze会自己检测Skill是否能正常使用，发现有问题会自动进行修复：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128104800017.png" class="" title="image-20260128104800017">
+
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128105335336.png" class="" title="image-20260128105335336">
+
+<p>左侧看到Skill文件结构，我们点击右上角的文件夹标志，会看到：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128110625570.png" class="" title="image-20260128110625570">
+
+<p>这就是一个Skill的文件结构，下面我们将介绍一下这个结构以及各文件内容（这是想手撸Skill的基础）：</p>
+<ul>
+<li>文件夹名称就是Skill的名字，必须为小写字母+连字符</li>
+<li><code>SKILL.md</code>是每个SKILL都包含的文件，其余文件可选</li>
+<li><code>SKILL.md</code>这个核心文件的结构固定分为两部分，且都是必须项。首先是<code>YAML</code>头部，用<code>---</code>包裹，必包含<code>name</code>和<code>description</code>字段（这里也包含了dependency字段，可能是<code>coze</code>独有的？不属于最通用的标准？），这部分是该SKILL的名片，会被放入到系统提示词中；第二部分就是Markdown主体了，这部分包含详细的工作流程、资源路径、注意事项和使用示例等，当<strong>触发</strong>这个SKILL后才会加载这部分Markdown主体，然后需要某些资源时（这里是<code>supported-formats.md</code>和<code>convert_audio.py</code>）再去加载对应资源。值得一提的是，对于<code>.md</code>文件资源会去读取具体内容，对于程序文件（这里是python文件），一般情况下不会去读取它的具体内容（直接运行），除非运行失败了，那么可能会去看下源码。</li>
+<li>每个SKILL的<code>name</code>和<code>description</code>信息会被放到系统提示词中，当这个技能被触发&#x2F;选中才会去读取下方的Markdown主题，再进一步（需要时）才会去使用其他资源（其他<code>md</code>文件和程序文件），这种方式叫做渐进式披露，其实就是按需加载，这是Agent SKILL技术省token的核心手段</li>
+<li>对于资源文件，<code>md</code>文件放到<code>references</code>文件夹，程序文件放到<code>scripts</code>文件夹</li>
+</ul>
+<hr>
+<p>原理介绍完毕，接下来我们使用刚才<code>coze</code>生成的SKILL看看效果，点击右上角的部署：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128113415268.png" class="" title="image-20260128113415268">
+
+<p>再点击开始部署，会看到：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128113534025.png" class="" title="image-20260128113534025">
+
+<p>点击<strong>立即体验</strong>，然后输入：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128113922987.png" class="" title="image-20260128113922987">
+
+<p>很快就转化好了：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128114016112.png" class="" title="image-20260128114016112">
+
+<p>下载听了下，没有问题。后续还可以对该Skill进行改造或上架到商店（这里不做介绍）：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128115151772.png" class="" title="image-20260128115151772">
+
+
+
+<p>我们上面体验了<code>coze</code>自带的、技能商店的、自然语言描述让<code>coze</code>生成的Skill，那能不能使用外部的（无论是从哪里下载的还是自己之前在<code>OpenCode</code>或者<code>Claude Code</code>中构建的）Skill呢，答案是肯定的，<code>coze</code>已经提供了上传Skill文件包（格式为.zip或.skill）的地方：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128114708305.png" class="" title="image-20260128114708305">
+
+<p>我们看下Anthropic官方开源的<a target="_blank" rel="noopener" href="https://github.com/anthropics/skills">Skills仓库</a>：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128143538873.png" class="" title="image-20260128143538873">
+
+<blockquote>
+<h2 id="16-个技能介绍"><a href="#16-个技能介绍" class="headerlink" title="16 个技能介绍"></a>16 个技能介绍</h2><h3 id="1-algorithmic-art（算法艺术）"><a href="#1-algorithmic-art（算法艺术）" class="headerlink" title="1. algorithmic-art（算法艺术）"></a>1. <strong>algorithmic-art</strong>（算法艺术）</h3><p>使用 p5.js 创建算法艺术，支持种子随机化和交互式参数探索。用于生成艺术、流场或粒子系统。 </p>
+<h3 id="2-brand-guidelines（品牌指南）"><a href="#2-brand-guidelines（品牌指南）" class="headerlink" title="2. brand-guidelines（品牌指南）"></a>2. <strong>brand-guidelines</strong>（品牌指南）</h3><p> 将 Anthropic 官方品牌颜色和排版应用到任何需要 Anthropic 外观和风格的产物中。当涉及品牌颜色、样式指南、视觉格式或公司设计标准时使用。 </p>
+<h3 id="3-canvas-design（画布设计）"><a href="#3-canvas-design（画布设计）" class="headerlink" title="3. canvas-design（画布设计）"></a>3. <strong>canvas-design</strong>（画布设计）</h3><p> 使用设计理念创建 .png 和 .pdf 格式的精美视觉艺术。当用户要求创建海报、艺术品、设计或其他静态作品时使用。创建原创视觉设计，避免复制现有艺术家作品以防版权侵权。 </p>
+<h3 id="4-doc-coauthoring（文档协作）"><a href="#4-doc-coauthoring（文档协作）" class="headerlink" title="4. doc-coauthoring（文档协作）"></a>4. <strong>doc-coauthoring</strong>（文档协作）</h3><p> 引导用户完成文档协作的结构化工作流。当用户想要编写文档、提案、技术规范、决策文档或类似结构化内容时使用。此工作流帮助用户高效传达上下文、通过迭代完善内容，并验证文档是否适合读者。 </p>
+<h3 id="5-docx（Word-文档处理）"><a href="#5-docx（Word-文档处理）" class="headerlink" title="5. docx（Word 文档处理）"></a>5. <strong>docx</strong>（Word 文档处理）</h3><p> 全面的文档创建、编辑和分析工具，支持修订跟踪、评论、格式保留和文本提取。当 Claude 需要处理专业文档（.docx 文件）时使用：（1）创建新文档，（2）修改或编辑内容，（3）处理修订跟踪，（4）添加评论，或任何其他文档任务。 </p>
+<h3 id="6-frontend-design（前端设计）"><a href="#6-frontend-design（前端设计）" class="headerlink" title="6. frontend-design（前端设计）"></a>6. <strong>frontend-design</strong>（前端设计）</h3><p> 创建独特、生产级的高设计质量前端界面。当用户要求构建网页组件、页面、产物、海报或应用程序时使用（示例包括网站、落地页、仪表板、React 组件、HTML&#x2F;CSS 布局，或美化任何网页 UI）。生成创意、精致的代码和 UI 设计，避免通用的 AI 美学。</p>
+<h3 id="7-internal-comms（内部沟通）"><a href="#7-internal-comms（内部沟通）" class="headerlink" title="7. internal-comms（内部沟通）"></a>7. <strong>internal-comms</strong>（内部沟通）</h3><p> 帮助我编写各种内部沟通内容的资源集，使用公司喜欢的格式。当被要求编写某种内部沟通内容时使用（状态报告、领导层更新、3P 更新、公司通讯、FAQ、事件报告、项目更新等）。 </p>
+<h3 id="8-mcp-builder（MCP-构建器）"><a href="#8-mcp-builder（MCP-构建器）" class="headerlink" title="8. mcp-builder（MCP 构建器）"></a>8. <strong>mcp-builder</strong>（MCP 构建器）</h3><p> 创建高质量 MCP（模型上下文协议）服务器的指南，使 LLM 能够通过精心设计的工具与外部服务交互。用于构建 MCP 服务器以集成外部 API 或服务，无论是 Python 还是 Node&#x2F;TypeScript。 </p>
+<h3 id="9-pdf（PDF-处理）"><a href="#9-pdf（PDF-处理）" class="headerlink" title="9. pdf（PDF 处理）"></a>9. <strong>pdf</strong>（PDF 处理）</h3><p> 全面的 PDF 操作工具包，用于提取文本和表格、创建新 PDF、合并&#x2F;拆分文档以及处理表单。当 Claude 需要填写 PDF 表单或以编程方式大规模处理、生成或分析 PDF 文档时使用。</p>
+<h3 id="10-pptx（PowerPoint-演示文稿）"><a href="#10-pptx（PowerPoint-演示文稿）" class="headerlink" title="10. pptx（PowerPoint 演示文稿）"></a>10. <strong>pptx</strong>（PowerPoint 演示文稿）</h3><p> 演示文稿创建、编辑和分析。当 Claude 需要处理演示文稿（.pptx 文件）时使用：（1）创建新演示文稿，（2）修改或编辑内容，（3）处理布局，（4）添加评论或演讲者备注，或任何其他演示文稿任务。 </p>
+<h3 id="11-skill-creator（技能创建器）"><a href="#11-skill-creator（技能创建器）" class="headerlink" title="11. skill-creator（技能创建器）"></a>11. <strong>skill-creator</strong>（技能创建器）</h3><p> 创建有效技能的指南。当用户想要创建新技能（或更新现有技能）以扩展 Claude 在专业知识、工作流或工具集成方面的能力时使用此技能。 </p>
+<h3 id="12-slack-gif-creator（Slack-GIF-创建器）"><a href="#12-slack-gif-creator（Slack-GIF-创建器）" class="headerlink" title="12. slack-gif-creator（Slack GIF 创建器）"></a>12. <strong>slack-gif-creator</strong>（Slack GIF 创建器）</h3><p> 为 Slack 创建优化动画 GIF 的知识和工具。提供约束条件、验证工具和动画概念。当用户请求 Slack 动画 GIF 时使用，例如”为我制作一个 X 做 Y 的 Slack GIF”。 </p>
+<h3 id="13-theme-factory（主题工厂）"><a href="#13-theme-factory（主题工厂）" class="headerlink" title="13. theme-factory（主题工厂）"></a>13. <strong>theme-factory</strong>（主题工厂）</h3><p> 使用主题对产物进行样式化的工具包。这些产物可以是幻灯片、文档、报告、HTML 落地页等。有 10 个预设主题，带有可以应用到任何已创建产物的颜色&#x2F;字体，或即时生成新主题。 </p>
+<h3 id="14-web-artifacts-builder（Web-产物构建器）"><a href="#14-web-artifacts-builder（Web-产物构建器）" class="headerlink" title="14. web-artifacts-builder（Web 产物构建器）"></a>14. <strong>web-artifacts-builder</strong>（Web 产物构建器）</h3><p> 使用现代前端 Web 技术（React、Tailwind CSS、shadcn&#x2F;ui）创建复杂多组件 claude.ai HTML 产物的工具套件。用于需要状态管理、路由或 shadcn&#x2F;ui 组件的复杂产物——不适用于简单的单文件 HTML&#x2F;JSX 产物。 </p>
+<h3 id="15-webapp-testing（Web-应用测试）"><a href="#15-webapp-testing（Web-应用测试）" class="headerlink" title="15. webapp-testing（Web 应用测试）"></a>15. <strong>webapp-testing</strong>（Web 应用测试）</h3><p> 使用 Playwright 与和测试本地 Web 应用程序的工具包。支持验证前端功能、调试 UI 行为、捕获浏览器截图和查看浏览器日志。</p>
+<h3 id="16-xlsx（电子表格处理）"><a href="#16-xlsx（电子表格处理）" class="headerlink" title="16. xlsx（电子表格处理）"></a>16. xlsx（电子表格处理）</h3><p>全面的电子表格创建、编辑和分析工具，支持公式、格式化、数据分析和可视化。当 Claude 需要处理电子表格（.xlsx, .xlsm, .csv, .tsv 等）时使用：（1）创建带公式和格式化的新电子表格，（2）读取或分析数据，（3）修改现有电子表格同时保留公式，（4）电子表格中的数据分析和可视化，（5）重新计算公式。包含金融模型的颜色编码标准、数字格式规范、公式构建规则等专业要求。</p>
+</blockquote>
+<p>clone下来，并把skills文件夹中的某个技能制作成压缩包并从上述位置上传这个压缩包（我这里使用<code>slack-gif-creator</code>）：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128151846439.png" class="" title="image-20260128151846439">
+
+<p>还可以哈（笑哭.jpg）。</p>
+<hr>
+<h3 id="小结1"><a href="#小结1" class="headerlink" title="小结1"></a>小结1</h3><p>好的，到这里我们通过<code>coze 2.0</code>实际体验了Agent Skill，对<code>coze2.0</code>的部分玩法和Agent Skill都有了基本的认识。</p>
+<p><code>Agent Skill</code>最大的优势就是渐进式披露机制使其相当省token（不用把所有文字都放入系统提示词了），其相当于SOP手册。</p>
+<p>几乎所有能用工作流实现的效果都能通过Agent Skill实现，<code>Agent Skill</code>与<code>MCP</code>能成为行业标准的原因就是其可复用。</p>
+<hr>
+<h3 id="示例2（OpenCode）"><a href="#示例2（OpenCode）" class="headerlink" title="示例2（OpenCode）"></a>示例2（<code>OpenCode</code>）</h3><p>windows电脑上安装（需先安装node.js），输入：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -g opencode-ai@latest</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128162125228.png" class="" title="image-20260128162125228">
+
+<p>切换文件夹后输入<code>opencode</code>，可以看到（看起来有点不太对）：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128165628362.png" class="" title="image-20260128165628362">
+
+<p>我们去<code>pycharm</code>的终端中打开它看看：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128171109138.png" class="" title="image-20260128171109138">
+
+<p>咦，这里对了，那就在这里用吧，输入<code>/connect</code>，然后选择<code>Zhipu AI</code>，再粘贴<code>API KEY</code>，我这里选择<code>GLM-4.7-Flash</code>（因为这是免费模型）（后面可以输入&#x2F;models去更换模型）：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128171615300.png" class="" title="image-20260128171615300">
+
+<p>随便问它一个问题：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128171852188.png" class="" title="image-20260128171852188">
+
+<p>可以正常运行，我们先不管Agent Skill，看看<code>OpenCode</code>能做什么，<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128172656037.png" class="" title="image-20260128172656037"></p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128172724966.png" class="" title="image-20260128172724966">
+
+<p>是不是觉得模型还行，一下完成了这个任务，其实是我训了它两句，它才成功的，它直接在当前文件夹下生成了一个<code>opencode_rules.txt</code>。接下来我们试下效果对不对：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128173124380.png" class="" title="image-20260128173124380">
+
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128173142598.png" class="" title="image-20260128173142598">
+
+<p>**效果是对的。**再来一个，我在<code>opencode</code>文件夹下创建了一个<code>需求.txt</code>，里面就一句简短的话：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">实现一个9*9乘法表并美观的打印出来（用Python语言）</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128174304487.png" class="" title="image-20260128174304487">
+
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128174642314.png" class="" title="image-20260128174642314">
+
+<p>写好了，运行效果也是对的，但卡在这了（不止为啥，先这样吧），好的，下面SKILL要登场了，我们随便复制一个pdf到当前文件夹下：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128175147174.png" class="" title="image-20260128175147174">
+
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128175230617.png" class="" title="image-20260128175230617">
+
+<p>当前<code>opencode</code> + <code>GLM-4.7-Flash</code>是不支持读取<code>pdf</code>文件的，那么怎么办呢？还记得示例1中介绍的Anthropic官方开源的<a target="_blank" rel="noopener" href="https://github.com/anthropics/skills">Skills仓库</a>吗，它里面就有操作<code>pdf</code>的SKILL，那么怎么在<code>opencode</code>中配置&#x2F;使用SKILL呢？</p>
+<p>直接把当时的<code>skills</code>文件夹复制到当前文件夹（注意这种操作是局部可用，换个文件夹就不能用了，想要全局可用可以像之前那样直接让<code>opencode</code>配置成全局），再重新问下这个问题：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128180749909.png" class="" title="image-20260128180749909">
+
+<p>问题变成了输入超出长度了（而且显式使用Read工具去读取<code>pdf</code>了），说明确实使用刚才复制进去的Skill了，换了个两页的<code>pdf</code>让其总结即可成功：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128181910767.png" class="" title="image-20260128181910767">
+
+<p>再玩一个，我们复制的工具中有一个是 <strong>skill-creator</strong>，这是个帮助我们写<code>Skill</code>的<code>Skill</code>，我们来体验下：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128183815652.png" class="" title="image-20260128183815652">
+
+<p>它还会主动问你一些细节：</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260128183951262.png" class="" title="image-20260128183951262">
+
+<p>生成完成后，发现SKILL名是<code>meeting-minutes</code>，里面只包含一个<code>SKILL.md</code>，内容为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">name: meeting-minutes</span><br><span class="line">description: 用于总结会议纪要，提取关键信息、生成会议总结、整理待办事项。支持从文本格式的会议记录中提取关键信息，包括会议主题、讨论要点、决策、待办事项等。</span><br><span class="line">license: Complete terms in LICENSE.txt</span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">## When to use this skill</span><br><span class="line"></span><br><span class="line">使用这个skill当需要处理会议纪要时：</span><br><span class="line">- 会议记录总结和整理</span><br><span class="line">- 提取会议中的关键决策点</span><br><span class="line">- 整理会议讨论内容</span><br><span class="line">- 生成会议总结报告</span><br><span class="line">- 提取待办事项和责任人</span><br><span class="line">- 创建任务清单</span><br><span class="line">- 跟踪会议行动项</span><br><span class="line"></span><br><span class="line">## How to use this skill</span><br><span class="line"></span><br><span class="line">### 基本使用流程</span><br><span class="line"></span><br><span class="line">1. **接收会议记录文本**：用户提供会议的文本记录</span><br><span class="line">2. **分析会议内容**：系统自动识别会议的各个组成部分</span><br><span class="line">3. **提取关键信息**：</span><br><span class="line">   - 会议基本信息（时间、地点、参与人员）</span><br><span class="line">   - 会议主题和议程</span><br><span class="line">   - 讨论要点和结论</span><br><span class="line">   - 决策事项</span><br><span class="line">   - 待办事项和责任人</span><br><span class="line">   - 下次会议安排</span><br><span class="line">4. **生成结构化输出**：按照标准格式输出会议纪要</span><br><span class="line">5. **任务提醒**：明确列出待办事项和截止日期</span><br><span class="line"></span><br><span class="line">### 输入格式</span><br><span class="line"></span><br><span class="line">- 支持纯文本格式的会议记录</span><br><span class="line">- 包含时间、日期、参与人员、讨论内容等信息的文本</span><br><span class="line">- 可以处理不同长度和详细程度的会议记录</span><br><span class="line"></span><br><span class="line">### 输出格式</span><br><span class="line"></span><br><span class="line">### 标准会议纪要结构</span><br><span class="line"></span><br><span class="line">#### 一、会议基本信息</span><br><span class="line">- 会议时间</span><br><span class="line">- 会议地点</span><br><span class="line">- 参与人员</span><br><span class="line">- 会议主题</span><br><span class="line"></span><br><span class="line">#### 二、会议议程</span><br><span class="line">- 讨论的主要议题</span><br><span class="line">- 各议题讨论顺序</span><br><span class="line"></span><br><span class="line">#### 三、会议内容总结</span><br><span class="line">- 关键讨论点</span><br><span class="line">- 重要观点和意见</span><br><span class="line">- 达成的共识</span><br><span class="line"></span><br><span class="line">#### 四、决策事项</span><br><span class="line">- 主要决策内容</span><br><span class="line">- 决策背景</span><br><span class="line">- 实施方案</span><br><span class="line"></span><br><span class="line">#### 五、待办事项</span><br><span class="line">- 任务描述</span><br><span class="line">- 责任人</span><br><span class="line">- 截止日期</span><br><span class="line">- 优先级</span><br><span class="line"></span><br><span class="line">#### 六、下次会议安排</span><br><span class="line">- 时间和地点</span><br><span class="line">- 讨论议题</span><br><span class="line"></span><br><span class="line">## 功能特性</span><br><span class="line"></span><br><span class="line">### 1. 智能内容提取</span><br><span class="line">- 自动识别会议记录中的关键信息</span><br><span class="line">- 提取讨论重点和结论</span><br><span class="line">- 识别决策点和行动项</span><br><span class="line"></span><br><span class="line">### 2. 结构化总结</span><br><span class="line">- 按照标准格式组织内容</span><br><span class="line">- 生成清晰的层次结构</span><br><span class="line">- 提供易于理解的摘要</span><br><span class="line"></span><br><span class="line">### 3. 任务管理</span><br><span class="line">- 识别所有待办事项</span><br><span class="line">- 分配责任人</span><br><span class="line">- 设定截止日期和优先级</span><br><span class="line">- 提醒功能</span><br><span class="line"></span><br><span class="line">### 4. 多场景支持</span><br><span class="line">- 支持不同类型的会议（项目会议、决策会议、例会等）</span><br><span class="line">- 适应不同的详细程度</span><br><span class="line">- 可自定义输出格式</span><br><span class="line"></span><br><span class="line">## 使用示例</span><br><span class="line"></span><br><span class="line">### 示例1：标准会议纪要总结</span><br><span class="line">输入：</span><br><span class="line">```</span><br><span class="line">会议时间：2026年1月28日 14:00-15:30</span><br><span class="line">会议地点：公司会议室A</span><br><span class="line">参与人员：张三、李四、王五、赵六</span><br><span class="line">会议主题：Q1季度项目进度评估</span><br><span class="line"></span><br><span class="line">讨论内容：</span><br><span class="line">1. 项目A完成情况：已完成80%，预计下周完成</span><br><span class="line">2. 项目B延期问题：原因是供应链问题，需要协调解决</span><br><span class="line">3. 资源分配：建议增加2名开发人员</span><br><span class="line">4. 时间表调整：原定3月1日上线推迟到3月15日</span><br><span class="line"></span><br><span class="line">待办事项：</span><br><span class="line">- 张三负责项目A的收尾工作，截止日期2月5日</span><br><span class="line">- 李四负责协调供应商解决项目B的延期问题，截止日期2月1日</span><br><span class="line">- 王五负责准备资源分配方案，截止日期2月3日</span><br><span class="line">- 赵六负责更新项目时间表，截止日期2月4日</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">```</span><br><span class="line">### 会议纪要 - Q1季度项目进度评估</span><br><span class="line"></span><br><span class="line">#### 一、会议基本信息</span><br><span class="line">- **时间**：2026年1月28日 14:00-15:30</span><br><span class="line">- **地点**：公司会议室A</span><br><span class="line">- **参与人员**：张三、李四、王五、赵六</span><br><span class="line">- **主题**：Q1季度项目进度评估</span><br><span class="line"></span><br><span class="line">#### 二、讨论要点</span><br><span class="line">1. **项目A**：已完成80%，预计下周完成</span><br><span class="line">2. **项目B**：因供应链问题延期，需协调解决</span><br><span class="line">3. **资源分配**：建议增加2名开发人员</span><br><span class="line">4. **时间表调整**：上线时间从3月1日推迟至3月15日</span><br><span class="line"></span><br><span class="line">#### 三、决策事项</span><br><span class="line">- 项目A继续按计划推进，确保下周完成</span><br><span class="line">- 成立资源协调小组，优先解决项目B的供应链问题</span><br><span class="line">- 批准增加2名开发人员投入工作</span><br><span class="line">- 项目B上线时间调整为3月15日</span><br><span class="line"></span><br><span class="line">#### 四、待办事项</span><br><span class="line">| 任务 | 责任人 | 截止日期 | 优先级 |</span><br><span class="line">|------|--------|----------|--------|</span><br><span class="line">| 项目A收尾工作 | 张三 | 2026年2月5日 | 高 |</span><br><span class="line">| 协调供应商解决项目B延期 | 李四 | 2026年2月1日 | 高 |</span><br><span class="line">| 准备资源分配方案 | 王五 | 2026年2月3日 | 中 |</span><br><span class="line">| 更新项目时间表 | 赵六 | 2026年2月4日 | 中 |</span><br><span class="line"></span><br><span class="line">#### 五、下次会议</span><br><span class="line">建议在2月10日召开进度跟进会议</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">### 示例2：快速任务提取</span><br><span class="line">输入：</span><br><span class="line">```</span><br><span class="line">会议记录摘要：</span><br><span class="line">- 需要设计新的用户界面，由产品设计团队负责</span><br><span class="line">- 开发团队需要准备技术方案，明天下午2点评审</span><br><span class="line">- 市场部门需要准备推广方案，周五之前提交</span><br><span class="line">- 行政部门负责安排会议室，下周一确定</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">```</span><br><span class="line">### 待办事项提取</span><br><span class="line"></span><br><span class="line">| 任务 | 责任部门 | 截止时间 | 状态 |</span><br><span class="line">|------|----------|----------|------|</span><br><span class="line">| 设计新用户界面 | 产品设计团队 | 未指定 | 待开始 |</span><br><span class="line">| 准备技术方案并评审 | 开发团队 | 明天14:00 | 待开始 |</span><br><span class="line">| 准备推广方案 | 市场部门 | 本周五 | 待开始 |</span><br><span class="line">| 安排会议室 | 行政部门 | 下周一 | 待开始 |</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">## 注意事项</span><br><span class="line"></span><br><span class="line">1. 确保输入的会议记录文本清晰完整</span><br><span class="line">2. 对于信息不完整的记录，请用户提供更多细节</span><br><span class="line">3. 待办事项的责任人和截止日期需要准确明确</span><br><span class="line">4. 优先级划分应根据实际紧急程度确定</span><br><span class="line">5. 重要决策应该明确记录</span><br><span class="line"></span><br><span class="line">## 关键词</span><br><span class="line"></span><br><span class="line">会议纪要, 会议总结, 待办事项, 决策记录, 行动项, 会议记录, 项目会议, 决策会议, 任务管理, 会议跟踪</span><br></pre></td></tr></table></figure>
+
+<p>来体验下，并未使用会议纪要的skill去总结会议纪要（免费模型还是不行）。</p>
+<hr>
+<h3 id="主流skill库-商店"><a href="#主流skill库-商店" class="headerlink" title="主流skill库&#x2F;商店"></a>主流skill库&#x2F;商店</h3><ul>
+<li>Anthropic官方开源的<a target="_blank" rel="noopener" href="https://github.com/anthropics/skills">Skills仓库</a>  56.5k Star</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill">ui-ux-pro-max-skill</a>  ui风格(24.3k Star)</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/obra/superpowers">superpowers</a>  规划和文档测试（38.5k Star）</li>
+<li><a target="_blank" rel="noopener" href="https://skillsmp.com/">https://skillsmp.com/</a>  skill商店</li>
+</ul>
+<hr>
+<h3 id="Agent-Skill-VS-MCP"><a href="#Agent-Skill-VS-MCP" class="headerlink" title="Agent Skill VS MCP"></a><code>Agent Skill</code> VS <code>MCP</code></h3><p>这了解<code>Agent Skill</code>的过程中，我想起了<code>cline</code>的运行方式（可参考<a href="https://caihaoran-00.github.io/2025/06/19/MCP%E7%95%AA%E5%A4%96%EF%BC%9ACline%E4%B8%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BA%A4%E4%BA%92%E8%BF%87%E7%A8%8B">这里</a>)，<code>cline</code>的内置提示词来指导做事流程，采用XML方式实现工具调用（其实也是监控<code>LLM</code>输出，只不过不是function call那种输出方式），通过监测<code>LLM</code>的输出实现特定工具的调用。<code>Agent Skill</code>也是，通过提示词来指导<code>LLM</code>做事流程，然后需要执行某个程序脚本时就去执行某个脚本，但有个显著的不一样的点是<strong>渐进式披露（按需加载）机制</strong>，这极大的减少了token用量。</p>
+<p>试想一下，如果提示词中的工具调用的定义很多（<code>MCP</code>中关于工具调用的定义也会被注入到系统提示词中），那么问一个简单问题也会消耗大量的token，且由于提示词过长，<code>LLM</code>的<strong>注意力</strong>也会受影响，这个问题可以被<code>Agent Skill</code>的渐进式披露机制解决。</p>
+<p>那么既然<code>Agent Skill</code>的方式看起来比<code>MCP</code>更好，是不是<code>MCP</code>就要被完全替代&#x2F;淘汰掉了呢？</p>
+<p>以下引用自<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/VQSRPTf5bOyA1bjS2JH5Kw?click_id=1">参考链接4</a>的2.2节 <code>MCP</code>会被淘汰吗？</p>
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260129103649596.png" class="" title="image-20260129103649596">
+
+<img src="/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/image-20260129103750495.png" class="" title="image-20260129103750495">
+
+<p>意思是会被替代一部分，但大概率是共存的模式。</p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们在本文一起在<code>coze 2.0</code>和<code>OpenCode</code>中实际体验和了解了<code>Agent Skill</code>，并推荐了几个主流的Skill库和商店，最后比较了<code>Agent Skill</code>与<code>MCP</code>的异同以及后续的可能模式，希望本文对你有所帮助。</p>
+<hr>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1GXzaByEEo/?spm_id_from=333.337.search-card.all.click&vd_source=075a061948e76c87e2ee8754e264056e">https://www.bilibili.com/video/BV1GXzaByEEo/?spm_id_from=333.337.search-card.all.click&amp;vd_source=075a061948e76c87e2ee8754e264056e</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/BqdmL-O-ffzdhXpS-nkS2A">https://mp.weixin.qq.com/s/BqdmL-O-ffzdhXpS-nkS2A</a></li>
+<li><a target="_blank" rel="noopener" href="https://v.douyin.com/WyPu3BHLRYg/">https://v.douyin.com/WyPu3BHLRYg/</a> </li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/VQSRPTf5bOyA1bjS2JH5Kw?click_id=1">https://mp.weixin.qq.com/s/VQSRPTf5bOyA1bjS2JH5Kw?click_id=1</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/agent-skill/" rel="tag"># agent skill</a>
+              <a href="/tags/coze/" rel="tag"># coze</a>
+              <a href="/tags/opencode/" rel="tag"># opencode</a>
+              <a href="/tags/mcp/" rel="tag"># mcp</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/12/25/GLM4-7-%E7%AE%80%E5%8D%95%E8%AF%95%E7%94%A8/" rel="prev" title="GLM4.7-简单试用">
+                  <i class="fa fa-angle-left"></i> GLM4.7-简单试用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/01/31/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%BA%8C%E6%AC%A1%E4%BD%9C%E4%B8%9A/" rel="next" title="二阶段AI课程：第二次作业">
+                  二阶段AI课程：第二次作业 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">482k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29:14</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

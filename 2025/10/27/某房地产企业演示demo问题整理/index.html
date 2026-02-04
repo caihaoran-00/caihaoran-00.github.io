@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言之前和老板去和某房地产公司两次，共同探讨现阶段大模型技术与该行业结合的应用，以及展示我们现阶段的一些结合大模型做的案例。第二次沟通时该房地产公司表示会以招标的形式选择供应商，会在月9月底前定下来两个供应商，后续将以人天的形式进行项目的结算。但后续就没下文了，现在快10月底了，招标需求发过来了。需求书中包含了大量AI应用、数据应用以及本轮为统一评估供应商所需的两个demo，第一个是营销类，第二个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="某房地产企业演示demo问题整理">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言之前和老板去和某房地产公司两次，共同探讨现阶段大模型技术与该行业结合的应用，以及展示我们现阶段的一些结合大模型做的案例。第二次沟通时该房地产公司表示会以招标的形式选择供应商，会在月9月底前定下来两个供应商，后续将以人天的形式进行项目的结算。但后续就没下文了，现在快10月底了，招标需求发过来了。需求书中包含了大量AI应用、数据应用以及本轮为统一评估供应商所需的两个demo，第一个是营销类，第二个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/image-20251027155610404.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/image-20251027155816348.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/image-20251027161641447.png">
+<meta property="article:published_time" content="2025-10-27T07:41:15.000Z">
+<meta property="article:modified_time" content="2025-10-31T10:25:10.437Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="房地产demo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/image-20251027155610404.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/","path":"2025/10/27/某房地产企业演示demo问题整理/","title":"某房地产企业演示demo问题整理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>某房地产企业演示demo问题整理 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%90%A5%E9%94%80%E7%B1%BB"><span class="nav-number">2.1.</span> <span class="nav-text">营销类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E5%90%8C%E6%8F%90%E5%8F%96%E5%92%8C%E6%A0%A1%E9%AA%8C%E7%B1%BB"><span class="nav-number">2.2.</span> <span class="nav-text">合同提取和校验类</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">132</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="某房地产企业演示demo问题整理 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          某房地产企业演示demo问题整理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-10-27 15:41:15" itemprop="dateCreated datePublished" datetime="2025-10-27T15:41:15+08:00">2025-10-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-10-31 18:25:10" itemprop="dateModified" datetime="2025-10-31T18:25:10+08:00">2025-10-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/theory/" itemprop="url" rel="index"><span itemprop="name">theory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>632</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前和老板去和某房地产公司两次，共同探讨现阶段大模型技术与该行业结合的应用，以及展示我们现阶段的一些结合大模型做的案例。第二次沟通时该房地产公司表示会以招标的形式选择供应商，会在月9月底前定下来两个供应商，后续将以人天的形式进行项目的结算。但后续就没下文了，现在快10月底了，招标需求发过来了。需求书中包含了大量AI应用、数据应用以及本轮为统一评估供应商所需的两个demo，第一个是<strong>营销类</strong>，第二个是<strong>合同提取并校验类</strong>。本文将就这两个场景的一些不明确的问题进行整理，为demo撰写提供支撑。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p>为保证正确性，关于demo相关的要求将使用直接截图的方式。</p>
+<img src="/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/image-20251027155610404.png" class="" title="image-20251027155610404">
+
+<hr>
+<h3 id="营销类"><a href="#营销类" class="headerlink" title="营销类"></a>营销类</h3><p><strong>背景和需求如下：</strong></p>
+<img src="/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/image-20251027155816348.png" class="" title="image-20251027155816348">
+
+<hr>
+<h3 id="合同提取和校验类"><a href="#合同提取和校验类" class="headerlink" title="合同提取和校验类"></a>合同提取和校验类</h3><img src="/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/image-20251027161641447.png" class="" title="image-20251027161641447">
+
+<hr>
+<p>**问题1：**两个场景是都要做还是二选一？</p>
+<p>**答：**都做。</p>
+<p>**问题2：**用户评论以及关注行为需要我们去获取吗？（我们做demo时是不是通过模拟用户评论的内容和关注行为的方式即可，不需要真实的去通过小红书&#x2F;抖音&#x2F;视频号这些平台获取）</p>
+<p>**答：**不用，只需设计核心算法。</p>
+<p>**问题3：**是不是倾向于在这个场景下使用知识库检索（rag）、微调等技术？</p>
+<p>**答：**只使用提示词大概率有幻觉（比如用户问有没有优惠，大模型可能会回复有，但其实没有），所以倡导使用rag。</p>
+<p>**问题5：**留资具体是留哪些东西</p>
+<p>**答：**手机号&#x2F;微信号。</p>
+<p>**问题6：**开口率、开口留资率、10s回复率具体定义是什么，是我们提供以表示系统性能 还是你们那边的评判工具优劣的指标</p>
+<p>**答：**是我们（需方）评判工具优劣的指标。</p>
+<p>**问题7：**提供合同文档吗？</p>
+<p>  **答：**会提供。</p>
+<p>**问题8：**这里的评估指标不是自动化的评估指标</p>
+<p>补充记录： </p>
+<p>**问：**会提供一些营销话术吗？</p>
+<p>**答：**暂时不会提供。可能会提供直播间在播的项目的基本信息以供参考。</p>
+<p>两个demo主要依据各供应商对业务的理解进行设计。 </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%88%BF%E5%9C%B0%E4%BA%A7demo/" rel="tag"># 房地产demo</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/10/25/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BB%8E0%E8%AE%AD%E7%BB%83%E5%9F%BA%E7%A1%80/" rel="prev" title="大模型从0训练之基础知识">
+                  <i class="fa fa-angle-left"></i> 大模型从0训练之基础知识
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/" rel="next" title="管网Agent需求梳理">
+                  管网Agent需求梳理 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">482k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29:14</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言本文参考微软的generative-ai-for-beginners，一共为21课，这个项目为初学者提供构建生成式 AI 应用的基础知识以及一些代码。本文将按照官方教程一起来学习下微软提供的基础教程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生成式AI初学者指南（版本3）：一起看">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言本文参考微软的generative-ai-for-beginners，一共为21课，这个项目为初学者提供构建生成式 AI 应用的基础知识以及一些代码。本文将按照官方教程一起来学习下微软提供的基础教程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118161643130.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118163243615.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118163354590.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118165148286.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118165315544.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118165749678.png">
+<meta property="article:published_time" content="2025-11-18T08:03:47.000Z">
+<meta property="article:modified_time" content="2025-11-29T02:53:09.345Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="agent，LLM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118161643130.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/","path":"2025/11/18/生成式AI初学者指南（版本3）：一起看/","title":"生成式AI初学者指南（版本3）：一起看"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>生成式AI初学者指南（版本3）：一起看 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC0%E8%AF%BE"><span class="nav-number">2.1.</span> <span class="nav-text">第0课</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC1%E8%AF%BE"><span class="nav-number">2.2.</span> <span class="nav-text">第1课</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC2%E8%AF%BE"><span class="nav-number">2.3.</span> <span class="nav-text">第2课</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">132</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="生成式AI初学者指南（版本3）：一起看 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          生成式AI初学者指南（版本3）：一起看
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-11-18 16:03:47" itemprop="dateCreated datePublished" datetime="2025-11-18T16:03:47+08:00">2025-11-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-11-29 10:53:09" itemprop="dateModified" datetime="2025-11-29T10:53:09+08:00">2025-11-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文参考微软的<a target="_blank" rel="noopener" href="https://github.com/microsoft/generative-ai-for-beginners">generative-ai-for-beginners</a>，一共为21课，这个项目为初学者提供构建生成式 AI 应用的基础知识以及一些代码。本文将按照官方教程一起来学习下微软提供的基础教程。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="第0课"><a href="#第0课" class="headerlink" title="第0课"></a>第0课</h3><p>按照<a target="_blank" rel="noopener" href="https://github.com/microsoft/generative-ai-for-beginners/blob/main/translations/zh/00-course-setup/README.md?WT.mc_id=academic-105485-koreyst">这里的教程</a>创建<code>codespace</code>（等待中）：</p>
+<img src="/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118161643130.png" class="" title="image-20251118161643130">
+
+<p>按照⚙️ Gear icon -&gt; Command Pallete-&gt; Codespaces : Manage user secret -&gt; Add a new secret.显示下面提示：</p>
+<img src="/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118163243615.png" class="" title="image-20251118163243615">
+
+
+
+<p>Troubleshooting 故障排除的第二条是这个问题的解决方案，但是，click <strong>+</strong> ➜ <em>bash</em>什么意思？</p>
+<img src="/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118163354590.png" class="" title="image-20251118163354590">
+
+<p>算了，不浪费时间在环境上了，直接看教程得了。</p>
+<hr>
+<h3 id="第1课"><a href="#第1课" class="headerlink" title="第1课"></a>第1课</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/microsoft/generative-ai-for-beginners/blob/main/translations/zh/01-introduction-to-genai/README.md">README.md</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=lFXQkBvEe0o">video</a></li>
+</ul>
+<p><strong>总结：</strong></p>
+<p>这节课主要讲了生成式人工智能的定义，</p>
+<blockquote>
+<p>生成式人工智能是一种能够生成文本、图像及其他类型内容的人工智能技术。它的神奇之处在于，它让人工智能变得更加普及，任何人只需输入一个文本提示，即用自然语言写的一句话，就可以使用它。你不需要学习像Java或SQL这样的编程语言来完成有价值的事情，只需用自己的语言表达需求，人工智能模型就会给出建议。它的应用和影响是巨大的，你可以在几秒钟内撰写或理解报告、编写应用程序等等。</p>
+</blockquote>
+<p>人工智能到生成式AI的历程，以及包含关系，</p>
+<img src="/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118165148286.png" class="" title="image-20251118165148286">
+
+<p>再到大模型的工作原理，</p>
+<p>分词器，将文本转化为数字作为大模型的输入-&gt;大模型预测输出token(这个选择过程是基于概率分布的，但并不总是从结果分布中选择概率最高的token。为了模拟创造性思维的过程，选择中加入了一定程度的随机性，这种随机性可以通过一个名为温度的模型参数进行调整。)</p>
+<img src="/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118165315544.png" class="" title="image-20251118165315544">
+
+<p>最后是怎么使用大语言模型（自然语言作为指令使用）：</p>
+<img src="/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/image-20251118165749678.png" class="" title="image-20251118165749678">
+
+<p><strong>作业</strong></p>
+<p>你的作业是进一步阅读关于<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Generative_artificial_intelligence?WT.mc_id=academic-105485-koreyst">生成式人工智能</a>的内容，并尝试识别一个目前尚未应用生成式人工智能的领域，思考如何将其应用到该领域。与传统方式相比，影响会有何不同？你是否能够实现以前无法做到的事情，或者是否更高效？撰写一篇300字的总结，描述你梦想中的人工智能初创公司，并包括以下标题：“问题”、“我将如何使用人工智能”、“影响”，以及可选的“商业计划”。</p>
+<p>最后是<strong>知识检查环节：</strong></p>
+<p>关于大型语言模型，以下哪些是正确的？</p>
+<ol>
+<li>每次都会得到完全相同的回答。</li>
+<li>它能完美地完成任务，非常擅长计算、生成可用代码等。</li>
+<li>回答可能会因相同的提示而有所不同。它也非常擅长为你提供某些内容的初稿，无论是文本还是代码。但你需要对结果进行改进。</li>
+</ol>
+<p>答案：3，大型语言模型是非确定性的，回答会有所变化，但你可以通过调整温度设置来控制其变化程度。同时，你不应期望它能完美完成任务，它的作用是为你完成繁重的工作，通常意味着你会得到一个不错的初稿，然后需要逐步改进。</p>
+<hr>
+<h3 id="第2课"><a href="#第2课" class="headerlink" title="第2课"></a>第2课</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/microsoft/generative-ai-for-beginners/tree/main/translations/zh/02-exploring-and-comparing-different-llms">README.md</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=lFXQkBvEe0o">video</a></li>
+</ul>
+<p><strong>探索与比较不同的大语言模型 (LLMs)</strong></p>
+<p><strong>1. 核心概念辨析：地基与建筑</strong></p>
+<ul>
+<li><strong>基础模型 (Foundation Models) vs. 大语言模型 (LLMs)</strong><ul>
+<li><strong>基础模型</strong>是一个更广泛的概念。它们是大规模的、经过预训练的、具有强适应性的模型，通常是多模态的（处理文本、图像、音频等）。它们是构建下游 AI 应用的“地基”。</li>
+<li><strong>LLMs</strong> 是基础模型的一个子集，专门专注于语言处理。</li>
+<li><em>关键点：</em> 所有 LLM 都是基础模型，但并非所有基础模型都是 LLM（例如纯视觉模型）。</li>
+</ul>
+</li>
+</ul>
+<p><strong>2. 模型的分类与功能</strong></p>
+<p>根据输入输出的不同，模型被分为几类：</p>
+<ul>
+<li><strong>文本&#x2F;代码生成模型：</strong> 输入文本，输出文本或代码。例如 GPT-4, Llama 2, Mistral。</li>
+<li><strong>图像生成模型：</strong> 输入文本提示，生成图像。例如 DALL-E, Stable Diffusion。</li>
+<li><strong>嵌入模型 (Embeddings)：</strong> 输入文本，输出数字向量。这是机器理解语义的关键，用于搜索、聚类和 RAG（检索增强生成）系统。</li>
+</ul>
+<p><strong>3. 决策十字路口：开源 vs. 专有</strong></p>
+<p>在选择模型时，这是第一个主要决策点：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th><strong>开源模型 (Open Source)</strong></th>
+<th><strong>专有模型 (Proprietary)</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>代表例子</strong></td>
+<td>Llama (Meta), Falcon, Mistral, Hugging Face 上的模型</td>
+<td>GPT-4 (OpenAI), Claude, Gemini</td>
+</tr>
+<tr>
+<td><strong>优点</strong></td>
+<td><strong>透明性</strong>（代码可见）、<strong>控制权</strong>（可微调权重）、<strong>隐私</strong>（可本地部署）、通常免费使用许可。</td>
+<td><strong>易用性</strong>（API 接入即用）、<strong>高性能</strong>、<strong>维护省心</strong>、安全性由厂商负责。</td>
+</tr>
+<tr>
+<td><strong>缺点</strong></td>
+<td><strong>维护成本高</strong>（需自建基建）、<strong>更新慢</strong>、需自己负责安全性修补。</td>
+<td><strong>黑盒</strong>（无法知晓内部运作）、<strong>数据隐私顾虑</strong>、<strong>成本</strong>（按 Token 付费）。</td>
+</tr>
+</tbody></table>
+<p><strong>4. 部署模式：服务 vs. 模型</strong></p>
+<p>决定了模型类型后，如何运行它？</p>
+<ul>
+<li><strong>模型即服务 (Model as a Service &#x2F; MaaS)：</strong><ul>
+<li>像使用水电一样，通过 API 调用云端的模型（如 Azure OpenAI Service）。</li>
+<li><strong>优势：</strong> 自动扩缩容、无需管理 GPU 服务器、快速集成。</li>
+</ul>
+</li>
+<li><strong>自托管模型 (Model as a Platform&#x2F;Artifact)：</strong><ul>
+<li>下载模型文件（Weights），在自己的服务器或 Docker 容器中运行。</li>
+<li><strong>优势：</strong> 极致的控制权。</li>
+<li><strong>劣势：</strong> 需要专业的运维团队和昂贵的硬件支持。</li>
+</ul>
+</li>
+</ul>
+<p><strong>5. 探索工具：Azure AI Studio</strong></p>
+<p>视频中详细展示了微软的工具平台，用于辅助上述决策：</p>
+<ul>
+<li><strong>Model Catalog（模型目录）：</strong> 一个聚合中心，可以浏览 OpenAI、Meta、Mistral 等各家厂商的模型。</li>
+<li><strong>Model Card（模型名片）：</strong> 类似于食品营养成分表，详细列出模型的训练数据、适用场景、局限性和许可证信息。</li>
+<li><strong>Benchmarks（基准测试）：</strong> 提供可视化的数据图表，对比不同模型在准确率、推理速度、连贯性上的表现。</li>
+</ul>
+<p><strong>6. 提升模型表现的“金字塔”策略</strong></p>
+<p>当你选定一个模型后，它可能还不能完美解决你的问题。课程提出了一个从易到难的优化路径（这也是本课程后续章节的伏笔）：</p>
+<ol>
+<li><strong>提示工程 (Prompt Engineering) [最底层&#x2F;最简单]：</strong><ul>
+<li>通过优化输入的 Prompt（提供上下文、Few-shot 示例、设定角色语气）来引导模型。</li>
+<li><em>适用场景：</em> 绝大多数通用任务，成本最低。</li>
+</ul>
+</li>
+<li><strong>检索增强生成 (RAG) [中层]：</strong><ul>
+<li>当模型需要知道它训练数据之外的信息（如公司内部文档、最新新闻）时使用。</li>
+<li>利用向量数据库检索相关信息，并将其注入到 Prompt 中。</li>
+<li><em>适用场景：</em> 智能客服、企业知识库助手。</li>
+</ul>
+</li>
+<li><strong>微调 (Fine-tuning) [高层]：</strong><ul>
+<li>使用特定的数据集对模型进行再训练，更新其权重。</li>
+<li><em>适用场景：</em> 需要特定的输出格式、学习独特的语言风格、或因为对延迟要求极高而无法使用超长 Prompt 时。</li>
+</ul>
+</li>
+<li><strong>从头训练 (Training from Scratch) [顶层&#x2F;最难]：</strong><ul>
+<li>通常不建议初创公司尝试，需要海量数据和算力资源。</li>
+</ul>
+</li>
+</ol>
+<p><strong>7. 总结</strong></p>
+<ul>
+<li><strong>互补性：</strong> 上述技术不是互斥的，而是互补的。实际生产中，最强大的系统往往是 <strong>RAG + 微调 + 提示工程</strong> 的组合。</li>
+<li><strong>迭代：</strong> 选择模型不是一次性的工作，而是一个“选择 -&gt; 测试 (Benchmarking) -&gt; 优化”的持续迭代过程。</li>
+</ul>
+<p>这就是这一课的完整全貌，涵盖了理论基础、选型策略、工具使用以及未来的优化方向。</p>
+<hr>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/agent%EF%BC%8CLLM/" rel="tag"># agent，LLM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/" rel="prev" title="管网Agent需求梳理">
+                  <i class="fa fa-angle-left"></i> 管网Agent需求梳理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/12/19/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%9C%E4%B8%9A/" rel="next" title="二阶段AI课程：第一次作业">
+                  二阶段AI课程：第一次作业 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">482k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29:14</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言这是一个需求梳理文档，暂名：管网Agent。是一个关于自动生成HAZOP文档的Agent。本文将重点梳理整个工作流以及各步骤的输入输出。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="管网Agent需求梳理">
+<meta property="og:url" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言这是一个需求梳理文档，暂名：管网Agent。是一个关于自动生成HAZOP文档的Agent。本文将重点梳理整个工作流以及各步骤的输入输出。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119172416886.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119172343404.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119172324034.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119172208687.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/f1.jpg">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/f2.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119170700461.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/f3.jpg">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251120181335711.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251215145948292.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251215112047632.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20260131164939907.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20260131180337864.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20260131183930899.png">
+<meta property="article:published_time" content="2025-11-17T07:59:18.000Z">
+<meta property="article:modified_time" content="2026-01-31T13:33:37.838Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="agent">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119172416886.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/","path":"2025/11/17/管网Agent需求梳理/","title":"管网Agent需求梳理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>管网Agent需求梳理 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HAZOP%E9%A2%84%E5%88%86%E6%9E%90"><span class="nav-number">2.1.</span> <span class="nav-text">HAZOP预分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#web%E5%85%A5%E5%8F%A3%EF%BC%88%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF-%E8%B5%84%E6%96%99%E4%B8%8A%E4%BC%A0%E4%B8%8E%E8%A7%A3%E6%9E%90%EF%BC%89"><span class="nav-number">2.1.1.</span> <span class="nav-text">web入口（基本信息+资料上传与解析）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E7%AE%A1%E7%90%86"><span class="nav-number">2.1.2.</span> <span class="nav-text">节点管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E7%AE%A1%E7%90%86"><span class="nav-number">2.1.3.</span> <span class="nav-text">场景管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HAZOP%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A"><span class="nav-number">2.2.</span> <span class="nav-text">HAZOP分析报告</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="nav-number">2.2.1.</span> <span class="nav-text">基本信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E5%B7%AE%E5%88%86%E6%9E%90"><span class="nav-number">2.2.2.</span> <span class="nav-text">偏差分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E6%95%85%E6%A1%88%E4%BE%8B"><span class="nav-number">2.2.3.</span> <span class="nav-text">事故案例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%8A%A5%E5%91%8A"><span class="nav-number">2.2.4.</span> <span class="nav-text">生成报告</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%EF%BC%88%E7%AC%AC%E4%B8%80%E7%89%88-%E5%88%9D%E7%89%88%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">实现方案（第一版&#x2F;初版）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E7%90%86%E8%A7%A3"><span class="nav-number">2.4.</span> <span class="nav-text">业务理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E8%81%94%E9%94%81-%E6%8E%A7%E5%88%B6%E7%82%B9"><span class="nav-number">2.4.1.</span> <span class="nav-text">主要联锁&#x2F;控制点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#R1-R2%E8%AE%A1%E7%AE%97"><span class="nav-number">2.4.2.</span> <span class="nav-text">R1 &amp; R2计算</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker%E6%93%8D%E4%BD%9C%E7%AC%94%E8%AE%B0"><span class="nav-number">2.5.</span> <span class="nav-text">docker操作笔记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E6%B5%81%E8%AF%B4%E6%98%8E"><span class="nav-number">2.6.</span> <span class="nav-text">工作流说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%84%E6%96%99%E8%A7%A3%E6%9E%90"><span class="nav-number">2.6.1.</span> <span class="nav-text">资料解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8A%82%E7%82%B9%E7%AE%A1%E7%90%86-1"><span class="nav-number">2.6.2.</span> <span class="nav-text">节点管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E7%AE%A1%E7%90%86-1"><span class="nav-number">2.6.3.</span> <span class="nav-text">场景管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%BB%BA%E8%AE%AE-%E9%97%AE%E9%A2%98%E5%BB%BA%E8%AE%AE%E5%AF%B9"><span class="nav-number">2.6.4.</span> <span class="nav-text">添加建议&#x2F;问题建议对</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E5%AF%BC%E5%87%BA%E6%AE%B5%E8%90%BD-%E7%AB%A0%E8%8A%82"><span class="nav-number">2.6.5.</span> <span class="nav-text">文档导出段落&#x2F;章节</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">2.7.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%99%E5%9C%BA%E5%8A%9F%E8%83%BD%E7%94%9F%E6%88%90"><span class="nav-number">2.7.1.</span> <span class="nav-text">站场功能生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E6%8E%A7%E5%88%B6%E7%B3%BB%E7%BB%9F%E7%94%9F%E6%88%90"><span class="nav-number">2.7.2.</span> <span class="nav-text">自动化控制系统生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E7%B3%BB%E7%BB%9F%E7%94%9F%E6%88%90"><span class="nav-number">2.7.3.</span> <span class="nav-text">通信系统生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E9%98%B2%E7%B3%BB%E7%BB%9F%E7%94%9F%E6%88%90"><span class="nav-number">2.7.4.</span> <span class="nav-text">消防系统生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9B%E9%85%8D%E7%94%B5%E7%B3%BB%E7%BB%9F%E7%94%9F%E6%88%90"><span class="nav-number">2.7.5.</span> <span class="nav-text">供配电系统生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%99%E5%9C%BA%E7%8E%AF%E5%A2%83-%E5%91%A8%E8%BE%B9%E7%8E%AF%E5%A2%83%E7%94%9F%E6%88%90"><span class="nav-number">2.7.6.</span> <span class="nav-text">站场环境&#x2F;周边环境生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E7%84%B6%E4%B8%8E%E5%9C%B0%E8%B4%A8%E6%9D%A1%E4%BB%B6-%E7%AB%99%E5%9C%BA%E5%90%8D"><span class="nav-number">2.7.7.</span> <span class="nav-text">自然与地质条件_站场名</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">114</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">132</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="管网Agent需求梳理 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          管网Agent需求梳理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-11-17 15:59:18" itemprop="dateCreated datePublished" datetime="2025-11-17T15:59:18+08:00">2025-11-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-01-31 21:33:37" itemprop="dateModified" datetime="2026-01-31T21:33:37+08:00">2026-01-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>30 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这是一个需求梳理文档，暂名：管网Agent。是一个关于自动生成<code>HAZOP</code>文档的Agent。本文将重点梳理整个工作流以及各步骤的输入输出。</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><p>**明确目标：**从头到为的所有操作都是为了生成&#x2F;提取一些段落&#x2F;短句，并将这些段落&#x2F;短句放到<code>HAZOP</code>模版文档的固定位置，以自动化的生成<code>HAZOP</code>文档。</p>
+<hr>
+<h2 id="HAZOP预分析"><a href="#HAZOP预分析" class="headerlink" title="HAZOP预分析"></a>HAZOP预分析</h2><hr>
+<h3 id="web入口（基本信息-资料上传与解析）"><a href="#web入口（基本信息-资料上传与解析）" class="headerlink" title="web入口（基本信息+资料上传与解析）"></a><strong>web入口（基本信息+资料上传与解析）</strong></h3><p>需要选择&#x2F;填写报告基本信息<strong>包含</strong>：</p>
+<ul>
+<li>项目（下拉列表，内置几种项目，每个项目绑定介质和站场功能），例：华东地区&#x2F;上海分公司&#x2F;站场1&#x2F;风险分析项目</li>
+<li>会议日期，例：2025.6.17</li>
+<li>报告展示名称，例：桂林输气站危险与可操作性（<code>HAZOP</code>）分析</li>
+<li>参会人员，例：张三、李四、王五</li>
+</ul>
+<p>需要上传站场资料信息<strong>包含</strong>：</p>
+<ul>
+<li>节点划分图纸，例：<code>HAZOP</code>分析节点划分依据图纸.pdf</li>
+<li>站场功能、建设及改造历史、周边环境，例：</li>
+<li>主要系统资料，</li>
+<li>主要工艺流程资料，</li>
+<li>主要设备和技术参数资料，</li>
+<li>主要工艺参数和保护参数资料，</li>
+</ul>
+<hr>
+<p>报告基本信息的四项的<strong>作用</strong></p>
+<ul>
+<li>项目字段用于绑定介质和站场功能（这两个字段用于后续流程）</li>
+<li>其余三个字段用于填充在HAZOP报告的固定位置</li>
+</ul>
+<p>各站场资料信息<strong>作用</strong></p>
+<ul>
+<li><p><strong>节点划分图纸</strong>中通常包含节点名称（比如节点1：XXXX，节点2：XXXX…），也可能包含工艺流程（位于图纸左下），主要设备（上方）</p>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119172416886.png" class="" title="image-20251119172416886">
+</li>
+<li><p><strong>站场功能、建设及改造历史、周边环境</strong> 以及 <strong>主要系统资料</strong>作为附加信息（类似于背景信息）用于后续的提示词工程，这部分不直接出现在<code>HAZOP</code>报告中</p>
+</li>
+<li><p><strong>主要工艺流程资料</strong>，例：SPC-0202PR01-0.pdf第9页的3.2 工艺流程，按三级标题+内容形式进行输出</p>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119172343404.png" class="" title="image-20251119172343404">
+</li>
+<li><p><strong>主要设备和技术参数资料</strong>，例：SPC-0202PR01-0.pdf第10页的表 3.3-1 站场设备配置一览表</p>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119172324034.png" class="" title="image-20251119172324034">
+</li>
+<li><p><strong>主要工艺参数和保护参数资料</strong>，例：关键工艺管道设备系统明细表及技术参数.docx（输出是啥样的？）</p>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119172208687.png" class="" title="image-20251119172208687"></li>
+</ul>
+<hr>
+<h3 id="节点管理"><a href="#节点管理" class="headerlink" title="节点管理"></a>节点管理</h3><p>所有原料准备好了，下面进行节点管理，由<strong>节点划分图纸</strong>解析得到的节点数量决定这里有几个sheet页，每页对应一个节点。</p>
+<p>本页展示（以节点一为例，一共有三个sheet页，因为有三个节点）：</p>
+<ul>
+<li>项目展示名称，例：风险分析项目（新增）</li>
+<li>会议日期，例：2025.6.17</li>
+<li>节点号，例：1（新增）</li>
+<li>参考图纸，例：桂林输气站工艺流程图（新增，&#x3D;节点划分图纸的文件名称）</li>
+<li>参会人员，例：张三、李四、王五</li>
+<li>装置&#x2F;系统，例：进出站及越站返输（新增，&#x3D; 节点1名称）</li>
+</ul>
+<p>这6项是节点工作表的表头。↓</p>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/f1.jpg" class="" title="f1">
+
+<ul>
+<li>工艺流程，下拉列表（新增）</li>
+<li>操作维护，下拉列表（新增）</li>
+<li>设备，下拉列表（新增）</li>
+</ul>
+<p>这三项是操作人员&#x2F;用户进行选择，用于维护节点的标签项。</p>
+<p>下面的标签&#x2F;字段都是可以<strong>手动输入或AI生成</strong>的：</p>
+<ul>
+<li><p>节点描述</p>
+<blockquote>
+<p>上传文档的界面选择项目时即关联了<strong>介质</strong>，再加上本页面的<strong>工艺流程</strong>，<strong>操作维护</strong>，<strong>设备</strong>字段，使用这四个字段去<strong>1-节点描述汇总.xls</strong>匹配词条，通过匹配到的词条&#x2F;节点描述 + （待考究）已经解析得到的<strong>主要设备信息</strong>、<strong>主要流程</strong>去让大模型生成节点描述。</p>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/f2.png" class="" title="f2"></blockquote>
+</li>
+<li><p>设计意图</p>
+<blockquote>
+<p>思路同上，<strong>2-设计意图汇总.xls</strong></p>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251119170700461.png" class="" title="image-20251119170700461"></blockquote>
+</li>
+<li><p>主要设备及技术参数</p>
+<blockquote>
+<p>思路同上，4-主要设备及参数汇总.xls，这里只通过工艺流程去匹配即可。通过匹配到的词条 加上 识别到的所有设备名称，让大模型给这些设备按节点（的工艺流程）分类。</p>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/f3.jpg" class="" title="f3"></blockquote>
+</li>
+<li><p>主要连锁控制点</p>
+<ul>
+<li>BPCS&#x2F;DCS联锁</li>
+<li>SIS联锁</li>
+<li>报警及人员响应</li>
+<li>其他联锁（如设备本体联锁，火气联锁等）</li>
+<li>机械保护（物理保护）</li>
+</ul>
+<blockquote>
+<p>做法（表头及单行示例如下）：</p>
+<table>
+<thead>
+<tr>
+<th>站场名称</th>
+<th>节点名称</th>
+<th>介质</th>
+<th>站场功能</th>
+<th>流程类别</th>
+<th>主要联锁&#x2F;控制点 （原封不动粘过来）</th>
+<th>设备名称</th>
+<th>标签库设备分类</th>
+<th>仪表名称</th>
+<th>表决逻辑</th>
+<th>报警（详细）</th>
+<th>名称：BPCS&#x2F;DCS 联锁</th>
+<th>其他保护</th>
+<th>SIS 联锁</th>
+<th>物理保护（泄放装置）</th>
+<th>联锁动作</th>
+<th>联锁设备</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>西一线长铝末站</td>
+<td>进站过滤分离流程</td>
+<td>天然气</td>
+<td>正输&#x2F;分输&#x2F;过滤分离</td>
+<td>正输流程</td>
+<td>进站压力PT1101低压(3.3MPa)低低（3.2MPa）报警;压力高（5.1MPa）,高高（5.3MPa）报警</td>
+<td>压力变送器</td>
+<td>压力变送器</td>
+<td>压力传感器</td>
+<td></td>
+<td>进站压力PT**低压(**MPa)低低（**MPa）报警;压力高（**MPa）,高高（**MPa）报警</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>对于匹配到的词条&#x2F;行，需要的列是</p>
+<ul>
+<li>报警（详细）  </li>
+<li>BPCS&#x2F;DCS 联锁 </li>
+<li>其他保护  </li>
+<li>SIS 联锁  </li>
+<li>物理保护（泄放装置）</li>
+<li>联锁动作</li>
+<li>联锁设备</li>
+</ul>
+<p>如果报警列有内容，将其内容与前面提取到的保护措施进行匹配，并将其放到报警及人员响应框；</p>
+<p>而BPCS&#x2F;DCS 联锁、其他保护、SIS 联锁、物理保护（泄放装置）的内容需与联锁动作、联锁设备拼接后做为完整内容去与前面提取到的保护措施进行匹配，并纳入到对应框中；</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="场景管理"><a href="#场景管理" class="headerlink" title="场景管理"></a>场景管理</h3><p>使用<strong>介质、站场功能、工艺流程、操作维护、设备</strong>标签去<code>5-场景列表.xlsx</code>文件中匹配相似的词条（场景），可按标签手动引用或添加场景，添加场景后将刚才确认引用的词条的内容放到以下的对应位置：</p>
+<ul>
+<li><p>选择（复选框）</p>
+</li>
+<li><p>序号，例：2.1.1</p>
+</li>
+<li><p>参数，例：压力（来自词条匹配）</p>
+</li>
+<li><p>偏差，例：压力高（词条匹配）</p>
+</li>
+<li><p>原因，例：来气压力高（词条匹配）</p>
+</li>
+<li><p>L，例：3（根据原因的内容查表，<strong>表待提供</strong>）</p>
+</li>
+<li><p>后果，例：流量计出口压力大，对站内管道冲击大（词条匹配）</p>
+</li>
+<li><p>S，例：P:-，F:-，E:-，R:1（词条匹配）</p>
+</li>
+<li><p>R1，例：I（通过风险矩阵表<strong>计算</strong>）</p>
+</li>
+<li><p>保护措施&#x2F;修正条件，例：报警及人员相应[0.1]: 1. 桂林输气站转供超声波流量计(DN300)精度范围：177m³&#x2F;h-7200m³&#x2F;h [0.1] …</p>
+<p>（这里是通过介质、站场功能、工艺流程、操作维护、设备等标签在场景列表中匹配到的词条，使用LLM从<strong>节点管理</strong>中的<strong>主要联锁&#x2F;控制点</strong>（应该叫做保护措施）中选择的词条，带PFD，操作员手动添加条件修正【感觉应当是手工填在主要联锁&#x2F;控制点中，而不是直接手工填在场景的保护措施&#x2F;修正条件中】。）</p>
+</li>
+<li><p>R2（计算得到）</p>
+</li>
+<li><p>建议措施（这里不填）</p>
+</li>
+<li><p>R3（不需计算）</p>
+</li>
+</ul>
+<p>以此类推，三个节点的内容都得到了，就可以预览或下载<code>HAZOP</code>预分析工作表了，要求为<strong>Word格式（模版待提供）</strong>，内容如下所示：</p>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251120181335711.png" class="" title="image-20251120181335711">
+
+<p>以上就是HAZOP与分析的整理逻辑流程，接下来是HAZOP分析报告。</p>
+<hr>
+<h2 id="HAZOP分析报告"><a href="#HAZOP分析报告" class="headerlink" title="HAZOP分析报告"></a>HAZOP分析报告</h2><p>这一步是在现场考察后，对上一步的预分析报告的部分内容进行修改和补充。</p>
+<h3 id="基本信息"><a href="#基本信息" class="headerlink" title="基本信息"></a>基本信息</h3><p>该部分主要提供模板让操作者进行填写以及上传文件，内容会出现在最终的HAZOP分析报告中。</p>
+<h3 id="偏差分析"><a href="#偏差分析" class="headerlink" title="偏差分析"></a>偏差分析</h3><p>这一步本质是在上述场景管理的基础上，操作员对其中的内容进行必要<strong>修改</strong>，并<strong>添加建议</strong>，</p>
+<p>添加建议的逻辑是：操作员添加简短描述，然后通过这个描述去<strong>操作建议库（待提供）<strong>查找</strong>发现问题-建议对</strong>，并将其显示在添加建议页面，将建议措施显示在场景列表的建议措施中。</p>
+<hr>
+<h3 id="事故案例"><a href="#事故案例" class="headerlink" title="事故案例"></a>事故案例</h3><p>事故案例库待提供，也是通过标签去匹配事故案例。</p>
+<hr>
+<h3 id="生成报告"><a href="#生成报告" class="headerlink" title="生成报告"></a>生成报告</h3><p>万事俱备，现在就可以生成<code>HAZOP分析报告</code>了，使用上面生成的以及手填的内容填充在Word文档模版中（模版待提供）的固定位置（位置待细化），以生成完整<strong>HAZOP分析报告</strong>。</p>
+<hr>
+<hr>
+<h2 id="实现方案（第一版-初版）"><a href="#实现方案（第一版-初版）" class="headerlink" title="实现方案（第一版&#x2F;初版）"></a>实现方案（第一版&#x2F;初版）</h2><p><strong>图纸解析：</strong></p>
+<p>**输入：**图纸 图片&#x2F;pdf</p>
+<p>**经过：**多模态大模型+提示词</p>
+<p>**得到：**节点名称（+流程+设备）</p>
+<p><strong>主要设备及参数解析：</strong></p>
+<p>**输入：**SPC-0202PR01-0（例）<br>**经过：**文档解析+提示词<br>**得到：**主要设备列表</p>
+<p><strong>工艺流程解析：</strong></p>
+<p>**输入：**SPC-0202PR01-0（例）<br>**经过：**文档解析+提示词<br>**得到：**主要流程列表</p>
+<p><strong>保护措施解析：</strong></p>
+<p>**输入：**关键工艺管道设备系统明细表及技术参数.docx（例）<br>**经过：**文档解析+提示词<br>**得到：**保护措施列表</p>
+<hr>
+<p><strong>节点描述：</strong></p>
+<ul>
+<li><p>**转化：**将<code>1-节点描述.xls</code>转化为<code>json</code>列表</p>
+</li>
+<li><p>**匹配：**通过介质、工艺流程、设备、操作维护去<code>json</code>列表中匹配节点描述</p>
+<blockquote>
+<p>介质、工艺流程、设备、操作维护填什么？</p>
+</blockquote>
+</li>
+<li><p>**提示词：**将匹配到的节点描述带上上述的主要流程+主要设备+节点名称编写如提示词</p>
+</li>
+<li><p>**得到：**节点描述</p>
+<blockquote>
+<p>如何评判准确性？</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<p><strong>设计意图：</strong></p>
+<p>思路同上。</p>
+<blockquote>
+<p>问题同上。</p>
+</blockquote>
+<hr>
+<p><strong>主要设备及技术参数：</strong></p>
+<p>思路同上。</p>
+<blockquote>
+<p>问题同上。</p>
+</blockquote>
+<hr>
+<p><strong>主要联锁&#x2F;控制点：</strong></p>
+<ul>
+<li><p>**转化：**将<code>3-联锁保护（新模版）.xlsx</code>转化为<code>json</code>列表</p>
+</li>
+<li><p>**匹配：**通过介质、工艺流程、设备、站场功能去<code>json</code>列表中匹配保护措施</p>
+<blockquote>
+<p>工艺流程、设备与前面的数据集统一？</p>
+</blockquote>
+</li>
+<li><p>**分类：**将匹配到的保护措施带上上述的保护措施列表+节点名称编写提示词，让<code>LLM</code>从保护措施列表挑选符合当前节点的保护措施，并分类为BPCS&#x2F;DCS 联锁、SIS 联锁、报警及人员响应、其他联锁（如设备本体联锁，火气联锁等）、机械保护(物理保护)</p>
+</li>
+<li><p>**得到：**分类后的符合当前节点的主要联锁&#x2F;控制点。</p>
+<blockquote>
+<p>问题同上。</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<p><strong>场景：</strong></p>
+<ul>
+<li>**转换：**HTTP</li>
+</ul>
+<hr>
+<h2 id="业务理解"><a href="#业务理解" class="headerlink" title="业务理解"></a>业务理解</h2><blockquote>
+<p>前提：目前使用产品原型上的站场进行实验，未做其他格式文件以及其他站场的兼容。</p>
+</blockquote>
+<p>总体上来看，<code>HAZOP</code>预分析的步骤是：</p>
+<ol>
+<li>资料解析</li>
+<li>节点管理</li>
+<li>场景管理</li>
+</ol>
+<p><strong>资料解析</strong>指的（目前关注，包括不限于）是：</p>
+<ul>
+<li><p>从<strong>节点图纸</strong>解析出节点信息、流程信息、设备信息</p>
+<blockquote>
+<p>现阶段从文档（广西公司桂林输气站HAZOP报告（O版）.pdf）中截图作为输入，使用Qwen2.5VL-32B，节点信息准确，其他信息准确度不足。</p>
+</blockquote>
+</li>
+<li><p>工艺流程&#x2F;主要设备及参数</p>
+<blockquote>
+<p>从SPC-0202PR01-0.pdf中解析得到，均准确</p>
+</blockquote>
+</li>
+<li><p>保护措施参数</p>
+<blockquote>
+<p>从<code>关键工艺管道设备系统明细表及技术参数.docx</code>解析得到，准确。</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<p><strong>节点管理</strong>指通过上述<strong>资料解析</strong>得到的内容+<strong>节点名称</strong>+<strong>工艺流程</strong>+<strong>操作维护</strong>+<strong>设备</strong>，得到：</p>
+<ul>
+<li><p>节点描述</p>
+<blockquote>
+<p>短，不带位号</p>
+</blockquote>
+</li>
+<li><p>设计意图</p>
+<blockquote>
+<p>详细，带位号</p>
+</blockquote>
+</li>
+<li><p>主要联锁&#x2F;控制点</p>
+</li>
+<li><p>主要设备及技术参数</p>
+</li>
+</ul>
+<hr>
+<h3 id="主要联锁-控制点"><a href="#主要联锁-控制点" class="headerlink" title="主要联锁&#x2F;控制点"></a>主要联锁&#x2F;控制点</h3><p>相当于工厂的保镖，</p>
+<ol>
+<li><strong>控制点 (Control Point)</strong>：<ul>
+<li>就像你把燃气灶的火调大调小。</li>
+<li><strong>在工厂里</strong>：这就是“调节阀”或“PID控制”。比如：为了保持水箱水位，阀门自动开大一点或关小一点。它的目的是<strong>让生产平稳进行</strong>。</li>
+</ul>
+</li>
+<li><strong>联锁点 (Interlock Point)</strong>：<ul>
+<li>就像电热水壶水烧干了，它会“咔哒”一下自动断电。这救了你的命，防止干烧起火。</li>
+<li><strong>在工厂里</strong>：这就是“SIS系统”或“ESD系统”。比如：进站压力太高了（快爆炸了），系统<strong>强制</strong>关闭进站阀门。它的目的是<strong>保命、保设备</strong>。</li>
+</ul>
+</li>
+</ol>
+<p>一个完整的“点”必须包含三要素：</p>
+<ol>
+<li><strong>眼睛（检测元件）</strong>：谁在看？（比如：PT-101 压力变送器）</li>
+<li><strong>大脑（设定值&#x2F;逻辑）</strong>：什么时候动手？（比如：压力 &gt; 9.9 MPa 时）</li>
+<li><strong>手（执行动作）</strong>：动手干什么？（比如：关闭 进站阀 ESDV-101）</li>
+</ol>
+<hr>
+<h3 id="R1-R2计算"><a href="#R1-R2计算" class="headerlink" title="R1 &amp; R2计算"></a>R1 &amp; R2计算</h3><p><strong>变量介绍：</strong></p>
+<ul>
+<li>L：事故发生概率等级（应根据典型偏差原因概率表填入，目前直接使用检索回的场景条目中的L）</li>
+<li>S：事故后果严重程度等级（根据现场分析人工填入，目前直接使用检索回的场景条目中的S）</li>
+<li>R1：初始风险等级（根据风险评估矩阵计算）</li>
+<li>R2：现有措施降级后风险等级（根据保护措施分类的对应PFD值，自动计算将险后的风险等级）</li>
+</ul>
+<hr>
+<p><strong>R1计算：</strong></p>
+<ul>
+<li><code>L</code>乘以<code>S</code>列的每项数值</li>
+<li>从风险评估矩阵中找到对应风险等级</li>
+<li>取最大值。</li>
+</ul>
+<p><strong>例：</strong></p>
+<p>L&#x3D;3，S&#x3D;{P : 1, F : 2, E : 3, R : 4}</p>
+<ul>
+<li><p>识别S中最大的值→4</p>
+</li>
+<li><p>查找风险评估矩阵（见下图红色圈）→得到：Ⅲ</p>
+<blockquote>
+<p>即<code>R1</code>的值为Ⅲ。</p>
+</blockquote>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251215145948292.png" class="" title="image-20251215145948292"></li>
+</ul>
+<hr>
+<p><strong>R2计算：</strong></p>
+<p><strong>每条保护措施对应<code>PFD</code>值（来自于节点管理页面默认&#x2F;手动填入的小数），可用于降初始概率等级；</strong></p>
+<blockquote>
+<p>这里的保护措施是主要联锁&#x2F;控制点的子集；主要联锁&#x2F;控制点是资料解析-保护措施参数分条后的子集）</p>
+</blockquote>
+<img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20251215112047632.png" class="" title="image-20251215112047632">
+
+<p><strong><code>PFD</code>值到0.1则降一级，到0.01降两级，到0.001降三级。比如PFD&#x3D;0.7不降级，PFD&#x3D;0.07降一级，PFD&#x3D;0.007降两级；</strong></p>
+<blockquote>
+<p>x &gt; 0.1 → 0级；<br>0.01  &lt; x ≤ 0.1 → 1级；<br>0.001 &lt; x ≤ 0.01 → 2级；<br>0.0001 &lt; x ≤ 0.001  → 3级</p>
+</blockquote>
+<p><strong>同类保护措施中，所有的保护措施累计降险不可大于两级；</strong></p>
+<p><strong>条件修正对应<code>PFD</code>可降后果严重程度等级</strong></p>
+<p><strong>降低概率等级（L）或严重程度等级（S），最多降至1级，不可降至0级</strong></p>
+<p><strong>降险后重新用风险矩阵，计算风险等级<code>R2</code></strong></p>
+<blockquote>
+<p>保护措施降L，条件修正降S，同类保护措施最多降两级，最低降至1级。</p>
+</blockquote>
+<hr>
+<h2 id="docker操作笔记"><a href="#docker操作笔记" class="headerlink" title="docker操作笔记"></a>docker操作笔记</h2><figure class="highlight python"><figcaption><span>client_url.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> httpx</span><br><span class="line"></span><br><span class="line"><span class="comment"># ================= 配置区域 =================</span></span><br><span class="line">API_URL = <span class="string">&quot;http://localhost:8085/parse-document&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用你提供的真实 URL</span></span><br><span class="line">TEST_FILE_URL = <span class="string">&quot;https://wecdn-ai.o...&quot;</span></span><br><span class="line">TEST_FILENAME = <span class="string">&quot;....pdf&quot;</span>  <span class="comment"># 新增：显式指定文件名</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ===========================================</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">call_parse_api</span>(<span class="params">file_url: <span class="built_in">str</span>, filename: <span class="built_in">str</span> = <span class="literal">None</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    调用文档解析API</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        file_url: 文件的URL地址</span></span><br><span class="line"><span class="string">        filename: 文件名（可选，如果不传则尝试从URL提取）</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    payload = &#123;</span><br><span class="line">        <span class="string">&quot;file_url&quot;</span>: file_url,</span><br><span class="line">        <span class="string">&quot;filename&quot;</span>: filename  <span class="comment"># 新增：传递文件名参数</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    headers = &#123;</span><br><span class="line">        <span class="string">&quot;Content-Type&quot;</span>: <span class="string">&quot;application/json&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;🚀 正在请求 API: <span class="subst">&#123;API_URL&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;📥 目标文件 URL: <span class="subst">&#123;file_url&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;📁 文件名: <span class="subst">&#123;filename&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">50</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 设置更长的超时时间（120秒），因为要下载 + 解析</span></span><br><span class="line">        <span class="keyword">with</span> httpx.Client(timeout=<span class="number">120.0</span>) <span class="keyword">as</span> client:</span><br><span class="line">            response = client.post(API_URL, json=payload, headers=headers)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">            result = response.json()</span><br><span class="line"></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;✅ 解析成功!&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">50</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;📁 文件名: <span class="subst">&#123;result.get(<span class="string">&#x27;filename&#x27;</span>)&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;📋 文件类型: <span class="subst">&#123;result.get(<span class="string">&#x27;file_type&#x27;</span>)&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;📊 状态: <span class="subst">&#123;result.get(<span class="string">&#x27;status&#x27;</span>)&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">50</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;📄 解析内容:&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(result.get(<span class="string">&#x27;text_content&#x27;</span>))</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">50</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;❌ 请求失败，状态码: <span class="subst">&#123;response.status_code&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;错误详情: <span class="subst">&#123;response.text&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">except</span> httpx.ConnectError:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;❌ 无法连接到服务器。请确保 server_url.py 正在运行。&quot;</span>)</span><br><span class="line">    <span class="keyword">except</span> httpx.TimeoutException:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;❌ 请求超时。可能是文件下载太慢或处理时间过长。&quot;</span>)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;❌ 发生未知错误: <span class="subst">&#123;<span class="built_in">str</span>(e)&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="comment"># 方式1: 显式传递文件名</span></span><br><span class="line">    call_parse_api(TEST_FILE_URL, TEST_FILENAME)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 方式2: 不传文件名（服务端会从URL尝试提取）</span></span><br><span class="line">    <span class="comment"># call_parse_api(TEST_FILE_URL)</span></span><br></pre></td></tr></table></figure>
+
+<p><code>server_url.py</code></p>
+<figure class="highlight python"><figcaption><span>server_url.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> tempfile</span><br><span class="line"><span class="keyword">import</span> httpx  <span class="comment"># 需要安装: pip install httpx</span></span><br><span class="line"><span class="keyword">from</span> fastapi <span class="keyword">import</span> FastAPI, HTTPException</span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel</span><br><span class="line"><span class="keyword">import</span> docx</span><br><span class="line"><span class="keyword">from</span> docx.oxml.text.paragraph <span class="keyword">import</span> CT_P</span><br><span class="line"><span class="keyword">from</span> docx.oxml.table <span class="keyword">import</span> CT_Tbl</span><br><span class="line"><span class="keyword">from</span> docx.text.paragraph <span class="keyword">import</span> Paragraph</span><br><span class="line"><span class="keyword">from</span> docx.table <span class="keyword">import</span> Table</span><br><span class="line"><span class="keyword">import</span> pdfplumber</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 创建FastAPI应用实例</span></span><br><span class="line">app = FastAPI(</span><br><span class="line">    title=<span class="string">&quot;文档解析API (URL版本)&quot;</span>,</span><br><span class="line">    description=<span class="string">&quot;接收文件URL和文件名，下载并解析文档文本。&quot;</span>,</span><br><span class="line">    version=<span class="string">&quot;2.1.0&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 定义请求和返回的数据模型</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ParseRequest</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    file_url: <span class="built_in">str</span>  <span class="comment"># 文件URL</span></span><br><span class="line">    filename: <span class="built_in">str</span> | <span class="literal">None</span> = <span class="literal">None</span>  <span class="comment"># 文件名（可选）</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ParseResponse</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    filename: <span class="built_in">str</span></span><br><span class="line">    file_type: <span class="built_in">str</span></span><br><span class="line">    text_content: <span class="built_in">str</span></span><br><span class="line">    status: <span class="built_in">str</span></span><br><span class="line">    message: <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 核心解析函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_formatted_text</span>(<span class="params">file_path: <span class="built_in">str</span>, file_type: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;解析文件并返回一个格式化的字符串&quot;&quot;&quot;</span></span><br><span class="line">    output_lines = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> file_type == <span class="string">&quot;docx&quot;</span>:</span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">iter_block_items_in_body</span>(<span class="params">body_element, parent_doc</span>):</span><br><span class="line">            <span class="keyword">for</span> child <span class="keyword">in</span> body_element.iterchildren():</span><br><span class="line">                <span class="keyword">if</span> <span class="built_in">isinstance</span>(child, CT_P):</span><br><span class="line">                    <span class="keyword">yield</span> Paragraph(child, parent_doc)</span><br><span class="line">                <span class="keyword">elif</span> <span class="built_in">isinstance</span>(child, CT_Tbl):</span><br><span class="line">                    <span class="keyword">yield</span> Table(child, parent_doc)</span><br><span class="line"></span><br><span class="line">        doc = docx.Document(file_path)</span><br><span class="line">        <span class="keyword">for</span> block <span class="keyword">in</span> iter_block_items_in_body(doc.element.body, doc):</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">isinstance</span>(block, Paragraph):</span><br><span class="line">                text = block.text.strip()</span><br><span class="line">                <span class="keyword">if</span> text:</span><br><span class="line">                    output_lines.append(<span class="string">f&quot;[PARA] <span class="subst">&#123;text&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">elif</span> <span class="built_in">isinstance</span>(block, Table):</span><br><span class="line">                output_lines.append(<span class="string">&quot;[TABLE]&quot;</span>)</span><br><span class="line">                <span class="keyword">for</span> row <span class="keyword">in</span> block.rows:</span><br><span class="line">                    row_text = <span class="string">&quot; | &quot;</span>.join(</span><br><span class="line">                        <span class="string">&quot; &quot;</span>.join(cell.text.strip().split()) <span class="keyword">for</span> cell <span class="keyword">in</span> row.cells</span><br><span class="line">                    )</span><br><span class="line">                    output_lines.append(<span class="string">f&quot;  | <span class="subst">&#123;row_text&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">elif</span> file_type == <span class="string">&quot;pdf&quot;</span>:</span><br><span class="line">        <span class="keyword">with</span> pdfplumber.<span class="built_in">open</span>(file_path) <span class="keyword">as</span> pdf:</span><br><span class="line">            <span class="keyword">for</span> page <span class="keyword">in</span> pdf.pages:</span><br><span class="line">                text = page.extract_text()</span><br><span class="line">                <span class="keyword">if</span> text:</span><br><span class="line">                    output_lines.append(text)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;\n&quot;</span>.join(output_lines)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 辅助函数：从URL下载文件</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">download_file</span>(<span class="params">url: <span class="built_in">str</span>, destination_path: <span class="built_in">str</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;异步下载文件并保存到指定路径&quot;&quot;&quot;</span></span><br><span class="line">    timeout = httpx.Timeout(<span class="number">30.0</span>, connect=<span class="number">10.0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> httpx.AsyncClient(timeout=timeout) <span class="keyword">as</span> client:</span><br><span class="line">        <span class="comment"># 发送 GET 请求</span></span><br><span class="line">        response = <span class="keyword">await</span> client.get(url)</span><br><span class="line">        response.raise_for_status()  <span class="comment"># ✅ 修复：正确的方法名是 raise_for_status()</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 写入文件</span></span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(destination_path, <span class="string">&quot;wb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            f.write(response.content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 辅助函数：获取文件类型（优先使用客户端传递的文件名）</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_file_type</span>(<span class="params">filename: <span class="built_in">str</span> | <span class="literal">None</span>, file_url: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    获取文件类型，优先级：</span></span><br><span class="line"><span class="string">    1. 使用客户端传递的 filename 参数</span></span><br><span class="line"><span class="string">    2. 从 file_url 中提取</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        filename: 客户端传递的文件名（可选）</span></span><br><span class="line"><span class="string">        file_url: 文件URL</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        文件类型（如 &quot;pdf&quot;, &quot;docx&quot;）</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Raises:</span></span><br><span class="line"><span class="string">        HTTPException: 无法识别文件类型时</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 优先使用客户端传递的文件名</span></span><br><span class="line">    <span class="keyword">if</span> filename <span class="keyword">and</span> <span class="string">&quot;.&quot;</span> <span class="keyword">in</span> filename:</span><br><span class="line">        file_type = filename.split(<span class="string">&#x27;.&#x27;</span>)[-<span class="number">1</span>].lower()</span><br><span class="line">        <span class="keyword">return</span> file_type</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 回退到从URL提取</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;.&quot;</span> <span class="keyword">in</span> file_url:</span><br><span class="line">        file_type = file_url.split(<span class="string">&#x27;.&#x27;</span>)[-<span class="number">1</span>].lower()</span><br><span class="line">        <span class="keyword">return</span> file_type</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 都无法识别时抛出异常</span></span><br><span class="line">    <span class="keyword">raise</span> HTTPException(</span><br><span class="line">        status_code=<span class="number">400</span>,</span><br><span class="line">        detail=<span class="string">&quot;无法识别文件类型，请确保 filename 参数包含扩展名或 URL 包含扩展名&quot;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 6. API端点</span></span><br><span class="line"><span class="meta">@app.post(<span class="params"><span class="string">&quot;/parse-document&quot;</span>, response_model=ParseResponse</span>)</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">parse_document</span>(<span class="params">request: ParseRequest</span>):</span><br><span class="line">    file_url = request.file_url</span><br><span class="line">    filename = request.filename  <span class="comment"># 获取客户端传递的文件名</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用新的辅助函数获取文件类型</span></span><br><span class="line">    file_type = get_file_type(filename, file_url)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> file_type <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">&quot;pdf&quot;</span>, <span class="string">&quot;docx&quot;</span>]:</span><br><span class="line">        <span class="keyword">raise</span> HTTPException(</span><br><span class="line">            status_code=<span class="number">400</span>,</span><br><span class="line">            detail=<span class="string">f&quot;只支持 .pdf 和 .docx 文件，检测到的类型: <span class="subst">&#123;file_type&#125;</span>&quot;</span></span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用临时目录管理文件生命周期</span></span><br><span class="line">    <span class="keyword">with</span> tempfile.TemporaryDirectory() <span class="keyword">as</span> tmp_dir:</span><br><span class="line">        tmp_filename = <span class="string">f&quot;upload.<span class="subst">&#123;file_type&#125;</span>&quot;</span></span><br><span class="line">        tmp_file_path = os.path.join(tmp_dir, tmp_filename)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 1. 下载文件</span></span><br><span class="line">            <span class="keyword">await</span> download_file(file_url, tmp_file_path)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 2. 解析文件</span></span><br><span class="line">            formatted_text = extract_formatted_text(tmp_file_path, file_type)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 3. 构造文件名（优先使用客户端传递的，回退到从URL提取）</span></span><br><span class="line">            final_filename = filename <span class="keyword">or</span> file_url.split(<span class="string">&quot;/&quot;</span>)[-<span class="number">1</span>].split(<span class="string">&quot;?&quot;</span>)[<span class="number">0</span>] <span class="keyword">or</span> <span class="string">f&quot;uploaded_file.<span class="subst">&#123;file_type&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line">            response = ParseResponse(</span><br><span class="line">                filename=final_filename,</span><br><span class="line">                file_type=file_type,</span><br><span class="line">                text_content=formatted_text,</span><br><span class="line">                status=<span class="string">&quot;success&quot;</span>,</span><br><span class="line">                message=<span class="string">&quot;文件解析成功&quot;</span></span><br><span class="line">            )</span><br><span class="line">            <span class="keyword">return</span> response</span><br><span class="line"></span><br><span class="line">        <span class="keyword">except</span> httpx.HTTPStatusError <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">raise</span> HTTPException(status_code=<span class="number">400</span>, detail=<span class="string">f&quot;下载文件失败: <span class="subst">&#123;e.response.status_code&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">raise</span> HTTPException(status_code=<span class="number">500</span>, detail=<span class="string">f&quot;处理文件时发生错误: <span class="subst">&#123;<span class="built_in">str</span>(e)&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 7. 健康检查端点</span></span><br><span class="line"><span class="meta">@app.get(<span class="params"><span class="string">&quot;/&quot;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">read_root</span>():</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;message&quot;</span>: <span class="string">&quot;文档解析API (URL版) 正在运行&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="keyword">import</span> uvicorn</span><br><span class="line"></span><br><span class="line">    uvicorn.run(<span class="string">&quot;server_url:app&quot;</span>, host=<span class="string">&quot;0.0.0.0&quot;</span>, port=<span class="number">8085</span>, reload=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p><code>requirements.txt</code></p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fastapi</span><br><span class="line">uvicorn[standard]</span><br><span class="line">httpx</span><br><span class="line">python-docx</span><br><span class="line">pdfplumber</span><br><span class="line">pypdfium2</span><br></pre></td></tr></table></figure>
+
+<p><code>Dockerfile</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># 1. 使用官方 Python 运行时作为基础镜像</span><br><span class="line">FROM python:3.11-slim</span><br><span class="line"></span><br><span class="line"># 2. 设置工作目录</span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line"># 3. 将依赖文件复制到镜像中</span><br><span class="line">COPY requirements.txt .</span><br><span class="line"></span><br><span class="line"># 4. 安装依赖</span><br><span class="line"># --no-cache-dir 不缓存索引包，减小镜像大小</span><br><span class="line">RUN pip install --no-cache-dir -r requirements.txt</span><br><span class="line"></span><br><span class="line"># 5. 将代码复制到镜像中</span><br><span class="line">COPY server_url.py .</span><br><span class="line"></span><br><span class="line"># 6. 暴露端口（我们在代码里改成了 80）</span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line"># 7. 定义启动命令</span><br><span class="line"># 使用 uvicorn 启动，监听 0.0.0.0 使得外部可以访问</span><br><span class="line">CMD [&quot;uvicorn&quot;, &quot;server_url:app&quot;, &quot;--host&quot;, &quot;0.0.0.0&quot;, &quot;--port&quot;, &quot;80&quot;]</span><br></pre></td></tr></table></figure>
+
+<p><strong>构建镜像</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> docker build -t doc-parser-api:latest .</span><br></pre></td></tr></table></figure>
+
+<p><strong>停止&#x2F;删除旧容器</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker stop my-doc-api</span><br><span class="line">docker <span class="built_in">rm</span> my-doc-api</span><br></pre></td></tr></table></figure>
+
+<p><strong>启动新容器</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 8085:80 --name my-doc-api doc-parser-api:latest</span><br></pre></td></tr></table></figure>
+
+<p><strong>检查容器状态</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps</span><br></pre></td></tr></table></figure>
+
+<p><strong>打包成tar压缩包</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker save -o &lt;输出文件名.tar&gt; &lt;镜像名&gt;:&lt;标签&gt;</span></span><br><span class="line"><span class="built_in">sudo</span> docker save -o doc-parser-api.tar doc-parser-api:latest</span><br></pre></td></tr></table></figure>
+
+<p><strong>去掉压缩包上的“锁”</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">chown</span> chr:chr doc-parser-api.tar</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="工作流说明"><a href="#工作流说明" class="headerlink" title="工作流说明"></a>工作流说明</h2><h3 id="资料解析"><a href="#资料解析" class="headerlink" title="资料解析"></a>资料解析</h3><ol>
+<li><p><strong>图纸解析</strong>对应原型<strong>HAZOP预分析（资料解析-节点图纸）</strong></p>
+<blockquote>
+<p>仅支持图片格式（.jpg，.png格式上传）</p>
+</blockquote>
+</li>
+<li><p><strong>工艺流程解析_1_原文</strong>与<strong>工艺流程解析_1_分条</strong>对应原型<strong>HAZOP预分析（资料解析-工艺流程）</strong></p>
+</li>
+<li><p><strong>主要设备及参数解析_1_原文</strong>与<strong>主要设备及参数解析_1_分条</strong>对应原型<strong>HAZOP预分析（资料解析-主要设备及参数）</strong></p>
+</li>
+<li><p><strong>保护措施解析_1_原文</strong>与<strong>保护措施解析_1_分条</strong>对应原型<strong>HAZOP预分析（资料解析-保护措施参数）</strong></p>
+<blockquote>
+<p>注意，2,3,4条中的<code>XX_1_原文</code>工作流使用了文档解析节点，目前的文档解析节点只支持<code>pdf</code>和<code>docx</code>文档（doc文档请使用<code>wps</code>或<code>office</code>等转化为<code>docx</code>格式使用）。</p>
+</blockquote>
+</li>
+</ol>
+<hr>
+<h3 id="节点管理-1"><a href="#节点管理-1" class="headerlink" title="节点管理"></a>节点管理</h3><ul>
+<li>节点描述生成_1</li>
+<li>设计意图生成_1</li>
+<li>主要设备及技术参数生成_1</li>
+<li>主要联锁&#x2F;控制点生成_1</li>
+</ul>
+<p>分别对应原型**HAZOP预分析（节点管理）**中的</p>
+<ul>
+<li><strong>节点描述</strong></li>
+<li><strong>设计意图</strong></li>
+<li><strong>主要设备及技术参数</strong></li>
+<li><strong>主要联锁控制点</strong></li>
+</ul>
+<hr>
+<h3 id="场景管理-1"><a href="#场景管理-1" class="headerlink" title="场景管理"></a>场景管理</h3><ul>
+<li><strong>场景管理_1</strong>对应原型**HAZOP预分析（场景管理）**中的下方场景（不包含保护措施&#x2F;修成条件列）</li>
+<li><strong>场景管理_1_保护措施&#x2F;修正条件生成</strong>对应上述场景中的<strong>保护措施&#x2F;修成条件列</strong></li>
+</ul>
+<hr>
+<h3 id="添加建议-问题建议对"><a href="#添加建议-问题建议对" class="headerlink" title="添加建议&#x2F;问题建议对"></a>添加建议&#x2F;问题建议对</h3><p><strong>问题建议对生成</strong>对应原型<strong>HAZOP分析报告（偏差分析）<strong>最后的</strong>操作栏</strong>中的<strong>添加建议</strong></p>
+<hr>
+<h3 id="文档导出段落-章节"><a href="#文档导出段落-章节" class="headerlink" title="文档导出段落&#x2F;章节"></a>文档导出段落&#x2F;章节</h3><ul>
+<li>站场功能生成</li>
+<li>自动化控制系统生成</li>
+<li>通信系统生成</li>
+<li>消防系统生成</li>
+<li>供配电系统生成</li>
+<li><del>照明系统生成（可忽略，未发布）</del></li>
+<li>站场环境&#x2F;周边环境生成</li>
+<li>自然与地质条件</li>
+<li>文档导出-主要设备</li>
+</ul>
+<blockquote>
+<p><strong>文档导出-主要设备</strong>生成章节，其余生成段落。这里的每个工作流都使用了文档解析节点（支持<code>pdf</code>和<code>docx</code>）。</p>
+</blockquote>
+<hr>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="站场功能生成"><a href="#站场功能生成" class="headerlink" title="站场功能生成"></a>站场功能生成</h3><img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20260131164939907.png" class="" title="image-20260131164939907">
+
+<blockquote>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">工程概况、设计功能、工艺流程、站场概述</span><br></pre></td></tr></table></figure></blockquote>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&quot;SPC-0202PR01-0.pdf&quot;</span><br><span class="line"></span><br><span class="line">&quot;桂林输气站接收上游柳州输气站来气，首先进入分离系统进行旋风分离和过滤分离处理，经贸易计量、调流后，通过出站紧急关断阀输往新气广西支干线永州分输清管站。站场具备清管器接收和发送功能，并设有越站流程；同时预留了增压功能及分输接口。设计输量分期实施，一期为25×10<span class="built_in">^</span>8立方米/年，二期为29.5×10<span class="built_in">^</span>8立方米/年，三期达到71.5×10<span class="built_in">^</span>8立方米/年。<span class="keyword">\n</span><span class="keyword">\n</span>站内采用安全仪表系统（ESD），与进、出站紧急关断阀（ESDV101/102）联动，当发生紧急事故时能自动触发全站关断，并通过紧急放空阀（BDV）将天然气经放空火炬集中放空。放空系统涵盖设备放空、站场放空和站外管线放空，确保维修和检修安全；此外，工艺区设有排污流程，将分离器和清管筒的污液收集至排污罐定期处理。&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;SPC-0200储03-01 工艺操作原理0版6月6日.docx&quot;</span><br><span class="line">&quot;辽河输油站位于辽宁省盘锦市冷家油田冷7路沿线，兴安村南侧1公里处，距辽河石化约12公里。本站是抚顺-锦州成品油管道干线上的新建站场，上游接收辽阳输油站来油，经增压后输送至下游锦州输油站，同时接收辽河输入支线来油并储存注入干线。站场核心功能包括油品接收、储存、增压、计量标定、清管器收发、油品注入、倒罐及压力泄放等，支持油品的顺序输送与混油处理。<span class="keyword">\n</span><span class="keyword">\n</span>辽河输油站工艺流程涵盖正输、油品存储、倒罐、油品注入及清管操作，确保管道系统的稳定运行与油品高效转运。作为干线关键节点，本站整合了支线油源与干线输送，具备完整的油品处理与增压外输能力。&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="自动化控制系统生成"><a href="#自动化控制系统生成" class="headerlink" title="自动化控制系统生成"></a>自动化控制系统生成</h3><img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20260131180337864.png" class="" title="image-20260131180337864">
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">概述、总体控制目标和水平、自动控制</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&quot;广西LNG管道广西段工艺操作原理及水力校核编制与更新-0.pdf&quot;</span><br><span class="line"></span><br><span class="line">&quot;本工程采用调度控制中心级、站场控制级和就地控制级的三级控制模式。第一级调度控制中心负责对全线及各站场进行监控、调度管理和优化运行；第二级站场控制级设置在各个站场，实现对站内工艺变量及设备运行状态的数据采集、监视控制及联锁保护，并与调控中心进行实时数据交换；第三级为就地控制级，用于站内单体设备或子系统的独立操作。正常情况下，由调控中心完成对站场及输气管网的数据处理、监视控制、安全保护和统一调度管理，调控中心可通过通信系统向各站控系统及远程终端单元发出调度指令。<span class="keyword">\n</span><span class="keyword">\n</span>各站场设置以可编程逻辑控制器为核心的站控系统，该系统包括基本过程控制系统和独立的安全仪表系统。站控系统与线路截断阀室设置的远程终端单元共同完成数据采集和控制功能，并通过通信系统将数据传输至调控中心。&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;SPC-0200储03-01 工艺操作原理0版6月6日.docx&quot;</span><br><span class="line"></span><br><span class="line">&quot;本管道工程采用调度中心控制级、站场控制级和就地控制级的三级控制方式。正常情况下由调度中心负责全线数据采集、监视控制、安全保护和统一调度管理。调度中心可向各站场的站控系统（SCS）及远程终端装置（RTU）下达调度指令，由后者完成对相应站场的监控及联锁保护任务并执行命令。<span class="keyword">\n</span><span class="keyword">\n</span>本工程站场内设置独立的站控系统（SCS）与安全仪表系统。安全仪表系统作为独立的安全保护系统，实时在线监测重要设备运行状态，其控制命令具有最高优先级，可通过调控中心、站控制室、操作界面或现场的紧急切断按钮手动触发，直接使被控设备按预定顺序动作。该系统通过独立信道与调度中心及水击保护系统进行数据通信。&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="通信系统生成"><a href="#通信系统生成" class="headerlink" title="通信系统生成"></a>通信系统生成</h3><img src="/2025/11/17/%E7%AE%A1%E7%BD%91Agent%E9%9C%80%E6%B1%82%E6%A2%B3%E7%90%86/image-20260131183930899.png" class="" title="image-20260131183930899">
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">通信系统</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&quot;广西LNG管道广西段工艺操作原理及水力校核编制与更新-0.pdf&quot;</span><br><span class="line"></span><br><span class="line">&quot;本工程采用自建光缆线路作为主用通信方式，备用通信采用租用公网数字电路传输方式，为输气管道全线的SCADA数据、话音、图像传输提供快速、安全、可靠的通信传输通道。当各工艺站场主用通信系统中断时，可自动切换至备用通信信道，调度控制中心也可实现主、备用通信信道的切换。&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;SPC-0200储03-01 工艺操作原理0版6月6日.docx&quot;</span><br><span class="line">&quot;本工程采用自建基于SDH MSTP的光传输系统作为主用通信方式，备用通信采用卫星通信和租用公网电路传输的方式，为输油管道全线的仪表数据、话音、图像传输提供快速、安全、可靠的通信传输通道。&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="消防系统生成"><a href="#消防系统生成" class="headerlink" title="消防系统生成"></a>消防系统生成</h3><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">给排水及消防系统的操作和控制、消防系统</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&quot;广西LNG管道广西段工艺操作原理及水力校核编制与更新-0.pdf&quot;</span><br><span class="line"></span><br><span class="line">&quot;各站场依据《石油天然气工程设计防火规范》GB 50183-2004、《建筑灭火器配置设计规范》GB 50140-2005等规范的相关规定进行设计。站内属于严重危险级的C类火灾，依据工艺装置区域大小，采用移动式灭火器材，设置一定数量的推车式、手提式ABC类磷酸铵盐干粉灭火器即可满足消防要求。灭火器设在专用的灭火器材箱内。室内根据《建筑灭火器配置设计规范》GB 50140-2005的要求，灭火器配置场所火灾危险等级为严重危险级和中危险级，各建筑物按相应级别配置手提式二氧化碳、磷酸铵盐干粉灭火器。&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;SPC-0200储03-01 工艺操作原理0版6月6日.docx&quot;</span><br><span class="line"></span><br><span class="line">&quot;本工程站场针对油罐区的消防系统进行了全面改造。消防系统采用固定式稳高压消防冷却水系统与固定式低倍数泡沫灭火系统相结合的方式。消防控制方式主要为远程手动启动，部分为手动启动。站内新建有一座半地下消防泵房，内设消防冷却水泵与泡沫供水泵，并配备平衡式泡沫比例混合装置、泡沫液罐及稳压装置。同时新建两座半地下消防水池。为确保泡沫混合液能在规定时间内输送到保护对象，对原有泡沫混合液管网进行了分区并增设了截断阀门，并对部分消防冷却水及泡沫混合液管线进行了更换。&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="供配电系统生成"><a href="#供配电系统生成" class="headerlink" title="供配电系统生成"></a>供配电系统生成</h3><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">变电站运行方式、供配电</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&quot;广西LNG管道广西段工艺操作原理及水力校核编制与更新-0.pdf&quot;</span><br><span class="line"></span><br><span class="line">&quot;站内变电所高压侧采用线路—变压器组接线型式，低压侧为单母线接线型式，配置一台10/0.4kV变压器。市电与备用发电机组之间采用ATS进行切换，并设有机械与电气连锁，可实现与市电的双电源快速互投。正常运行状态下，由市电为站内负荷供电；当市电电源中断或变压器发生故障退出运行时，备用天然气发电机组将启动，并可自动或手动投入供电。待市电恢复正常后，发电机组将退出运行并延时停机。&quot;</span><br><span class="line"></span><br><span class="line">&quot;SPC-0200储03-01 工艺操作原理0版6月6日.docx&quot;</span><br><span class="line"></span><br><span class="line">&quot;本工程站场建有多电压等级变配电室，配置变压器，由市电引两回电源供电。重要负荷如仪表和通信设备采用UPS电源保障，应急供电时间不小于2小时。沿线监控阀室采用外电加开关电源供电，配备电池，后备时间2天。&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="站场环境-周边环境生成"><a href="#站场环境-周边环境生成" class="headerlink" title="站场环境&#x2F;周边环境生成"></a>站场环境&#x2F;周边环境生成</h3><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">使用station<span class="built_in">_</span>name</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&quot;广西LNG管道广西段工艺操作原理及水力校核编制与更新-0.pdf&quot;</span><br><span class="line"></span><br><span class="line">&quot;本工程站场位于桂林市临桂区四塘镇东畔村村南约800m，西南侧紧邻县道X106，东南侧紧邻站内修建的水泥路，交通运输条件便利。站场周边环境开阔独立，厂前区东侧36.7m为广西桂林理邦德普天然气有限公司，东南侧28m为已建桂林分输站，东南侧147m为中缅天然气管道工程支线桂林末站。放空区北侧63m为10Kv电力线路，北侧68m为10kV四燕山线理邦德普天然气支线。生产区按功能划分为工艺设备区、清管区、放空区、辅助生产区等，各功能分区明确。&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;SPC-0200储03-01 工艺操作原理0版6月6日.docx&quot;</span><br><span class="line">&quot;本工程站场位于盘锦市冷家油田冷7路沿线，交通运输条件便利。站场南侧1km相邻兴安村，距辽河石化约12km。生产区按功能划分为输油泵区、清管区等，具备油品增压、储存、注入及清管器收发等功能，各功能分区明确。&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="自然与地质条件-站场名"><a href="#自然与地质条件-站场名" class="headerlink" title="自然与地质条件_站场名"></a>自然与地质条件_站场名</h3><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">气象资料、自然、地质、周边、station<span class="built_in">_</span>name</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&quot;SPC-0202PR01-0.pdf&quot;</span><br><span class="line"></span><br><span class="line">&quot;站场所在地属降水丰沛的亚热带季风气候区，年平均降水量为1923.1毫米，年最大降雨量达2827.2毫米。该地区存在暴雨、大风等灾害性天气，累年极端小时最大降水量为52.8毫米，极端最低气温达-3.6℃，极端最高气温为40.1℃，年最大风速为10.6米/秒，基本风压为0.2千牛/平方米。&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;SPC-0200储03-01 工艺操作原理0版6月6日.docx&quot;</span><br><span class="line">&quot;辽河输油站位于盘锦市冷家油田冷7路沿线，兴安村南侧1km处。&quot;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/agent/" rel="tag"># agent</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/10/27/%E6%9F%90%E6%88%BF%E5%9C%B0%E4%BA%A7%E4%BC%81%E4%B8%9A%E6%BC%94%E7%A4%BAdemo%E9%97%AE%E9%A2%98%E6%95%B4%E7%90%86/" rel="prev" title="某房地产企业演示demo问题整理">
+                  <i class="fa fa-angle-left"></i> 某房地产企业演示demo问题整理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/11/18/%E7%94%9F%E6%88%90%E5%BC%8FAI%E5%88%9D%E5%AD%A6%E8%80%85%E6%8C%87%E5%8D%97%EF%BC%88%E7%89%88%E6%9C%AC3%EF%BC%89%EF%BC%9A%E4%B8%80%E8%B5%B7%E7%9C%8B/" rel="next" title="生成式AI初学者指南（版本3）：一起看">
+                  生成式AI初学者指南（版本3）：一起看 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">482k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29:14</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
