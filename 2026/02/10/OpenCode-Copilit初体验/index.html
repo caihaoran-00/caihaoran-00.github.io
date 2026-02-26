@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言我们在上篇文件把Vibe Coding(Antigravity + OpenCode + Copilot)的环境准备好了，下面就可以愉快的进行Vibe Coding了，起初想的是弄下语音对话玩具上的记忆功能，确实也弄了，也上传到github了，老感觉缺点意思（可能没经过激烈的讨论环节）。本文纪律一个记录时间点和持续事件的小工具的创造过程，用于自查和给有缘人参考。开源地址：https:&#x2F;&#x2F;git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenCode+Copilit初体验">
+<meta property="og:url" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言我们在上篇文件把Vibe Coding(Antigravity + OpenCode + Copilot)的环境准备好了，下面就可以愉快的进行Vibe Coding了，起初想的是弄下语音对话玩具上的记忆功能，确实也弄了，也上传到github了，老感觉缺点意思（可能没经过激烈的讨论环节）。本文纪律一个记录时间点和持续事件的小工具的创造过程，用于自查和给有缘人参考。开源地址：https:&#x2F;&#x2F;git">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260210143936763.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260210144030211.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260210151806738.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260211183206523.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224111403250.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224111507867.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224111620377.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224112923659.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113154209.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113329196.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113358950.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113553495.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113729131.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114019315.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114132406.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114441610.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114551660.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114657970.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114815020.png">
+<meta property="article:published_time" content="2026-02-10T05:48:15.000Z">
+<meta property="article:modified_time" content="2026-02-24T06:12:57.498Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="Vibe Coding">
+<meta property="article:tag" content="Antigravity">
+<meta property="article:tag" content="OpenCode">
+<meta property="article:tag" content="Copilot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260210143936763.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/","path":"2026/02/10/OpenCode-Copilit初体验/","title":"OpenCode+Copilit初体验"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>OpenCode+Copilit初体验 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9C%80%E6%B1%82%E6%B2%9F%E9%80%9A"><span class="nav-number">2.1.</span> <span class="nav-text">需求沟通</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E9%80%9A%E8%85%BE%E8%AE%AF%E4%BA%91COS"><span class="nav-number">2.2.</span> <span class="nav-text">开通腾讯云COS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E5%B9%B2%E6%B4%BB"><span class="nav-number">2.3.</span> <span class="nav-text">开始干活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AC%A1%E9%9C%80%E6%B1%82"><span class="nav-number">2.4.</span> <span class="nav-text">第二次需求</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B5%B7%E5%A7%8B%E9%A1%B5"><span class="nav-number">2.4.1.</span> <span class="nav-text">起始页</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E5%AF%86%E7%A0%81"><span class="nav-number">2.4.2.</span> <span class="nav-text">输入密码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E8%A7%92%E8%89%B2"><span class="nav-number">2.4.3.</span> <span class="nav-text">选择角色</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E7%82%B9%E9%A1%B5"><span class="nav-number">2.4.3.1.</span> <span class="nav-text">时间点页</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%81%E7%BB%AD%E9%A1%B5"><span class="nav-number">2.4.3.2.</span> <span class="nav-text">持续页</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8E%86%E5%8F%B2%E9%A1%B5"><span class="nav-number">2.4.3.3.</span> <span class="nav-text">历史页</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">118</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">133</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="OpenCode+Copilit初体验 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OpenCode+Copilit初体验
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-10 13:48:15" itemprop="dateCreated datePublished" datetime="2026-02-10T13:48:15+08:00">2026-02-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-02-24 14:12:57" itemprop="dateModified" datetime="2026-02-24T14:12:57+08:00">2026-02-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>9 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在上篇文件把Vibe Coding(Antigravity + OpenCode + Copilot)的环境准备好了，下面就可以愉快的进行Vibe Coding了，起初想的是弄下语音对话玩具上的记忆功能，确实也弄了，也上传到<code>github</code>了，老感觉缺点意思（可能没经过激烈的讨论环节）。本文纪律一个记录时间点和持续事件的小工具的创造过程，用于自查和给有缘人参考。<br><strong>开源地址</strong>：<a target="_blank" rel="noopener" href="https://github.com/caihaoran-00/xiaojilu">https://github.com/caihaoran-00/xiaojilu</a></p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><blockquote>
+<p>可直接跳转到<a href="#f1">第二次需求</a></p>
+</blockquote>
+<h3 id="需求沟通"><a href="#需求沟通" class="headerlink" title="需求沟通"></a>需求沟通</h3><p>直接上需求（包含了背景）：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">帮我做个便捷使用且低成本的工具。我在小宝换纸尿布和晒太阳等场景发现有两个功能比较实用，一是记录时间点，二是记录持续时间。在换纸尿裤时需要记录时间点，同时由于换纸尿裤的人可能不是同一个（上一次是我老妈或者我老婆换的，但这次他们去忙了，我不知道什么时候需要换），所以需要知道之前换纸尿裤的时间点以及已经过去了多久；第二就是记录持续时间，比如晒太阳，如果我点一下开始，到时候再点一下结束，就能给我记录开始时间和结束时间，也能自动算出持续时间，支持事件选择/修改功能（是在干什么，晒太阳还是吃奶等）。几个重要的要求：1. 也需要数据互通，各自在自己手机上都能看到统一的换尿裤/晒太阳时间（并且晒太阳这种持续事件的结束时间可由家庭组的任意一员点击结束）2. 要使用上极其简洁3. 目前仅我，我老婆，我老妈三个人用，尽量使用0成本方式实现（不需要租公有云服务器的形式）4. 我和我老婆是苹果手机，我妈用的是安卓手机。 帮我设计这个小工具</span><br></pre></td></tr></table></figure>
+
+<p>发给<code>Prometheus</code>，虽然我配置的是<code>Claude Opus 4.6</code>，但由于预料到会经过很多轮的讨论（主要因为我不太懂所需要使用的技术栈，想让模型略微给我科普下，然后我来对方案把把关），所以我把模型换成了<code>Kimi 2.5</code>（目前FREE），最终讨论得到的：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">##</span> TL;DR</span><br><span class="line"></span><br><span class="line">&gt; **目标**：为3人家庭（iOS+Android）打造婴儿护理记录PWA工具</span><br><span class="line">&gt; </span><br><span class="line">&gt; **核心功能**：</span><br><span class="line">&gt; - 一键记录事件时间点（换纸尿裤、晒太阳等）</span><br><span class="line">&gt; - 计时器模式（开始→结束，自动计算时长）</span><br><span class="line">&gt; - **图片上传**（可选）— 记录尿不湿粑粑颜色、晒太阳场景等</span><br><span class="line">&gt; - 实时数据同步（3人手机数据秒级互通）</span><br><span class="line">&gt; - 离线使用 + 添加到主屏幕</span><br><span class="line">&gt; </span><br><span class="line">&gt; **技术栈**：Vue 3 + Vite + Vant 4 + LeanCloud（数据库+文件存储）+ 腾讯云COS（静态托管）</span><br><span class="line">&gt; </span><br><span class="line">&gt; **架构说明**：</span><br><span class="line">&gt; - **腾讯云COS** → 只存网站代码（HTML/CSS/JS），让用户能访问到这个App</span><br><span class="line">&gt; - **LeanCloud** → 存数据（事件记录）+ 存图片（尿不湿照片等）</span><br><span class="line">&gt; </span><br><span class="line">&gt; **图片处理**：自动压缩（&lt;500KB）、最多3张/事件、LeanCloud文件存储（10GB免费）</span><br><span class="line">&gt; </span><br><span class="line">&gt; **成本**：前6个月 ¥0，之后 &lt;¥1/月</span><br><span class="line">&gt; </span><br><span class="line">&gt; **预估时间**：2-3天完成可用版本</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="开通腾讯云COS"><a href="#开通腾讯云COS" class="headerlink" title="开通腾讯云COS"></a>开通腾讯云COS</h3><p>如何开通可参考<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/436/38484?from=console_document_search">这里</a>，然后来到<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cos">开通存储COS服务</a>，<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260210143936763.png" class="" title="image-20260210143936763"></p>
+<p>点击<strong>开通COS并领取免费额度资源包</strong>，</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260210144030211.png" class="" title="image-20260210144030211">
+
+<p>进入控制台，创建存储桶，然后按默认设置即可（我关掉了AZ特性），然后就可以看到：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260210151806738.png" class="" title="image-20260210151806738">
+
+<hr>
+<h3 id="开始干活"><a href="#开始干活" class="headerlink" title="开始干活"></a>开始干活</h3><p><code>OpenCode</code>让我直接<code>start-work baby-tracker</code>，那我就直接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start-work baby-tracker</span><br></pre></td></tr></table></figure>
+
+<p>然后就静等它干活，过程中发现LeanCloud已经不能进行注册了，遂变更方案为图片等的存储也放到腾讯云COS上，需要获取的信息：</p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">SecretId: &#x27;你的SecretId&#x27;,      // 从腾讯云控制台获取</span><br><span class="line">SecretKey: &#x27;你的SecretKey&#x27;,    // 从腾讯云控制台获取</span><br><span class="line">Bucket: &#x27;baby-tracker-xxxxxx&#x27;, // 存储桶名称</span><br><span class="line">Region: &#x27;ap-shanghai&#x27;          // 存储桶地域</span><br><span class="line"></span><br><span class="line">获取位置：</span><br><span class="line"><span class="bullet">     1.</span> 腾讯云控制台 → 点击头像的账号信息 → 访问管理 → 访问秘钥</span><br><span class="line"><span class="bullet">     2.</span> COS控制台 → 存储桶列表 → 查看 Bucket 和 Region</span><br></pre></td></tr></table></figure>
+
+<p>之后需要再操作下：</p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">⚠️ 最后一步：开启静态网站托管</span><br><span class="line">   </span><br><span class="line"><span class="code">     访问地址返回 404，需要在腾讯云控制台开启静态网站：</span></span><br><span class="line"><span class="code">   </span></span><br><span class="line"><span class="code">     1. 登录 COS控制台 (https://console.cloud.tencent.com/cos)</span></span><br><span class="line"><span class="code">     2. 进入存储桶 xiaojilu-1348776921</span></span><br><span class="line"><span class="code">     3. 点击 基础配置 → 静态网站</span></span><br><span class="line"><span class="code">     4. 开启静态网站，设置：</span></span><br><span class="line"><span class="code">        - 索引文档：index.html</span></span><br><span class="line"><span class="code">        - 错误文档：index.html</span></span><br><span class="line"><span class="code">     5. 点击 保存</span></span><br></pre></td></tr></table></figure>
+
+<p>然后又发现：</p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">2024年1月1日后创建的存储桶，使用默认域名（包括静态网站域名）访问文件，不支持预览。必须绑定自定义域名。</span><br></pre></td></tr></table></figure>
+
+<p>买域名岂不是又和0成本冲突了，那不行。</p>
+<p>经过一些列的折腾…好吧好吧，我买个轻量云服务器还不行吗，别折腾了（哭.gif），直接买个：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260211183206523.png" class="" title="image-20260211183206523">
+
+<p>99每年，新老同价，直接全款拿下，又不是没那条件（别信）。<br>然后让opencode换方案，把这个服务器信息给他，经过各种配合，不行，我还是另起一个session从新开始吧。</p>
+<hr>
+<h3 id="第二次需求"><a href="#第二次需求" class="headerlink" title="第二次需求"></a>第二次需求<a name="f1"></a></h3><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">帮我做个便捷使用的小工具。我在小宝换纸尿布和晒太阳等场景发现有两个功能比较实用，一是记录时间点，二是记录持续时间。在换纸尿裤时需要记录时间点，同时由于换纸尿裤的人可能不是同一个（上一次是我老妈或者我老婆换的，但这次他们去忙了，我不知道什么时候需要换），所以需要知道之前换纸尿裤的时间点以及已经过去了多久；第二就是记录持续时间，比如晒太阳，如果我点一下开始，到时候再点一下结束，就能给我记录开始时间和结束时间，也能自动算出持续时间，支持事件选择/修改功能（是在干什么，晒太阳还是吃奶等）。几个重要的要求：1. 也需要数据互通，各自在自己手机上都能看到统一的换尿裤/晒太阳时间（并且晒太阳这种持续事件的结束时间可由家庭组的任意一员点击结束）2. 要使用上极其简洁易懂 3. 目前仅我，我老婆，我老妈三个人用 4. 我和我老婆是苹果手机，我妈用的是安卓手机。5.我的云服务器，需要什么信息请与我说，IP是：129.211.5.9； 现在帮我实现这个小工具（有不清楚的地方先问我）</span><br></pre></td></tr></table></figure>
+<p>经过了一番探讨（第一次就实现成功，只是我需要细节上再调整下），最终效果如下（在电脑上好截图，以下截图均来自电脑浏览器）：</p>
+<blockquote>
+<p>建议搭配git上的README食用。</p>
+</blockquote>
+<h4 id="起始页"><a href="#起始页" class="headerlink" title="起始页"></a>起始页</h4><img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224111403250.png" class="" title="image-20260224111403250">
+
+<h4 id="输入密码"><a href="#输入密码" class="headerlink" title="输入密码"></a>输入密码</h4><img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224111507867.png" class="" title="image-20260224111507867">
+
+<h4 id="选择角色"><a href="#选择角色" class="headerlink" title="选择角色"></a>选择角色</h4><h5 id="时间点页"><a href="#时间点页" class="headerlink" title="时间点页"></a>时间点页</h5><img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224111620377.png" class="" title="image-20260224111620377">
+
+<p>可以看到分为了三页，第一页为记录时间点，最上方显示<strong>xxx的小记录</strong>（通过<strong>管理后台</strong>配置，密码也是通过管理后台配置，输入同一个密码的数据互通，相当于一个<strong>家庭组</strong>），右方显示角色，下面是注释<strong>记录一次性事件</strong>解释当前页的作用，再下面快速管理右方的<strong>管理</strong>用于删除自定义的事件，比如我点击**+自定义<strong>添加了吐奶这个事件，再点击</strong>管理**，就看到：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224112923659.png" class="" title="image-20260224112923659">
+
+<p>这时候就可以删除这个自定义事件，我在这里不删除。再往下就是各个事件了，只需要点一下就会对该事件的时间进行记录（比如我点击一下吐奶）：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113154209.png" class="" title="image-20260224113154209">
+
+<p>就会看到下方出现了该事件的记录，可以在这里添加备注和添加图片，比如：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113329196.png" class="" title="image-20260224113329196">
+
+<p>点击保存：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113358950.png" class="" title="image-20260224113358950">
+
+<p>下方我再添加个图片：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113553495.png" class="" title="image-20260224113553495">
+
+<p>也可以去最后一个<strong>历史</strong>页看下：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224113729131.png" class="" title="image-20260224113729131">
+
+<p>刚才的记录都会显示在这里，也可以在上面按事件分类查看。由于目前换纸尿裤是最关注的事件，所以我把换纸尿裤醒目的统计出来：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114019315.png" class="" title="image-20260224114019315">
+
+<hr>
+<h5 id="持续页"><a href="#持续页" class="headerlink" title="持续页"></a>持续页</h5><img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114132406.png" class="" title="image-20260224114132406">
+
+<p>与时间点页类似，持续页的布局如上图所示，指的注意的是，</p>
+<ul>
+<li><p>本页事件点击一次是开始，需点击第二次去结束该事件（因为本页是持续事件）</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114441610.png" class="" title="image-20260224114441610"></li>
+</ul>
+<p><strong>结束</strong>右侧的铅笔标志是修改事件作用：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114551660.png" class="" title="image-20260224114551660">
+
+<p>我们点击<strong>结束</strong>：</p>
+<img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114657970.png" class="" title="image-20260224114657970">
+
+<ul>
+<li><strong>同一个家庭组，可以由不同角色进行开始和结束操作</strong>。</li>
+</ul>
+<hr>
+<h5 id="历史页"><a href="#历史页" class="headerlink" title="历史页"></a>历史页</h5><img src="/2026/02/10/OpenCode-Copilit%E5%88%9D%E4%BD%93%E9%AA%8C/image-20260224114815020.png" class="" title="image-20260224114815020">
+
+<p>在这里查看历史记录，也可以按事件筛选进行查看。</p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在本文，我们通过将Copilot的配额引入OpenCode，结合现实场景实现了一个用于母婴记录的小工具，在第一次需求沟通时，由于我不想购买云服务器，给出的方案出现了几次阻塞性的大问题（主要由于模型获取的信息过时了，有的是平台政策改了，有些是平台不能注册了），导致浪费了很多时间，最后还是买了服务器，买服务器后就one-shot了，后又经过了一些细节上的要求，达到了理想的水平。该项目已上传到git，有兴趣的同学可以参考。</p>
+<blockquote>
+<p>这告诉我们，甲方要求的一个小点可能就会导致整个项目的难度指数级增长。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Vibe-Coding/" rel="tag"># Vibe Coding</a>
+              <a href="/tags/Antigravity/" rel="tag"># Antigravity</a>
+              <a href="/tags/OpenCode/" rel="tag"># OpenCode</a>
+              <a href="/tags/Copilot/" rel="tag"># Copilot</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/02/02/google%E5%8F%8D%E9%87%8D%E5%8A%9B-Antigravity-OpenCode-GitHub-Copilot-%E4%BD%93%E9%AA%8C/" rel="prev" title="google反重力(Antigravity)+OpenCode(+GitHub Copilot)体验">
+                  <i class="fa fa-angle-left"></i> google反重力(Antigravity)+OpenCode(+GitHub Copilot)体验
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/02/25/AAshare/%E5%8D%9A%E5%AE%A2/ollama-glm-4-7-flash-openclaw%EF%BC%9A4090%E4%B8%8A%E4%B8%80%E8%B5%B7%E7%8E%A9%E7%8E%A9%EF%BC%88%E5%A4%8D%E4%BB%B6%EF%BC%89/" rel="next" title="ollama+glm-4.7-flash+openclaw：ubuntu4090上一起玩玩">
+                  ollama+glm-4.7-flash+openclaw：ubuntu4090上一起玩玩 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">491k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">29:47</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
