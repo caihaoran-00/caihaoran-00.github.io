@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言第一次课主要讲了部分大模型的基础，包括分词器、Embedding层、LLM输出的原理（预测下一个token）以及提示词相关的内容，第一次的课程作业是编写对话玩具的提示词，然后制定标准评测提示词的好坏，寻找评测提示词好坏&#x2F;帮助提升提示词效果的工具，最后是通过调用api的方式体验下整个操作过程。 第二次课的内容主要是tools和mcp的体验，作业是玩具场景下的tools实现。 第三次课的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二阶段AI课程：第三次作业">
+<meta property="og:url" content="https://caihaoran-00.github.io/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言第一次课主要讲了部分大模型的基础，包括分词器、Embedding层、LLM输出的原理（预测下一个token）以及提示词相关的内容，第一次的课程作业是编写对话玩具的提示词，然后制定标准评测提示词的好坏，寻找评测提示词好坏&#x2F;帮助提升提示词效果的工具，最后是通过调用api的方式体验下整个操作过程。 第二次课的内容主要是tools和mcp的体验，作业是玩具场景下的tools实现。 第三次课的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/6d6a3c878cd872e181854d64184eb4b1.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/image-20260228095819355.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/image-20260228192243932.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/image-20260228112336768.png">
+<meta property="article:published_time" content="2026-02-28T01:45:03.000Z">
+<meta property="article:modified_time" content="2026-03-02T06:44:47.718Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="AI内部导学系列">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/6d6a3c878cd872e181854d64184eb4b1.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/","path":"2026/02/28/二阶段AI课程：第三次作业/","title":"二阶段AI课程：第三次作业"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>二阶段AI课程：第三次作业 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">第一题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">第二题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.3.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">118</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">135</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="二阶段AI课程：第三次作业 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          二阶段AI课程：第三次作业
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-28 09:45:03" itemprop="dateCreated datePublished" datetime="2026-02-28T09:45:03+08:00">2026-02-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-03-02 14:44:47" itemprop="dateModified" datetime="2026-03-02T14:44:47+08:00">2026-03-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>951</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>第一次课主要讲了部分大模型的基础，包括分词器、Embedding层、<code>LLM</code>输出的原理（预测下一个token）以及提示词相关的内容，第一次的课程作业是编写对话玩具的提示词，然后制定标准评测提示词的好坏，寻找评测提示词好坏&#x2F;帮助提升提示词效果的工具，最后是通过调用<code>api</code>的方式体验下整个操作过程。</p>
+<p>第二次课的内容主要是<code>tools</code>和<code>mcp</code>的体验，作业是玩具场景下的tools实现。</p>
+<p>第三次课的内容主要是Agent skill，作业主要也是其相关和vibe coding工具的使用，下面一起来看下吧。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><img src="/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/6d6a3c878cd872e181854d64184eb4b1.png" class="">
+
+<blockquote>
+<p>表面上是三题，实际上是两题，一题是opencode+skill，另一题是搭建个与上一个skill同样功能的工作流。</p>
+<p>我选景：智能销售客服场景（仅做展示，这里未完全实现）。</p>
+</blockquote>
+<h3 id="第一题"><a href="#第一题" class="headerlink" title="第一题"></a>第一题</h3><p>手写一个skill并展示使用效果。</p>
+<blockquote>
+<p>我们在<a href="https://caihaoran-00.github.io/2026/01/26/Agent-Skill%E5%9F%BA%E7%A1%80%EF%BC%9A%E4%BB%8E%E4%BD%BF%E7%94%A8%E5%88%B0%E5%8E%9F%E7%90%86/#%E7%A4%BA%E4%BE%8B2%EF%BC%88OpenCode%EF%BC%89">Agent Skill基础：从使用到原理</a>中一起看了其原理和在coze2.0以及opencode中的使用及效果，但并未去手搓一个skill，借这个机会我们就手搓一个skill加深下认识。</p>
+<p>借用下这篇博客的skill的部分介绍：</p>
+<img src="/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/image-20260228095819355.png" class="" title="image-20260228095819355"></blockquote>
+<p><strong>答</strong>：在当前文件夹下创建个<code>.opencode</code>文件夹，在其里面创建个<code>skills</code>文件夹，再在<code>skills</code>里面创建个<code>sales-agent</code>文件夹，在里面创建个<code>SKILL.md</code>文件，内容为：</p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">智能销售客服工作流</span><br><span class="line">⚠️ 强制执行规则</span><br><span class="line">你必须严格按照以下步骤执行，禁止跳过任何步骤，禁止自己生成回复内容。</span><br><span class="line"></span><br><span class="line">最终输出必须是脚本的原始输出，不能添加任何解释或修饰。</span><br><span class="line"></span><br><span class="line">执行步骤（按顺序执行）</span><br><span class="line">步骤 1：分类用户问题</span><br><span class="line">分析用户输入，判断属于以下哪一类：</span><br><span class="line"></span><br><span class="line">分类	触发条件</span><br><span class="line">售前	产品咨询、价格询问、功能了解、购买意向</span><br><span class="line">售后	产品问题、使用困难、投诉建议、退换货</span><br><span class="line">闲聊	问候、无关话题、日常对话</span><br><span class="line">其他	不属于以上三类</span><br><span class="line">步骤 2：执行对应脚本（必须使用 bash 工具）</span><br><span class="line">你 MUST 使用 bash 工具执行脚本，禁止直接输出文本。</span><br><span class="line"></span><br><span class="line">根据分类结果，执行以下命令：</span><br><span class="line"></span><br><span class="line">分类	执行命令</span><br><span class="line">售前	PYTHONIOENCODING=utf-8 python .opencode/skills/sales-agent/scripts/presale.py</span><br><span class="line">售后	PYTHONIOENCODING=utf-8 python .opencode/skills/sales-agent/scripts/aftersale.py</span><br><span class="line">闲聊	PYTHONIOENCODING=utf-8 python .opencode/skills/sales-agent/scripts/chat.py</span><br><span class="line">其他	PYTHONIOENCODING=utf-8 python .opencode/skills/sales-agent/scripts/other.py</span><br><span class="line">步骤 3：原样返回脚本输出</span><br><span class="line">将脚本的输出内容原封不动地返回给用户。</span><br><span class="line"></span><br><span class="line">禁止事项：</span><br><span class="line"></span><br><span class="line">❌ 禁止添加任何解释、前言或后语</span><br><span class="line">❌ 禁止自己生成回复内容</span><br><span class="line">❌ 禁止修改脚本的输出内容</span><br><span class="line">示例</span><br><span class="line">用户输入： &quot;这个产品多少钱？&quot;</span><br><span class="line"></span><br><span class="line">执行过程：</span><br><span class="line"></span><br><span class="line">分类：售前</span><br><span class="line">执行：python .opencode/skills/sales-agent/scripts/presale.py</span><br><span class="line">脚本输出：别买</span><br><span class="line">最终回复：别买</span><br><span class="line">用户输入： &quot;今天天气怎么样？&quot;</span><br><span class="line"></span><br><span class="line">执行过程：</span><br><span class="line"></span><br><span class="line">分类：闲聊</span><br><span class="line">执行：python .opencode/skills/sales-agent/scripts/chat.py</span><br><span class="line">脚本输出：去找豆包聊去</span><br><span class="line">最终回复：去找豆包聊去</span><br></pre></td></tr></table></figure>
+
+<p>再创建个<code>scripts</code>文件夹，在里面创建python脚本，比如<code>presale.py</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">售前咨询处理脚本</span></span><br><span class="line"><span class="string">处理用户的产品咨询、价格询问、功能了解等售前问题</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> io</span><br><span class="line"></span><br><span class="line"><span class="comment"># 强制 UTF-8 输出</span></span><br><span class="line">sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding=<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;别买&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>就可以在<code>opencode</code>中使用这个<code>skill</code>了：</p>
+<img src="/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/image-20260228192243932.png" class="" title="image-20260228192243932">
+
+
+
+<hr>
+<h3 id="第二题"><a href="#第二题" class="headerlink" title="第二题"></a>第二题</h3><img src="/2026/02/28/%E4%BA%8C%E9%98%B6%E6%AE%B5AI%E8%AF%BE%E7%A8%8B%EF%BC%9A%E7%AC%AC%E4%B8%89%E6%AC%A1%E4%BD%9C%E4%B8%9A/image-20260228112336768.png" class="" title="image-20260228112336768">
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">纸巾怎么卖啊？</span><br><span class="line">别买</span><br><span class="line"></span><br><span class="line">你家纸巾怎么掉屑啊？</span><br><span class="line">买前不看看？</span><br><span class="line"></span><br><span class="line">你好呀</span><br><span class="line">去找豆包聊去</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI%E5%86%85%E9%83%A8%E5%AF%BC%E5%AD%A6%E7%B3%BB%E5%88%97/" rel="tag"># AI内部导学系列</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/02/25/ollama-glm-4-7-flash-openclaw%EF%BC%9A4090%E4%B8%8A%E4%B8%80%E8%B5%B7%E7%8E%A9%E7%8E%A9/" rel="prev" title="ollama+glm-4.7-flash+openclaw：ubuntu4090上一起玩玩">
+                  <i class="fa fa-angle-left"></i> ollama+glm-4.7-flash+openclaw：ubuntu4090上一起玩玩
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/03/09/openclaw%E4%B8%AD%E7%BA%A7%E7%94%A8%E6%B3%95/" rel="next" title="openclaw中级用法">
+                  openclaw中级用法 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">504k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">30:31</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
