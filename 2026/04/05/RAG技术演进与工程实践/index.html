@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="写在前面这篇文章想回答两个问题。 第一个问题：RAG 从最早的“向量库 + 大模型”一路发展到现在，中间到底出现了哪些技术？这些技术分别解决什么问题？ 第二个问题：今天如果要做一个企业级 RAG 系统，文档解析、检索、数据库查询、权限、引用、评测这些模块应该怎么搭？哪些地方可以用框架，哪些地方最好自己控制？ 本文会参考 Fareed Khan 的文章《Testing 18 RAG Techniqu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAG技术演进与工程实践">
+<meta property="og:url" content="https://caihaoran-00.github.io/2026/04/05/RAG%E6%8A%80%E6%9C%AF%E6%BC%94%E8%BF%9B%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="写在前面这篇文章想回答两个问题。 第一个问题：RAG 从最早的“向量库 + 大模型”一路发展到现在，中间到底出现了哪些技术？这些技术分别解决什么问题？ 第二个问题：今天如果要做一个企业级 RAG 系统，文档解析、检索、数据库查询、权限、引用、评测这些模块应该怎么搭？哪些地方可以用框架，哪些地方最好自己控制？ 本文会参考 Fareed Khan 的文章《Testing 18 RAG Techniqu">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-05T08:28:26.000Z">
+<meta property="article:modified_time" content="2026-04-29T08:33:40.783Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="rag">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2026/04/05/RAG%E6%8A%80%E6%9C%AF%E6%BC%94%E8%BF%9B%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2026/04/05/RAG%E6%8A%80%E6%9C%AF%E6%BC%94%E8%BF%9B%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/","path":"2026/04/05/RAG技术演进与工程实践/","title":"RAG技术演进与工程实践"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>RAG技术演进与工程实践 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%90%86%E8%A7%A3-RAG"><span class="nav-number">2.</span> <span class="nav-text">一句话理解 RAG</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9ARAG-%E6%8A%80%E6%9C%AF%E7%BB%8F%E5%8E%86%E4%BA%86%E5%93%AA%E4%BA%9B%E9%98%B6%E6%AE%B5"><span class="nav-number">3.</span> <span class="nav-text">第一部分：RAG 技术经历了哪些阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-0%EF%BC%9A%E6%B2%A1%E6%9C%89-RAG%EF%BC%8C%E5%8F%AA%E6%9C%89-Prompt-%E5%92%8C%E5%BE%AE%E8%B0%83"><span class="nav-number">3.1.</span> <span class="nav-text">阶段 0：没有 RAG，只有 Prompt 和微调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-1%EF%BC%9ASimple-RAG%EF%BC%8C%E5%85%88%E6%8A%8A%E8%B5%84%E6%96%99%E6%89%BE%E5%9B%9E%E6%9D%A5"><span class="nav-number">3.2.</span> <span class="nav-text">阶段 1：Simple RAG，先把资料找回来</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-2%EF%BC%9A%E5%85%88%E6%8A%8A%E2%80%9C%E5%88%87%E5%9D%97%E2%80%9D%E5%92%8C%E2%80%9C%E4%B8%8A%E4%B8%8B%E6%96%87%E2%80%9D%E4%BF%AE%E5%A5%BD"><span class="nav-number">3.3.</span> <span class="nav-text">阶段 2：先把“切块”和“上下文”修好</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-3%EF%BC%9A%E4%BB%8E%E2%80%9C%E5%90%91%E9%87%8F%E6%A3%80%E7%B4%A2%E2%80%9D%E8%B5%B0%E5%90%91%E2%80%9C%E6%B7%B7%E5%90%88%E6%A3%80%E7%B4%A2%E2%80%9D"><span class="nav-number">3.4.</span> <span class="nav-text">阶段 3：从“向量检索”走向“混合检索”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-4%EF%BC%9A%E6%A3%80%E7%B4%A2%E5%90%8E%E5%86%8D%E5%81%9A%E2%80%9C%E7%B2%BE%E6%8E%92%E2%80%9D"><span class="nav-number">3.5.</span> <span class="nav-text">阶段 4：检索后再做“精排”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-5%EF%BC%9A%E6%94%B9%E5%86%99%E9%97%AE%E9%A2%98%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%8F%AA%E6%94%B9%E8%B5%84%E6%96%99"><span class="nav-number">3.6.</span> <span class="nav-text">阶段 5：改写问题，而不是只改资料</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-6%EF%BC%9A%E8%AE%A9%E7%B3%BB%E7%BB%9F%E5%88%A4%E6%96%AD%E2%80%9C%E6%A3%80%E7%B4%A2%E7%BB%93%E6%9E%9C%E5%A4%9F%E4%B8%8D%E5%A4%9F%E2%80%9D"><span class="nav-number">3.7.</span> <span class="nav-text">阶段 6：让系统判断“检索结果够不够”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-7%EF%BC%9A%E4%BB%8E%E5%8D%95%E6%96%87%E6%A1%A3%E9%97%AE%E7%AD%94%E8%B5%B0%E5%90%91%E7%BB%93%E6%9E%84%E5%8C%96%E7%9F%A5%E8%AF%86"><span class="nav-number">3.8.</span> <span class="nav-text">阶段 7：从单文档问答走向结构化知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-8%EF%BC%9A%E5%A4%9A%E6%A8%A1%E6%80%81-RAG"><span class="nav-number">3.9.</span> <span class="nav-text">阶段 8：多模态 RAG</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%B6%E6%AE%B5-9%EF%BC%9AAgentic-RAG"><span class="nav-number">3.10.</span> <span class="nav-text">阶段 9：Agentic RAG</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E7%8E%B0%E5%9C%A8%E4%B8%9A%E7%95%8C-RAG-%E7%B3%BB%E7%BB%9F%E6%80%8E%E4%B9%88%E5%81%9A"><span class="nav-number">4.</span> <span class="nav-text">第二部分：现在业界 RAG 系统怎么做</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E6%88%90%E7%86%9F%E7%B3%BB%E7%BB%9F%E5%A4%A7%E6%A6%82%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="nav-number">4.1.</span> <span class="nav-text">一个成熟系统大概长什么样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E6%9E%B6%E6%9E%84%EF%BC%9A%E5%85%88%E5%88%86%E6%B5%81%EF%BC%8C%E5%86%8D%E6%A3%80%E7%B4%A2"><span class="nav-number">4.2.</span> <span class="nav-text">推荐架构：先分流，再检索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A8%E9%87%8F%E9%97%B8%E9%97%A8%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">4.3.</span> <span class="nav-text">质量闸门到底是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E8%A7%A3%E6%9E%90%E5%B1%82%E6%80%8E%E4%B9%88%E9%80%89"><span class="nav-number">4.4.</span> <span class="nav-text">文档解析层怎么选</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E6%A0%BC%E4%B8%8D%E8%A6%81%E5%BD%93%E6%99%AE%E9%80%9A%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86"><span class="nav-number">4.5.</span> <span class="nav-text">表格不要当普通文本处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E5%92%8C%E5%AD%98%E5%82%A8%E6%80%8E%E4%B9%88%E5%81%9A"><span class="nav-number">4.6.</span> <span class="nav-text">索引和存储怎么做</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A2%9E%E9%87%8F%E6%9B%B4%E6%96%B0%E3%80%81%E7%89%88%E6%9C%AC%E5%92%8C-hash-%E6%98%AF%E5%B9%B2%E4%BB%80%E4%B9%88%E7%9A%84"><span class="nav-number">4.7.</span> <span class="nav-text">增量更新、版本和 hash 是干什么的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E5%92%8C%E6%BA%AF%E6%BA%90%E6%80%8E%E4%B9%88%E5%81%9A"><span class="nav-number">4.8.</span> <span class="nav-text">权限和溯源怎么做</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E8%AF%84%E6%B5%8B-RAG-%E7%B3%BB%E7%BB%9F"><span class="nav-number">4.9.</span> <span class="nav-text">怎么评测 RAG 系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LlamaIndex%E3%80%81LangChain%E3%80%81RAGFlow%E3%80%81Dify-%E6%80%8E%E4%B9%88%E9%80%89"><span class="nav-number">4.10.</span> <span class="nav-text">LlamaIndex、LangChain、RAGFlow、Dify 怎么选</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E5%A6%82%E6%9E%9C%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%8C%E6%88%91%E4%BC%9A%E6%80%8E%E4%B9%88%E5%81%9A"><span class="nav-number">5.</span> <span class="nav-text">第三部分：如果从零开始，我会怎么做</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9A18-%E7%A7%8D-RAG-%E6%8A%80%E6%9C%AF%E9%80%9F%E6%9F%A5"><span class="nav-number">6.</span> <span class="nav-text">第四部分：18 种 RAG 技术速查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-number">7.</span> <span class="nav-text">结语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95-A%EF%BC%9A%E6%96%B0%E6%96%87%E4%BB%B6%E6%9B%BF%E4%BB%A3%E6%97%A7%E6%96%87%E4%BB%B6%E6%80%8E%E4%B9%88%E8%AE%BE%E8%AE%A1"><span class="nav-number">8.</span> <span class="nav-text">附录 A：新文件替代旧文件怎么设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95-B%EF%BC%9ARAG-%E7%B3%BB%E7%BB%9F%E5%85%B3%E6%B3%A8%E5%93%AA%E4%BA%9B%E6%8C%87%E6%A0%87"><span class="nav-number">9.</span> <span class="nav-text">附录 B：RAG 系统关注哪些指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2%E6%8C%87%E6%A0%87"><span class="nav-number">9.1.</span> <span class="nav-text">检索指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%8C%87%E6%A0%87"><span class="nav-number">9.2.</span> <span class="nav-text">生成指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%92%8C%E7%89%88%E6%9C%AC%E6%8C%87%E6%A0%87"><span class="nav-number">9.3.</span> <span class="nav-text">数据和版本指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E7%A8%8B%E6%8C%87%E6%A0%87"><span class="nav-number">9.4.</span> <span class="nav-text">工程指标</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">10.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">138</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2026/04/05/RAG%E6%8A%80%E6%9C%AF%E6%BC%94%E8%BF%9B%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="RAG技术演进与工程实践 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RAG技术演进与工程实践
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-04-05 16:28:26" itemprop="dateCreated datePublished" datetime="2026-04-05T16:28:26+08:00">2026-04-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-04-29 16:33:40" itemprop="dateModified" datetime="2026-04-29T16:33:40+08:00">2026-04-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>31 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这篇文章想回答两个问题。</p>
+<p>第一个问题：RAG 从最早的“向量库 + 大模型”一路发展到现在，中间到底出现了哪些技术？这些技术分别解决什么问题？</p>
+<p>第二个问题：今天如果要做一个企业级 RAG 系统，文档解析、检索、数据库查询、权限、引用、评测这些模块应该怎么搭？哪些地方可以用框架，哪些地方最好自己控制？</p>
+<p>本文会参考 Fareed Khan 的文章《<a target="_blank" rel="noopener" href="https://levelup.gitconnected.com/testing-18-rag-techniques-to-find-the-best-094d166af27f">Testing 18 RAG Techniques to Find the Best</a>》。这类横向测试的价值不在于给出一个“世界第一”的排行榜，而是把常见 RAG 技术放在同一套实验里对比，适合拿来学习技术脉络。</p>
+<p>先说结论：不要把里面的分数当成行业标准。Adaptive RAG 在那组实验里得分高，不代表所有场景都该上 Adaptive RAG；Semantic Chunking 在那组实验里得分低，也不代表它永远没用。RAG 的效果非常吃数据、问题类型、切分方式、评测集和模型。</p>
+<hr>
+<h2 id="一句话理解-RAG"><a href="#一句话理解-RAG" class="headerlink" title="一句话理解 RAG"></a>一句话理解 RAG</h2><p>RAG 的核心很简单：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">用户问题 → 找资料 → 把资料交给模型 → 让模型基于资料回答</span><br></pre></td></tr></table></figure>
+
+<p>它解决的不是“让模型变聪明”这个问题，而是“让模型回答时有资料可查”。这点很重要。很多 RAG 失败，不是模型不会写，而是系统根本没有把正确资料找回来。</p>
+<p>一个最小 RAG 系统大概长这样：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">文档 → 解析 → 切块 → embedding → 向量库</span><br><span class="line">用户问题 → embedding → 相似度检索 → 拼上下文 → LLM 生成答案</span><br></pre></td></tr></table></figure>
+
+<p>这就是 Simple RAG。能跑，但很快会遇到问题：</p>
+<ul>
+<li>专有名词搜不到，比如设备型号、合同编号、政策编号</li>
+<li>文档切块把上下文切断</li>
+<li>表格、图片、扫描件解析不准</li>
+<li>检索结果相关但不够精确</li>
+<li>模型没有根据证据回答</li>
+<li>企业数据不只在文档里，还在数据库、工单、CRM 和业务 API 里</li>
+<li>权限、引用、审计、数据更新都没处理</li>
+</ul>
+<p>后面所有 RAG 技术，基本都是围绕这些问题打补丁。</p>
+<hr>
+<h2 id="第一部分：RAG-技术经历了哪些阶段"><a href="#第一部分：RAG-技术经历了哪些阶段" class="headerlink" title="第一部分：RAG 技术经历了哪些阶段"></a>第一部分：RAG 技术经历了哪些阶段</h2><h3 id="阶段-0：没有-RAG，只有-Prompt-和微调"><a href="#阶段-0：没有-RAG，只有-Prompt-和微调" class="headerlink" title="阶段 0：没有 RAG，只有 Prompt 和微调"></a>阶段 0：没有 RAG，只有 Prompt 和微调</h3><p>最早大家会把资料直接塞进 Prompt，或者用私有数据微调模型。</p>
+<p>这两种方式都有问题。Prompt 放不下太多内容，微调又不适合频繁变化的知识。公司制度、产品文档、订单状态每天都可能变，拿这些东西去微调模型，维护成本太高。</p>
+<p>RAG 出现后，思路变了：知识不一定要写进模型参数里，可以放在外部系统里，问的时候再取。</p>
+<h3 id="阶段-1：Simple-RAG，先把资料找回来"><a href="#阶段-1：Simple-RAG，先把资料找回来" class="headerlink" title="阶段 1：Simple RAG，先把资料找回来"></a>阶段 1：Simple RAG，先把资料找回来</h3><p>Simple RAG 是最基础的形态：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">文档切块 → 向量化 → 相似度检索 → LLM 回答</span><br></pre></td></tr></table></figure>
+
+<p>它适合做最早的 baseline。无论后面要上多少高级技术，第一步都应该先跑一个 Simple RAG，看 bad case 到底在哪里。</p>
+<p>Simple RAG 的优点是简单，问题也明显：只靠向量相似度容易漏掉精确词，chunk 切不好时会丢上下文，检索结果也没有二次判断。</p>
+<h3 id="阶段-2：先把“切块”和“上下文”修好"><a href="#阶段-2：先把“切块”和“上下文”修好" class="headerlink" title="阶段 2：先把“切块”和“上下文”修好"></a>阶段 2：先把“切块”和“上下文”修好</h3><p>很多 RAG 问题不是检索算法的问题，而是文档在入库时就被弄坏了。</p>
+<p>常见技术有：</p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>解决什么问题</th>
+<th>怎么理解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Fixed-size chunking</td>
+<td>快速建立 baseline</td>
+<td>按长度切，简单但容易切断语义</td>
+</tr>
+<tr>
+<td>Overlap chunking</td>
+<td>防止上下文断裂</td>
+<td>相邻 chunk 保留一段重叠文本</td>
+</tr>
+<tr>
+<td>Semantic Chunking</td>
+<td>按语义边界切分</td>
+<td>听起来合理，但不一定稳定</td>
+</tr>
+<tr>
+<td>Contextual Chunk Headers</td>
+<td>补文档路径</td>
+<td>给 chunk 加“文档名&#x2F;章节&#x2F;标题”</td>
+</tr>
+<tr>
+<td>Sentence Window</td>
+<td>命中一句话后扩展前后句</td>
+<td>找得准，也保留上下文</td>
+</tr>
+<tr>
+<td>RSE</td>
+<td>补齐相邻片段</td>
+<td>防止只取到中间一小段导致断章取义</td>
+</tr>
+</tbody></table>
+<p>这里有个实用判断：如果文档有清晰标题结构，优先保留标题路径；如果是合同、制度、手册，段落和条款编号往往比“语义分块”更可靠。</p>
+<h3 id="阶段-3：从“向量检索”走向“混合检索”"><a href="#阶段-3：从“向量检索”走向“混合检索”" class="headerlink" title="阶段 3：从“向量检索”走向“混合检索”"></a>阶段 3：从“向量检索”走向“混合检索”</h3><p>只用向量检索会有一个硬伤：它擅长语义相似，不擅长精确匹配。</p>
+<p>比如用户问：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B18-甲型涡轮机的维保周期是多少？</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>B18-甲型涡轮机</code> 是精确词。向量检索可能觉得一堆“涡轮机维护规范”都很像，但真正需要的是包含这个型号的那段。</p>
+<p>所以生产系统里常见的是混合检索：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BM25 / 关键词检索 + 向量检索 → 融合排序</span><br></pre></td></tr></table></figure>
+
+<p>相关技术：</p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BM25</td>
+<td>抓关键词、编号、专有名词</td>
+</tr>
+<tr>
+<td>Vector Search</td>
+<td>抓语义相似</td>
+</tr>
+<tr>
+<td>Hybrid Search</td>
+<td>同时用关键词和向量</td>
+</tr>
+<tr>
+<td>Fusion RAG &#x2F; RRF</td>
+<td>把多路召回结果合并排序</td>
+</tr>
+</tbody></table>
+<p>这也是为什么 Elasticsearch&#x2F;OpenSearch 这类关键词索引在 RAG 系统里没有过时。向量库不是全部。</p>
+<h3 id="阶段-4：检索后再做“精排”"><a href="#阶段-4：检索后再做“精排”" class="headerlink" title="阶段 4：检索后再做“精排”"></a>阶段 4：检索后再做“精排”</h3><p>初召回通常会取 Top 20、Top 50，里面有不少噪音。Re-Ranker 的作用就是二次筛选。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">初召回 Top 50 → Re-Ranker 精排 → 取 Top 5 给 LLM</span><br></pre></td></tr></table></figure>
+
+<p>常见做法是用 Cross-Encoder 类模型，让模型同时看 query 和候选片段，判断二者到底相关不相关。它比单向量相似度更准，但更慢，所以一般只用于候选集精排，不会拿来全库检索。</p>
+<p>ColBERT 这类 Late Interaction 方法介于向量检索和 Cross-Encoder 之间，表达力更强，但索引和推理成本也更高。</p>
+<h3 id="阶段-5：改写问题，而不是只改资料"><a href="#阶段-5：改写问题，而不是只改资料" class="headerlink" title="阶段 5：改写问题，而不是只改资料"></a>阶段 5：改写问题，而不是只改资料</h3><p>很多时候用户的问题太短、太口语，直接拿去检索效果不好。</p>
+<p>相关技术有：</p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>怎么做</th>
+<th>风险</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Query Transform</td>
+<td>把用户问题改写成更清晰的检索问题</td>
+<td>改写错会带偏</td>
+</tr>
+<tr>
+<td>Multi-query</td>
+<td>生成多个检索 query</td>
+<td>成本更高，结果要合并</td>
+</tr>
+<tr>
+<td>HyDE</td>
+<td>先生成一个假想答案，再用假想答案检索</td>
+<td>假想答案如果偏了，会越找越歪</td>
+</tr>
+<tr>
+<td>Doc2Query</td>
+<td>给文档预生成可能被问到的问题</td>
+<td>入库成本增加</td>
+</tr>
+</tbody></table>
+<p>我对这类技术的看法比较保守：可以用，但要评测。尤其是 HyDE，理论上很漂亮，但不是所有语料都受益。</p>
+<h3 id="阶段-6：让系统判断“检索结果够不够”"><a href="#阶段-6：让系统判断“检索结果够不够”" class="headerlink" title="阶段 6：让系统判断“检索结果够不够”"></a>阶段 6：让系统判断“检索结果够不够”</h3><p>普通 RAG 是一次性流程：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">检索 → 生成</span><br></pre></td></tr></table></figure>
+
+<p>但真实场景里，检索结果可能是错的、少的、互相冲突的。于是出现了 CRAG、Self-RAG、Feedback Loop 这类技术。</p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>核心思想</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CRAG</td>
+<td>先评估检索结果质量，不够好就纠正或兜底</td>
+</tr>
+<tr>
+<td>Self-RAG</td>
+<td>模型边生成边判断是否需要检索、证据是否足够</td>
+</tr>
+<tr>
+<td>Feedback Loop RAG</td>
+<td>根据反馈不断调整检索和生成</td>
+</tr>
+<tr>
+<td>Adaptive RAG</td>
+<td>先判断问题类型，再选择不同检索策略</td>
+</tr>
+</tbody></table>
+<p>这些技术的共同点是：RAG 不再是一条固定流水线，而是有了“判断”和“分流”。</p>
+<h3 id="阶段-7：从单文档问答走向结构化知识"><a href="#阶段-7：从单文档问答走向结构化知识" class="headerlink" title="阶段 7：从单文档问答走向结构化知识"></a>阶段 7：从单文档问答走向结构化知识</h3><p>当问题变成“跨文档总结”“多实体关系推理”“公司 A 和公司 B 的关系是什么”时，普通 chunk 检索就不够了。</p>
+<p>于是出现了：</p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RAPTOR &#x2F; Hierarchical RAG</td>
+<td>长文档、多层摘要、宏观总结</td>
+</tr>
+<tr>
+<td>GraphRAG</td>
+<td>实体关系、跨文档推理、社区摘要</td>
+</tr>
+<tr>
+<td>Knowledge Graph + RAG</td>
+<td>强关系型知识、金融穿透、组织关系</td>
+</tr>
+</tbody></table>
+<p>RAPTOR 的思路是把 chunk 聚类，再层层摘要，形成树。用户问宏观问题时，不必只在叶子节点里找，可以检索上层摘要。</p>
+<p>GraphRAG 则更偏关系网络。它把实体、关系、事件抽出来，再围绕图结构检索和生成。它的成本更高，不适合所有知识库。</p>
+<h3 id="阶段-8：多模态-RAG"><a href="#阶段-8：多模态-RAG" class="headerlink" title="阶段 8：多模态 RAG"></a>阶段 8：多模态 RAG</h3><p>企业文档不是只有文字。财报里有表格，论文里有公式，PPT 里有图，扫描件里有图片，图纸里有空间结构。</p>
+<p>多模态 RAG 有两条路：</p>
+<table>
+<thead>
+<tr>
+<th>路线</th>
+<th>做法</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>转成文字</td>
+<td>VLM&#x2F;OCR 生成描述、表格、Markdown</td>
+<td>大部分文档问答</td>
+</tr>
+<tr>
+<td>保留视觉表征</td>
+<td>直接对页面图片或 patch 建索引</td>
+<td>图表、图纸、复杂版面</td>
+</tr>
+</tbody></table>
+<p>ColPali、VisRAG 这类方法就是第二类。它们不急着把页面转成纯文本，而是保留视觉布局去检索。代价是存储和检索成本更高。</p>
+<h3 id="阶段-9：Agentic-RAG"><a href="#阶段-9：Agentic-RAG" class="headerlink" title="阶段 9：Agentic RAG"></a>阶段 9：Agentic RAG</h3><p>Agentic RAG 不是把所有问题都交给 Agent。它适合那些“一次检索不够”的问题。</p>
+<p>普通 RAG：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">问题 → 检索 → 生成</span><br></pre></td></tr></table></figure>
+
+<p>Agentic RAG：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">问题 → 拆解 → 选择工具 → 检索/SQL/API → 观察结果 → 再决定下一步 → 生成</span><br></pre></td></tr></table></figure>
+
+<p>典型场景：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">根据公司最新差旅制度，判断华东区销售团队上个月差旅费是否超预算。</span><br></pre></td></tr></table></figure>
+
+<p>这个问题至少要查三类东西：差旅制度、预算表、报销数据。一次向量检索解决不了。</p>
+<p>Agentic RAG 的价值在多跳和多工具调用。缺点也明显：慢、贵、难评测、容易跑偏。所以它应该放在查询路由后面，只处理复杂问题。</p>
+<hr>
+<h2 id="第二部分：现在业界-RAG-系统怎么做"><a href="#第二部分：现在业界-RAG-系统怎么做" class="headerlink" title="第二部分：现在业界 RAG 系统怎么做"></a>第二部分：现在业界 RAG 系统怎么做</h2><h3 id="一个成熟系统大概长什么样"><a href="#一个成熟系统大概长什么样" class="headerlink" title="一个成熟系统大概长什么样"></a>一个成熟系统大概长什么样</h3><p>今天的企业 RAG 系统通常不是一个组件，而是一组模块：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">数据源</span><br><span class="line">  ├─ 文档：PDF / Word / PPT / 网页 / Markdown</span><br><span class="line">  ├─ 结构化数据：数据库 / 数仓 / CRM / ERP / 工单</span><br><span class="line">  └─ 多媒体：图片 / 图表 / 扫描件</span><br><span class="line"></span><br><span class="line">数据处理</span><br><span class="line">  ├─ 文档解析：OCR / 版面 / 表格 / 坐标 / 图片描述</span><br><span class="line">  ├─ 清洗切分：chunk / 标题路径 / 元数据 / 权限标签</span><br><span class="line">  └─ 增量更新：版本 / hash / 数据血缘</span><br><span class="line"></span><br><span class="line">检索与查询</span><br><span class="line">  ├─ 文档检索：BM25 + 向量 + rerank</span><br><span class="line">  ├─ 数据库查询：SQL / 数仓 / 业务 API</span><br><span class="line">  ├─ 图检索：实体关系 / GraphRAG</span><br><span class="line">  └─ 查询路由：判断该走哪条链路</span><br><span class="line"></span><br><span class="line">生成与控制</span><br><span class="line">  ├─ 基于证据回答</span><br><span class="line">  ├─ 引用和溯源</span><br><span class="line">  ├─ 权限过滤</span><br><span class="line">  ├─ 质量闸门</span><br><span class="line">  └─ 高风险审批 / 超时降级</span><br><span class="line"></span><br><span class="line">评测与观测</span><br><span class="line">  ├─ 检索命中率</span><br><span class="line">  ├─ 答案忠实度</span><br><span class="line">  ├─ 引用准确率</span><br><span class="line">  ├─ SQL/API 成功率</span><br><span class="line">  ├─ 延迟和成本</span><br><span class="line">  └─ bad case 回放</span><br></pre></td></tr></table></figure>
+
+<p>这就是我理解的成熟 RAG。它不是一条链，而是一个能分流、能审计、能回放的问题处理系统。</p>
+<h3 id="推荐架构：先分流，再检索"><a href="#推荐架构：先分流，再检索" class="headerlink" title="推荐架构：先分流，再检索"></a>推荐架构：先分流，再检索</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">    User([用户问题]) --&gt; Router&#123;查询路由&#125;</span><br><span class="line"></span><br><span class="line">    Router -- 文档/制度/合同 --&gt; DocRAG[文档 RAG: BM25 + Vector + Rerank]</span><br><span class="line">    Router -- 指标/订单/库存 --&gt; SQL[SQL / 数仓 / 业务 API]</span><br><span class="line">    Router -- 多跳/多工具 --&gt; Agent[Agentic RAG]</span><br><span class="line"></span><br><span class="line">    DocRAG --&gt; Evidence[证据池]</span><br><span class="line">    SQL --&gt; Evidence</span><br><span class="line">    Agent --&gt; Evidence</span><br><span class="line"></span><br><span class="line">    Evidence --&gt; Gate&#123;质量闸门&#125;</span><br><span class="line">    Gate -- 证据充分 --&gt; LLM[LLM 生成答案]</span><br><span class="line">    Gate -- 证据不足/冲突 --&gt; Fallback[二次检索 / 降级 / 高风险审批]</span><br><span class="line"></span><br><span class="line">    Fallback --&gt; LLM</span><br></pre></td></tr></table></figure>
+
+<p>这里的关键是查询路由。它本质上是意图识别：先判断用户问的是文档问题、指标问题、权限问题，还是多跳推理问题。</p>
+<p>实现不一定靠大模型。常见做法是：</p>
+<ul>
+<li>规则：金额、订单、库存、客户、权限这类词先路由到结构化查询</li>
+<li>Embedding 分类：用一批样例问题做类别原型，按相似度分类</li>
+<li>小模型&#x2F;SLM：用 2B、7B 或 BERT 类模型做路由判断</li>
+<li>LLM 复判：低置信度时让更强模型判断</li>
+</ul>
+<p>我的建议是初期别训练太复杂的分类器。先用“规则 + SLM&#x2F;LLM 结构化输出”跑起来，等业务稳定、样本足够，再把高频路由沉淀成轻量分类器。</p>
+<h3 id="质量闸门到底是什么"><a href="#质量闸门到底是什么" class="headerlink" title="质量闸门到底是什么"></a>质量闸门到底是什么</h3><p>质量闸门不是一个固定产品模块，而是一组工程策略：在把答案交给用户前，判断当前证据够不够、风险高不高、要不要继续查或降级。</p>
+<p>它不一定每次都很重。成熟系统通常会把检查分成轻重两层：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>检查什么</th>
+<th>是否默认启用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>轻量检查</td>
+<td>检索相似度、引用数量、文档版本、SQL&#x2F;API 是否成功</td>
+<td>通常默认启用</td>
+</tr>
+<tr>
+<td>重量检查</td>
+<td>LLM-as-a-Judge、NLI 校验、人工审批</td>
+<td>只在低置信度或高风险时触发</td>
+</tr>
+</tbody></table>
+<p>常见触发条件：</p>
+<ul>
+<li>Top-K 相似度太低，或者没有找到能支撑答案的证据</li>
+<li>检索结果互相冲突，比如新旧制度同时命中</li>
+<li>SQL&#x2F;API 查询失败、超时或返回空结果</li>
+<li>问题涉及法律、财务、合规、客户赔付、医疗建议等高风险场景</li>
+<li>模型答案里有结论，但引用片段支撑不了这个结论</li>
+</ul>
+<p>质量闸门后的动作一般有三种。</p>
+<p>第一种是二次检索。比如第一次向量检索没找到，就改用 BM25 查专有名词，或者改写 query 后再查一次。二次检索不能无限循环，通常限制 1-2 次。</p>
+<p>第二种是降级。系统承认证据不足，不硬编答案，比如返回“未找到足够证据，以下是相关条款供参考”，或者“当前数据库查询超时，请稍后重试”。</p>
+<p>第三种是高风险审批。它不是所有请求都人工审核，只拦截少数高风险、低置信度、对外承诺类输出。普通内部问答不应该因为审批被卡住。</p>
+<p>所以质量闸门会增加一点延迟，但可以通过分层控制：轻量检查默认跑，重检查按风险触发，所有检查都要有超时策略。它的目的不是让流程变复杂，而是防止系统在证据不足时自信地胡答。</p>
+<h3 id="文档解析层怎么选"><a href="#文档解析层怎么选" class="headerlink" title="文档解析层怎么选"></a>文档解析层怎么选</h3><p>LlamaIndex、LangChain 这类框架不等于文档解析工具。它们负责 RAG 编排，复杂文档解析最好交给专门工具。</p>
+<p>常见选择：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>适合什么</th>
+<th>注意点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LlamaParse</td>
+<td>LlamaIndex 生态、快速原型、复杂英文文档</td>
+<td>商业 API &#x2F; LlamaCloud 体系，成本要算清</td>
+</tr>
+<tr>
+<td>Docling</td>
+<td>本地化、批量 PDF&#x2F;Office、可控 Pipeline</td>
+<td>复杂表格要评估 VLM pipeline</td>
+</tr>
+<tr>
+<td>MinerU</td>
+<td>复杂 PDF、扫描件、公式、表格、中文文档</td>
+<td>不同 backend 效果差异大</td>
+</tr>
+<tr>
+<td>Unstructured</td>
+<td>多格式文件拆成 elements</td>
+<td>表格和复杂版面要调策略</td>
+</tr>
+<tr>
+<td>Marker</td>
+<td>PDF 转 Markdown&#x2F;JSON、本地批处理</td>
+<td>企业使用前要看许可证</td>
+</tr>
+<tr>
+<td>PaddleOCR &#x2F; PP-StructureV3</td>
+<td>中文 OCR、版面、表格、公式</td>
+<td>更偏底层组件，需要集成</td>
+</tr>
+<tr>
+<td>Azure Document Intelligence</td>
+<td>云服务、表单、票据、企业 SLA</td>
+<td>云厂商绑定和费用</td>
+</tr>
+<tr>
+<td>Mistral OCR</td>
+<td>云端 OCR、Markdown、表格、图片 bbox</td>
+<td>适合快速接 API</td>
+</tr>
+<tr>
+<td>Apache Tika</td>
+<td>大量格式的文本和元数据抽取</td>
+<td>不适合复杂版面还原</td>
+</tr>
+</tbody></table>
+<p>一个实用路由：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">普通 PDF/Word → Docling</span><br><span class="line">复杂中文扫描件/财报 → MinerU 或 TextIn</span><br><span class="line">LlamaIndex 快速原型 → LlamaParse</span><br><span class="line">中文 OCR/版面底层能力 → PaddleOCR</span><br><span class="line">已有 Azure 体系 → Azure Document Intelligence</span><br></pre></td></tr></table></figure>
+
+<p>不要一开始就假设某个工具通吃。文档解析层最好做成可替换的 parser registry。</p>
+<h3 id="表格不要当普通文本处理"><a href="#表格不要当普通文本处理" class="headerlink" title="表格不要当普通文本处理"></a>表格不要当普通文本处理</h3><p>表格是 RAG 里最容易被低估的数据类型。普通文本只要判断“这段话和问题是否相关”，表格还要保住行列关系、表头、合并单元格、跨页结构和单元格坐标。</p>
+<p>PDF 解析工具经常会把表格输出成 HTML、Markdown 或 JSON。这里要注意：HTML 更像结构保存格式，不一定是最终检索格式。</p>
+<p>比较稳的做法是同时保存三份表示：</p>
+<table>
+<thead>
+<tr>
+<th>表示</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>table_text</code> &#x2F; <code>row_text</code></td>
+<td>给 BM25 和向量检索用</td>
+</tr>
+<tr>
+<td><code>table_html</code></td>
+<td>保留结构、展示、高亮和溯源</td>
+</tr>
+<tr>
+<td><code>table_json</code> &#x2F; <code>csv</code> &#x2F; <code>DataFrame</code></td>
+<td>精确筛选、聚合和计算</td>
+</tr>
+</tbody></table>
+<p>小表可以整体作为 chunk。比如差旅报销标准表只有几行，就把表名、表头、行数据和来源页码一起入库。</p>
+<p>中等表格可以按行组切分。每个行组都要带完整表头，否则“600 元&#x2F;晚”这种值脱离列名就没意义。</p>
+<p>大表和财务类表格不要整张塞给 LLM。几百行销售报表、库存表、回款表，应该转成 CSV、DataFrame 或 SQL 表。检索只负责找到相关表，具体筛选和计算交给 SQL 或 Python。</p>
+<p>所以表格处理可以按这个原则走：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">小表 → 整表 chunk</span><br><span class="line">中表 → 行组 chunk，每块带表头</span><br><span class="line">大表 → 结构化成 CSV/数据库，检索只负责找表</span><br><span class="line">复杂合并单元格 → HTML/JSON 保留结构，另生成可检索文本</span><br><span class="line">财务和指标计算 → SQL/Pandas 计算，LLM 只解释结果</span><br></pre></td></tr></table></figure>
+
+<p>一句话：不要让 LLM 读 HTML 心算。HTML 用来保结构和溯源，检索用表格转写后的文本，计算用 DataFrame 或 SQL。</p>
+<h3 id="索引和存储怎么做"><a href="#索引和存储怎么做" class="headerlink" title="索引和存储怎么做"></a>索引和存储怎么做</h3><p>成熟系统通常是异构存储：</p>
+<table>
+<thead>
+<tr>
+<th>存储</th>
+<th>放什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>向量库</td>
+<td>语义检索</td>
+</tr>
+<tr>
+<td>Elasticsearch &#x2F; OpenSearch</td>
+<td>关键词、过滤、元数据</td>
+</tr>
+<tr>
+<td>关系库 &#x2F; 数仓 &#x2F; OLAP</td>
+<td>订单、库存、指标、权限状态</td>
+</tr>
+<tr>
+<td>对象存储</td>
+<td>原始文件、图片、截图</td>
+</tr>
+<tr>
+<td>图数据库</td>
+<td>实体关系、GraphRAG</td>
+</tr>
+</tbody></table>
+<p>向量库不是数据库的替代品。涉及金额、库存、订单状态、绩效指标，一般先查数据库或业务 API，再让 LLM 组织语言。</p>
+<h3 id="增量更新、版本和-hash-是干什么的"><a href="#增量更新、版本和-hash-是干什么的" class="headerlink" title="增量更新、版本和 hash 是干什么的"></a>增量更新、版本和 hash 是干什么的</h3><p>文档不是一次入库就完事。制度会改，合同会补充，产品文档会更新，知识库页面也会反复编辑。RAG 系统要知道：哪些内容变了，哪些索引该更新，线上答案用的是哪个版本。</p>
+<p>这里有三个概念：</p>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>版本</td>
+<td>标记同一份文档的不同版本，比如 <code>差旅制度_2026-04-01</code></td>
+</tr>
+<tr>
+<td>hash</td>
+<td>给文档、页面、段落或 chunk 算内容指纹，用来判断有没有变化</td>
+</tr>
+<tr>
+<td>数据血缘</td>
+<td>记录 chunk 从哪个文件、哪个版本、哪一页、哪个解析器来</td>
+</tr>
+</tbody></table>
+<p>小系统可以简单粗暴一点：上传新文档后删除旧 chunk，再全量重建。这个办法没错，适合文档少、更新少、成本可接受的场景。</p>
+<p>但文档量一大，全删重建就不划算了。比如 200 页员工手册只改了一句话，如果全量重建，就要重新解析、切块、embedding、写向量库和关键词索引。真正变的可能只有 3 个 chunk。</p>
+<p>更稳的做法是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">新版本上传</span><br><span class="line">→ 计算页面/段落/chunk hash</span><br><span class="line">→ 找出新增、修改、删除的部分</span><br><span class="line">→ 只更新变化 chunk</span><br><span class="line">→ 新索引验证通过</span><br><span class="line">→ 切换 active_version</span><br><span class="line">→ 旧版本保留或延迟清理</span><br></pre></td></tr></table></figure>
+
+<p>hash 的价值不是“不能全删”，而是减少无意义重建，并且保留回滚能力。企业系统通常还要保留历史版本，因为用户可能问“2025 年版本的制度当时怎么规定”。</p>
+<p>数据血缘则是为了排查问题。一个 chunk 最好能追到这些信息：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;source_file&quot;</span><span class="punctuation">:</span> <span class="string">&quot;差旅报销制度.pdf&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;doc_version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-04-01&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;page&quot;</span><span class="punctuation">:</span> <span class="number">4</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;section&quot;</span><span class="punctuation">:</span> <span class="string">&quot;3.2 住宿标准&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;parser&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Docling&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;parser_version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2.x&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source_hash&quot;</span><span class="punctuation">:</span> <span class="string">&quot;a8f31...&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>这样线上答案出问题时，才知道它引用的是旧文档、新文档，还是某次解析出了错。</p>
+<h3 id="权限和溯源怎么做"><a href="#权限和溯源怎么做" class="headerlink" title="权限和溯源怎么做"></a>权限和溯源怎么做</h3><p>企业 RAG 里，权限不能放到生成后再处理。检索前就要过滤。</p>
+<p>每个 chunk 至少要带：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">doc_id</span><br><span class="line">doc_version</span><br><span class="line">page</span><br><span class="line">section</span><br><span class="line">bbox</span><br><span class="line">source_url</span><br><span class="line">created_at</span><br><span class="line">updated_at</span><br><span class="line">acl / permission_tags</span><br></pre></td></tr></table></figure>
+
+<p>数据库查询也一样，要用只读账号、白名单表、字段权限、SQL AST 校验、超时限制。</p>
+<p>权限过滤可以分两层。简单条件交给向量库的 metadata filter，比如租户、文档状态、版本、语言、文档类型、普通标签：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tenant_id = company_a</span><br><span class="line">doc_status = active</span><br><span class="line">doc_type = policy</span><br></pre></td></tr></table></figure>
+
+<p>复杂权限不要全压给向量库。比如客户归属、组织层级、项目成员关系、字段级权限、复杂密级规则，最好先由权限服务或业务系统算出用户能看的 <code>doc_id</code> 范围，再让向量库只在这些文档里做语义检索。</p>
+<p>一句话：向量库负责“在能看的内容里找最相关”，权限系统负责“判断哪些内容能看”。</p>
+<p>系统最终返回的结果不应该只有一段自然语言。更稳的做法是返回“答案 + 结构化证据元数据”：</p>
+<ul>
+<li>引用文档</li>
+<li>页码或段落</li>
+<li>bbox 高亮位置</li>
+<li>SQL&#x2F;API 查询条件与统计口径</li>
+<li>数据更新时间</li>
+</ul>
+<p>这些字段应该来自检索系统、文档解析系统和数据库查询工具，不能让 LLM 自己编。LLM 负责把证据组织成自然语言；引用位置、bbox、SQL 条件、数据更新时间必须由系统真实返回。</p>
+<p>没有这些，系统出错时很难排查。比如答案里的金额来自哪个表、按什么时间范围统计、是否只算已审批单据、数据是什么时候更新的，都需要能追溯。</p>
+<h3 id="怎么评测-RAG-系统"><a href="#怎么评测-RAG-系统" class="headerlink" title="怎么评测 RAG 系统"></a>怎么评测 RAG 系统</h3><p>面试或方案评审时，可以这么说：</p>
+<p>RAG 不能只评最终答案，要拆成三层。</p>
+<p>第一层评检索。看 Top-K 里有没有正确证据。指标可以用 Recall@K、MRR、NDCG、Hit Rate。如果证据都没找回来，生成再强也没用。</p>
+<p>第二层评生成。看模型是否基于证据答对，有没有编。指标可以看 Faithfulness、Answer Correctness、Citation Accuracy。关键样本最好人工抽检，LLM-as-a-Judge 可以辅助，但不要全信。</p>
+<p>第三层评线上工程表现。看延迟、成本、SQL&#x2F;API 成功率、权限拦截率、数据新鲜度、失败率和用户反馈。</p>
+<p>最好维护一套 golden set：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">问题</span><br><span class="line">标准答案</span><br><span class="line">标准证据</span><br><span class="line">文档版本</span><br><span class="line">权限上下文</span><br><span class="line">数据版本</span><br><span class="line">期望 SQL/API 结果</span><br></pre></td></tr></table></figure>
+
+<p>注意，golden set 不应该绑定某一次 chunk_id。chunk 策略变了，chunk_id 会变；但标准证据对应的原文页码、段落、bbox、文档版本应该稳定。改 chunk 后，是重新评估新 chunk 是否覆盖标准证据，不是重建整个评测集。</p>
+<h3 id="LlamaIndex、LangChain、RAGFlow、Dify-怎么选"><a href="#LlamaIndex、LangChain、RAGFlow、Dify-怎么选" class="headerlink" title="LlamaIndex、LangChain、RAGFlow、Dify 怎么选"></a>LlamaIndex、LangChain、RAGFlow、Dify 怎么选</h3><p>这几个不是同一类东西。</p>
+<table>
+<thead>
+<tr>
+<th>选择</th>
+<th>定位</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LlamaIndex</td>
+<td>RAG 开发框架</td>
+<td>文档问答、索引、检索、数据连接器</td>
+</tr>
+<tr>
+<td>LangChain &#x2F; LangGraph</td>
+<td>Agent 和工作流框架</td>
+<td>工具调用、多步骤编排、状态机</td>
+</tr>
+<tr>
+<td>RAGFlow</td>
+<td>开箱 RAG 平台</td>
+<td>企业知识库、文档问答、业务人员调试</td>
+</tr>
+<tr>
+<td>Dify</td>
+<td>LLM 应用平台</td>
+<td>workflow、chatflow、AI 应用搭建</td>
+</tr>
+</tbody></table>
+<p>如果是自己开发企业 RAG，我会优先用 LlamaIndex 做 RAG 主链路。它的抽象更贴近文档、节点、索引、检索器和查询引擎。</p>
+<p>如果要做复杂 Agent、多工具调用、状态机，我会用 LangGraph。</p>
+<p>如果业务目标是快速搭知识库产品，不想写太多代码，RAGFlow 更合适。</p>
+<p>如果目标是做一堆 AI 应用和流程编排，Dify 更合适。</p>
+<p>一句话：LlamaIndex 和 LangChain 是开发框架，RAGFlow 和 Dify 更像产品平台。它们不是完全替代关系。</p>
+<hr>
+<h2 id="第三部分：如果从零开始，我会怎么做"><a href="#第三部分：如果从零开始，我会怎么做" class="headerlink" title="第三部分：如果从零开始，我会怎么做"></a>第三部分：如果从零开始，我会怎么做</h2><p>不要一上来就做 Adaptive RAG、GraphRAG、Agentic RAG。先把最朴素的系统跑准。</p>
+<p>第一步：做 baseline。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Docling/MinerU 解析 → 标题路径切分 → BM25 + 向量混合检索 → Re-Ranker → 引用回答</span><br></pre></td></tr></table></figure>
+
+<p>第二步：补结构化查询。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">指标/订单/库存/权限 → SQL / API → 返回结构化结果 → LLM 组织答案</span><br></pre></td></tr></table></figure>
+
+<p>第三步：加评测和回放。</p>
+<p>先做 100-300 条 golden set，不求全，覆盖高频问题、重要文档、权限边界和容易错的问题。</p>
+<p>第四步：根据 bad case 加技术。</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>再加什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>专有名词搜不到</td>
+<td>BM25 &#x2F; Hybrid &#x2F; 字段索引</td>
+</tr>
+<tr>
+<td>找到了但排得低</td>
+<td>Re-Ranker</td>
+</tr>
+<tr>
+<td>问题太口语</td>
+<td>Query Rewrite</td>
+</tr>
+<tr>
+<td>长文总结差</td>
+<td>RAPTOR &#x2F; 层级摘要 &#x2F; 长上下文</td>
+</tr>
+<tr>
+<td>跨文档关系复杂</td>
+<td>GraphRAG</td>
+</tr>
+<tr>
+<td>需要查多个系统</td>
+<td>Agentic RAG</td>
+</tr>
+<tr>
+<td>表格解析差</td>
+<td>MinerU &#x2F; TextIn &#x2F; LlamaParse &#x2F; VLM</td>
+</tr>
+<tr>
+<td>答案没依据</td>
+<td>引用约束 &#x2F; Faithfulness 检查</td>
+</tr>
+<tr>
+<td>权限风险</td>
+<td>检索前 RBAC&#x2F;ABAC 过滤</td>
+</tr>
+</tbody></table>
+<p>第五步：上线观测。</p>
+<p>至少要看这些指标：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>看什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>检索命中率</td>
+<td>正确证据有没有进 Top-K</td>
+</tr>
+<tr>
+<td>引用覆盖率</td>
+<td>答案里的结论有没有证据</td>
+</tr>
+<tr>
+<td>SQL&#x2F;API 成功率</td>
+<td>结构化查询是否稳定</td>
+</tr>
+<tr>
+<td>数据新鲜度</td>
+<td>索引和数据库是否是最新</td>
+</tr>
+<tr>
+<td>权限拦截率</td>
+<td>有没有越权风险</td>
+</tr>
+<tr>
+<td>延迟和成本</td>
+<td>系统能不能撑住真实流量</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="第四部分：18-种-RAG-技术速查"><a href="#第四部分：18-种-RAG-技术速查" class="headerlink" title="第四部分：18 种 RAG 技术速查"></a>第四部分：18 种 RAG 技术速查</h2><p>下面这张表不是排行榜，而是帮助理解技术分工。</p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>一句话解释</th>
+<th>什么时候考虑</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Simple RAG</td>
+<td>最基础的向量检索问答</td>
+<td>第一版 baseline</td>
+</tr>
+<tr>
+<td>Semantic Chunking</td>
+<td>按语义边界切块</td>
+<td>文档结构弱时可以试</td>
+</tr>
+<tr>
+<td>Contextual Chunk Headers</td>
+<td>给 chunk 加标题路径</td>
+<td>制度、手册、合同</td>
+</tr>
+<tr>
+<td>Doc2Query</td>
+<td>给文档预生成问题</td>
+<td>用户 query 和文档表达差异大</td>
+</tr>
+<tr>
+<td>Query Transform</td>
+<td>改写用户问题</td>
+<td>口语化、短 query</td>
+</tr>
+<tr>
+<td>HyDE</td>
+<td>先生成假想答案再检索</td>
+<td>query 太抽象时试验</td>
+</tr>
+<tr>
+<td>Sentence Window</td>
+<td>命中句子后扩展上下文</td>
+<td>精确句子问答</td>
+</tr>
+<tr>
+<td>RSE</td>
+<td>补相邻片段</td>
+<td>防止断章取义</td>
+</tr>
+<tr>
+<td>Reranker</td>
+<td>二次排序候选片段</td>
+<td>几乎所有生产 RAG 都值得评估</td>
+</tr>
+<tr>
+<td>Contextual Compression</td>
+<td>压缩检索结果</td>
+<td>上下文太长、噪音太多</td>
+</tr>
+<tr>
+<td>Fusion RAG</td>
+<td>多路召回融合</td>
+<td>BM25 + 向量混合</td>
+</tr>
+<tr>
+<td>Feedback Loop RAG</td>
+<td>根据反馈修正答案</td>
+<td>有用户反馈闭环时</td>
+</tr>
+<tr>
+<td>Adaptive RAG</td>
+<td>根据问题类型选择策略</td>
+<td>query 类型差异大</td>
+</tr>
+<tr>
+<td>CRAG</td>
+<td>判断检索质量，不够好就纠正</td>
+<td>检索结果不稳定</td>
+</tr>
+<tr>
+<td>Self-RAG</td>
+<td>生成时自我判断是否需要检索</td>
+<td>高风险回答，但成本高</td>
+</tr>
+<tr>
+<td>RAPTOR &#x2F; Hierarchical RAG</td>
+<td>聚类和层级摘要</td>
+<td>长文总结、宏观问题</td>
+</tr>
+<tr>
+<td>GraphRAG</td>
+<td>实体关系图 + 社区摘要</td>
+<td>跨文档关系推理</td>
+</tr>
+<tr>
+<td>Multimodal RAG</td>
+<td>文本、图片、表格一起检索</td>
+<td>图表、扫描件、PPT</td>
+</tr>
+</tbody></table>
+<p>Fareed Khan 的测试可以作为学习入口，但生产选型还是要回到自己的数据。RAG 没有通用最优解，只有“你的问题卡在哪一层”。</p>
+<hr>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>RAG 的演进其实很清楚。</p>
+<p>一开始是“能不能找回来”。后来变成“能不能找准、排好、保留上下文”。再后来，问题变成“能不能处理表格、图片、数据库、权限、引用和数据更新”。到了企业场景，RAG 就不再是一个算法题，而是一个数据工程系统。</p>
+<p>如果只记一件事，就记这个：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">成熟 RAG = 好数据处理 + 多路检索 + 查询路由 + 权限控制 + 引用溯源 + 持续评测</span><br></pre></td></tr></table></figure>
+
+<p>向量库只是其中一块。模型也只是其中一块。真正决定系统质量的，往往是那些不那么炫的东西：文档解析、权限、数据新鲜度、评测集、bad case 回放。</p>
+<hr>
+<h2 id="附录-A：新文件替代旧文件怎么设计"><a href="#附录-A：新文件替代旧文件怎么设计" class="headerlink" title="附录 A：新文件替代旧文件怎么设计"></a>附录 A：新文件替代旧文件怎么设计</h2><p>文档更新是企业 RAG 里很常见的事。比如公司重新上传了一版差旅制度，普通用户之后应该查到新版，而不是新旧版本混在一起。</p>
+<p>一个容易出错的做法是：新文件一上传，就立刻删除旧 chunk，然后开始解析新文件。这个办法在小系统里能用，但有两个问题：</p>
+<ul>
+<li>新版本还没解析完时，用户可能查不到任何内容</li>
+<li>新版本解析失败时，旧版本已经删了，没法回滚</li>
+</ul>
+<p>更稳的做法是“双版本切换”：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. 旧版本 v1 继续作为 active_version</span><br><span class="line">2. 新版本 v2 上传，状态为 indexing</span><br><span class="line">3. v2 完成解析、切块、embedding、写索引</span><br><span class="line">4. 系统做基本校验，比如 chunk 数量、关键章节、表格数量是否异常</span><br><span class="line">5. 校验通过后，把 active_version 从 v1 切到 v2</span><br><span class="line">6. 普通查询只查 active_version</span><br><span class="line">7. v1 标记为 historical 或 deprecated，保留一段时间后再清理</span><br></pre></td></tr></table></figure>
+
+<p>这里的关键点是：旧版本可以保留，但普通查询不能混查旧版本。检索时必须加版本过滤：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">doc_id = &quot;travel_policy&quot;</span><br><span class="line">AND version_status = &quot;active&quot;</span><br></pre></td></tr></table></figure>
+
+<p>旧版本只在两类场景里可查：</p>
+<ul>
+<li>历史追溯，比如“2025 年执行的差旅标准是什么”</li>
+<li>审计回放，比如排查某次历史回答为什么引用了旧制度</li>
+</ul>
+<p>为了支持这个流程，chunk metadata 里至少要有这些字段：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;doc_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;travel_policy&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;doc_version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-04-01&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;version_status&quot;</span><span class="punctuation">:</span> <span class="string">&quot;active&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source_updated_at&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-04-01 09:00:00&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;indexed_at&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-04-01 09:12:00&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source_hash&quot;</span><span class="punctuation">:</span> <span class="string">&quot;a8f31...&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果新文档只是改了一句话，也不一定要全量重建。可以用 hash 对页面、段落或 chunk 做 diff，只更新变化部分。但这不是硬性要求。文档少、更新少、成本可接受时，全量重建也可以；只是上线系统最好用双版本切换，避免空窗和无法回滚。</p>
+<h2 id="附录-B：RAG-系统关注哪些指标"><a href="#附录-B：RAG-系统关注哪些指标" class="headerlink" title="附录 B：RAG 系统关注哪些指标"></a>附录 B：RAG 系统关注哪些指标</h2><p>RAG 的评测不能只看“答案好不好”。成熟系统会把问题拆开看：检索有没有找对、生成有没有基于证据、数据是不是最新、权限有没有越界、系统是否跑得动。</p>
+<h3 id="检索指标"><a href="#检索指标" class="headerlink" title="检索指标"></a>检索指标</h3><p>检索指标依赖 golden set。每条样本要有问题、标准证据 doc_id&#x2F;chunk_id&#x2F;页码&#x2F;原文片段。跑评测时，把系统返回的 Top-K 和标准证据对比。</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>含义</th>
+<th>怎么收集和计算</th>
+<th>看它是为了什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Recall@K</td>
+<td>Top-K 里是否覆盖标准证据</td>
+<td>对每个问题取 Top-K，计算命中的标准证据数 &#x2F; 标准证据总数，再求平均</td>
+<td>判断系统有没有把资料找回来</td>
+</tr>
+<tr>
+<td>Precision@K</td>
+<td>Top-K 里有多少是真相关</td>
+<td>对每个问题人工或用标注集判断 Top-K 相关性，相关结果数 &#x2F; K</td>
+<td>判断检索结果噪音大不大</td>
+</tr>
+<tr>
+<td>MRR</td>
+<td>第一个正确证据排在第几</td>
+<td>找到第一个相关结果的排名 r，记 <code>1/r</code>，所有问题求平均</td>
+<td>判断正确资料是不是排得靠前</td>
+</tr>
+<tr>
+<td>NDCG</td>
+<td>排序质量</td>
+<td>给结果标相关等级，按排名折损计算 DCG，再除以理想排序 IDCG</td>
+<td>判断强相关证据是否排在弱相关证据前面</td>
+</tr>
+<tr>
+<td>Hit Rate</td>
+<td>是否命中标准证据</td>
+<td>Top-K 里只要有一个标准证据就记 1，否则记 0，最后求平均</td>
+<td>简单看“找没找到”</td>
+</tr>
+</tbody></table>
+<p>如果检索阶段没找到正确证据，后面的 LLM 基本只能靠猜。</p>
+<h3 id="生成指标"><a href="#生成指标" class="headerlink" title="生成指标"></a>生成指标</h3><p>生成指标需要保存模型输出、引用证据、标准答案。可以人工标注，也可以用 LLM-as-a-Judge 做初筛，但高风险样本最好人工抽检。</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>含义</th>
+<th>怎么收集和计算</th>
+<th>看它是为了什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Faithfulness</td>
+<td>答案是否被证据支持</td>
+<td>把答案拆成若干结论，逐条判断是否能被引用证据支持，支持结论数 &#x2F; 总结论数</td>
+<td>防止模型编</td>
+</tr>
+<tr>
+<td>Answer Correctness</td>
+<td>答案是否正确</td>
+<td>和标准答案比对，可人工打分，也可用 LLM judge 给 0-1 或 1-5 分</td>
+<td>看最终回答是否解决问题</td>
+</tr>
+<tr>
+<td>Citation Accuracy</td>
+<td>引用是否真的支撑对应结论</td>
+<td>对每个引用检查它是否支持答案中的那句话，正确引用数 &#x2F; 总引用数</td>
+<td>防止引用乱挂</td>
+</tr>
+<tr>
+<td>Context Relevance</td>
+<td>给模型的上下文是否相关</td>
+<td>判断传入 LLM 的片段是否与问题相关，相关片段数 &#x2F; 总片段数</td>
+<td>判断检索和压缩是否带入噪音</td>
+</tr>
+<tr>
+<td>Hallucination Rate</td>
+<td>无依据结论比例</td>
+<td>无证据支持的结论数 &#x2F; 总结论数</td>
+<td>衡量幻觉风险</td>
+</tr>
+</tbody></table>
+<p>生成指标可以用人工评，也可以用 LLM-as-a-Judge 辅助。但高风险样本最好人工抽检。</p>
+<h3 id="数据和版本指标"><a href="#数据和版本指标" class="headerlink" title="数据和版本指标"></a>数据和版本指标</h3><p>数据和版本指标来自索引流水线、文档元数据、数据库快照时间和答案 trace。</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>含义</th>
+<th>怎么收集和计算</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>index_lag</td>
+<td>源文档更新到索引生效的时间差</td>
+<td><code>indexed_at - source_updated_at</code></td>
+<td>09:00 上传，09:12 可检索，lag 12 分钟</td>
+</tr>
+<tr>
+<td>version_match_rate</td>
+<td>普通查询是否命中 active_version</td>
+<td>普通查询中引用 active_version 的次数 &#x2F; 总引用次数</td>
+<td>100 次制度查询里 99 次命中新版</td>
+</tr>
+<tr>
+<td>stale_answer_rate</td>
+<td>答案引用旧版本证据的比例</td>
+<td>引用 deprecated&#x2F;historical 版本的答案数 &#x2F; 总答案数</td>
+<td>新制度已生效，但仍回答旧标准</td>
+</tr>
+<tr>
+<td>data_lag</td>
+<td>数据快照时间和回答时间的差距</td>
+<td><code>answer_generated_at - query_snapshot_time</code></td>
+<td>11:00 回答，用的是 10:45 快照</td>
+</tr>
+<tr>
+<td>freshness_sla</td>
+<td>新数据必须多久内可用</td>
+<td>业务先定义 SLA，再统计超过 SLA 的比例</td>
+<td>订单 5 秒内，制度 30 分钟内</td>
+</tr>
+</tbody></table>
+<p>这里的重点不是追求所有数据都实时，而是要知道答案基于哪个版本、哪个快照。如果只能查到 T+1 数仓，就应该在答案里说明“数据截至某时间”。</p>
+<h3 id="工程指标"><a href="#工程指标" class="headerlink" title="工程指标"></a>工程指标</h3><p>工程指标来自线上日志和 trace。每次请求最好记录 request_id、用户、路由结果、检索耗时、SQL&#x2F;API 耗时、LLM 耗时、token 用量、是否 fallback、是否权限拦截。</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>含义</th>
+<th>怎么收集和计算</th>
+<th>看它是为了什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>端到端延迟</td>
+<td>从提问到返回的总耗时</td>
+<td><code>response_finished_at - request_started_at</code>，看 P50&#x2F;P95&#x2F;P99</td>
+<td>判断用户是否等得起</td>
+</tr>
+<tr>
+<td>分阶段延迟</td>
+<td>检索、重排、SQL、LLM 各自耗时</td>
+<td>每个模块打 trace span，分别统计 P50&#x2F;P95</td>
+<td>定位慢在哪一层</td>
+</tr>
+<tr>
+<td>SQL&#x2F;API 成功率</td>
+<td>结构化查询是否成功</td>
+<td>成功调用次数 &#x2F; 总调用次数，失败原因单独分类</td>
+<td>发现权限、schema、超时问题</td>
+</tr>
+<tr>
+<td>权限拦截率</td>
+<td>被 RBAC&#x2F;ABAC 拦截的请求比例</td>
+<td>权限拦截次数 &#x2F; 总请求数，也要看误拦截反馈</td>
+<td>判断权限是否过宽或过严</td>
+</tr>
+<tr>
+<td>单次请求成本</td>
+<td>embedding、rerank、VLM、LLM、API 成本</td>
+<td>统计 token、模型单价、API 次数、VLM 页数，折算到每次请求</td>
+<td>防止复杂链路成本失控</td>
+</tr>
+<tr>
+<td>fallback_rate</td>
+<td>进入二次检索或降级的比例</td>
+<td>fallback 次数 &#x2F; 总请求数，并按原因拆分</td>
+<td>判断主链路是否稳定</td>
+</tr>
+</tbody></table>
+<p>线上排障时，最好能回放完整请求链路：用户问题、路由结果、检索片段、SQL&#x2F;API 调用、权限过滤、模型输入、模型输出、引用证据。没有这条链路，RAG 出错时很难判断是哪一层的问题。</p>
+<hr>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li>Fareed Khan: <a target="_blank" rel="noopener" href="https://levelup.gitconnected.com/testing-18-rag-techniques-to-find-the-best-094d166af27f">Testing 18 RAG Techniques to Find the Best</a></li>
+<li>LlamaIndex: <a target="_blank" rel="noopener" href="https://docs.llamaindex.ai/en/stable/llama_cloud/llama_parse/">LlamaParse documentation</a></li>
+<li>Docling: <a target="_blank" rel="noopener" href="https://docling.site/cli/">CLI and VLM pipeline documentation</a></li>
+<li>MinerU: <a target="_blank" rel="noopener" href="https://mineru.net/doc/docs/index_en/">official documentation</a></li>
+<li>Unstructured: <a target="_blank" rel="noopener" href="https://docs.unstructured.io/open-source/core-functionality/partitioning">partitioning documentation</a></li>
+<li>PaddleOCR: <a target="_blank" rel="noopener" href="https://www.paddleocr.ai/main/en/version3.x/algorithm/PP-StructureV3/PP-StructureV3.html">PP-StructureV3 documentation</a></li>
+<li>Azure AI Document Intelligence: <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/concept-model-overview">model overview</a></li>
+<li>Mistral: <a target="_blank" rel="noopener" href="https://docs.mistral.ai/capabilities/document_ai/basic_ocr/">Document AI OCR Processor</a></li>
+<li>Apache Tika: <a target="_blank" rel="noopener" href="https://tika.apache.org/2.8.0/formats.html">supported formats</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rag/" rel="tag"># rag</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/03/31/Android%E7%AB%AF%E6%95%B0%E5%AD%97%E4%BA%BADuix-Mobile%E4%BD%93%E9%AA%8C%E4%B8%8E%E6%94%B9%E9%80%A0/" rel="prev" title="Android端数字人Duix-Mobile体验与改造">
+                  <i class="fa fa-angle-left"></i> Android端数字人Duix-Mobile体验与改造
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/04/14/AAshare/%E5%8D%9A%E5%AE%A2/Ubuntu%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/" rel="next" title="">
+                   <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">533k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">32:19</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

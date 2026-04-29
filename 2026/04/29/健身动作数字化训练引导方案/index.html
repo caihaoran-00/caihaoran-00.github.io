@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一、原始需求客户已经提供了一批健身动作视频，动作由不同模特完成。现在希望基于这些动作，生成一套更适合训练场景使用的内容。 需求可以概括为： 123451. 能利用客户已有的动作视频，而不是完全重新做一套内容2. 训练过程不能只是播放视频，需要有节奏提示和动作引导3. 展示角色尽量统一，比如统一的3D人物或简化示意角色4. 能在移动端使用5. 动作内容后续可以持续扩展">
+<meta property="og:type" content="article">
+<meta property="og:title" content="健身动作数字化训练引导方案">
+<meta property="og:url" content="https://caihaoran-00.github.io/2026/04/29/%E5%81%A5%E8%BA%AB%E5%8A%A8%E4%BD%9C%E6%95%B0%E5%AD%97%E5%8C%96%E8%AE%AD%E7%BB%83%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="一、原始需求客户已经提供了一批健身动作视频，动作由不同模特完成。现在希望基于这些动作，生成一套更适合训练场景使用的内容。 需求可以概括为： 123451. 能利用客户已有的动作视频，而不是完全重新做一套内容2. 训练过程不能只是播放视频，需要有节奏提示和动作引导3. 展示角色尽量统一，比如统一的3D人物或简化示意角色4. 能在移动端使用5. 动作内容后续可以持续扩展">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-04-29T03:29:38.000Z">
+<meta property="article:modified_time" content="2026-04-29T03:31:46.380Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="方案">
+<meta property="article:tag" content="姿态">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2026/04/29/%E5%81%A5%E8%BA%AB%E5%8A%A8%E4%BD%9C%E6%95%B0%E5%AD%97%E5%8C%96%E8%AE%AD%E7%BB%83%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2026/04/29/%E5%81%A5%E8%BA%AB%E5%8A%A8%E4%BD%9C%E6%95%B0%E5%AD%97%E5%8C%96%E8%AE%AD%E7%BB%83%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88/","path":"2026/04/29/健身动作数字化训练引导方案/","title":"健身动作数字化训练引导方案"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>健身动作数字化训练引导方案 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%8E%9F%E5%A7%8B%E9%9C%80%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text">一、原始需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%96%B9%E6%A1%88%E7%BB%93%E8%AE%BA"><span class="nav-number">2.</span> <span class="nav-text">二、方案结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%9B%B4%E6%8E%A5%E7%94%9F%E6%88%90%E8%A7%86%E9%A2%91"><span class="nav-number">3.</span> <span class="nav-text">三、为什么不直接生成视频</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%81%9A%E5%AE%9E%E6%97%B6-AI-%E7%94%9F%E6%88%90%E5%8A%A8%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">四、为什么不做实时 AI 生成动作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E5%8A%A8%E4%BD%9C%E6%9D%A5%E6%BA%90%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="nav-number">5.</span> <span class="nav-text">五、动作来源怎么处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E5%AE%A2%E6%88%B7%E8%A7%86%E9%A2%91"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 客户视频</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E4%B8%93%E4%B8%9A%E5%8A%A8%E4%BD%9C%E5%BA%93"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 专业动作库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E5%85%B3%E9%94%AE%E5%8A%A8%E4%BD%9C%E4%BA%BA%E5%B7%A5%E4%BC%98%E5%8C%96"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 关键动作人工优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%8A%A8%E6%8D%95%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90"><span class="nav-number">6.</span> <span class="nav-text">六、动捕工具推荐</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E6%8E%A8%E8%8D%90%E7%BB%93%E8%AE%BA"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 推荐结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-number">6.2.</span> <span class="nav-text">6.2 推荐使用方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E5%AE%9E%E6%93%8D%E5%BB%BA%E8%AE%AE"><span class="nav-number">6.3.</span> <span class="nav-text">6.3 实操建议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B7%A5%E5%85%B7%E3%80%81%E5%8A%A8%E4%BD%9C%E5%BA%93%E4%B8%8E%E5%A4%A7%E8%87%B4%E8%B4%B9%E7%94%A8"><span class="nav-number">7.</span> <span class="nav-text">七、工具、动作库与大致费用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81MediaPipe-%E5%9C%A8%E6%9C%AC%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84%E5%AE%9A%E4%BD%8D"><span class="nav-number">8.</span> <span class="nav-text">八、MediaPipe 在本项目中的定位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-MediaPipe-%E9%80%82%E5%90%88%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">8.1.</span> <span class="nav-text">8.1 MediaPipe 适合做什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-MediaPipe-%E4%B8%8D%E9%80%82%E5%90%88%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">8.2.</span> <span class="nav-text">8.2 MediaPipe 不适合做什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-%E5%BD%93%E5%89%8D%E7%BB%93%E8%AE%BA"><span class="nav-number">8.3.</span> <span class="nav-text">8.3 当前结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%8A%A8%E4%BD%9C%E5%A6%82%E4%BD%95%E8%A2%AB%E7%B3%BB%E7%BB%9F%E6%8E%A7%E5%88%B6"><span class="nav-number">9.</span> <span class="nav-text">九、动作如何被系统控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E5%8A%A8%E4%BD%9C%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E7%A4%BA%E4%BE%8B%E4%B8%8E%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E"><span class="nav-number">10.</span> <span class="nav-text">十、动作配置数据示例与字段说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%86%85%E9%83%A8%E5%8A%A8%E4%BD%9C%E6%A0%87%E6%B3%A8%E5%B7%A5%E5%85%B7"><span class="nav-number">11.</span> <span class="nav-text">十一、内部动作标注工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#11-1-%E8%BE%93%E5%85%A5"><span class="nav-number">11.1.</span> <span class="nav-text">11.1 输入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-2-%E6%A0%87%E6%B3%A8%E5%86%85%E5%AE%B9"><span class="nav-number">11.2.</span> <span class="nav-text">11.2 标注内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-3-%E8%BE%93%E5%87%BA"><span class="nav-number">11.3.</span> <span class="nav-text">11.3 输出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E8%AF%AD%E9%9F%B3%E6%8F%90%E7%A4%BA%E6%80%8E%E4%B9%88%E8%AE%BE%E8%AE%A1"><span class="nav-number">12.</span> <span class="nav-text">十二、语音提示怎么设计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%89%E3%80%81%E5%8A%A8%E4%BD%9C%E8%8A%82%E5%A5%8F%E6%80%8E%E4%B9%88%E9%80%82%E9%85%8D"><span class="nav-number">13.</span> <span class="nav-text">十三、动作节奏怎么适配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#13-1-%E5%A4%A7%E5%A4%9A%E6%95%B0%E5%8A%A8%E4%BD%9C%EF%BC%9A%E4%B8%80%E5%A5%97%E5%8A%A8%E7%94%BB-%E5%B0%8F%E8%8C%83%E5%9B%B4%E8%B0%83%E9%80%9F"><span class="nav-number">13.1.</span> <span class="nav-text">13.1 大多数动作：一套动画 + 小范围调速</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#13-2-%E5%B0%91%E6%95%B0%E5%85%B3%E9%94%AE%E5%8A%A8%E4%BD%9C%EF%BC%9A%E5%87%86%E5%A4%87%E4%B8%A4%E4%B8%AA%E7%89%88%E6%9C%AC"><span class="nav-number">13.2.</span> <span class="nav-text">13.2 少数关键动作：准备两个版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#13-3-%E5%A4%8D%E6%9D%82%E5%8A%A8%E4%BD%9C%EF%BC%9A%E5%8D%95%E7%8B%AC%E5%A4%84%E7%90%86"><span class="nav-number">13.3.</span> <span class="nav-text">13.3 复杂动作：单独处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E5%9B%9B%E3%80%81%E8%82%8C%E8%82%89%E5%8F%91%E5%8A%9B%E6%8F%90%E7%A4%BA%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0"><span class="nav-number">14.</span> <span class="nav-text">十四、肌肉发力提示怎么实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#14-1-%E6%8E%A8%E8%8D%90%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">14.1.</span> <span class="nav-text">14.1 推荐实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E5%81%9A%E5%A4%8D%E6%9D%82%E6%96%B9%E6%A1%88"><span class="nav-number">14.2.</span> <span class="nav-text">14.2 为什么不做复杂方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%BA%94%E3%80%81%E5%99%A8%E6%A2%B0%E5%8A%A8%E4%BD%9C%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="nav-number">15.</span> <span class="nav-text">十五、器械动作怎么处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E5%85%AD%E3%80%81%E5%A4%9A%E8%A7%92%E5%BA%A6%E5%B1%95%E7%A4%BA%E8%83%BD%E5%8A%9B"><span class="nav-number">16.</span> <span class="nav-text">十六、多角度展示能力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%83%E3%80%81%E9%94%99%E8%AF%AF%E5%8A%A8%E4%BD%9C%E5%AF%B9%E6%AF%94"><span class="nav-number">17.</span> <span class="nav-text">十七、错误动作对比</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E5%85%AB%E3%80%81AI-%E4%BD%BF%E7%94%A8%E8%BE%B9%E7%95%8C"><span class="nav-number">18.</span> <span class="nav-text">十八、AI 使用边界</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B9%9D%E3%80%81%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0"><span class="nav-number">19.</span> <span class="nav-text">十九、客户端技术实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8D%81%E3%80%81%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%80%A7%E8%83%BD%E6%8E%A7%E5%88%B6"><span class="nav-number">20.</span> <span class="nav-text">二十、移动端性能控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8D%81%E4%B8%80%E3%80%81%E4%B8%BB%E8%A6%81%E6%8A%80%E6%9C%AF%E9%9A%BE%E7%82%B9"><span class="nav-number">21.</span> <span class="nav-text">二十一、主要技术难点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#21-1-%E5%8A%A8%E4%BD%9C%E8%B5%84%E4%BA%A7%E8%B4%A8%E9%87%8F"><span class="nav-number">21.1.</span> <span class="nav-text">21.1 动作资产质量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#21-2-%E5%8A%A8%E4%BD%9C%E8%8A%82%E5%A5%8F%E9%80%82%E9%85%8D"><span class="nav-number">21.2.</span> <span class="nav-text">21.2 动作节奏适配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#21-3-%E8%82%8C%E8%82%89%E9%AB%98%E4%BA%AE%E5%87%86%E7%A1%AE%E6%80%A7"><span class="nav-number">21.3.</span> <span class="nav-text">21.3 肌肉高亮准确性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#21-4-%E5%99%A8%E6%A2%B0%E5%8A%A8%E4%BD%9C"><span class="nav-number">21.4.</span> <span class="nav-text">21.4 器械动作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#21-5-%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%80%A7%E8%83%BD"><span class="nav-number">21.5.</span> <span class="nav-text">21.5 移动端性能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8D%81%E4%BA%8C%E3%80%81%E5%BB%BA%E8%AE%AE%E7%9A%84%E6%8A%80%E6%9C%AF%E8%90%BD%E5%9C%B0%E9%A1%BA%E5%BA%8F"><span class="nav-number">22.</span> <span class="nav-text">二十二、建议的技术落地顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8D%81%E4%B8%89%E3%80%81%E7%B3%BB%E7%BB%9F%E6%9C%80%E7%BB%88%E5%BD%A2%E6%80%81"><span class="nav-number">23.</span> <span class="nav-text">二十三、系统最终形态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8D%81%E5%9B%9B%E3%80%81%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93"><span class="nav-number">24.</span> <span class="nav-text">二十四、方案总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">138</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2026/04/29/%E5%81%A5%E8%BA%AB%E5%8A%A8%E4%BD%9C%E6%95%B0%E5%AD%97%E5%8C%96%E8%AE%AD%E7%BB%83%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="健身动作数字化训练引导方案 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          健身动作数字化训练引导方案
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-04-29 11:29:38 / 修改时间：11:31:46" itemprop="dateCreated datePublished" datetime="2026-04-29T11:29:38+08:00">2026-04-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>21 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="一、原始需求"><a href="#一、原始需求" class="headerlink" title="一、原始需求"></a>一、原始需求</h2><p>客户已经提供了一批健身动作视频，动作由不同模特完成。现在希望基于这些动作，生成一套更适合训练场景使用的内容。</p>
+<p>需求可以概括为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 能利用客户已有的动作视频，而不是完全重新做一套内容</span><br><span class="line">2. 训练过程不能只是播放视频，需要有节奏提示和动作引导</span><br><span class="line">3. 展示角色尽量统一，比如统一的3D人物或简化示意角色</span><br><span class="line">4. 能在移动端使用</span><br><span class="line">5. 动作内容后续可以持续扩展</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<hr>
+<h2 id="二、方案结论"><a href="#二、方案结论" class="headerlink" title="二、方案结论"></a>二、方案结论</h2><p>建议采用：</p>
+<blockquote>
+<p><strong>统一数字教练 + 节奏驱动训练 + 肌肉发力提示</strong></p>
+</blockquote>
+<p>这套方案不把重点放在“实时生成视频”或“AI 自动生成动作”上，而是把动作提前处理成可复用的数字资产。用户训练时，系统根据设定好的节奏，控制数字教练演示动作，并配合语音提示和肌肉高亮。</p>
+<p>可以简单理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">系统节奏</span><br><span class="line">→ 控制数字教练做动作</span><br><span class="line">→ 同时播放语音口令</span><br><span class="line">→ 同时高亮对应发力肌肉</span><br></pre></td></tr></table></figure>
+
+<p>核心判断：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 动作提前生产，不在训练时实时生成</span><br><span class="line">2. 节奏由系统控制，而不是由原视频控制</span><br><span class="line">3. 动作按阶段拆分，训练时根据节奏播放</span><br><span class="line">4. 语音只做口令提示，不做帧级强同步</span><br><span class="line">5. 肌肉高亮是教学提示，不是实时检测结果</span><br></pre></td></tr></table></figure>
+
+<p>这套方案的本质不是“生成内容”，而是：</p>
+<blockquote>
+<p><strong>把动作内容结构化，再用系统节奏进行训练引导。</strong></p>
+</blockquote>
+<hr>
+<h2 id="三、为什么不直接生成视频"><a href="#三、为什么不直接生成视频" class="headerlink" title="三、为什么不直接生成视频"></a>三、为什么不直接生成视频</h2><p>不建议把最终形态做成一段段生成好的视频，原因主要有三个。</p>
+<p>第一，视频不可交互。普通视频的视角固定，用户不能自由切换正面、侧面或环绕视角。</p>
+<p>第二，视频复用能力弱。如果每个训练计划都要重新生成一条完整视频，后续维护、组合、更新成本都会比较高。</p>
+<p>第三，视频很难适配不同节奏。不同用户可能需要慢节奏、正常节奏或快速节奏训练，而普通视频很难灵活变化。</p>
+<p>所以，更适合的方式是：</p>
+<blockquote>
+<p><strong>用 3D 数字教练实时展示动作，而不是提前生成固定视频。</strong></p>
+</blockquote>
+<hr>
+<h2 id="四、为什么不做实时-AI-生成动作"><a href="#四、为什么不做实时-AI-生成动作" class="headerlink" title="四、为什么不做实时 AI 生成动作"></a>四、为什么不做实时 AI 生成动作</h2><p>当前不建议在用户训练时实时生成动作，原因如下。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 健身动作有标准性和安全要求，AI实时生成动作难以保证每次都正确</span><br><span class="line">2. 生成结果不够可控，不同输入、设备和环境下可能表现不一致</span><br><span class="line">3. 运行成本和工程复杂度高，需要模型推理、性能优化和设备适配</span><br><span class="line">4. 不利于产品化，训练体验难以保持统一</span><br></pre></td></tr></table></figure>
+
+<p>因此，本方案采用：</p>
+<blockquote>
+<p><strong>动作提前生产，训练时实时调度。</strong></p>
+</blockquote>
+<p>也就是说，动作不是现场生成的，而是提前做成“动作资产”。</p>
+<hr>
+<h2 id="五、动作来源怎么处理"><a href="#五、动作来源怎么处理" class="headerlink" title="五、动作来源怎么处理"></a>五、动作来源怎么处理</h2><p>动作来源不建议押在单一路径上，而是采用组合策略。</p>
+<h3 id="5-1-客户视频"><a href="#5-1-客户视频" class="headerlink" title="5.1 客户视频"></a>5.1 客户视频</h3><p>客户视频用于体现定制价值。</p>
+<p>流程：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">客户动作视频</span><br><span class="line">→ 动作捕捉</span><br><span class="line">→ 转成数字教练可用的动作</span><br><span class="line">→ 检查动作质量</span><br><span class="line">→ 必要时轻度调整</span><br></pre></td></tr></table></figure>
+
+<p>这样可以保留客户自身动作内容的价值，也能体现方案的定制能力。</p>
+<h3 id="5-2-专业动作库"><a href="#5-2-专业动作库" class="headerlink" title="5.2 专业动作库"></a>5.2 专业动作库</h3><p>基础动作可以用成熟动作库补充，例如开合跳、原地跑、简单拉伸等。</p>
+<p>作用：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">降低成本</span><br><span class="line">提高制作效率</span><br><span class="line">快速补齐基础内容</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-关键动作人工优化"><a href="#5-3-关键动作人工优化" class="headerlink" title="5.3 关键动作人工优化"></a>5.3 关键动作人工优化</h3><p>对深蹲、弓步、俯卧撑、负重动作等核心训练动作，需要重点检查。如果动作转换后存在明显问题，再进行少量人工调整。</p>
+<p>原则：</p>
+<blockquote>
+<p><strong>不是所有动作都精修，只处理影响观感、安全性和训练表达的动作。</strong></p>
+</blockquote>
+<hr>
+<h2 id="六、动捕工具推荐"><a href="#六、动捕工具推荐" class="headerlink" title="六、动捕工具推荐"></a>六、动捕工具推荐</h2><p>这里的“动捕”是指：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">客户视频 → 数字教练可用的3D动作初稿</span><br></pre></td></tr></table></figure>
+
+<p>不是用户训练时的实时识别。</p>
+<h3 id="6-1-推荐结论"><a href="#6-1-推荐结论" class="headerlink" title="6.1 推荐结论"></a>6.1 推荐结论</h3><p>优先推荐：</p>
+<blockquote>
+<p><strong>Rokoko Video &#x2F; Rokoko Studio</strong></p>
+</blockquote>
+<p>备选：</p>
+<blockquote>
+<p><strong>DeepMotion Animate 3D</strong></p>
+</blockquote>
+<p>原因是，本项目需要的是把客户视频快速转成动作初稿，再导出到 Unity 检查、标注和轻修。Rokoko 在这条链路上更顺一些：支持视频转动作、清理滤镜、FBX 导出，免费 Starter 档支持 15 秒以内的视频转动作和 FBX 导出；Basic 档年付约 10 美元&#x2F;月，支持不限量 Video-to-Motion，更适合批量试动作。(<a target="_blank" rel="noopener" href="https://www.rokoko.com/pricing?utm_source=chatgpt.com">Rokoko</a>)</p>
+<h3 id="6-2-推荐使用方式"><a href="#6-2-推荐使用方式" class="headerlink" title="6.2 推荐使用方式"></a>6.2 推荐使用方式</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">首选：</span><br><span class="line">Rokoko Video / Rokoko Studio</span><br><span class="line"></span><br><span class="line">用途：</span><br><span class="line">客户视频 → 动作初稿 → FBX → Unity</span><br></pre></td></tr></table></figure>
+
+<p>DeepMotion 可以作为对照工具。它也支持视频转 3D 动作，可导出 FBX、BVH、MP4、GLB 等格式；免费档每月可生成 60 秒动画，但官方说明免费账号偏个人、非商业使用，商业化项目需要看付费订阅。DeepMotion 的 Animate 3D 按 credit 计量，1 credit 约等于 1 秒动画或 1 个 3D 姿势，面部和手部追踪还会额外消耗 credit。(<a target="_blank" rel="noopener" href="https://www.deepmotion.com/pricing-animate3d?utm_source=chatgpt.com">DeepMotion</a>)</p>
+<h3 id="6-3-实操建议"><a href="#6-3-实操建议" class="headerlink" title="6.3 实操建议"></a>6.3 实操建议</h3><p>拿客户同一个动作视频，分别跑一遍 Rokoko 和 DeepMotion，对比输出质量。</p>
+<p>对比指标：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1. 是否脚底滑动</span><br><span class="line">2. 是否关节抖动</span><br><span class="line">3. 重心是否自然</span><br><span class="line">4. 导入 Unity 是否顺利</span><br><span class="line">5. 是否容易轻修</span><br><span class="line">6. 商业授权是否满足项目需要</span><br></pre></td></tr></table></figure>
+
+<p>默认建议：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">先用 Rokoko</span><br><span class="line">必要时用 DeepMotion 做对照</span><br><span class="line">最终选择输出更干净、授权更合适的工具</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、工具、动作库与大致费用"><a href="#七、工具、动作库与大致费用" class="headerlink" title="七、工具、动作库与大致费用"></a>七、工具、动作库与大致费用</h2><p>以下价格和授权可能变化，实际采购前需要再确认。这里给的是当前调研到的参考范围。</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>工具 &#x2F; 资源</th>
+<th>免费 &#x2F; 收费</th>
+<th>大致费用</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>动作库</td>
+<td>Mixamo</td>
+<td>免费</td>
+<td>需要 Adobe ID；免费使用</td>
+<td>补充基础动作、快速验证流程</td>
+</tr>
+<tr>
+<td>动作库</td>
+<td>Rokoko Motion Library</td>
+<td>部分免费，部分收费</td>
+<td>付费动作通常约 3–20 美元&#x2F;个</td>
+<td>购买更高质量动作</td>
+</tr>
+<tr>
+<td>动捕工具</td>
+<td>Rokoko Studio &#x2F; Video-to-Motion</td>
+<td>有免费档，也有订阅</td>
+<td>Starter 免费；Basic 年付约 10 美元&#x2F;月；Plus 年付约 20 美元&#x2F;月</td>
+<td>客户视频转动作初稿</td>
+</tr>
+<tr>
+<td>动捕工具</td>
+<td>DeepMotion Animate 3D</td>
+<td>有免费档，也有订阅&#x2F;点数</td>
+<td>免费档有额度；1 credit 约等于 1 秒动画；商业使用需付费订阅</td>
+<td>客户视频转动作初稿</td>
+</tr>
+<tr>
+<td>动作库</td>
+<td>ActorCore</td>
+<td>收费为主</td>
+<td>通常按动作或动作包购买，价格随包变化</td>
+<td>更专业动作补充</td>
+</tr>
+<tr>
+<td>3D 工具</td>
+<td>Blender</td>
+<td>免费</td>
+<td>0</td>
+<td>动作检查、轻修、模型处理</td>
+</tr>
+<tr>
+<td>3D 引擎</td>
+<td>Unity</td>
+<td>有免费档，也有商业授权</td>
+<td>视团队收入、版本和授权情况而定</td>
+<td>实时渲染、动作播放</td>
+</tr>
+<tr>
+<td>3D 资源</td>
+<td>器械模型</td>
+<td>免费 &#x2F; 收费</td>
+<td>简单模型约 0–20 美元；资源包可能更高</td>
+<td>哑铃、壶铃、杠铃等</td>
+</tr>
+</tbody></table>
+<p>补充说明：</p>
+<p>Mixamo 目前对有 Adobe ID 的用户免费，不需要 Creative Cloud 订阅，并且 Adobe FAQ 说明其角色和动画可免版税用于个人、商业和非营利项目；但 Mixamo 不适合作为专业健身动作的唯一来源。(<a target="_blank" rel="noopener" href="https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html?utm_source=chatgpt.com">Adobe帮助中心</a>)</p>
+<p>Rokoko Motion Library 有很多免费动作，也有付费动作；官方说明付费动作通常根据复杂度定价，约 3–20 美元一个。(<a target="_blank" rel="noopener" href="https://support.rokoko.com/hc/en-us/articles/4410021327121-Getting-Started-Rokoko-Studio-Motion-Library?utm_source=chatgpt.com">support.rokoko.com</a>)</p>
+<p>Rokoko Studio 有免费 Starter 档，支持短视频转动作、FBX 导出等基础能力；Basic 年付价格约 10 美元&#x2F;月，Plus 年付约 20 美元&#x2F;月。(<a target="_blank" rel="noopener" href="https://www.rokoko.com/pricing?utm_source=chatgpt.com">Rokoko</a>)</p>
+<p>建议动作来源策略：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">客户核心动作：客户视频 → Rokoko / DeepMotion → 检查 / 轻修</span><br><span class="line">基础动作：Mixamo / Rokoko 免费或低价动作补充</span><br><span class="line">关键专业动作：Rokoko / ActorCore 等高质量动作库采购</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、MediaPipe-在本项目中的定位"><a href="#八、MediaPipe-在本项目中的定位" class="headerlink" title="八、MediaPipe 在本项目中的定位"></a>八、MediaPipe 在本项目中的定位</h2><p>MediaPipe 可以用，但不作为当前主链路。</p>
+<p>它适合做的是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">手机摄像头 → 实时识别用户人体关键点</span><br></pre></td></tr></table></figure>
+
+<p>所以它更适合用户侧互动能力，而不是动作资产生产。</p>
+<h3 id="8-1-MediaPipe-适合做什么"><a href="#8-1-MediaPipe-适合做什么" class="headerlink" title="8.1 MediaPipe 适合做什么"></a>8.1 MediaPipe 适合做什么</h3><p>未来可用于：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 判断用户有没有在动</span><br><span class="line">2. 简单动作计数</span><br><span class="line">3. 判断用户大概是否跟上节奏</span><br><span class="line">4. 训练过程中的轻互动</span><br></pre></td></tr></table></figure>
+
+<p>例如深蹲计数：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">用户做深蹲</span><br><span class="line">→ MediaPipe 识别髋部、膝盖、肩膀位置</span><br><span class="line">→ 系统判断是否完成一次</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-2-MediaPipe-不适合做什么"><a href="#8-2-MediaPipe-不适合做什么" class="headerlink" title="8.2 MediaPipe 不适合做什么"></a>8.2 MediaPipe 不适合做什么</h3><p>不建议用它来做：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">客户视频 → 高质量3D动作动画</span><br></pre></td></tr></table></figure>
+
+<p>原因是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. MediaPipe 输出的是人体关键点，不是可直接播放的3D动画资产</span><br><span class="line">2. 关键点会有抖动，需要大量后处理</span><br><span class="line">3. 很难直接变成顺滑的数字教练动作</span><br><span class="line">4. 对器械、遮挡、复杂动作支持有限</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-3-当前结论"><a href="#8-3-当前结论" class="headerlink" title="8.3 当前结论"></a>8.3 当前结论</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">当前动作资产生产：</span><br><span class="line">优先使用 Rokoko / DeepMotion</span><br><span class="line"></span><br><span class="line">MediaPipe：</span><br><span class="line">后续作为用户侧增强能力，用于动作计数、简单跟练检测和互动反馈</span><br></pre></td></tr></table></figure>
+
+<p>一句话：</p>
+<blockquote>
+<p><strong>Rokoko &#x2F; DeepMotion 是“把客户视频变成动作资产”；MediaPipe 是“看用户有没有跟着做”。当前阶段先做前者，MediaPipe 后置。</strong></p>
+</blockquote>
+<hr>
+<h2 id="九、动作如何被系统控制"><a href="#九、动作如何被系统控制" class="headerlink" title="九、动作如何被系统控制"></a>九、动作如何被系统控制</h2><p>每个动作不会被当作一整段视频播放，而是拆成几个动作阶段。</p>
+<p>以深蹲为例：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">准备</span><br><span class="line">下蹲</span><br><span class="line">停顿</span><br><span class="line">起身</span><br><span class="line">结束</span><br></pre></td></tr></table></figure>
+
+<p>系统会根据训练节奏控制这些阶段的播放。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">慢节奏：</span><br><span class="line">下蹲 2 秒</span><br><span class="line">起身 2 秒</span><br><span class="line"></span><br><span class="line">正常节奏：</span><br><span class="line">下蹲 1 秒</span><br><span class="line">起身 1 秒</span><br></pre></td></tr></table></figure>
+
+<p>也就是说：</p>
+<blockquote>
+<p><strong>用户不是跟着原视频节奏练，而是跟着系统节奏练。</strong></p>
+</blockquote>
+<p>这是本方案和普通跟练视频最大的区别之一。</p>
+<hr>
+<h2 id="十、动作配置数据示例与字段说明"><a href="#十、动作配置数据示例与字段说明" class="headerlink" title="十、动作配置数据示例与字段说明"></a>十、动作配置数据示例与字段说明</h2><p>一个动作除了动画文件，还需要一份配置文件，告诉系统这个动作该怎么播放、什么时候提示语音、哪些肌肉需要高亮。</p>
+<p>示例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;actionId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;squat&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;深蹲&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;animation&quot;</span><span class="punctuation">:</span> <span class="string">&quot;squat.anim&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;stages&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;down&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;下蹲&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="number">0.2</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="number">1.2</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;voice&quot;</span><span class="punctuation">:</span> <span class="string">&quot;下&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;muscles&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;大腿前侧&quot;</span><span class="punctuation">:</span> <span class="number">0.8</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;核心&quot;</span><span class="punctuation">:</span> <span class="number">0.5</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;up&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;起身&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="number">1.2</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="number">2.4</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;voice&quot;</span><span class="punctuation">:</span> <span class="string">&quot;起&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;muscles&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;臀部&quot;</span><span class="punctuation">:</span> <span class="number">0.9</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;大腿前侧&quot;</span><span class="punctuation">:</span> <span class="number">0.6</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;equipment&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;dumbbell&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;bindTo&quot;</span><span class="punctuation">:</span> <span class="string">&quot;rightHand&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>字段说明：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>actionId</code></td>
+<td>动作唯一标识，给系统内部使用，例如 <code>squat</code></td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>动作中文名称，用于页面展示，例如“深蹲”</td>
+</tr>
+<tr>
+<td><code>animation</code></td>
+<td>对应的动画文件名，系统通过它找到要播放的动作</td>
+</tr>
+<tr>
+<td><code>stages</code></td>
+<td>动作阶段列表，一个动作会拆成多个阶段</td>
+</tr>
+<tr>
+<td><code>stages.id</code></td>
+<td>阶段唯一标识，例如 <code>down</code>、<code>up</code></td>
+</tr>
+<tr>
+<td><code>stages.name</code></td>
+<td>阶段中文名称，例如“下蹲”“起身”</td>
+</tr>
+<tr>
+<td><code>stages.start</code></td>
+<td>该阶段在动画中的开始时间，单位通常为秒</td>
+</tr>
+<tr>
+<td><code>stages.end</code></td>
+<td>该阶段在动画中的结束时间，单位通常为秒</td>
+</tr>
+<tr>
+<td><code>stages.voice</code></td>
+<td>进入该阶段时播放的语音口令</td>
+</tr>
+<tr>
+<td><code>stages.muscles</code></td>
+<td>当前阶段需要高亮的肌肉区域</td>
+</tr>
+<tr>
+<td><code>muscles</code> 数值</td>
+<td>高亮强度，通常 0–1，数值越大，高亮越明显</td>
+</tr>
+<tr>
+<td><code>equipment</code></td>
+<td>器械配置，例如是否需要哑铃、绑定在哪只手</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="十一、内部动作标注工具"><a href="#十一、内部动作标注工具" class="headerlink" title="十一、内部动作标注工具"></a>十一、内部动作标注工具</h2><p>内部动作标注工具不是用来“生成动作”的，而是用来把已有动画整理成系统可以调度的数据。</p>
+<p>可以理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">动画文件只告诉系统“人怎么动”</span><br><span class="line">动作标注文件告诉系统“什么时候喊口令、哪里亮、用什么器械”</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-1-输入"><a href="#11-1-输入" class="headerlink" title="11.1 输入"></a>11.1 输入</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1. 动画文件</span><br><span class="line">   例如 squat.anim / FBX</span><br><span class="line"></span><br><span class="line">2. 数字教练模型</span><br><span class="line">   用来预览动作效果</span><br><span class="line"></span><br><span class="line">3. 肌肉区域配置</span><br><span class="line">   例如大腿前侧、臀部、核心等区域</span><br><span class="line"></span><br><span class="line">4. 可选器械模型</span><br><span class="line">   例如哑铃、壶铃、杠铃</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-2-标注内容"><a href="#11-2-标注内容" class="headerlink" title="11.2 标注内容"></a>11.2 标注内容</h3><p>内容人员或工程人员在工具里完成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">1. 拖动时间轴，找到动作关键阶段</span><br><span class="line">   例如下蹲开始、下蹲结束、起身开始、起身结束</span><br><span class="line"></span><br><span class="line">2. 给阶段命名</span><br><span class="line">   例如“下蹲”“起身”“保持”</span><br><span class="line"></span><br><span class="line">3. 给每个阶段配置语音</span><br><span class="line">   例如“下”“起”“稳住”</span><br><span class="line"></span><br><span class="line">4. 给每个阶段配置肌肉高亮</span><br><span class="line">   例如下蹲阶段高亮大腿前侧和核心</span><br><span class="line"></span><br><span class="line">5. 配置器械信息</span><br><span class="line">   例如这个动作需要右手挂哑铃</span><br><span class="line"></span><br><span class="line">6. 预览整体效果</span><br><span class="line">   看动作、语音、高亮是否大致匹配</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-3-输出"><a href="#11-3-输出" class="headerlink" title="11.3 输出"></a>11.3 输出</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 动作配置 JSON</span><br><span class="line">2. 肌肉高亮配置</span><br><span class="line">3. 语音触发配置</span><br><span class="line">4. 器械绑定配置</span><br></pre></td></tr></table></figure>
+
+<p>这个工具很关键。动作数量一多，如果每个动作都靠工程师手写配置，效率会很低，也容易出错。动作标注工具能把动作生产从“工程开发”变成“内容配置”。</p>
+<hr>
+<h2 id="十二、语音提示怎么设计"><a href="#十二、语音提示怎么设计" class="headerlink" title="十二、语音提示怎么设计"></a>十二、语音提示怎么设计</h2><p>语音提示只负责“喊口令”，不需要和动作做到逐帧精确同步。</p>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">进入下蹲阶段 → 播放“下”</span><br><span class="line">进入起身阶段 → 播放“起”</span><br><span class="line">进入保持阶段 → 播放“稳住”</span><br></pre></td></tr></table></figure>
+
+<p>这里不追求毫秒级同步，原因是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 人体动作本身有自然的加速和减速</span><br><span class="line">2. 强行精确同步会让动作显得僵硬</span><br><span class="line">3. 后期只要调整动作，就要重新调整语音，维护成本很高</span><br></pre></td></tr></table></figure>
+
+<p>所以采用的是：</p>
+<blockquote>
+<p><strong>弱同步：语音和动作处在同一个训练节奏内，但不做死板对齐。</strong></p>
+</blockquote>
+<p>这更接近真实教练喊口令的感觉。</p>
+<hr>
+<h2 id="十三、动作节奏怎么适配"><a href="#十三、动作节奏怎么适配" class="headerlink" title="十三、动作节奏怎么适配"></a>十三、动作节奏怎么适配</h2><p>如果要支持慢、中、快三种节奏，不应该一开始就给每个动作做三套动画。</p>
+<p>正确做法是分层处理。</p>
+<h3 id="13-1-大多数动作：一套动画-小范围调速"><a href="#13-1-大多数动作：一套动画-小范围调速" class="headerlink" title="13.1 大多数动作：一套动画 + 小范围调速"></a>13.1 大多数动作：一套动画 + 小范围调速</h3><p>大多数动作先只准备一套标准动画。</p>
+<p>系统允许在小范围内调整速度，例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0.8 倍 ~ 1.25 倍</span><br></pre></td></tr></table></figure>
+
+<p>这个范围内，动作通常不会太假，成本也最低。</p>
+<p>适合：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">开合跳</span><br><span class="line">原地跑</span><br><span class="line">简单拉伸</span><br><span class="line">轻量哑铃动作</span><br></pre></td></tr></table></figure>
+
+<h3 id="13-2-少数关键动作：准备两个版本"><a href="#13-2-少数关键动作：准备两个版本" class="headerlink" title="13.2 少数关键动作：准备两个版本"></a>13.2 少数关键动作：准备两个版本</h3><p>对少数关键动作，如果慢速和快速差异很明显，可以准备两个版本：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">标准版</span><br><span class="line">慢速版</span><br></pre></td></tr></table></figure>
+
+<p>适合：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">深蹲</span><br><span class="line">俯卧撑</span><br><span class="line">弓步</span><br><span class="line">硬拉类动作</span><br></pre></td></tr></table></figure>
+
+<p>这类动作发力节奏明显，强行拉伸可能显得漂浮，强行压缩又像快进。</p>
+<h3 id="13-3-复杂动作：单独处理"><a href="#13-3-复杂动作：单独处理" class="headerlink" title="13.3 复杂动作：单独处理"></a>13.3 复杂动作：单独处理</h3><p>少数动作确实不适合靠调速解决，需要单独制作或采购对应版本。</p>
+<p>适合：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">高爆发动作</span><br><span class="line">复杂负重动作</span><br><span class="line">带单杠或固定器械动作</span><br></pre></td></tr></table></figure>
+
+<p>推荐比例：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">80% 动作：一套动画 + 小范围调速</span><br><span class="line">15% 动作：两套动画</span><br><span class="line">5% 动作：单独处理</span><br></pre></td></tr></table></figure>
+
+<p>这样可以保留节奏可调能力，同时避免动作成本失控。</p>
+<hr>
+<h2 id="十四、肌肉发力提示怎么实现"><a href="#十四、肌肉发力提示怎么实现" class="headerlink" title="十四、肌肉发力提示怎么实现"></a>十四、肌肉发力提示怎么实现</h2><p>肌肉高亮的定位是“教学提示”，不是实时检测用户真的用了哪块肌肉。</p>
+<h3 id="14-1-推荐实现方式"><a href="#14-1-推荐实现方式" class="headerlink" title="14.1 推荐实现方式"></a>14.1 推荐实现方式</h3><p>第一版建议采用最简单、最清楚的方式：</p>
+<blockquote>
+<p><strong>把数字教练身体提前切成几个肌肉区域，每个区域可以单独变色。发力时变红，不发力时保持绿色或默认色。</strong></p>
+</blockquote>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">大腿前侧 = 一块</span><br><span class="line">臀部 = 一块</span><br><span class="line">腹部 = 一块</span><br><span class="line">胸部 = 一块</span><br><span class="line">手臂 = 一块</span><br></pre></td></tr></table></figure>
+
+<p>运行时：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">当前阶段练大腿</span><br><span class="line">→ 大腿前侧变红</span><br><span class="line"></span><br><span class="line">当前阶段练臀</span><br><span class="line">→ 臀部变红</span><br><span class="line"></span><br><span class="line">其他区域</span><br><span class="line">→ 绿色或默认色</span><br></pre></td></tr></table></figure>
+
+<p>这就是“多区域变色”的实现方式，也是当前项目最推荐的方式。</p>
+<h3 id="14-2-为什么不做复杂方案"><a href="#14-2-为什么不做复杂方案" class="headerlink" title="14.2 为什么不做复杂方案"></a>14.2 为什么不做复杂方案</h3><p>更复杂的做法是用精细贴图控制肌肉边界，效果会更好，但需要更强的美术配合，制作和调试成本也更高。</p>
+<p>当前阶段没必要追求医学级肌肉纹理，目标是让用户清楚看到：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这个阶段主要练哪里</span><br></pre></td></tr></table></figure>
+
+<p>所以第一版做到“大块肌肉区域变色”就够了。</p>
+<hr>
+<h2 id="十五、器械动作怎么处理"><a href="#十五、器械动作怎么处理" class="headerlink" title="十五、器械动作怎么处理"></a>十五、器械动作怎么处理</h2><p>对于哑铃、壶铃、药球这类手持器械，可以采用较简单的方式处理：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">把器械绑定到数字教练的手上</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，手怎么动，器械就跟着怎么动。</p>
+<p>适合第一阶段支持的器械：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">哑铃</span><br><span class="line">壶铃</span><br><span class="line">药球</span><br><span class="line">瑜伽垫</span><br></pre></td></tr></table></figure>
+
+<p>杠铃、弹力带可以放到后续处理。</p>
+<p>单杠和大型固定器械更复杂，因为这类器械不是跟着人动，而是固定在空间里，人的手或身体必须贴住它。这类动作需要更复杂的动作约束处理，不建议一开始做。</p>
+<p>原则：</p>
+<blockquote>
+<p><strong>先做手持器械，后做固定器械。</strong></p>
+</blockquote>
+<hr>
+<h2 id="十六、多角度展示能力"><a href="#十六、多角度展示能力" class="headerlink" title="十六、多角度展示能力"></a>十六、多角度展示能力</h2><p>由于采用的是 3D 数字教练，系统天然支持多角度查看。</p>
+<p>可支持：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">正面视角</span><br><span class="line">侧面视角</span><br><span class="line">45°视角</span><br><span class="line">环绕视角</span><br></pre></td></tr></table></figure>
+
+<p>普通视频只能从拍摄角度观看，而 3D 数字教练可以通过调整摄像机位置，从不同角度展示同一个动作。</p>
+<p>这对健身动作教学很有价值，尤其是深蹲、硬拉、俯卧撑这类需要看身体角度的动作。</p>
+<hr>
+<h2 id="十七、错误动作对比"><a href="#十七、错误动作对比" class="headerlink" title="十七、错误动作对比"></a>十七、错误动作对比</h2><p>当前不建议把“错误动作对比”作为核心功能。</p>
+<p>原因是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 每个动作都做错误版本，会让动作制作成本成倍增加</span><br><span class="line">2. 错误动作需要专业定义，不能随便设计</span><br><span class="line">3. 这个功能更偏内容教学，不是当前训练执行系统的核心</span><br></pre></td></tr></table></figure>
+
+<p>可以保留轻量提示，例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">注意膝盖方向</span><br><span class="line">保持核心收紧</span><br><span class="line">背部不要塌</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，当前可以做提示，但不做完整错误动作库。</p>
+<hr>
+<h2 id="十八、AI-使用边界"><a href="#十八、AI-使用边界" class="headerlink" title="十八、AI 使用边界"></a>十八、AI 使用边界</h2><p>当前阶段不做：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">实时动作识别</span><br><span class="line">动作评分</span><br><span class="line">AI实时生成动作</span><br><span class="line">实时纠错</span><br></pre></td></tr></table></figure>
+
+<p>原因是这些能力对精度要求高、实现复杂，而且容易影响用户体验稳定性。</p>
+<p>AI 可以使用在生产侧：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">客户视频 → 动作捕捉 → 数字教练动作资产</span><br></pre></td></tr></table></figure>
+
+<p>AI 后续也可以用于用户侧轻互动：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">摄像头 → MediaPipe → 动作计数 / 是否跟练检测</span><br></pre></td></tr></table></figure>
+
+<p>但当前主链路应先放在：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">动作资产生产</span><br><span class="line">节奏驱动播放</span><br><span class="line">肌肉高亮提示</span><br><span class="line">3D实时展示</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="十九、客户端技术实现"><a href="#十九、客户端技术实现" class="headerlink" title="十九、客户端技术实现"></a>十九、客户端技术实现</h2><p>如果目标是先验证效果，建议优先使用 Unity。</p>
+<p>原因：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">3D 动画系统成熟</span><br><span class="line">数字人绑定方便</span><br><span class="line">肌肉高亮容易实现</span><br><span class="line">摄像机控制方便</span><br><span class="line">器械绑定方便</span><br><span class="line">后续支持手机端</span><br></pre></td></tr></table></figure>
+
+<p>如果后续目标是小程序或 H5，可以再评估：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Three.js</span><br><span class="line">Cocos</span><br><span class="line">WebGL</span><br></pre></td></tr></table></figure>
+
+<p>但第一版不建议一开始就兼顾所有平台，否则工程复杂度会明显上升。</p>
+<p>客户端主要模块：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">动作播放器</span><br><span class="line">节奏控制器</span><br><span class="line">语音提示器</span><br><span class="line">肌肉高亮控制器</span><br><span class="line">器械绑定模块</span><br><span class="line">摄像机控制模块</span><br><span class="line">训练流程控制模块</span><br></pre></td></tr></table></figure>
+
+<p>运行时逻辑：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">读取训练计划</span><br><span class="line">↓</span><br><span class="line">加载动作资产</span><br><span class="line">↓</span><br><span class="line">读取动作阶段配置</span><br><span class="line">↓</span><br><span class="line">节奏控制器决定当前阶段</span><br><span class="line">↓</span><br><span class="line">动作播放器播放对应动画片段</span><br><span class="line">↓</span><br><span class="line">语音提示器播放口令</span><br><span class="line">↓</span><br><span class="line">肌肉高亮控制器更新发力区域</span><br><span class="line">↓</span><br><span class="line">摄像机根据需要切换视角</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二十、移动端性能控制"><a href="#二十、移动端性能控制" class="headerlink" title="二十、移动端性能控制"></a>二十、移动端性能控制</h2><p>移动端需要重点控制性能。</p>
+<p>建议：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">使用低多边形模型</span><br><span class="line">减少实时光源数量</span><br><span class="line">肌肉高亮不要用过重效果</span><br><span class="line">限制同屏模型数量</span><br><span class="line">动作和器械资源按需加载</span><br><span class="line">控制纹理大小</span><br></pre></td></tr></table></figure>
+
+<p>应避免：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">高精度人体模型</span><br><span class="line">复杂实时阴影</span><br><span class="line">过多粒子效果</span><br><span class="line">高分辨率贴图</span><br><span class="line">复杂后处理效果</span><br></pre></td></tr></table></figure>
+
+<p>第一版应优先保证：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">稳定帧率</span><br><span class="line">动作流畅</span><br><span class="line">发热可控</span><br><span class="line">加载速度可接受</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二十一、主要技术难点"><a href="#二十一、主要技术难点" class="headerlink" title="二十一、主要技术难点"></a>二十一、主要技术难点</h2><h3 id="21-1-动作资产质量"><a href="#21-1-动作资产质量" class="headerlink" title="21.1 动作资产质量"></a>21.1 动作资产质量</h3><p>这是最核心的难点。</p>
+<p>客户视频转出来的动作不一定直接可用，常见问题包括：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">脚底滑动</span><br><span class="line">关节抖动</span><br><span class="line">动作变形</span><br><span class="line">身体重心漂移</span><br><span class="line">器械位置不准</span><br></pre></td></tr></table></figure>
+
+<p>解决方式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">先自动动捕</span><br><span class="line">再人工验收</span><br><span class="line">只对关键问题做轻度修正</span><br></pre></td></tr></table></figure>
+
+<h3 id="21-2-动作节奏适配"><a href="#21-2-动作节奏适配" class="headerlink" title="21.2 动作节奏适配"></a>21.2 动作节奏适配</h3><p>一个动画不能无限压缩或拉伸。<br>解决方式是控制调速范围，必要时为关键动作准备不同速度版本。</p>
+<h3 id="21-3-肌肉高亮准确性"><a href="#21-3-肌肉高亮准确性" class="headerlink" title="21.3 肌肉高亮准确性"></a>21.3 肌肉高亮准确性</h3><p>肌肉高亮不是实时检测，而是预设提示，所以需要健身专业人员参与配置。</p>
+<p>解决方式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">建立肌肉配置规范</span><br><span class="line">关键动作由健身专业人士审核</span><br></pre></td></tr></table></figure>
+
+<h3 id="21-4-器械动作"><a href="#21-4-器械动作" class="headerlink" title="21.4 器械动作"></a>21.4 器械动作</h3><p>手持器械相对简单，固定器械比较复杂。</p>
+<p>解决方式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">第一阶段只做手持器械</span><br><span class="line">单杠和固定器械后置</span><br></pre></td></tr></table></figure>
+
+<h3 id="21-5-移动端性能"><a href="#21-5-移动端性能" class="headerlink" title="21.5 移动端性能"></a>21.5 移动端性能</h3><p>3D 实时渲染会带来性能压力。</p>
+<p>解决方式：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">低模角色</span><br><span class="line">简化材质</span><br><span class="line">减少实时光影</span><br><span class="line">按需加载资源</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二十二、建议的技术落地顺序"><a href="#二十二、建议的技术落地顺序" class="headerlink" title="二十二、建议的技术落地顺序"></a>二十二、建议的技术落地顺序</h2><p>如果后续推进实现，建议按这个顺序做：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1. 统一数字教练模型</span><br><span class="line">2. 一个标准动作导入并播放</span><br><span class="line">3. 动作阶段拆分与播放控制</span><br><span class="line">4. 语音提示触发</span><br><span class="line">5. 肌肉区域变色</span><br><span class="line">6. 简单器械绑定</span><br><span class="line">7. 多视角切换</span><br><span class="line">8. 动作标注工具</span><br><span class="line">9. 动作库扩展</span><br><span class="line">10. 移动端性能优化</span><br></pre></td></tr></table></figure>
+
+<p>不要一开始就做：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">实时纠错</span><br><span class="line">动作评分</span><br><span class="line">复杂固定器械</span><br><span class="line">完整错误动作库</span><br></pre></td></tr></table></figure>
+
+<p>这些都会显著增加复杂度，但不是当前核心链路。</p>
+<hr>
+<h2 id="二十三、系统最终形态"><a href="#二十三、系统最终形态" class="headerlink" title="二十三、系统最终形态"></a>二十三、系统最终形态</h2><p>这套系统可以定义为：</p>
+<blockquote>
+<p><strong>节奏驱动的 3D 数字训练引导系统</strong></p>
+</blockquote>
+<p>输入是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">动作资产</span><br><span class="line">动作阶段标注</span><br><span class="line">肌肉发力配置</span><br><span class="line">训练节奏</span><br></pre></td></tr></table></figure>
+
+<p>输出是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">数字教练动作演示</span><br><span class="line">语音节奏提示</span><br><span class="line">肌肉高亮提示</span><br><span class="line">多角度训练展示</span><br></pre></td></tr></table></figure>
+
+<p>它和传统视频播放器的区别是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">传统视频：用户被动跟着视频练</span><br><span class="line">本方案：系统按训练节奏主动引导用户练</span><br></pre></td></tr></table></figure>
+
+<p>它和 AI 生成系统的区别是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AI生成系统：结果不稳定，成本高</span><br><span class="line">本方案：动作可控，体验稳定，方便产品化</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="二十四、方案总结"><a href="#二十四、方案总结" class="headerlink" title="二十四、方案总结"></a>二十四、方案总结</h2><p>本方案的核心思路是：</p>
+<blockquote>
+<p><strong>不用实时生成动作，而是把客户动作提前转化成统一的数字教练动作资产；训练时由系统节奏驱动动作、语音和肌肉高亮。</strong></p>
+</blockquote>
+<p>最终价值体现在三个方面：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1. 统一性</span><br><span class="line">不同模特的视频可以转化为统一数字教练展示，视觉风格一致。</span><br><span class="line"></span><br><span class="line">2. 引导性</span><br><span class="line">通过节奏、语音和肌肉高亮，让用户不是单纯“看视频”，而是被带着训练。</span><br><span class="line"></span><br><span class="line">3. 扩展性</span><br><span class="line">动作一旦资产化，后续可以继续增加动作、组合训练计划、支持不同节奏和不同视角。</span><br></pre></td></tr></table></figure>
+
+<p>一句话概括：</p>
+<blockquote>
+<p><strong>用客户动作建立定制感，用统一数字教练建立规模化能力，用节奏和肌肉高亮建立体验差异。</strong></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%96%B9%E6%A1%88/" rel="tag"># 方案</a>
+              <a href="/tags/%E5%A7%BF%E6%80%81/" rel="tag"># 姿态</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/04/14/AAshare/%E5%8D%9A%E5%AE%A2/Ubuntu%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/" rel="prev" title="">
+                  <i class="fa fa-angle-left"></i> 
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">533k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">32:19</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
