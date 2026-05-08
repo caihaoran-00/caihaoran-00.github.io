@@ -27,7 +27,7 @@
 <meta property="og:description" content="一、原始需求客户已经提供了一批健身动作视频，动作由不同模特完成。现在希望基于这些动作，生成一套更适合训练场景使用的内容。 需求可以概括为： 123451. 能利用客户已有的动作视频，而不是完全重新做一套内容2. 训练过程不能只是播放视频，需要有节奏提示和动作引导3. 展示角色尽量统一，比如统一的3D人物或简化示意角色4. 能在移动端使用5. 动作内容后续可以持续扩展">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-04-29T03:29:38.000Z">
-<meta property="article:modified_time" content="2026-04-29T03:31:46.380Z">
+<meta property="article:modified_time" content="2026-05-07T02:51:46.417Z">
 <meta property="article:author" content="Chr">
 <meta property="article:tag" content="方案">
 <meta property="article:tag" content="姿态">
@@ -153,7 +153,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-count">124</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -164,7 +164,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">138</span>
+        <span class="site-state-item-count">140</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -228,9 +228,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-04-29 11:29:38 / 修改时间：11:31:46" itemprop="dateCreated datePublished" datetime="2026-04-29T11:29:38+08:00">2026-04-29</time>
+      <time title="创建时间：2026-04-29 11:29:38" itemprop="dateCreated datePublished" datetime="2026-04-29T11:29:38+08:00">2026-04-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-07 10:51:46" itemprop="dateModified" datetime="2026-05-07T10:51:46+08:00">2026-05-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -256,14 +262,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>5.9k</span>
+      <span>6.1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>21 分钟</span>
+      <span>22 分钟</span>
     </span>
 </div>
 
@@ -285,6 +291,11 @@
 <p><strong>统一数字教练 + 节奏驱动训练 + 肌肉发力提示</strong></p>
 </blockquote>
 <p>这套方案不把重点放在“实时生成视频”或“AI 自动生成动作”上，而是把动作提前处理成可复用的数字资产。用户训练时，系统根据设定好的节奏，控制数字教练演示动作，并配合语音提示和肌肉高亮。</p>
+<blockquote>
+<p>端侧口播数字人和端侧视频生成技术都已经存在，但它们和本项目要解决的问题不同。口播数字人主要生成口型、表情和轻量身体动作；端侧视频生成目前更多用于创意视频、风格化内容或短片段生成。</p>
+<p>本项目需要的是标准、稳定、可复用的全身健身动作，涉及关节角度、身体重心、动作节奏、器械关系和训练安全，不能只追求“看起来会动”。</p>
+<p>因此，本方案不把健身动作交给端侧实时生成，而是提前把动作资产化，先保证动作质量和安全性；端侧负责播放、节奏控制、语音提示、肌肉高亮和视角切换。这样更稳定，也更适合产品化落地。</p>
+</blockquote>
 <p>可以简单理解为：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">系统节奏</span><br><span class="line">→ 控制数字教练做动作</span><br><span class="line">→ 同时播放语音口令</span><br><span class="line">→ 同时高亮对应发力肌肉</span><br></pre></td></tr></table></figure>
 
@@ -749,6 +760,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2026/05/08/%E4%BB%8EHermes-Agent%E6%8A%BD%E7%A6%BBWeCom%E8%83%BD%E5%8A%9B%EF%BC%9A%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E7%8B%AC%E7%AB%8B%E5%8F%AF%E5%A4%8D%E7%94%A8%E7%9A%84%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%8E%A5%E5%85%A5%E9%A1%B9%E7%9B%AE/" rel="next" title="从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目">
+                  从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目 <i class="fa fa-angle-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -779,13 +793,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">533k</span>
+    <span title="站点总字数">540k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">32:19</span>
+    <span title="站点阅读时长">32:44</span>
   </span>
 </div>
 <div class="busuanzi-count">

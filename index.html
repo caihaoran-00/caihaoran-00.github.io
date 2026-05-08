@@ -149,7 +149,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">123</span>
+          <span class="site-state-item-count">124</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -160,7 +160,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">138</span>
+        <span class="site-state-item-count">140</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -186,6 +186,108 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2026/05/08/%E4%BB%8EHermes-Agent%E6%8A%BD%E7%A6%BBWeCom%E8%83%BD%E5%8A%9B%EF%BC%9A%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E7%8B%AC%E7%AB%8B%E5%8F%AF%E5%A4%8D%E7%94%A8%E7%9A%84%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%8E%A5%E5%85%A5%E9%A1%B9%E7%9B%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/05/08/%E4%BB%8EHermes-Agent%E6%8A%BD%E7%A6%BBWeCom%E8%83%BD%E5%8A%9B%EF%BC%9A%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E7%8B%AC%E7%AB%8B%E5%8F%AF%E5%A4%8D%E7%94%A8%E7%9A%84%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%8E%A5%E5%85%A5%E9%A1%B9%E7%9B%AE/" class="post-title-link" itemprop="url">从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-08 10:09:05 / 修改时间：19:10:42" itemprop="dateCreated datePublished" datetime="2026-05-08T10:09:05+08:00">2026-05-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近接到个需求，其中有一块要用到与企业微信机器人交互（用于企业微信群内的客户运营），索性先把这块做了，OpenClaw 使用企业微信 Node SDK&#x2F;官方插件骨架，Hermes 用 Python 自己实现了一套适配器，我更熟悉Python，所以选择从Hermes Agent中抽离企业微信接入的代码（必然也不是我手动抽，借助伟大的GPT5.5大人完成），本文我们就一起看下该项目（抽离出的企业微信接入模块）怎么用。</p>
+<p><strong>git仓库</strong>：<a target="_blank" rel="noopener" href="https://github.com/caihaoran-00/wecom-agent-bridge">https://github.com/caihaoran-00/wecom-agent-bridge</a></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/05/08/%E4%BB%8EHermes-Agent%E6%8A%BD%E7%A6%BBWeCom%E8%83%BD%E5%8A%9B%EF%BC%9A%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E7%8B%AC%E7%AB%8B%E5%8F%AF%E5%A4%8D%E7%94%A8%E7%9A%84%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%8E%A5%E5%85%A5%E9%A1%B9%E7%9B%AE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -223,9 +325,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2026-04-29 11:29:38 / 修改时间：11:31:46" itemprop="dateCreated datePublished" datetime="2026-04-29T11:29:38+08:00">2026-04-29</time>
+      <time title="创建时间：2026-04-29 11:29:38" itemprop="dateCreated datePublished" datetime="2026-04-29T11:29:38+08:00">2026-04-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-07 10:51:46" itemprop="dateModified" datetime="2026-05-07T10:51:46+08:00">2026-05-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -244,14 +352,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>5.9k</span>
+      <span>6.1k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>21 分钟</span>
+      <span>22 分钟</span>
     </span>
 </div>
 
@@ -575,7 +683,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-04-29 16:33:40" itemprop="dateModified" datetime="2026-04-29T16:33:40+08:00">2026-04-29</time>
+      <time title="修改时间：2026-05-06 15:01:50" itemprop="dateModified" datetime="2026-05-06T15:01:50+08:00">2026-05-06</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -594,14 +702,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>8.6k</span>
+      <span>14k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>31 分钟</span>
+      <span>52 分钟</span>
     </span>
 </div>
 
@@ -613,7 +721,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这篇文章想回答两个问题。</p>
-<p>第一个问题：RAG 从最早的“向量库 + 大模型”一路发展到现在，中间到底出现了哪些技术？这些技术分别解决什么问题？</p>
+<p>第一个问题：RAG 从最常见的“向量库 + 大模型”一路发展到现在，中间到底出现了哪些技术？这些技术分别解决什么问题？</p>
 <p>第二个问题：今天如果要做一个企业级 RAG 系统，文档解析、检索、数据库查询、权限、引用、评测这些模块应该怎么搭？哪些地方可以用框架，哪些地方最好自己控制？</p>
 <p>本文会参考 Fareed Khan 的文章《<a target="_blank" rel="noopener" href="https://levelup.gitconnected.com/testing-18-rag-techniques-to-find-the-best-094d166af27f">Testing 18 RAG Techniques to Find the Best</a>》。这类横向测试的价值不在于给出一个“世界第一”的排行榜，而是把常见 RAG 技术放在同一套实验里对比，适合拿来学习技术脉络。</p>
 <p>先说结论：不要把里面的分数当成行业标准。Adaptive RAG 在那组实验里得分高，不代表所有场景都该上 Adaptive RAG；Semantic Chunking 在那组实验里得分低，也不代表它永远没用。RAG 的效果非常吃数据、问题类型、切分方式、评测集和模型。</p>
@@ -637,7 +745,8 @@
 </ul>
 <p>后面所有 RAG 技术，基本都是围绕这些问题打补丁。</p>
 <hr>
-<h2 id="第一部分：RAG-技术经历了哪些阶段"><a href="#第一部分：RAG-技术经历了哪些阶段" class="headerlink" title="第一部分：RAG 技术经历了哪些阶段"></a>第一部分：RAG 技术经历了哪些阶段</h2><h3 id="阶段-0：没有-RAG，只有-Prompt-和微调"><a href="#阶段-0：没有-RAG，只有-Prompt-和微调" class="headerlink" title="阶段 0：没有 RAG，只有 Prompt 和微调"></a>阶段 0：没有 RAG，只有 Prompt 和微调</h3><p>最早大家会把资料直接塞进 Prompt，或者用私有数据微调模型。</p>
+<h2 id="第一部分：RAG-技术经历了哪些阶段"><a href="#第一部分：RAG-技术经历了哪些阶段" class="headerlink" title="第一部分：RAG 技术经历了哪些阶段"></a>第一部分：RAG 技术经历了哪些阶段</h2><p>这里的“阶段”不是严格历史年表，而是能力层级。很多技术是并行出现的，只是从工程复杂度看，通常会从 Simple RAG、混合检索、精排、路由、GraphRAG&#x2F;Agentic RAG 逐步加上去。</p>
+<h3 id="阶段-0：没有-RAG，只有-Prompt-和微调"><a href="#阶段-0：没有-RAG，只有-Prompt-和微调" class="headerlink" title="阶段 0：没有 RAG，只有 Prompt 和微调"></a>阶段 0：没有 RAG，只有 Prompt 和微调</h3><p>最早大家会把资料直接塞进 Prompt，或者用私有数据微调模型。</p>
 <p>这两种方式都有问题。Prompt 放不下太多内容，微调又不适合频繁变化的知识。公司制度、产品文档、订单状态每天都可能变，拿这些东西去微调模型，维护成本太高。</p>
 <p>RAG 出现后，思路变了：知识不一定要写进模型参数里，可以放在外部系统里，问的时候再取。</p>
 <h3 id="阶段-1：Simple-RAG，先把资料找回来"><a href="#阶段-1：Simple-RAG，先把资料找回来" class="headerlink" title="阶段 1：Simple RAG，先把资料找回来"></a>阶段 1：Simple RAG，先把资料找回来</h3><p>Simple RAG 是最基础的形态：</p>
@@ -687,6 +796,7 @@
 </tr>
 </tbody></table>
 <p>这里有个实用判断：如果文档有清晰标题结构，优先保留标题路径；如果是合同、制度、手册，段落和条款编号往往比“语义分块”更可靠。</p>
+<p>这里的 RSE 可以理解成 Relevant Segment Extraction 一类做法：先命中最相关的小片段，再按段落、标题或相邻 chunk 补齐上下文。它和 Sentence Window 很像，区别是 Sentence Window 通常以“句子”为单位，RSE 更常以“段落&#x2F;片段&#x2F;章节边界”为单位。</p>
 <h3 id="阶段-3：从“向量检索”走向“混合检索”"><a href="#阶段-3：从“向量检索”走向“混合检索”" class="headerlink" title="阶段 3：从“向量检索”走向“混合检索”"></a>阶段 3：从“向量检索”走向“混合检索”</h3><p>只用向量检索会有一个硬伤：它擅长语义相似，不擅长精确匹配。</p>
 <p>比如用户问：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B18-甲型涡轮机的维保周期是多少？</span><br></pre></td></tr></table></figure>
@@ -721,6 +831,12 @@
 </tr>
 </tbody></table>
 <p>这也是为什么 Elasticsearch&#x2F;OpenSearch 这类关键词索引在 RAG 系统里没有过时。向量库不是全部。</p>
+<p>这里的 Elasticsearch&#x2F;OpenSearch 不是搜索互联网，而是搜索已经入库的企业文档。它的使用方式和向量检索类似，也要先解析、切块、加 metadata，再把 chunk 写入索引。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">文档 → 解析 → 切块 → 写入全文检索索引</span><br><span class="line">用户问题 → 关键词检索 → 返回相关 chunk</span><br></pre></td></tr></table></figure>
+
+<p>用户问题可以先整句丢进去，不一定一开始就手工挑关键词。后续再根据 bad case 加短语匹配、编号抽取、同义词、字段权重和 query rewrite。</p>
+<p>BM25 比普通关键词匹配强的地方在于：它会判断一个词在全库里是不是稀有。比如“住宿标准”很多文档都有，但 <code>财办〔2026〕18号</code> 可能只有一份文件有。BM25 会更重视这个稀有词。</p>
+<p>一句话：向量检索负责找语义，BM25 负责抓关键词和编号。</p>
 <h3 id="阶段-4：检索后再做“精排”"><a href="#阶段-4：检索后再做“精排”" class="headerlink" title="阶段 4：检索后再做“精排”"></a>阶段 4：检索后再做“精排”</h3><p>初召回通常会取 Top 20、Top 50，里面有不少噪音。Re-Ranker 的作用就是二次筛选。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">初召回 Top 50 → Re-Ranker 精排 → 取 Top 5 给 LLM</span><br></pre></td></tr></table></figure>
 
@@ -856,8 +972,8 @@
 <p>实现不一定靠大模型。常见做法是：</p>
 <ul>
 <li>规则：金额、订单、库存、客户、权限这类词先路由到结构化查询</li>
-<li>Embedding 分类：用一批样例问题做类别原型，按相似度分类</li>
-<li>小模型&#x2F;SLM：用 2B、7B 或 BERT 类模型做路由判断</li>
+<li>Embedding 分类：用一批样例问题做类别原型，按相似度分类；置信度可以来自最高相似度、最高分和第二名的差距、是否超过人工设定阈值</li>
+<li>小模型&#x2F;SLM：用 2B、7B 这类小生成模型做结构化路由，或用 BERT 类 encoder 微调成分类器</li>
 <li>LLM 复判：低置信度时让更强模型判断</li>
 </ul>
 <p>我的建议是初期别训练太复杂的分类器。先用“规则 + SLM&#x2F;LLM 结构化输出”跑起来，等业务稳定、样本足够，再把高频路由沉淀成轻量分类器。</p>
@@ -936,6 +1052,11 @@
 <td>更偏底层组件，需要集成</td>
 </tr>
 <tr>
+<td>TextIn</td>
+<td>中文 OCR、票据、合同、表格、文档解析</td>
+<td>商业服务，适合评估私有化、成本和数据合规</td>
+</tr>
+<tr>
 <td>Azure Document Intelligence</td>
 <td>云服务、表单、票据、企业 SLA</td>
 <td>云厂商绑定和费用</td>
@@ -952,7 +1073,7 @@
 </tr>
 </tbody></table>
 <p>一个实用路由：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">普通 PDF/Word → Docling</span><br><span class="line">复杂中文扫描件/财报 → MinerU 或 TextIn</span><br><span class="line">LlamaIndex 快速原型 → LlamaParse</span><br><span class="line">中文 OCR/版面底层能力 → PaddleOCR</span><br><span class="line">已有 Azure 体系 → Azure Document Intelligence</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">普通 PDF/Word → Docling</span><br><span class="line">复杂中文扫描件/财报 → MinerU / PaddleOCR / TextIn</span><br><span class="line">LlamaIndex 快速原型 → LlamaParse</span><br><span class="line">中文 OCR/版面底层能力 → PaddleOCR</span><br><span class="line">已有 Azure 体系 → Azure Document Intelligence</span><br></pre></td></tr></table></figure>
 
 <p>不要一开始就假设某个工具通吃。文档解析层最好做成可替换的 parser registry。</p>
 <h3 id="表格不要当普通文本处理"><a href="#表格不要当普通文本处理" class="headerlink" title="表格不要当普通文本处理"></a>表格不要当普通文本处理</h3><p>表格是 RAG 里最容易被低估的数据类型。普通文本只要判断“这段话和问题是否相关”，表格还要保住行列关系、表头、合并单元格、跨页结构和单元格坐标。</p>
@@ -985,7 +1106,8 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">小表 → 整表 chunk</span><br><span class="line">中表 → 行组 chunk，每块带表头</span><br><span class="line">大表 → 结构化成 CSV/数据库，检索只负责找表</span><br><span class="line">复杂合并单元格 → HTML/JSON 保留结构，另生成可检索文本</span><br><span class="line">财务和指标计算 → SQL/Pandas 计算，LLM 只解释结果</span><br></pre></td></tr></table></figure>
 
 <p>一句话：不要让 LLM 读 HTML 心算。HTML 用来保结构和溯源，检索用表格转写后的文本，计算用 DataFrame 或 SQL。</p>
-<h3 id="索引和存储怎么做"><a href="#索引和存储怎么做" class="headerlink" title="索引和存储怎么做"></a>索引和存储怎么做</h3><p>成熟系统通常是异构存储：</p>
+<h3 id="索引和存储怎么做"><a href="#索引和存储怎么做" class="headerlink" title="索引和存储怎么做"></a>索引和存储怎么做</h3><p>成熟系统通常是异构存储，但不一定一开始就上很多组件。</p>
+<p>常见分工是：</p>
 <table>
 <thead>
 <tr>
@@ -994,27 +1116,288 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>向量库</td>
+<td>向量索引</td>
 <td>语义检索</td>
 </tr>
 <tr>
-<td>Elasticsearch &#x2F; OpenSearch</td>
-<td>关键词、过滤、元数据</td>
+<td>全文检索</td>
+<td>关键词、编号、标题、字段过滤</td>
 </tr>
 <tr>
-<td>关系库 &#x2F; 数仓 &#x2F; OLAP</td>
-<td>订单、库存、指标、权限状态</td>
+<td>关系型数据库</td>
+<td>文档版本、权限、任务、审计、业务数据</td>
 </tr>
 <tr>
 <td>对象存储</td>
-<td>原始文件、图片、截图</td>
+<td>原始文件、图片、页面截图</td>
 </tr>
 <tr>
 <td>图数据库</td>
 <td>实体关系、GraphRAG</td>
 </tr>
 </tbody></table>
-<p>向量库不是数据库的替代品。涉及金额、库存、订单状态、绩效指标，一般先查数据库或业务 API，再让 LLM 组织语言。</p>
+<p>这里有几个容易混淆的点。</p>
+<p>第一，向量数据库不一定要单独部署。Elasticsearch&#x2F;OpenSearch 自己也能存向量，也能做 BM25 + 向量的混合检索。也就是说，有两种做法：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">方案一：OpenSearch / Elasticsearch 同时做 BM25 和向量检索</span><br><span class="line">方案二：OpenSearch / Elasticsearch 做 BM25，Milvus / Qdrant 做向量检索</span><br></pre></td></tr></table></figure>
+
+<p>第二，PostgreSQL 也可以做少组件方案。它可以用 <code>pgvector</code> 做向量检索，用 PostgreSQL FTS 做全文检索，用 <code>pg_trgm</code> 做模糊匹配和编号片段匹配。</p>
+<p>这里不要把 PostgreSQL FTS 里的几个概念理解成“都要选一遍的组件”。它们是一条全文检索链路里的不同角色：</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tsvector</code></td>
+<td>把文档内容转成可索引的词项，通常配合 GIN 索引</td>
+</tr>
+<tr>
+<td><code>tsquery</code></td>
+<td>把用户 query 转成全文检索查询表达式</td>
+</tr>
+<tr>
+<td><code>@@</code></td>
+<td>判断 <code>tsvector</code> 是否匹配 <code>tsquery</code></td>
+</tr>
+<tr>
+<td><code>ts_rank / ts_rank_cd</code></td>
+<td>对命中的结果做相关性排序</td>
+</tr>
+<tr>
+<td><code>ts_headline</code></td>
+<td>生成命中高亮摘要，可选</td>
+</tr>
+</tbody></table>
+<p>所以最小可用链路是 <code>tsvector + tsquery + @@ + GIN index</code>；如果要排序，再加 <code>ts_rank / ts_rank_cd</code>；如果要展示高亮，再加 <code>ts_headline</code>。</p>
+<p>所以第一版不一定要拆成 PostgreSQL + OpenSearch + Milvus 三套。很多内部知识库可以先用：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PostgreSQL + pgvector + PostgreSQL FTS + pg_trgm</span><br></pre></td></tr></table></figure>
+
+<p>这样文档 metadata、权限、版本、审计、向量和关键词索引都在一个库里，交付和运维简单。</p>
+<p>但 PostgreSQL FTS 默认的 <code>ts_rank / ts_rank_cd</code> 不是 BM25。它主要看当前 chunk 里命中了多少词、词在哪、词近不近。BM25 会额外考虑“这个词在全库里稀不稀有”。所以在政府文件、合同、设备手册这种编号和专名很多的场景里，BM25 通常更稳。</p>
+<p>如果使用 ParadeDB &#x2F; <code>pg_search</code>，它主要替代或增强的是“PostgreSQL FTS 这一层”：用 BM25 索引和相关操作符来做关键词全文检索，而不是替代 <code>pgvector</code>。<code>pgvector</code> 仍然负责语义向量检索。<code>pg_trgm</code> 也不一定被完全替代，它仍适合做短字符串、编号片段、相似度和模糊匹配。简单理解：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">语义相似：pgvector</span><br><span class="line">关键词全文：PostgreSQL FTS，或 pg_search / ParadeDB</span><br><span class="line">模糊匹配：pg_trgm</span><br></pre></td></tr></table></figure>
+
+<p><code>pg_search</code> 值得关注，但要看版本、许可证、部署环境和团队运维能力，不能直接等同于 Elasticsearch&#x2F;OpenSearch。</p>
+<p>一个实用判断是分阶段演进，而不是按某个数字机械切换。下面的数字只适合做方案讨论的量级参考，不能当容量承诺。真实项目必须看 PostgreSQL 是业务主库还是专用检索库、embedding 维度、chunk 长度、Top-K、过滤选择性、rerank 候选数、更新频率、机器规格和索引参数。</p>
+<table>
+<thead>
+<tr>
+<th>量级参考</th>
+<th>常见特征</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>小型：10 万 - 100 万 chunk，检索 QPS &lt; 10</td>
+<td>部门级知识库，读多写少，过滤条件简单</td>
+<td>PostgreSQL + pgvector + PostgreSQL FTS 通常足够，优先少组件、低运维成本</td>
+</tr>
+<tr>
+<td>小到中型：100 万 - 500 万 chunk，检索 QPS 10 - 30</td>
+<td>有 hybrid 检索、租户过滤、中文关键词、少量字段权重</td>
+<td>PostgreSQL 仍可作为主方案；如果需要 BM25 可评估 pg_search &#x2F; ParadeDB；开始做真实查询压测</td>
+</tr>
+<tr>
+<td>中型：500 万 - 1000 万 chunk，检索 QPS 30 - 80</td>
+<td>字段权重、高亮、权限过滤、索引更新开始变复杂</td>
+<td>如果 PG 是专用检索库，可以继续评估；如果 PG 是业务主库，建议拆出检索实例、只读检索副本，或引入 OpenSearch&#x2F;Elasticsearch</td>
+</tr>
+<tr>
+<td>较大型：1000 万 - 5000 万 chunk，检索 QPS 80 - 200</td>
+<td>多租户、复杂过滤、更新量较大、延迟稳定性要求高</td>
+<td>不要按 chunk 数直接选型；PG、OpenSearch&#x2F;Elasticsearch、专用向量库都应基于真实查询、真实过滤、真实更新压测</td>
+</tr>
+<tr>
+<td>大型：5000 万 chunk 以上，或检索 QPS 200+</td>
+<td>高并发、多租户、权限复杂，需要稳定扩容和降级</td>
+<td>优先考虑分区、分租户、业务域拆分、冷热分层、权限预计算；搜索引擎集群和专用向量库都必须压测</td>
+</tr>
+</tbody></table>
+<p>这里的 QPS 是检索 QPS，不是用户 QPS。一次用户问题可能会触发关键词检索、向量检索、模糊检索和 rerank，所以用户 QPS 1 不等于检索 QPS 1。</p>
+<p>这些数字对互联网搜索系统不算高，但对企业 RAG 已经有参考意义。因为一次问答往往不是一次检索，而是“多路召回 + metadata filter + rerank + SQL&#x2F;API + LLM”。如果 embedding 是 3072 维、Top-K 很大、过滤条件很复杂，瓶颈会更早出现；如果 embedding 维度低、过滤简单、缓存命中高，PostgreSQL 单体或专用检索库也可能撑得更久。</p>
+<p>这里最容易忽略的是资源隔离：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PG 作为业务主库：量级建议保守，100 万 - 500 万 chunk 就要开始关注隔离、连接池、CPU、内存、IO、VACUUM 和 REINDEX 压力。</span><br><span class="line"></span><br><span class="line">PG 作为专用检索库：量级可以放宽，500 万 - 1000 万 chunk 仍可作为合理评估范围；读多写少、硬件充足、索引设计合理时，可以继续向上压测。</span><br></pre></td></tr></table></figure>
+
+<p>所以 PostgreSQL 和 OpenSearch&#x2F;Elasticsearch 不是简单替代关系。PostgreSQL 适合做主库，管理文档 metadata、版本、权限、任务状态和审计日志；也可以作为少组件的检索库。OpenSearch&#x2F;Elasticsearch 的价值则主要在搜索平台能力：BM25、analyzer 管理、中文分词、字段权重、同义词、高亮、聚合、多索引、分片扩容、搜索可观测性、索引重建和别名切换。</p>
+<p>专用向量库也不应该只按 chunk 数触发。只有当真实压测证明向量召回在延迟、内存、过滤性能、更新成本或扩容能力上成为主要瓶颈时，再评估 Milvus、Qdrant、Weaviate 等专用向量库。</p>
+<p>所以系统演进通常不是“从 PostgreSQL 换成 OpenSearch”，而是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">PostgreSQL 单体</span><br><span class="line">→ PostgreSQL 主库 + OpenSearch / Elasticsearch 检索层</span><br><span class="line">→ PostgreSQL 主库 + OpenSearch / Elasticsearch 全文检索 + 专用向量库</span><br></pre></td></tr></table></figure>
+
+<p>一句话：不要为了架构完整而一开始堆组件。先让系统能稳定找回正确证据，再根据瓶颈拆。</p>
+<h3 id="向量数据库怎么选"><a href="#向量数据库怎么选" class="headerlink" title="向量数据库怎么选"></a>向量数据库怎么选</h3><p>向量数据库选型不要先问“哪个最强”，而要先问“我需不需要单独的向量数据库”。</p>
+<p>可以按问题来选：</p>
+<table>
+<thead>
+<tr>
+<th>你最关心什么</th>
+<th>倾向方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>少组件、好交付、主数据和检索放一起</td>
+<td>PostgreSQL + pgvector</td>
+</tr>
+<tr>
+<td>BM25、中文分词、字段权重、高亮、复杂过滤</td>
+<td>OpenSearch &#x2F; Elasticsearch</td>
+</tr>
+<tr>
+<td>大规模向量、高并发 ANN、多租户隔离</td>
+<td>Milvus &#x2F; Qdrant &#x2F; Weaviate</td>
+</tr>
+<tr>
+<td>已经在云上，团队不想维护检索集群</td>
+<td>云厂商向量服务</td>
+</tr>
+</tbody></table>
+<p>部门级知识库没必要一开始就上专用向量库。<code>pgvector</code> 或 OpenSearch&#x2F;Elasticsearch 的向量能力通常已经够做第一版。等向量检索真的成为瓶颈，再拆 Milvus、Qdrant、Weaviate 这类专用向量数据库。</p>
+<p>这里还要区分“开源”和“免费交付”。OpenSearch、Milvus、Qdrant、Weaviate、pgvector 都有开源版本，但云服务、企业功能、商业支持和运维成本通常都要单独算。Elasticsearch 的授权也要单独看版本和发行版。</p>
+<p>一句话：向量库只是检索组件，不是企业数据底座。文档版本、权限、任务状态、审计日志、数据血缘，仍然建议由主库或明确的索引系统管理。</p>
+<h3 id="图检索怎么生成、存储和使用"><a href="#图检索怎么生成、存储和使用" class="headerlink" title="图检索怎么生成、存储和使用"></a>图检索怎么生成、存储和使用</h3><p>图检索不是把所有文档都换成图数据库，也不是替代 BM25 和向量检索。它解决的是“关系怎么走”的问题。</p>
+<p>典型链路是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">文档 / 数据库 / 业务系统</span><br><span class="line">→ 实体抽取</span><br><span class="line">→ 关系抽取</span><br><span class="line">→ 实体消歧</span><br><span class="line">→ 图存储</span><br><span class="line">→ 问题识别实体</span><br><span class="line">→ 图遍历 / 路径查询 / 子图扩展</span><br><span class="line">→ 找到相关事实和来源文档</span><br><span class="line">→ 和普通 RAG 证据合并</span><br><span class="line">→ LLM 生成答案</span><br></pre></td></tr></table></figure>
+
+<h4 id="图怎么生成"><a href="#图怎么生成" class="headerlink" title="图怎么生成"></a>图怎么生成</h4><p>图不是直接由 chunk 变出来的，而是从文档、数据库和业务系统里抽出结构化事实。</p>
+<p>常见抽取对象：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实体</td>
+<td>公司、人员、部门、项目、合同、产品、客户、政策条款</td>
+</tr>
+<tr>
+<td>关系</td>
+<td>隶属、负责、签订、供应、投资、引用、适用、约束</td>
+</tr>
+<tr>
+<td>属性</td>
+<td>时间、金额、状态、角色、来源文档、页码、置信度</td>
+</tr>
+</tbody></table>
+<p>比如原文是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">华东销售部负责 A 客户，A 客户签订了合同 C001，合同 C001 适用 2026 年新版价格政策。</span><br></pre></td></tr></table></figure>
+
+<p>可以抽成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">华东销售部 --负责--&gt; A客户</span><br><span class="line">A客户 --签订--&gt; 合同C001</span><br><span class="line">合同C001 --适用--&gt; 2026新版价格政策</span><br></pre></td></tr></table></figure>
+
+<p>这一步可以由规则、信息抽取模型、LLM 或业务系统数据共同完成。工程上不要只依赖 LLM 抽图，最好把确定性强的数据源优先用起来。比如 CRM 里的客户归属、合同系统里的合同关系、组织系统里的部门层级，本来就是结构化关系，不需要再让 LLM 猜。</p>
+<h4 id="图怎么存储"><a href="#图怎么存储" class="headerlink" title="图怎么存储"></a>图怎么存储</h4><p>图结构通常存到图数据库或图索引里，但原文证据、向量索引、全文索引一般仍然分开存。</p>
+<p>节点可以这样存：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;node_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;customer_a&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;node_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;customer&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;A客户&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;aliases&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;客户A&quot;</span><span class="punctuation">,</span> <span class="string">&quot;A公司&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;properties&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;industry&quot;</span><span class="punctuation">:</span> <span class="string">&quot;制造业&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source_doc_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;contract_c001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source_page&quot;</span><span class="punctuation">:</span> <span class="number">3</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source_span&quot;</span><span class="punctuation">:</span> <span class="string">&quot;...&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;confidence&quot;</span><span class="punctuation">:</span> <span class="number">0.92</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;updated_at&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-05-06 10:00:00&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>边也要存来源：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;from&quot;</span><span class="punctuation">:</span> <span class="string">&quot;customer_a&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;to&quot;</span><span class="punctuation">:</span> <span class="string">&quot;contract_c001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;relation_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;signed&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;properties&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;signed_at&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-04-01&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source_doc_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;contract_c001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source_page&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;source_span&quot;</span><span class="punctuation">:</span> <span class="string">&quot;...&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;confidence&quot;</span><span class="punctuation">:</span> <span class="number">0.98</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>为什么要存来源？因为图里的一条边只是结论，RAG 最终回答还要能回到原文证据。否则图检索查出了“客户 A 适用新版价格政策”，但系统说不清这个关系来自哪份合同、哪一页、哪条款。</p>
+<h4 id="图数据库有哪些"><a href="#图数据库有哪些" class="headerlink" title="图数据库有哪些"></a>图数据库有哪些</h4><p>常见选择可以这样看：</p>
+<table>
+<thead>
+<tr>
+<th>图数据库 &#x2F; 图方案</th>
+<th>特点</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Neo4j</td>
+<td>生态成熟，Cypher 友好，工具和可视化能力强</td>
+<td>知识图谱、关系查询、原型和生产系统</td>
+</tr>
+<tr>
+<td>NebulaGraph</td>
+<td>分布式图数据库，面向大规模点边和高并发遍历</td>
+<td>大规模关系网络、国产化或私有化场景</td>
+</tr>
+<tr>
+<td>Amazon Neptune</td>
+<td>AWS 托管图数据库，支持 Gremlin、SPARQL、openCypher</td>
+<td>已在 AWS 上，想少运维</td>
+</tr>
+<tr>
+<td>JanusGraph</td>
+<td>开源分布式图数据库，常和 Cassandra&#x2F;HBase&#x2F;Elasticsearch 组合</td>
+<td>超大规模、自建、工程团队较强</td>
+</tr>
+<tr>
+<td>ArangoDB</td>
+<td>多模型数据库，文档、图、KV 放在一套系统里</td>
+<td>数据模型混合，团队想减少组件数</td>
+</tr>
+<tr>
+<td>TigerGraph &#x2F; Memgraph 等</td>
+<td>也常见于图分析、实时图查询或企业图场景</td>
+<td>需要结合授权、部署、生态和团队经验评估</td>
+</tr>
+</tbody></table>
+<p>选型时先问三个问题：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">图规模有多大：点边数量、平均度数、热点节点多不多</span><br><span class="line">查询模式是什么：一跳邻居、k 跳路径、最短路径、社区发现、图算法</span><br><span class="line">部署约束是什么：开源、自建、云托管、国产化、许可证、运维能力</span><br></pre></td></tr></table></figure>
+
+<h4 id="存储和检索是不是都用图数据库"><a href="#存储和检索是不是都用图数据库" class="headerlink" title="存储和检索是不是都用图数据库"></a>存储和检索是不是都用图数据库</h4><p>如果已经决定做图检索，图结构的存储和图遍历通常会交给图数据库或图索引，但完整 RAG 系统一般不是只用图数据库。</p>
+<p>更常见的分工是：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>常用存储 &#x2F; 引擎</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>图结构</td>
+<td>Neo4j &#x2F; NebulaGraph &#x2F; Neptune &#x2F; JanusGraph &#x2F; ArangoDB</td>
+<td>存实体、关系、属性，做路径查询和邻居扩展</td>
+</tr>
+<tr>
+<td>原文证据</td>
+<td>对象存储 + 关系型数据库</td>
+<td>保存原始文件、页码、bbox、source_span</td>
+</tr>
+<tr>
+<td>语义检索</td>
+<td>向量库 &#x2F; OpenSearch &#x2F; Elasticsearch &#x2F; pgvector</td>
+<td>找语义相近的 chunk</td>
+</tr>
+<tr>
+<td>关键词检索</td>
+<td>OpenSearch &#x2F; Elasticsearch &#x2F; PostgreSQL FTS</td>
+<td>找编号、专有名词、条款标题</td>
+</tr>
+<tr>
+<td>业务事实</td>
+<td>关系型数据库 &#x2F; 数仓 &#x2F; API</td>
+<td>查订单、预算、库存、金额等实时或准实时数据</td>
+</tr>
+</tbody></table>
+<p>也就是说，图数据库负责“关系检索”，不是负责所有检索。比如用户问：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A 客户的合同是否受新版价格政策影响？</span><br></pre></td></tr></table></figure>
+
+<p>系统可以这样走：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 从问题里识别实体：A客户、新版价格政策</span><br><span class="line">2. 图数据库查路径：A客户 → 合同C001 → 适用 → 2026新版价格政策</span><br><span class="line">3. 根据路径上的合同和政策 doc_id，去全文/向量索引查原文条款</span><br><span class="line">4. 把图路径、合同条款、政策条款合并成证据</span><br><span class="line">5. LLM 基于证据回答，并返回引用位置</span><br></pre></td></tr></table></figure>
+
+<p>这样做的好处是：图负责找关系链，BM25&#x2F;向量负责找原文证据，SQL&#x2F;API 负责查业务数据，LLM 负责组织答案。</p>
+<h4 id="什么时候值得上图检索"><a href="#什么时候值得上图检索" class="headerlink" title="什么时候值得上图检索"></a>什么时候值得上图检索</h4><p>适合上图：</p>
+<ul>
+<li>组织关系、客户关系、供应链关系、股权穿透</li>
+<li>合同、项目、产品、客户之间的多跳关系</li>
+<li>政策条款之间有大量引用、适用、例外关系</li>
+<li>用户常问“谁影响谁”“A 和 B 什么关系”“这个政策会影响哪些合同”</li>
+</ul>
+<p>不适合一开始就上图：</p>
+<ul>
+<li>普通制度问答</li>
+<li>单文档问答</li>
+<li>FAQ</li>
+<li>文档解析、切块、混合检索还没跑稳</li>
+<li>实体和关系质量无法保证</li>
+</ul>
+<p>一句话：图检索是成熟 RAG 的增强模块，不是基础模块。先把文本证据找准，再用图解决跨实体、跨文档、跨系统的关系问题。</p>
 <h3 id="增量更新、版本和-hash-是干什么的"><a href="#增量更新、版本和-hash-是干什么的" class="headerlink" title="增量更新、版本和 hash 是干什么的"></a>增量更新、版本和 hash 是干什么的</h3><p>文档不是一次入库就完事。制度会改，合同会补充，产品文档会更新，知识库页面也会反复编辑。RAG 系统要知道：哪些内容变了，哪些索引该更新，线上答案用的是哪个版本。</p>
 <p>这里有三个概念：</p>
 <table>
@@ -1049,14 +1432,54 @@
 <p>这样线上答案出问题时，才知道它引用的是旧文档、新文档，还是某次解析出了错。</p>
 <h3 id="权限和溯源怎么做"><a href="#权限和溯源怎么做" class="headerlink" title="权限和溯源怎么做"></a>权限和溯源怎么做</h3><p>企业 RAG 里，权限不能放到生成后再处理。检索前就要过滤。</p>
 <p>每个 chunk 至少要带：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">doc_id</span><br><span class="line">doc_version</span><br><span class="line">page</span><br><span class="line">section</span><br><span class="line">bbox</span><br><span class="line">source_url</span><br><span class="line">created_at</span><br><span class="line">updated_at</span><br><span class="line">acl / permission_tags</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">doc_id</span><br><span class="line">doc_version</span><br><span class="line">page</span><br><span class="line">section</span><br><span class="line">bbox / source_spans</span><br><span class="line">source_url</span><br><span class="line">created_at</span><br><span class="line">updated_at</span><br><span class="line">acl / permission_tags</span><br></pre></td></tr></table></figure>
 
+<p>bbox 通常不是用来检索的，而是用来溯源和高亮的。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">content 用来找</span><br><span class="line">bbox 用来指</span><br></pre></td></tr></table></figure>
+
+<p>如果只是普通文本，页码和章节有时够用。但如果是表格、合同条款、扫描件，最好保存 <code>source_spans</code>，记录这段证据来自哪一页、哪块坐标、哪段原文。这样系统回答时，不只是说“依据某文档”，还能定位到原文页面上的具体区域。</p>
 <p>数据库查询也一样，要用只读账号、白名单表、字段权限、SQL AST 校验、超时限制。</p>
 <p>权限过滤可以分两层。简单条件交给向量库的 metadata filter，比如租户、文档状态、版本、语言、文档类型、普通标签：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tenant_id = company_a</span><br><span class="line">doc_status = active</span><br><span class="line">doc_type = policy</span><br></pre></td></tr></table></figure>
 
 <p>复杂权限不要全压给向量库。比如客户归属、组织层级、项目成员关系、字段级权限、复杂密级规则，最好先由权限服务或业务系统算出用户能看的 <code>doc_id</code> 范围，再让向量库只在这些文档里做语义检索。</p>
 <p>一句话：向量库负责“在能看的内容里找最相关”，权限系统负责“判断哪些内容能看”。</p>
+<p>这里还要注意一个细节：很多向量库和搜索引擎都支持 metadata filter，但“支持”的含义不一样。</p>
+<table>
+<thead>
+<tr>
+<th>引擎&#x2F;方案</th>
+<th>常见过滤方式</th>
+<th>工程含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Milvus</td>
+<td>standard filtering 是先按标量条件缩小范围再做 ANN；复杂过滤也可以走 iterative filtering</td>
+<td>简单版本、租户、文档类型过滤适合直接放进去；复杂表达式要压测延迟</td>
+</tr>
+<tr>
+<td>Weaviate</td>
+<td>文档里明确按 pre-filtering 思路实现过滤向量检索</td>
+<td>适合把硬过滤条件放进 where filter，但仍要看过滤选择性</td>
+</tr>
+<tr>
+<td>Qdrant</td>
+<td>用 payload filter 和 filterable vector index 处理过滤</td>
+<td>常见 metadata filter 可以直接用；高基数&#x2F;低基数过滤的性能要实测</td>
+</tr>
+<tr>
+<td>OpenSearch &#x2F; Elasticsearch</td>
+<td>OpenSearch 有 efficient k-NN filtering、post-filter 和 scoring script；Elasticsearch 的 <code>knn.filter</code> 是 pre-filter，Query DSL 树里的其他 filter 是 post-filter</td>
+<td>filter 写在 kNN 查询内部和外部，效果可能不同；写错可能变成后过滤，导致返回结果少于 k</td>
+</tr>
+<tr>
+<td>collection &#x2F; partition 分区</td>
+<td>先按租户、业务域、文档库分物理或逻辑分区，再在分区内检索</td>
+<td>适合强隔离、多租户或超大规模，但会增加索引和运维复杂度</td>
+</tr>
+</tbody></table>
+<p>所以版本过滤、权限过滤这类硬条件，不能只看“支持 filter”四个字。要确认过滤发生在向量检索前、检索中还是检索后，并在目标数据量上测 Recall@K 和 P95 延迟。</p>
 <p>系统最终返回的结果不应该只有一段自然语言。更稳的做法是返回“答案 + 结构化证据元数据”：</p>
 <ul>
 <li>引用文档</li>
@@ -1076,6 +1499,20 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">问题</span><br><span class="line">标准答案</span><br><span class="line">标准证据</span><br><span class="line">文档版本</span><br><span class="line">权限上下文</span><br><span class="line">数据版本</span><br><span class="line">期望 SQL/API 结果</span><br></pre></td></tr></table></figure>
 
 <p>注意，golden set 不应该绑定某一次 chunk_id。chunk 策略变了，chunk_id 会变；但标准证据对应的原文页码、段落、bbox、文档版本应该稳定。改 chunk 后，是重新评估新 chunk 是否覆盖标准证据，不是重建整个评测集。</p>
+<h3 id="一个端到端请求示例"><a href="#一个端到端请求示例" class="headerlink" title="一个端到端请求示例"></a>一个端到端请求示例</h3><p>前面的模块放在一起，系统大概是这样工作的。</p>
+<p>用户问：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">根据最新差旅制度，华东区销售团队上个月差旅费是否超预算？</span><br></pre></td></tr></table></figure>
+
+<p>这不是一个单纯的文档问答问题，也不是一个单纯的 SQL 问题。它需要同时查制度和查业务数据。</p>
+<p>第一步，查询路由判断这是“文档检索 + 结构化数据查询”的混合问题。路由结果应该至少包含：要查哪类文档、要查哪张业务表或哪个 API、是否需要最新版本、是否涉及权限。</p>
+<p>第二步，文档检索只检索 active 版本的差旅制度。检索条件里要带租户、部门、权限标签、文档状态，不能先搜全库再把旧版本过滤掉。检索结果最好返回制度名称、版本、生效时间、页码、段落、bbox。</p>
+<p>第三步，结构化查询去数据库或 API 查预算和报销实绩。比如查询华东区、销售团队、上个月、已审批通过的差旅报销金额，再和预算表里的预算金额比较。这里要记录 SQL 或 API 查询口径，例如时间范围、组织范围、费用类型、单据状态。</p>
+<p>第四步，质量闸门检查证据是否够用。比如制度有没有命中 active 版本、SQL 是否成功、数据快照是否过期、用户是否有权限看华东区销售团队数据。如果证据不够，可以二次检索、要求用户补充条件，或者返回“当前证据不足，无法判断”，而不是硬编。</p>
+<p>第五步，LLM 生成答案。LLM 负责把制度条款和数据库结果组织成自然语言，但引用文档、页码、bbox、SQL 查询口径、数据更新时间应来自系统 trace，不要让模型凭空生成。</p>
+<p>一个合格答案不只是“超了”或“没超”，而应该能追溯：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">结论：华东区销售团队上月差旅费超预算 8.6%。</span><br><span class="line">依据：</span><br><span class="line">1. 差旅制度 V3.2 第 4.1 条规定，销售团队差旅费按月度预算控制。</span><br><span class="line">2. SQL 口径：2026-04-01 至 2026-04-30，华东区，销售团队，费用类型=差旅费，单据状态=已审批。</span><br><span class="line">3. 预算金额 100 万，实际报销 108.6 万。</span><br><span class="line">数据更新时间：2026-05-06 09:30。</span><br></pre></td></tr></table></figure>
+
+<p>这类例子能看出成熟 RAG 的核心：不是只把文档塞给大模型，而是把检索、权限、结构化查询、版本、证据和生成串成一条可追溯链路。</p>
 <h3 id="LlamaIndex、LangChain、RAGFlow、Dify-怎么选"><a href="#LlamaIndex、LangChain、RAGFlow、Dify-怎么选" class="headerlink" title="LlamaIndex、LangChain、RAGFlow、Dify 怎么选"></a>LlamaIndex、LangChain、RAGFlow、Dify 怎么选</h3><p>这几个不是同一类东西。</p>
 <table>
 <thead>
@@ -1111,11 +1548,15 @@
 <p>如果业务目标是快速搭知识库产品，不想写太多代码，RAGFlow 更合适。</p>
 <p>如果目标是做一堆 AI 应用和流程编排，Dify 更合适。</p>
 <p>一句话：LlamaIndex 和 LangChain 是开发框架，RAGFlow 和 Dify 更像产品平台。它们不是完全替代关系。</p>
-<hr>
 <h2 id="第三部分：如果从零开始，我会怎么做"><a href="#第三部分：如果从零开始，我会怎么做" class="headerlink" title="第三部分：如果从零开始，我会怎么做"></a>第三部分：如果从零开始，我会怎么做</h2><p>不要一上来就做 Adaptive RAG、GraphRAG、Agentic RAG。先把最朴素的系统跑准。</p>
 <p>第一步：做 baseline。</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Docling/MinerU 解析 → 标题路径切分 → BM25 + 向量混合检索 → Re-Ranker → 引用回答</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Docling/MinerU 解析</span><br><span class="line">→ 标题路径切分</span><br><span class="line">→ chunk + metadata + source_spans</span><br><span class="line">→ 关键词检索 + 向量检索</span><br><span class="line">→ RRF 融合</span><br><span class="line">→ Re-Ranker 精排</span><br><span class="line">→ 带引用回答</span><br></pre></td></tr></table></figure>
 
+<p>如果项目不大，第一版可以用：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PostgreSQL + pgvector + PostgreSQL FTS + pg_trgm</span><br></pre></td></tr></table></figure>
+
+<p>如果搜索体验不够，再加 OpenSearch &#x2F; Elasticsearch。</p>
+<p>如果向量规模和并发继续上来，再拆出 Milvus &#x2F; Qdrant &#x2F; Weaviate。</p>
 <p>第二步：补结构化查询。</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">指标/订单/库存/权限 → SQL / API → 返回结构化结果 → LLM 组织答案</span><br></pre></td></tr></table></figure>
 
@@ -1131,11 +1572,11 @@
 </thead>
 <tbody><tr>
 <td>专有名词搜不到</td>
-<td>BM25 &#x2F; Hybrid &#x2F; 字段索引</td>
+<td>BM25 &#x2F; Hybrid &#x2F; 字段索引 &#x2F; pg_trgm</td>
 </tr>
 <tr>
 <td>找到了但排得低</td>
-<td>Re-Ranker</td>
+<td>RRF &#x2F; Re-Ranker</td>
 </tr>
 <tr>
 <td>问题太口语</td>
@@ -1155,7 +1596,7 @@
 </tr>
 <tr>
 <td>表格解析差</td>
-<td>MinerU &#x2F; TextIn &#x2F; LlamaParse &#x2F; VLM</td>
+<td>MinerU &#x2F; PaddleOCR &#x2F; TextIn &#x2F; LlamaParse &#x2F; VLM</td>
 </tr>
 <tr>
 <td>答案没依据</td>
@@ -1253,7 +1694,7 @@
 <tr>
 <td>Reranker</td>
 <td>二次排序候选片段</td>
-<td>几乎所有生产 RAG 都值得评估</td>
+<td>多数生产 RAG 都值得评估</td>
 </tr>
 <tr>
 <td>Contextual Compression</td>
@@ -1507,16 +1948,100 @@
 </tbody></table>
 <p>线上排障时，最好能回放完整请求链路：用户问题、路由结果、检索片段、SQL&#x2F;API 调用、权限过滤、模型输入、模型输出、引用证据。没有这条链路，RAG 出错时很难判断是哪一层的问题。</p>
 <hr>
+<h2 id="附录-C：政企-政府项目选型注意事项"><a href="#附录-C：政企-政府项目选型注意事项" class="headerlink" title="附录 C：政企&#x2F;政府项目选型注意事项"></a>附录 C：政企&#x2F;政府项目选型注意事项</h2><p>政府项目和普通企业项目最大的区别，不是技术更复杂，而是约束更多。</p>
+<p>通常要先看这些要求：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">是否要求信创</span><br><span class="line">是否要求私有化部署</span><br><span class="line">是否要求数据不出域</span><br><span class="line">是否要求国产 CPU / 操作系统 / 数据库</span><br><span class="line">是否有等保、密评、审计要求</span><br><span class="line">是否有甲方指定名录</span><br></pre></td></tr></table></figure>
+
+<p>所以政府项目选型不能只看“哪个工具好用”，还要看“能不能交付、能不能验收、能不能长期运维”。</p>
+<p>一个比较稳的思路是：</p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>普通项目常见选择</th>
+<th>政企&#x2F;政府项目优先看</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文档解析</td>
+<td>Docling &#x2F; MinerU &#x2F; PaddleOCR &#x2F; 云 OCR</td>
+<td>可私有化、可离线、适配国产环境</td>
+</tr>
+<tr>
+<td>关系型数据库</td>
+<td>PostgreSQL &#x2F; MySQL</td>
+<td>达梦、人大金仓、GaussDB、OceanBase、TDSQL 等</td>
+</tr>
+<tr>
+<td>全文检索</td>
+<td>Elasticsearch &#x2F; OpenSearch</td>
+<td>甲方已有搜索平台、国产搜索能力，或数据库自带全文检索</td>
+</tr>
+<tr>
+<td>向量检索</td>
+<td>pgvector &#x2F; Milvus &#x2F; Qdrant</td>
+<td>先看国产数据库、搜索平台或 AI 平台是否已有向量能力</td>
+</tr>
+<tr>
+<td>对象存储</td>
+<td>MinIO &#x2F; S3</td>
+<td>政务云对象存储或甲方文件平台</td>
+</tr>
+<tr>
+<td>大模型</td>
+<td>云 API &#x2F; 开源模型</td>
+<td>国产私有化模型或政务云模型服务</td>
+</tr>
+</tbody></table>
+<p>这里还有一个细节：人大金仓、GaussDB 这类数据库即使兼容 PostgreSQL，也不能直接写成“所有 PostgreSQL 扩展都能用”。更稳的说法是：优先使用厂商提供或适配过的全文检索、模糊匹配和向量检索能力。比如人大金仓有 <code>tsvector / tsquery</code> 和 <code>sys_trgm</code>，GaussDB 也有 <code>tsvector / tsquery</code> 和向量数据类型，但 <code>pgvector / pg_trgm</code> 能不能直接用，要看具体版本、兼容模式和实测结果。</p>
+<p>政府 RAG 不是没有落地案例，而是公开资料很少披露完整底层技术栈。很多项目会写“政务大模型平台、知识库构建平台、智能体应用”，但不会写 BM25 用什么、向量库用什么。实际选型通常先跟随甲方信创名录和政务云底座。</p>
+<p>一句话：政企&#x2F;政府项目里的 RAG，不是炫技系统，而是一个可控、可查、可审计的知识服务系统。</p>
+<hr>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
 <li>Fareed Khan: <a target="_blank" rel="noopener" href="https://levelup.gitconnected.com/testing-18-rag-techniques-to-find-the-best-094d166af27f">Testing 18 RAG Techniques to Find the Best</a></li>
+<li>Sarthi 等: <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2401.18059">RAPTOR: Recursive Abstractive Processing for Tree-Organized Retrieval</a></li>
+<li>Microsoft: <a target="_blank" rel="noopener" href="https://microsoft.github.io/graphrag/">GraphRAG documentation</a></li>
+<li>RAGAS: <a target="_blank" rel="noopener" href="https://docs.ragas.io/">official documentation</a></li>
+<li>LangChain: <a target="_blank" rel="noopener" href="https://langchain-ai.github.io/langgraph/">LangGraph documentation</a></li>
+<li>LlamaIndex: <a target="_blank" rel="noopener" href="https://docs.llamaindex.ai/">official documentation</a></li>
+<li>LangChain: <a target="_blank" rel="noopener" href="https://www.langchain.com/langchain">official website</a></li>
+<li>RAGFlow: <a target="_blank" rel="noopener" href="https://www.ragflow.io/">official website</a></li>
+<li>Dify: <a target="_blank" rel="noopener" href="https://docs.dify.ai/">official documentation</a></li>
+<li>Neo4j: <a target="_blank" rel="noopener" href="https://neo4j.com/docs/getting-started/whats-neo4j/">What is Neo4j?</a></li>
+<li>NebulaGraph: <a target="_blank" rel="noopener" href="https://www.nebula-graph.io/">official website</a></li>
+<li>Amazon Neptune: <a target="_blank" rel="noopener" href="https://docs.aws.amazon.com/neptune/latest/userguide/intro.html">What Is Amazon Neptune?</a></li>
+<li>JanusGraph: <a target="_blank" rel="noopener" href="https://docs.janusgraph.org/">official documentation</a></li>
+<li>ArangoDB: <a target="_blank" rel="noopener" href="https://docs.arangodb.com/3.12/graphs/">Graphs documentation</a></li>
+<li>TigerGraph: <a target="_blank" rel="noopener" href="https://docs.tigergraph.com/home/">official documentation</a></li>
+<li>Memgraph: <a target="_blank" rel="noopener" href="https://memgraph.com/">official website</a></li>
 <li>LlamaIndex: <a target="_blank" rel="noopener" href="https://docs.llamaindex.ai/en/stable/llama_cloud/llama_parse/">LlamaParse documentation</a></li>
 <li>Docling: <a target="_blank" rel="noopener" href="https://docling.site/cli/">CLI and VLM pipeline documentation</a></li>
 <li>MinerU: <a target="_blank" rel="noopener" href="https://mineru.net/doc/docs/index_en/">official documentation</a></li>
 <li>Unstructured: <a target="_blank" rel="noopener" href="https://docs.unstructured.io/open-source/core-functionality/partitioning">partitioning documentation</a></li>
+<li>Marker: <a target="_blank" rel="noopener" href="https://github.com/VikParuchuri/marker">official repository</a></li>
 <li>PaddleOCR: <a target="_blank" rel="noopener" href="https://www.paddleocr.ai/main/en/version3.x/algorithm/PP-StructureV3/PP-StructureV3.html">PP-StructureV3 documentation</a></li>
+<li>TextIn: <a target="_blank" rel="noopener" href="https://www.textin.com/">智能文档处理云平台</a></li>
+<li>TextIn: <a target="_blank" rel="noopener" href="https://www.textin.ai/xparse">xParse document parsing</a></li>
 <li>Azure AI Document Intelligence: <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/concept-model-overview">model overview</a></li>
 <li>Mistral: <a target="_blank" rel="noopener" href="https://docs.mistral.ai/capabilities/document_ai/basic_ocr/">Document AI OCR Processor</a></li>
-<li>Apache Tika: <a target="_blank" rel="noopener" href="https://tika.apache.org/2.8.0/formats.html">supported formats</a></li>
+<li>Apache Tika: <a target="_blank" rel="noopener" href="https://tika.apache.org/3.2.2/formats.html">supported formats</a></li>
+<li>PostgreSQL: <a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/textsearch.html">Full Text Search</a></li>
+<li>PostgreSQL: <a target="_blank" rel="noopener" href="https://www.postgresql.org/docs/current/pgtrgm.html">pg_trgm</a></li>
+<li>pgvector: <a target="_blank" rel="noopener" href="https://github.com/pgvector/pgvector">official repository</a></li>
+<li>ParadeDB: <a target="_blank" rel="noopener" href="https://www.paradedb.com/">official website</a></li>
+<li>pg_search: <a target="_blank" rel="noopener" href="https://pgxn.org/dist/pg_search/">PGXN package</a></li>
+<li>OpenSearch: <a target="_blank" rel="noopener" href="https://docs.opensearch.org/latest/vector-search/ai-search/hybrid-search/index/">Hybrid search documentation</a></li>
+<li>OpenSearch: <a target="_blank" rel="noopener" href="https://docs.opensearch.org/latest/vector-search/filter-search-knn/index/">Filtering data in vector search</a></li>
+<li>Elastic: <a target="_blank" rel="noopener" href="https://www.elastic.co/search-labs/tutorials/search-tutorial/vector-search/hybrid-search">Hybrid search tutorial</a></li>
+<li>Elastic: <a target="_blank" rel="noopener" href="https://www.elastic.co/docs/reference/query-languages/query-dsl/query-dsl-knn-query">Knn query documentation</a></li>
+<li>Milvus: <a target="_blank" rel="noopener" href="https://milvus.io/docs/filtered-search.md">Filtered Search</a></li>
+<li>Weaviate: <a target="_blank" rel="noopener" href="https://weaviate.io/developers/weaviate/concepts/filtering">Filtering</a></li>
+<li>Qdrant: <a target="_blank" rel="noopener" href="https://qdrant.tech/documentation/manage-data/indexing/">Indexing</a></li>
+<li>KingbaseES: <a target="_blank" rel="noopener" href="https://docs.kingbase.com.cn/cn/KES-V9R3C15/administration/Query_Task_Mgmt/Full_text_Search/">全文索引</a></li>
+<li>KingbaseES: <a target="_blank" rel="noopener" href="https://docs.kingbase.com.cn/cn/KES-V9R1C10/reference/database/%E6%8F%92%E4%BB%B6%E5%8F%82%E8%80%83/sys_trgm/">sys_trgm</a></li>
+<li>GaussDB: <a target="_blank" rel="noopener" href="https://support.huaweicloud.com/distributed-devg-v8-gaussdb/gaussdb-12-2632.html">文本检索操作符</a></li>
+<li>GaussDB: <a target="_blank" rel="noopener" href="https://support.huaweicloud.com/distributed-devg-v8-gaussdb/gaussdb-12-1730.html">向量数据类型</a></li>
+<li>财政部、工信部: <a target="_blank" rel="noopener" href="https://www.mof.gov.cn/jrttts/202312/t20231226_3924139.htm">数据库政府采购需求标准（2023年版）</a></li>
 </ul>
 
       
@@ -2183,113 +2708,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2026/02/02/google%E5%8F%8D%E9%87%8D%E5%8A%9B-Antigravity-OpenCode-GitHub-Copilot-%E4%BD%93%E9%AA%8C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Chr">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Chr's Blog">
-      <meta itemprop="description" content="Welcome to my little world">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Chr's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/02/02/google%E5%8F%8D%E9%87%8D%E5%8A%9B-Antigravity-OpenCode-GitHub-Copilot-%E4%BD%93%E9%AA%8C/" class="post-title-link" itemprop="url">google反重力(Antigravity)+OpenCode(+GitHub Copilot)体验</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-02-02 09:43:47" itemprop="dateCreated datePublished" datetime="2026-02-02T09:43:47+08:00">2026-02-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-02-10 14:13:31" itemprop="dateModified" datetime="2026-02-10T14:13:31+08:00">2026-02-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>7 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近大火的Opencode的GUI客户端bug较多，较为难用，现在主流用法还是用TUI（命令行使用的方式），而且是在VS code（或者基于VS code二次开发的代码编辑器）的终端窗口中打开OpenCode，看到<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/BqdmL-O-ffzdhXpS-nkS2A">数字生命卡兹克大佬</a>使用的方式是Antigravity+OpenCode方式，那么我们也来体验一下。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/02/02/google%E5%8F%8D%E9%87%8D%E5%8A%9B-Antigravity-OpenCode-GitHub-Copilot-%E4%BD%93%E9%AA%8C/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -2313,13 +2731,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">533k</span>
+    <span title="站点总字数">540k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">32:19</span>
+    <span title="站点阅读时长">32:44</span>
   </span>
 </div>
 <div class="busuanzi-count">
