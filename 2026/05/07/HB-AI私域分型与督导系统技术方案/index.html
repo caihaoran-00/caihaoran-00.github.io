@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言本文整理 HB.AI 私域分型与督导系统 V1 的技术方案。核心目标是把企业微信群里的用户反馈转化为可结构化、可追踪、可运营的分型、风险、复购&#x2F;升级信号和后台待办。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HB.AI私域分型与督导系统技术方案">
+<meta property="og:url" content="https://caihaoran-00.github.io/2026/05/07/HB-AI%E7%A7%81%E5%9F%9F%E5%88%86%E5%9E%8B%E4%B8%8E%E7%9D%A3%E5%AF%BC%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言本文整理 HB.AI 私域分型与督导系统 V1 的技术方案。核心目标是把企业微信群里的用户反馈转化为可结构化、可追踪、可运营的分型、风险、复购&#x2F;升级信号和后台待办。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-07T10:50:25.000Z">
+<meta property="article:modified_time" content="2026-05-11T10:53:40.061Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="方案">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2026/05/07/HB-AI%E7%A7%81%E5%9F%9F%E5%88%86%E5%9E%8B%E4%B8%8E%E7%9D%A3%E5%AF%BC%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2026/05/07/HB-AI%E7%A7%81%E5%9F%9F%E5%88%86%E5%9E%8B%E4%B8%8E%E7%9D%A3%E5%AF%BC%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88/","path":"2026/05/07/HB-AI私域分型与督导系统技术方案/","title":"HB.AI私域分型与督导系统技术方案"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>HB.AI私域分型与督导系统技术方案 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E7%BE%A4%E5%86%85%E7%94%A8%E6%88%B7%E7%8A%B6%E6%80%81%E8%AF%86%E5%88%AB%E3%80%81%E5%88%86%E5%9E%8B%E5%88%A4%E6%96%AD%E4%B8%8E%E8%BF%90%E8%90%A5%E8%BE%85%E5%8A%A9%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88"><span class="nav-number">2.0.1.</span> <span class="nav-text">企业微信群内用户状态识别、分型判断与运营辅助技术方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF"><span class="nav-number">2.1.</span> <span class="nav-text">一、项目背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%A1%B9%E7%9B%AE%E9%9C%80%E6%B1%82"><span class="nav-number">2.2.</span> <span class="nav-text">二、项目需求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E4%B8%9A%E5%8A%A1%E9%9C%80%E6%B1%82"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1 业务需求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E4%BA%A4%E4%BA%92%E9%9C%80%E6%B1%82"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2 交互需求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E6%8A%80%E6%9C%AF%E9%9C%80%E6%B1%82"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.3 技术需求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%BF%90%E8%90%A5%E9%9C%80%E6%B1%82"><span class="nav-number">2.2.4.</span> <span class="nav-text">2.4 数据与运营需求</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%85%88%E8%AF%B4%E7%BB%93%E8%AE%BA"><span class="nav-number">2.3.</span> <span class="nav-text">三、先说结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81V1-%E5%BB%BA%E8%AE%BE%E8%8C%83%E5%9B%B4%E4%B8%8E%E8%BE%B9%E7%95%8C"><span class="nav-number">2.4.</span> <span class="nav-text">四、V1 建设范围与边界</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-V1-%E5%BB%BA%E8%AE%BE%E5%86%85%E5%AE%B9"><span class="nav-number">2.4.1.</span> <span class="nav-text">4.1 V1 建设内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-V1-%E8%BE%B9%E7%95%8C"><span class="nav-number">2.4.2.</span> <span class="nav-text">4.2 V1 边界</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="nav-number">2.5.</span> <span class="nav-text">五、总体架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E6%8E%A8%E8%8D%90%E6%9E%B6%E6%9E%84"><span class="nav-number">2.5.1.</span> <span class="nav-text">5.1 推荐架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E6%A8%A1%E5%9D%97%E5%88%86%E5%B7%A5"><span class="nav-number">2.5.2.</span> <span class="nav-text">5.2 模块分工</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-Workflow-Engine-%E4%B8%8E-quick-analyze-%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">2.5.3.</span> <span class="nav-text">5.3 Workflow Engine 与 quick_analyze 的关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%8E%A5%E5%85%A5%E6%96%B9%E5%BC%8F"><span class="nav-number">2.6.</span> <span class="nav-text">六、企业微信接入方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E8%BE%93%E5%85%A5%E4%BA%8B%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.6.1.</span> <span class="nav-text">6.1 输入事件格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E8%BE%93%E5%87%BA%E5%9B%9E%E5%A4%8D%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.6.2.</span> <span class="nav-text">6.2 输出回复格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E6%A0%B8%E5%BF%83%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B"><span class="nav-number">2.7.</span> <span class="nav-text">七、核心处理流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-%E7%94%A8%E6%88%B7-AI-%E5%90%8E%E7%9A%84%E5%90%8C%E6%AD%A5%E9%93%BE%E8%B7%AF"><span class="nav-number">2.7.1.</span> <span class="nav-text">7.1 用户 @AI 后的同步链路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5%E8%BE%B9%E7%95%8C"><span class="nav-number">2.7.2.</span> <span class="nav-text">7.2 同步与异步边界</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-quick-analyze-%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">2.7.3.</span> <span class="nav-text">7.3 quick_analyze 做什么</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%BC%82%E6%AD%A5%E9%93%BE%E8%B7%AF"><span class="nav-number">2.8.</span> <span class="nav-text">八、异步链路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1%E8%B7%AF%E7%94%B1"><span class="nav-number">2.8.1.</span> <span class="nav-text">8.1 异步任务路由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%82%E6%AD%A5"><span class="nav-number">2.8.2.</span> <span class="nav-text">8.2 为什么要异步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E7%94%A8%E6%88%B7%E7%8A%B6%E6%80%81%E4%B8%8E%E5%88%86%E5%9E%8B"><span class="nav-number">2.9.</span> <span class="nav-text">九、用户状态与分型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-%E7%94%A8%E6%88%B7%E7%8A%B6%E6%80%81%E5%AD%97%E6%AE%B5"><span class="nav-number">2.9.1.</span> <span class="nav-text">9.1 用户状态字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-%E5%88%86%E5%9E%8B%E4%B8%8D%E6%98%AF%E6%AF%8F%E5%8F%A5%E8%AF%9D%E9%83%BD%E7%9B%B4%E6%8E%A5%E6%94%B9"><span class="nav-number">2.9.2.</span> <span class="nav-text">9.2 分型不是每句话都直接改</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-3-V1-%E5%88%86%E5%9E%8B%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.9.3.</span> <span class="nav-text">9.3 V1 分型类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%8128-%E5%A4%A9%E5%8D%8F%E8%AE%AE%E7%8A%B6%E6%80%81"><span class="nav-number">2.10.</span> <span class="nav-text">十、28 天协议状态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-1-%E9%98%B6%E6%AE%B5%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.10.1.</span> <span class="nav-text">10.1 阶段设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-2-%E5%8D%8F%E8%AE%AE%E6%8E%A8%E8%BF%9B%E8%A7%84%E5%88%99"><span class="nav-number">2.10.2.</span> <span class="nav-text">10.2 协议推进规则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E5%A4%8D%E8%B4%AD%E4%B8%8E%E5%8D%87%E7%BA%A7%E4%BF%A1%E5%8F%B7%E8%AF%86%E5%88%AB"><span class="nav-number">2.11.</span> <span class="nav-text">十一、复购与升级信号识别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#11-1-%E5%A4%8D%E8%B4%AD%E4%BF%A1%E5%8F%B7"><span class="nav-number">2.11.1.</span> <span class="nav-text">11.1 复购信号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-2-%E5%8D%87%E7%BA%A7%E4%BF%A1%E5%8F%B7"><span class="nav-number">2.11.2.</span> <span class="nav-text">11.2 升级信号</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E9%A3%8E%E9%99%A9%E8%AF%86%E5%88%AB"><span class="nav-number">2.12.</span> <span class="nav-text">十二、风险识别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#12-1-%E9%A3%8E%E9%99%A9%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.12.1.</span> <span class="nav-text">12.1 风险类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-2-%E9%A3%8E%E9%99%A9%E8%BE%B9%E7%95%8C"><span class="nav-number">2.12.2.</span> <span class="nav-text">12.2 风险边界</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-3-%E9%AB%98%E9%A3%8E%E9%99%A9%E5%9B%9E%E5%A4%8D%E7%AD%96%E7%95%A5"><span class="nav-number">2.12.3.</span> <span class="nav-text">12.3 高风险回复策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%89%E3%80%81%E6%A1%88%E4%BE%8B%E7%9F%A5%E8%AF%86%E6%B2%89%E6%B7%80"><span class="nav-number">2.13.</span> <span class="nav-text">十三、案例知识沉淀</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#13-1-V1-%E7%9A%84%E6%A1%88%E4%BE%8B%E6%9D%A5%E6%BA%90"><span class="nav-number">2.13.1.</span> <span class="nav-text">13.1 V1 的案例来源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#13-2-%E6%A1%88%E4%BE%8B%E6%B2%89%E6%B7%80%E6%B5%81%E7%A8%8B"><span class="nav-number">2.13.2.</span> <span class="nav-text">13.2 案例沉淀流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#13-3-%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%E6%B2%89%E6%B7%80-4-%E7%B1%BB%E6%A1%88%E4%BE%8B"><span class="nav-number">2.13.3.</span> <span class="nav-text">13.3 第一阶段沉淀 4 类案例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E5%9B%9B%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.14.</span> <span class="nav-text">十四、数据库设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#14-1-users"><span class="nav-number">2.14.1.</span> <span class="nav-text">14.1 users</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14-2-user-states"><span class="nav-number">2.14.2.</span> <span class="nav-text">14.2 user_states</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14-3-feedback-events"><span class="nav-number">2.14.3.</span> <span class="nav-text">14.3 feedback_events</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14-4-bot-replies"><span class="nav-number">2.14.4.</span> <span class="nav-text">14.4 bot_replies</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14-5-manual-tasks"><span class="nav-number">2.14.5.</span> <span class="nav-text">14.5 manual_tasks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14-6-case-candidates"><span class="nav-number">2.14.6.</span> <span class="nav-text">14.6 case_candidates</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%BA%94%E3%80%81%E8%BF%90%E8%90%A5%E5%90%8E%E5%8F%B0"><span class="nav-number">2.15.</span> <span class="nav-text">十五、运营后台</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#15-1-%E7%94%A8%E6%88%B7%E5%88%97%E8%A1%A8"><span class="nav-number">2.15.1.</span> <span class="nav-text">15.1 用户列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#15-2-%E7%94%A8%E6%88%B7%E8%AF%A6%E6%83%85"><span class="nav-number">2.15.2.</span> <span class="nav-text">15.2 用户详情</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#15-3-%E4%BB%8A%E6%97%A5%E5%BE%85%E5%8A%9E"><span class="nav-number">2.15.3.</span> <span class="nav-text">15.3 今日待办</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#15-4-%E6%95%B0%E6%8D%AE%E7%9C%8B%E6%9D%BF"><span class="nav-number">2.15.4.</span> <span class="nav-text">15.4 数据看板</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E5%85%AD%E3%80%81%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B%E5%BB%BA%E8%AE%AE"><span class="nav-number">2.16.</span> <span class="nav-text">十六、技术选型建议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#16-1-%E5%90%8E%E7%AB%AF"><span class="nav-number">2.16.1.</span> <span class="nav-text">16.1 后端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#16-2-%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">2.16.2.</span> <span class="nav-text">16.2 数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#16-3-%E9%98%9F%E5%88%97"><span class="nav-number">2.16.3.</span> <span class="nav-text">16.3 队列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#16-4-LLM"><span class="nav-number">2.16.4.</span> <span class="nav-text">16.4 LLM</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%83%E3%80%81%E4%B8%BB%E8%A6%81%E9%A3%8E%E9%99%A9%E4%B8%8E%E5%BA%94%E5%AF%B9"><span class="nav-number">2.17.</span> <span class="nav-text">十七、主要风险与应对</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#17-1-%E7%BE%A4%E6%B6%88%E6%81%AF%E6%9D%83%E9%99%90%E9%A3%8E%E9%99%A9"><span class="nav-number">2.17.1.</span> <span class="nav-text">17.1 群消息权限风险</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#17-2-%E5%BB%B6%E8%BF%9F%E9%A3%8E%E9%99%A9"><span class="nav-number">2.17.2.</span> <span class="nav-text">17.2 延迟风险</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#17-3-AI-%E8%BE%93%E5%87%BA%E4%B8%8D%E7%A8%B3%E5%AE%9A"><span class="nav-number">2.17.3.</span> <span class="nav-text">17.3 AI 输出不稳定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#17-4-AI-%E8%B6%8A%E7%95%8C%E8%A1%A8%E8%BE%BE"><span class="nav-number">2.17.4.</span> <span class="nav-text">17.4 AI 越界表达</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#17-5-%E6%A1%88%E4%BE%8B%E6%B2%89%E6%B7%80%E4%B8%8D%E5%AE%8C%E6%95%B4"><span class="nav-number">2.17.5.</span> <span class="nav-text">17.5 案例沉淀不完整</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E5%85%AB%E3%80%81%E8%90%BD%E5%9C%B0%E9%98%B6%E6%AE%B5"><span class="nav-number">2.18.</span> <span class="nav-text">十八、落地阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Phase-0%EF%BC%9A%E6%8A%80%E6%9C%AF%E9%AA%8C%E8%AF%81"><span class="nav-number">2.18.1.</span> <span class="nav-text">Phase 0：技术验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Phase-1%EF%BC%9AMVP"><span class="nav-number">2.18.2.</span> <span class="nav-text">Phase 1：MVP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Phase-2%EF%BC%9A%E8%AF%95%E7%82%B9%E7%BE%A4%E8%BF%90%E8%A1%8C"><span class="nav-number">2.18.3.</span> <span class="nav-text">Phase 2：试点群运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Phase-3%EF%BC%9A%E6%89%A9%E5%B1%95"><span class="nav-number">2.18.4.</span> <span class="nav-text">Phase 3：扩展</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">3.</span> <span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">140</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2026/05/07/HB-AI%E7%A7%81%E5%9F%9F%E5%88%86%E5%9E%8B%E4%B8%8E%E7%9D%A3%E5%AF%BC%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="HB.AI私域分型与督导系统技术方案 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HB.AI私域分型与督导系统技术方案
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-07 18:50:25" itemprop="dateCreated datePublished" datetime="2026-05-07T18:50:25+08:00">2026-05-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2026-05-11 18:53:40" itemprop="dateModified" datetime="2026-05-11T18:53:40+08:00">2026-05-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>6.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>22 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文整理 HB.AI 私域分型与督导系统 V1 的技术方案。核心目标是把企业微信群里的用户反馈转化为可结构化、可追踪、可运营的分型、风险、复购&#x2F;升级信号和后台待办。</p>
+<span id="more"></span>
+
+<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h3 id="企业微信群内用户状态识别、分型判断与运营辅助技术方案"><a href="#企业微信群内用户状态识别、分型判断与运营辅助技术方案" class="headerlink" title="企业微信群内用户状态识别、分型判断与运营辅助技术方案"></a>企业微信群内用户状态识别、分型判断与运营辅助技术方案</h3><h2 id="一、项目背景"><a href="#一、项目背景" class="headerlink" title="一、项目背景"></a>一、项目背景</h2><p>加速燃正在从“快速减重产品”转向“AI 驱动的激素能量支持品牌”。后续业务重点不只是卖单一产品，而是围绕用户的长期状态、节律、能量、饮食秩序、复购升级和私域运营，建立一套可以持续运转的系统。</p>
+<p>客户现阶段已经有大量企业微信群。群内每天会产生用户反馈、打卡、效果质疑、购买咨询、升级咨询和风险反馈。过去这些内容主要靠运营人员人工查看、判断和跟进。随着群数量增加，人工会被大量“中间劳动”拖住：谁是下午崩盘型，谁是晚间失控型，谁有复购机会，谁出现负面情绪，谁需要人工介入，这些判断如果长期依赖人工，很难规模化。</p>
+<p>因此，HB.AI 第一阶段不适合做成一个泛化聊天机器人，也不适合一开始建设完整经营中枢。更合理的路径是先落到企业微信群这个高频场景里，跑通一个最小可用闭环：用户在群里 @AI，系统理解用户反馈，更新用户状态，给出简短督导回复，并把风险、复购、升级和待跟进事项同步到运营后台。</p>
+<p>第一阶段的目标不是替代所有运营人员，而是先替代大量重复、分散、依赖经验判断的中间工作，让用户状态可见，让运营知道下一步该跟谁、为什么跟、怎么跟。</p>
+<hr>
+<h2 id="二、项目需求"><a href="#二、项目需求" class="headerlink" title="二、项目需求"></a>二、项目需求</h2><h3 id="2-1-业务需求"><a href="#2-1-业务需求" class="headerlink" title="2.1 业务需求"></a>2.1 业务需求</h3><p>V1 需要支撑加速燃私域群里的基础督导工作，核心需求包括：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1. 用户在企业微信群内 @AI 后，AI 能理解用户反馈并给出简短回复。</span><br><span class="line">2. 系统能把用户反馈沉淀为结构化状态，而不是只停留在聊天记录里。</span><br><span class="line">3. 系统能识别基础用户分型，例如下午崩盘、晚间失控、嘴馋乱吃、疲惫低能量、高预期错配、升级潜力等。</span><br><span class="line">4. 系统能标记风险、复购、升级和人工跟进信号。</span><br><span class="line">5. 运营人员能在后台看到用户状态、待办事项和重点跟进对象。</span><br><span class="line">6. 案例候选可以沉淀，但进入正式知识库前必须由运营审核。</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-交互需求"><a href="#2-2-交互需求" class="headerlink" title="2.2 交互需求"></a>2.2 交互需求</h3><p>V1 只处理企业微信群内用户 @AI 的消息，不默认读取所有群消息，也不做 AI 私聊。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">用户在群内 @AI</span><br><span class="line">↓</span><br><span class="line">系统收到消息</span><br><span class="line">↓</span><br><span class="line">读取该用户历史状态</span><br><span class="line">↓</span><br><span class="line">LLM 完成 quick_analyze</span><br><span class="line">↓</span><br><span class="line">系统生成群内回复</span><br><span class="line">↓</span><br><span class="line">后台更新状态和待办</span><br></pre></td></tr></table></figure>
+
+<p>群内建议保留人工运营或督导官。AI 负责中间判断和初步回复，人工负责控场、异常兜底、复购升级承接和用户信任维护。</p>
+<h3 id="2-3-技术需求"><a href="#2-3-技术需求" class="headerlink" title="2.3 技术需求"></a>2.3 技术需求</h3><p>V1 采用可控的 Workflow &#x2F; Pipeline，而不是自由发挥式 Agent。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. WeCom Adapter 负责企业微信消息接入和群内回复。</span><br><span class="line">2. HB Workflow Engine 负责固定执行处理流程。</span><br><span class="line">3. LLM quick_analyze 负责消息分类、字段抽取、风险判断、复购/升级信号判断和回复草稿生成。</span><br><span class="line">4. 后端负责校验 LLM 输出、更新数据库、生成运营待办。</span><br><span class="line">5. 异步任务负责分型证据更新、案例候选、用户摘要和数据看板。</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-数据与运营需求"><a href="#2-4-数据与运营需求" class="headerlink" title="2.4 数据与运营需求"></a>2.4 数据与运营需求</h3><p>V1 必须有结构化状态库和基础运营后台。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. V1 暂按 user_id + group_id 维护 user_state；同一用户出现在多个群时，先视为不同群内状态。</span><br><span class="line">2. 每次 @AI 的原始消息、AI 回复和结构化分析结果都需要留痕。</span><br><span class="line">3. 复购、升级、风险和负面反馈需要生成 manual_task。</span><br><span class="line">4. 运营后台至少支持用户列表、用户详情、今日待办和基础数据看板。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="三、先说结论"><a href="#三、先说结论" class="headerlink" title="三、先说结论"></a>三、先说结论</h2><p>第一阶段不建议直接采用“自由发挥式 Agent”作为主系统，也不建议把 HB.AI 做成一个泛化聊天机器人。</p>
+<p>更稳的实现方式是：</p>
+<blockquote>
+<p><strong>自研 Workflow &#x2F; Pipeline 控制主流程，LLM 作为分类、抽取、判断和回复生成能力使用。</strong></p>
+</blockquote>
+<p>这里的 Workflow &#x2F; Pipeline 指后端固定执行的一套处理流程，避免 AI 自己决定下一步做什么。LLM 负责理解用户消息和生成结构化结果，后端负责校验、写库、生成待办和决定后续动作。</p>
+<p>V1 只聚焦一个明确场景：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">用户在企业微信群内 @AI 机器人</span><br><span class="line">↓</span><br><span class="line">系统识别用户与群</span><br><span class="line">↓</span><br><span class="line">读取用户历史状态</span><br><span class="line">↓</span><br><span class="line">Workflow 调用 quick_analyze</span><br><span class="line">↓</span><br><span class="line">系统记录本次反馈，必要时更新风险与待办</span><br><span class="line">↓</span><br><span class="line">AI 在群内回复</span><br><span class="line">↓</span><br><span class="line">后台生成运营待办</span><br></pre></td></tr></table></figure>
+
+<p>也就是说，V1 的本质不是“AI 群聊机器人”，而是：</p>
+<blockquote>
+<p><strong>把用户在群里 @AI 的每一句话，转化成用户画像、分型、风险、复购&#x2F;升级信号和运营动作。</strong></p>
+</blockquote>
+<hr>
+<h2 id="四、V1-建设范围与边界"><a href="#四、V1-建设范围与边界" class="headerlink" title="四、V1 建设范围与边界"></a>四、V1 建设范围与边界</h2><p>V1 聚焦企业微信群内 @AI 触发场景，先跑通用户反馈识别、状态沉淀、基础分型、风险标记、复购&#x2F;升级信号识别和运营待办。</p>
+<h3 id="4-1-V1-建设内容"><a href="#4-1-V1-建设内容" class="headerlink" title="4.1 V1 建设内容"></a>4.1 V1 建设内容</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1. 企业微信群内 @AI 机器人触发</span><br><span class="line">2. AI 群内回复</span><br><span class="line">3. 用户状态档案</span><br><span class="line">4. LLM quick_analyze</span><br><span class="line">5. 用户分型</span><br><span class="line">6. 28 天协议状态管理</span><br><span class="line">7. 风险识别与人工跟进标记</span><br><span class="line">8. 复购/升级信号识别</span><br><span class="line">9. 案例候选沉淀</span><br><span class="line">10. 运营后台待办</span><br><span class="line">11. 基础数据看板</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-V1-边界"><a href="#4-2-V1-边界" class="headerlink" title="4.2 V1 边界"></a>4.2 V1 边界</h3><p>以下能力不纳入 V1 默认范围，可作为后续阶段单独评估：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. AI 私聊</span><br><span class="line">2. 未 @AI 的全量群聊分析</span><br><span class="line">3. 历史聊天记录获取</span><br><span class="line">4. 自动成交</span><br><span class="line">5. 医疗诊断或治疗建议</span><br><span class="line">6. 完整 HB.AI 平台化能力</span><br><span class="line">7. 三大宇宙全部上线</span><br></pre></td></tr></table></figure>
+
+<p>这里最重要的边界是：</p>
+<blockquote>
+<p><strong>系统只处理 AI 实际收到的消息，也就是用户在群里 @AI 的内容。</strong></p>
+</blockquote>
+<p>如果后续客户想分析全量群聊，需要另行验证企业微信会话内容存档能力，不放进 V1 默认范围。</p>
+<hr>
+<h2 id="五、总体架构"><a href="#五、总体架构" class="headerlink" title="五、总体架构"></a>五、总体架构</h2><h3 id="5-1-推荐架构"><a href="#5-1-推荐架构" class="headerlink" title="5.1 推荐架构"></a>5.1 推荐架构</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">企业微信群</span><br><span class="line">   ↓</span><br><span class="line">用户 @AI 机器人</span><br><span class="line">   ↓</span><br><span class="line">WeCom Adapter</span><br><span class="line">   ↓</span><br><span class="line">HB Workflow Engine</span><br><span class="line">   ├── 读取用户状态</span><br><span class="line">   ├── 调用 quick_analyze</span><br><span class="line">   ├── 校验结构化结果</span><br><span class="line">   ├── 更新状态</span><br><span class="line">   ├── 生成回复</span><br><span class="line">   └── 派发异步任务</span><br><span class="line">   ↓</span><br><span class="line">HB Core Backend</span><br><span class="line">   ├── 用户状态库</span><br><span class="line">   ├── 分型逻辑</span><br><span class="line">   ├── 28 天协议状态</span><br><span class="line">   ├── 风险与人工跟进字段</span><br><span class="line">   ├── 复购/升级信号</span><br><span class="line">   ├── 案例候选库</span><br><span class="line">   └── 运营后台</span><br><span class="line">   ↓</span><br><span class="line">群内回复 + 后台待办</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-模块分工"><a href="#5-2-模块分工" class="headerlink" title="5.2 模块分工"></a>5.2 模块分工</h3><table>
+<thead>
+<tr>
+<th>模块</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>WeCom Adapter</td>
+<td>接收群内 @AI 消息，发送群内回复</td>
+</tr>
+<tr>
+<td>HB Workflow Engine</td>
+<td>固定执行消息处理流程</td>
+</tr>
+<tr>
+<td>LLM quick_analyze</td>
+<td>Workflow 中的一次 LLM 快速分析服务</td>
+</tr>
+<tr>
+<td>HB Core Backend</td>
+<td>校验结果、更新状态、生成待办</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td>存用户、状态、反馈、回复、待办、案例</td>
+</tr>
+<tr>
+<td>Redis Queue</td>
+<td>承载异步分析任务</td>
+</tr>
+<tr>
+<td>运营后台</td>
+<td>展示用户状态、风险、复购&#x2F;升级机会</td>
+</tr>
+</tbody></table>
+<p>一句话：</p>
+<blockquote>
+<p><strong>WeCom Adapter 负责入口，Workflow 负责流程，LLM 负责理解，数据库负责沉淀，后台负责运营承接。</strong></p>
+</blockquote>
+<h3 id="5-3-Workflow-Engine-与-quick-analyze-的关系"><a href="#5-3-Workflow-Engine-与-quick-analyze-的关系" class="headerlink" title="5.3 Workflow Engine 与 quick_analyze 的关系"></a>5.3 Workflow Engine 与 quick_analyze 的关系</h3><p><code>quick_analyze</code> 不是独立流程控制器，而是 HB Workflow 在同步链路中调用的一次 LLM 分析服务。</p>
+<p>更准确地说：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HB Workflow Engine = 流程控制器</span><br><span class="line">LLM quick_analyze = Workflow 里的一个分析步骤</span><br></pre></td></tr></table></figure>
+
+<p>Workflow 决定每一步必须做什么，quick_analyze 只负责在其中完成快速语义分析，包括消息分类、关键信息抽取、初步风险判断、复购&#x2F;升级信号初判和回复草稿生成。</p>
+<hr>
+<h2 id="六、企业微信接入方式"><a href="#六、企业微信接入方式" class="headerlink" title="六、企业微信接入方式"></a>六、企业微信接入方式</h2><p>V1 不直接采用 Hermes Agent 作为主系统，但可以参考 Hermes Agent 项目中已有的 WeCom 接入实现。</p>
+<p>建议做一个独立的 <strong>WeCom Adapter</strong>，负责把企业微信消息转换成系统标准事件。</p>
+<h3 id="6-1-输入事件格式"><a href="#6-1-输入事件格式" class="headerlink" title="6.1 输入事件格式"></a>6.1 输入事件格式</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;event_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;msg_001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;group_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;group_123&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;user_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wx_001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;message_text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;我今天下午还是很困，晚上又想吃甜的&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;mentioned_bot&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;timestamp&quot;</span><span class="punctuation">:</span> <span class="string">&quot;2026-04-12T20:00:00&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-输出回复格式"><a href="#6-2-输出回复格式" class="headerlink" title="6.2 输出回复格式"></a>6.2 输出回复格式</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;event_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;msg_001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;group_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;group_123&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;reply_text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;我理解你现在会有点落差。我们先抓下午 3-5 点和晚上 8 点后这两个时间段观察。&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>这样做的好处是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. 不从零重写复杂企微接入</span><br><span class="line">2. 不把主流程交给 Hermes Agent 自主决策</span><br><span class="line">3. 后续如果更换企微接入方式，HB Workflow 不需要大改</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="七、核心处理流程"><a href="#七、核心处理流程" class="headerlink" title="七、核心处理流程"></a>七、核心处理流程</h2><h3 id="7-1-用户-AI-后的同步链路"><a href="#7-1-用户-AI-后的同步链路" class="headerlink" title="7.1 用户 @AI 后的同步链路"></a>7.1 用户 @AI 后的同步链路</h3><p>V1 不要把所有分析都串行执行，否则延迟会很大。</p>
+<p>同步链路只做用户当下回复必须依赖的事：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">用户 @AI</span><br><span class="line">↓</span><br><span class="line">识别 user_id / group_id</span><br><span class="line">↓</span><br><span class="line">读取 user_state</span><br><span class="line">↓</span><br><span class="line">调用 LLM quick_analyze</span><br><span class="line">↓</span><br><span class="line">后端校验结构化结果</span><br><span class="line">↓</span><br><span class="line">写入本次反馈事件</span><br><span class="line">↓</span><br><span class="line">命中高健康风险时创建人工待办</span><br><span class="line">↓</span><br><span class="line">群内回复</span><br><span class="line">↓</span><br><span class="line">异步任务入队</span><br></pre></td></tr></table></figure>
+
+<p>目标是让用户在 <strong>2-5 秒内</strong> 收到回复。</p>
+<h3 id="7-2-同步与异步边界"><a href="#7-2-同步与异步边界" class="headerlink" title="7.2 同步与异步边界"></a>7.2 同步与异步边界</h3><p>同步链路只处理用户当场回复必须依赖的步骤；异步链路处理更深的分析和运营沉淀。</p>
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>执行方式</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>识别用户与群</td>
+<td>同步</td>
+<td>回复前必须知道是谁、在哪个群</td>
+</tr>
+<tr>
+<td>读取用户历史状态</td>
+<td>同步</td>
+<td>回复需要上下文</td>
+</tr>
+<tr>
+<td>quick_analyze</td>
+<td>同步</td>
+<td>需要生成当场回复</td>
+</tr>
+<tr>
+<td>群内回复</td>
+<td>同步</td>
+<td>用户体验要求</td>
+</tr>
+<tr>
+<td>保存原始消息与回复</td>
+<td>同步</td>
+<td>保证基础留痕</td>
+</tr>
+<tr>
+<td>创建高健康风险人工待办</td>
+<td>同步</td>
+<td>避免高风险漏接</td>
+</tr>
+<tr>
+<td>更新分型证据分</td>
+<td>异步</td>
+<td>不影响当场回复</td>
+</tr>
+<tr>
+<td>更新主分型</td>
+<td>异步</td>
+<td>需要综合历史证据</td>
+</tr>
+<tr>
+<td>案例候选沉淀</td>
+<td>异步</td>
+<td>不影响用户体验</td>
+</tr>
+<tr>
+<td>用户摘要更新</td>
+<td>异步</td>
+<td>可以延迟</td>
+</tr>
+<tr>
+<td>数据看板刷新</td>
+<td>异步</td>
+<td>不需要实时</td>
+</tr>
+</tbody></table>
+<h3 id="7-3-quick-analyze-做什么"><a href="#7-3-quick-analyze-做什么" class="headerlink" title="7.3 quick_analyze 做什么"></a>7.3 quick_analyze 做什么</h3><p>V1 为了保证群内回复速度，同步链路先采用一次 LLM quick_analyze 调用，完成快速语义分析。</p>
+<p>quick_analyze 负责：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. 判断消息类型</span><br><span class="line">2. 抽取用户反馈字段</span><br><span class="line">3. 初步判断分型信号</span><br><span class="line">4. 判断风险等级</span><br><span class="line">5. 判断复购/升级信号</span><br><span class="line">6. 判断是否需要人工跟进</span><br><span class="line">7. 生成群内回复草稿</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，quick_analyze 的输出是结构化分析结果，不直接代表最终状态变更。后端会基于 JSON Schema 校验结果，并结合历史状态、分型证据分和业务规则，决定是否更新主分型、生成运营待办或进入案例候选。</p>
+<p>其中 <code>repurchase_signal_strength</code> 和 <code>upgrade_signal_strength</code> 建议统一使用 <code>none / low / medium / high</code> 四档。</p>
+<p>LLM 输出结构化 JSON，例如：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;message_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;state_feedback&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;extracted&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;afternoon_crash&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;night_loss_control&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;craving&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;effect_doubt&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;classification_signals&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;afternoon_crash&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;night_loss_control&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;expectation_mismatch&quot;</span><span class="punctuation">:</span> <span class="number">1</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;risk_level&quot;</span><span class="punctuation">:</span> <span class="string">&quot;medium&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;risk_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;commercial&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;repurchase_signal&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;repurchase_signal_strength&quot;</span><span class="punctuation">:</span> <span class="string">&quot;none&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;repurchase_signal_reason&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;upgrade_signal&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;upgrade_signal_strength&quot;</span><span class="punctuation">:</span> <span class="string">&quot;none&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;upgrade_signal_reason&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;manual_followup_required&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;reply_text&quot;</span><span class="punctuation">:</span> <span class="string">&quot;我理解你现在会有点落差。你这条反馈里有两个关键点：下午还是困，晚上又想吃甜的。今天先不要只用“有没有马上变化”来判断，我们先抓下午 3-5 点和晚上 8 点后这两个时间段。&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的关键是：</p>
+<blockquote>
+<p><strong>LLM 负责输出分析结果；后端负责校验、写库和触发后续动作。</strong></p>
+</blockquote>
+<hr>
+<h2 id="八、异步链路"><a href="#八、异步链路" class="headerlink" title="八、异步链路"></a>八、异步链路</h2><p>用户收到回复后，后台继续做更深的分析。</p>
+<p>但异步链路不是对每条消息都完整执行所有分析，而是通过 <strong>Async Job Router</strong> 按消息类型和信号触发对应任务。这样可以避免无效调用，也能控制成本和延迟。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">feedback_event 入队</span><br><span class="line">↓</span><br><span class="line">Async Job Router 判断任务类型</span><br><span class="line">↓</span><br><span class="line">按条件执行对应任务</span><br><span class="line">↓</span><br><span class="line">合并结果并更新数据库</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-1-异步任务路由"><a href="#8-1-异步任务路由" class="headerlink" title="8.1 异步任务路由"></a>8.1 异步任务路由</h3><table>
+<thead>
+<tr>
+<th>条件</th>
+<th>执行任务</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>有状态反馈</td>
+<td>更新分型证据分</td>
+</tr>
+<tr>
+<td>有普通健康风险、商业风险或负面反馈</td>
+<td>生成 &#x2F; 归并风险待办</td>
+</tr>
+<tr>
+<td>有复购信号</td>
+<td>生成复购待办</td>
+</tr>
+<tr>
+<td>有升级信号</td>
+<td>生成升级待办</td>
+</tr>
+<tr>
+<td>有典型分型或风险事件</td>
+<td>判断案例候选</td>
+</tr>
+<tr>
+<td>达到阶段节点</td>
+<td>做阶段复盘</td>
+</tr>
+<tr>
+<td>普通闲聊</td>
+<td>只记录，不跑深分析</td>
+</tr>
+</tbody></table>
+<h3 id="8-2-为什么要异步"><a href="#8-2-为什么要异步" class="headerlink" title="8.2 为什么要异步"></a>8.2 为什么要异步</h3><p>因为这些任务不一定要立刻完成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">详细分型</span><br><span class="line">复购/升级判断二次确认</span><br><span class="line">案例沉淀</span><br><span class="line">用户长期摘要</span><br><span class="line">数据看板统计</span><br><span class="line">运营待办归并</span><br></pre></td></tr></table></figure>
+
+<p>异步后，前台回复快，后台分析深。</p>
+<hr>
+<h2 id="九、用户状态与分型"><a href="#九、用户状态与分型" class="headerlink" title="九、用户状态与分型"></a>九、用户状态与分型</h2><h3 id="9-1-用户状态字段"><a href="#9-1-用户状态字段" class="headerlink" title="9.1 用户状态字段"></a>9.1 用户状态字段</h3><p>每个用户至少维护一份状态。</p>
+<p>V1 暂按 <code>user_id + group_id</code> 维护用户状态。同一用户出现在多个群时，先视为不同群内状态；后续如果需要跨群统一身份，再拆出 <code>group_memberships</code>。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;user_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wx_001&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;group_id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;group_123&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;protocol_day&quot;</span><span class="punctuation">:</span> <span class="number">4</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;current_phase&quot;</span><span class="punctuation">:</span> <span class="string">&quot;第一轮针对性督导&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;primary_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;afternoon_crash&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;secondary_type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;night_loss_control&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;risk_level&quot;</span><span class="punctuation">:</span> <span class="string">&quot;medium&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;repurchase_signal&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;upgrade_signal&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;manual_followup_required&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;next_strategy&quot;</span><span class="punctuation">:</span> <span class="string">&quot;observe_afternoon_and_night&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;last_feedback&quot;</span><span class="punctuation">:</span> <span class="string">&quot;下午困，晚上想吃甜的，感觉没啥变化&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="9-2-分型不是每句话都直接改"><a href="#9-2-分型不是每句话都直接改" class="headerlink" title="9.2 分型不是每句话都直接改"></a>9.2 分型不是每句话都直接改</h3><p>分型采用“证据分”机制。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">首次互动 / 建档：做初始分型</span><br><span class="line">每次有效反馈后：更新证据分</span><br><span class="line">证据达到阈值后：更新主分型</span><br><span class="line">Day 3 / Day 7 / Day 14 / Day 28：做阶段复盘</span><br></pre></td></tr></table></figure>
+
+<p>不要让主分型频繁跳变。</p>
+<h3 id="9-3-V1-分型类型"><a href="#9-3-V1-分型类型" class="headerlink" title="9.3 V1 分型类型"></a>9.3 V1 分型类型</h3><table>
+<thead>
+<tr>
+<th>分型</th>
+<th>识别信号</th>
+<th>策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>下午崩盘型</td>
+<td>下午困、三四点没精神、想吃甜</td>
+<td>午后续航观察</td>
+</tr>
+<tr>
+<td>晚间失控型</td>
+<td>晚上想吃、晚饭后破功</td>
+<td>夜间收口观察</td>
+</tr>
+<tr>
+<td>嘴馋乱吃型</td>
+<td>不饿也想吃、零食冲动</td>
+<td>区分真饿和乱饿</td>
+</tr>
+<tr>
+<td>疲惫低能量型</td>
+<td>没劲、疲惫、动力差</td>
+<td>低摩擦能量支持</td>
+</tr>
+<tr>
+<td>高预期错配型</td>
+<td>怎么还没瘦、没效果、想快点</td>
+<td>降低承诺，人工关注</td>
+</tr>
+<tr>
+<td>升级潜力型</td>
+<td>想系统一点、后面怎么继续</td>
+<td>标记升级信号</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="十、28-天协议状态"><a href="#十、28-天协议状态" class="headerlink" title="十、28 天协议状态"></a>十、28 天协议状态</h2><h3 id="10-1-阶段设计"><a href="#10-1-阶段设计" class="headerlink" title="10.1 阶段设计"></a>10.1 阶段设计</h3><p>原始失控点不应等到 Day 4-7 才识别。系统需要在用户首次互动时就做初筛，前 3 天用于验证，之后再进入针对性督导。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">首次互动 / 建档：初步识别核心失控点</span><br><span class="line">根据用户首次反馈，初步判断其主要问题更接近下午崩盘、晚间失控、嘴馋乱吃、疲惫低能量还是高预期错配。</span><br><span class="line"></span><br><span class="line">Day 1-3：核心失控点验证</span><br><span class="line">通过连续反馈验证初始判断是否成立，避免单次反馈导致分型误判。</span><br><span class="line"></span><br><span class="line">Day 4-7：第一轮针对性督导</span><br><span class="line">围绕已验证的主失控点给出观察点和低摩擦建议。</span><br><span class="line"></span><br><span class="line">Day 8-14：稳定一个关键行为</span><br><span class="line">围绕一个核心问题做持续督导。</span><br><span class="line"></span><br><span class="line">Day 15-21：产品组合与路径推进</span><br><span class="line">观察复购/升级信号。</span><br><span class="line"></span><br><span class="line">Day 22-28：复盘与升级判断</span><br><span class="line">判断是否适合进入下一阶段路径。</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-2-协议推进规则"><a href="#10-2-协议推进规则" class="headerlink" title="10.2 协议推进规则"></a>10.2 协议推进规则</h3><p>协议推进不交给 LLM 自由决定，由后端规则控制：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">建档完成 → protocol_day = 1</span><br><span class="line">每日有效互动 → 更新状态，不一定推进天数</span><br><span class="line">阶段节点 → 触发复盘</span><br><span class="line">风险用户 → 暂停自动推进，转人工</span><br></pre></td></tr></table></figure>
+
+<p>LLM 可以给建议，但状态推进由代码决定。</p>
+<hr>
+<h2 id="十一、复购与升级信号识别"><a href="#十一、复购与升级信号识别" class="headerlink" title="十一、复购与升级信号识别"></a>十一、复购与升级信号识别</h2><p>V1 不采用纯关键词匹配。系统会在 quick_analyze 中让 LLM 结合用户原话和历史状态，判断是否存在复购或升级意向，并分别输出复购、升级的信号强度和原因。</p>
+<p>常见表达只作为提示词中的示例，用于帮助模型理解哪些话通常代表购买、续购或升级意向，不作为唯一判断依据。</p>
+<h3 id="11-1-复购信号"><a href="#11-1-复购信号" class="headerlink" title="11.1 复购信号"></a>11.1 复购信号</h3><p>复购信号指用户出现购买、续购、补货、价格、组合、周期等相关意图。</p>
+<p>示例表达包括：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">这个还要吃多久</span><br><span class="line">一盒够吗</span><br><span class="line">后面还要买吗</span><br><span class="line">怎么买</span><br><span class="line">多少钱</span><br><span class="line">有没有组合</span><br><span class="line">有没有活动</span><br><span class="line">我适合哪款</span><br></pre></td></tr></table></figure>
+
+<p>输出示例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;repurchase_signal&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;repurchase_signal_strength&quot;</span><span class="punctuation">:</span> <span class="string">&quot;medium&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;repurchase_signal_reason&quot;</span><span class="punctuation">:</span> <span class="string">&quot;用户询问后续购买周期和产品组合&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;upgrade_signal&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;upgrade_signal_strength&quot;</span><span class="punctuation">:</span> <span class="string">&quot;none&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;upgrade_signal_reason&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>系统动作：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. repurchase_signal_strength = medium / high 时，生成复购跟进任务。</span><br><span class="line">2. repurchase_signal_strength = low 时，只记录，不打扰运营。</span><br><span class="line">3. 群内轻回应，不强推成交。</span><br></pre></td></tr></table></figure>
+
+<p>群内回复示例：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">这个问题最好结合你现在的状态来看，不建议只按“买哪盒”判断。</span><br><span class="line"></span><br><span class="line">从你目前反馈看，重点还是下午状态和晚上收口。</span><br><span class="line">我先帮你记录一下，运营同学可以根据你这几天的反馈给你更具体的组合建议。</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-2-升级信号"><a href="#11-2-升级信号" class="headerlink" title="11.2 升级信号"></a>11.2 升级信号</h3><p>升级信号指用户表达想进入更完整计划、更系统路径或下一阶段协议的意愿。</p>
+<p>示例表达包括：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">我想系统一点</span><br><span class="line">后面怎么继续</span><br><span class="line">有没有完整方案</span><br><span class="line">28 天后怎么办</span><br><span class="line">想认真做一轮</span><br></pre></td></tr></table></figure>
+
+<p>系统动作：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1. upgrade_signal_strength = medium / high 时，生成升级跟进任务。</span><br><span class="line">2. 推荐运营人工承接。</span><br><span class="line">3. 不让 AI 在群内直接成交。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="十二、风险识别"><a href="#十二、风险识别" class="headerlink" title="十二、风险识别"></a>十二、风险识别</h2><p>V1 不单独做复杂合规审查模块。风险判断直接内置在 <code>quick_analyze</code> 的系统提示词中。</p>
+<h3 id="12-1-风险类型"><a href="#12-1-风险类型" class="headerlink" title="12.1 风险类型"></a>12.1 风险类型</h3><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>识别信号</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>健康风险</td>
+<td>心悸、严重失眠、胃痛、疾病、药物、血糖血压等</td>
+<td>谨慎回复，转人工</td>
+</tr>
+<tr>
+<td>商业风险</td>
+<td>没效果、退款、骗人、夸大、强烈不满</td>
+<td>降低承诺，转人工</td>
+</tr>
+</tbody></table>
+<h3 id="12-2-风险边界"><a href="#12-2-风险边界" class="headerlink" title="12.2 风险边界"></a>12.2 风险边界</h3><p>AI 不做：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">诊断</span><br><span class="line">治疗建议</span><br><span class="line">处方建议</span><br><span class="line">加量建议</span><br><span class="line">停药建议</span><br><span class="line">替代医生判断</span><br><span class="line">保证效果</span><br><span class="line">快速减重承诺</span><br></pre></td></tr></table></figure>
+
+<h3 id="12-3-高风险回复策略"><a href="#12-3-高风险回复策略" class="headerlink" title="12.3 高风险回复策略"></a>12.3 高风险回复策略</h3><p>如果命中明显身体不适或高风险表达，使用谨慎话术：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">这个情况我先不建议在群里继续给具体判断。</span><br><span class="line"></span><br><span class="line">如果已经出现明显身体不适，建议先暂停自行调整，并咨询专业人士。</span><br><span class="line">我也会把这个情况标记给运营同学，让他们跟进。</span><br></pre></td></tr></table></figure>
+
+<p>V1 不做复杂风控引擎，但至少要把以下字段写库：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">risk_level</span><br><span class="line">risk_type</span><br><span class="line">manual_followup_required</span><br></pre></td></tr></table></figure>
+
+<p>高健康风险在同步链路中直接创建人工待办；普通健康风险、商业风险和负面反馈由异步链路生成或归并待办。同一 <code>event_id</code> 已有待办时，异步链路只更新，不重复创建。</p>
+<hr>
+<h2 id="十三、案例知识沉淀"><a href="#十三、案例知识沉淀" class="headerlink" title="十三、案例知识沉淀"></a>十三、案例知识沉淀</h2><h3 id="13-1-V1-的案例来源"><a href="#13-1-V1-的案例来源" class="headerlink" title="13.1 V1 的案例来源"></a>13.1 V1 的案例来源</h3><p>由于 AI 不一定能看到全量群聊，V1 案例沉淀只基于：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. 用户 @AI 的消息</span><br><span class="line">2. AI 的回复</span><br><span class="line">3. 运营后台人工标记</span><br><span class="line">4. 复购/升级/风险事件</span><br></pre></td></tr></table></figure>
+
+<p>不承诺自动分析未 @AI 的群聊内容。</p>
+<h3 id="13-2-案例沉淀流程"><a href="#13-2-案例沉淀流程" class="headerlink" title="13.2 案例沉淀流程"></a>13.2 案例沉淀流程</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">用户互动事件</span><br><span class="line">↓</span><br><span class="line">异步判断是否为案例候选</span><br><span class="line">↓</span><br><span class="line">生成案例摘要</span><br><span class="line">↓</span><br><span class="line">写入 case_candidates</span><br><span class="line">↓</span><br><span class="line">运营审核</span><br><span class="line">↓</span><br><span class="line">进入案例知识库</span><br></pre></td></tr></table></figure>
+
+<h3 id="13-3-第一阶段沉淀-4-类案例"><a href="#13-3-第一阶段沉淀-4-类案例" class="headerlink" title="13.3 第一阶段沉淀 4 类案例"></a>13.3 第一阶段沉淀 4 类案例</h3><table>
+<thead>
+<tr>
+<th>案例类型</th>
+<th>触发条件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>正向案例</td>
+<td>连续反馈改善、完成阶段协议</td>
+<td>内容素材、话术优化</td>
+</tr>
+<tr>
+<td>风险案例</td>
+<td>投诉、质疑、健康异常</td>
+<td>风控 SOP 优化</td>
+</tr>
+<tr>
+<td>转化案例</td>
+<td>出现复购&#x2F;升级并成交</td>
+<td>销售路径沉淀</td>
+</tr>
+<tr>
+<td>分型案例</td>
+<td>典型下午崩盘、晚间失控</td>
+<td>优化分型规则</td>
+</tr>
+</tbody></table>
+<p>案例进入正式知识库前必须由运营审核，避免隐私、夸大效果和健康暗示风险。</p>
+<hr>
+<h2 id="十四、数据库设计"><a href="#十四、数据库设计" class="headerlink" title="十四、数据库设计"></a>十四、数据库设计</h2><p>数据库采用：</p>
+<blockquote>
+<p><strong>关键字段单独存，扩展信息放 JSON。</strong></p>
+</blockquote>
+<p>这样后台查询方便，早期规则变化也方便扩展。</p>
+<h3 id="14-1-users"><a href="#14-1-users" class="headerlink" title="14.1 users"></a>14.1 users</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">wecom_user_id</span><br><span class="line">group_id</span><br><span class="line">nickname</span><br><span class="line">first_seen_at</span><br><span class="line">last_seen_at</span><br><span class="line">status</span><br></pre></td></tr></table></figure>
+
+<h3 id="14-2-user-states"><a href="#14-2-user-states" class="headerlink" title="14.2 user_states"></a>14.2 user_states</h3><p>核心表。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">user_id</span><br><span class="line">protocol_day</span><br><span class="line">current_phase</span><br><span class="line">primary_type</span><br><span class="line">secondary_type</span><br><span class="line">risk_level</span><br><span class="line">repurchase_signal</span><br><span class="line">upgrade_signal</span><br><span class="line">manual_followup_required</span><br><span class="line">next_strategy</span><br><span class="line">last_feedback_at</span><br><span class="line">type_scores_json</span><br><span class="line">state_json</span><br><span class="line">updated_at</span><br></pre></td></tr></table></figure>
+
+<h3 id="14-3-feedback-events"><a href="#14-3-feedback-events" class="headerlink" title="14.3 feedback_events"></a>14.3 feedback_events</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">user_id</span><br><span class="line">group_id</span><br><span class="line">raw_text</span><br><span class="line">message_type</span><br><span class="line">parsed_json</span><br><span class="line">sentiment</span><br><span class="line">risk_tags</span><br><span class="line">created_at</span><br></pre></td></tr></table></figure>
+
+<h3 id="14-4-bot-replies"><a href="#14-4-bot-replies" class="headerlink" title="14.4 bot_replies"></a>14.4 bot_replies</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">user_id</span><br><span class="line">group_id</span><br><span class="line">reply_text</span><br><span class="line">reply_type</span><br><span class="line">strategy_used</span><br><span class="line">created_at</span><br></pre></td></tr></table></figure>
+
+<h3 id="14-5-manual-tasks"><a href="#14-5-manual-tasks" class="headerlink" title="14.5 manual_tasks"></a>14.5 manual_tasks</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">user_id</span><br><span class="line">task_type</span><br><span class="line">priority</span><br><span class="line">reason</span><br><span class="line">suggested_action</span><br><span class="line">status</span><br><span class="line">created_at</span><br></pre></td></tr></table></figure>
+
+<h3 id="14-6-case-candidates"><a href="#14-6-case-candidates" class="headerlink" title="14.6 case_candidates"></a>14.6 case_candidates</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">id</span><br><span class="line">user_id</span><br><span class="line">case_type</span><br><span class="line">summary</span><br><span class="line">evidence_event_ids</span><br><span class="line">risk_flags</span><br><span class="line">review_status</span><br><span class="line">created_at</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="十五、运营后台"><a href="#十五、运营后台" class="headerlink" title="十五、运营后台"></a>十五、运营后台</h2><p>后台 V1 做四页即可。</p>
+<h3 id="15-1-用户列表"><a href="#15-1-用户列表" class="headerlink" title="15.1 用户列表"></a>15.1 用户列表</h3><p>展示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">昵称</span><br><span class="line">所属群</span><br><span class="line">协议天数</span><br><span class="line">主分型</span><br><span class="line">副分型</span><br><span class="line">风险等级</span><br><span class="line">复购信号</span><br><span class="line">升级信号</span><br><span class="line">是否需人工跟进</span><br><span class="line">最近反馈</span><br></pre></td></tr></table></figure>
+
+<h3 id="15-2-用户详情"><a href="#15-2-用户详情" class="headerlink" title="15.2 用户详情"></a>15.2 用户详情</h3><p>展示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">用户状态档案</span><br><span class="line">分型证据</span><br><span class="line">历史反馈</span><br><span class="line">AI 回复记录</span><br><span class="line">协议进度</span><br><span class="line">风险记录</span><br><span class="line">复购/升级记录</span><br><span class="line">人工跟进记录</span><br></pre></td></tr></table></figure>
+
+<h3 id="15-3-今日待办"><a href="#15-3-今日待办" class="headerlink" title="15.3 今日待办"></a>15.3 今日待办</h3><p>分组展示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">健康风险</span><br><span class="line">商业风险</span><br><span class="line">负面反馈</span><br><span class="line">复购机会</span><br><span class="line">升级机会</span><br><span class="line">案例候选</span><br></pre></td></tr></table></figure>
+
+<h3 id="15-4-数据看板"><a href="#15-4-数据看板" class="headerlink" title="15.4 数据看板"></a>15.4 数据看板</h3><p>展示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">有效互动人数</span><br><span class="line">完成建档人数</span><br><span class="line">分型完成数</span><br><span class="line">各分型占比</span><br><span class="line">风险用户数</span><br><span class="line">复购信号数</span><br><span class="line">升级信号数</span><br><span class="line">人工待办数</span><br><span class="line">28 天协议进度分布</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="十六、技术选型建议"><a href="#十六、技术选型建议" class="headerlink" title="十六、技术选型建议"></a>十六、技术选型建议</h2><h3 id="16-1-后端"><a href="#16-1-后端" class="headerlink" title="16.1 后端"></a>16.1 后端</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Python FastAPI</span><br><span class="line">或 Node.js NestJS</span><br></pre></td></tr></table></figure>
+
+<p>如果团队偏 AI &#x2F; 数据处理，选 FastAPI。如果团队偏业务系统和前端工程，选 NestJS。</p>
+<h3 id="16-2-数据库"><a href="#16-2-数据库" class="headerlink" title="16.2 数据库"></a>16.2 数据库</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PostgreSQL</span><br></pre></td></tr></table></figure>
+
+<p>原因：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">结构化字段好查</span><br><span class="line">JSON 字段好扩展</span><br><span class="line">后续可加 pgvector 做知识检索</span><br></pre></td></tr></table></figure>
+
+<h3 id="16-3-队列"><a href="#16-3-队列" class="headerlink" title="16.3 队列"></a>16.3 队列</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Redis Queue</span><br></pre></td></tr></table></figure>
+
+<p>Node.js 用 BullMQ。Python 用 Celery &#x2F; RQ。</p>
+<h3 id="16-4-LLM"><a href="#16-4-LLM" class="headerlink" title="16.4 LLM"></a>16.4 LLM</h3><p>可按成本和效果选择：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Qwen / DeepSeek / GLM</span><br></pre></td></tr></table></figure>
+
+<p>V1 重点不是模型多高级，而是 prompt 稳定、输出 JSON 稳定、流程可控。</p>
+<hr>
+<h2 id="十七、主要风险与应对"><a href="#十七、主要风险与应对" class="headerlink" title="十七、主要风险与应对"></a>十七、主要风险与应对</h2><h3 id="17-1-群消息权限风险"><a href="#17-1-群消息权限风险" class="headerlink" title="17.1 群消息权限风险"></a>17.1 群消息权限风险</h3><p>风险：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AI Bot 不一定能读取未 @AI 的群消息。</span><br></pre></td></tr></table></figure>
+
+<p>应对：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">V1 只处理 @AI 消息。</span><br><span class="line">不承诺关键词触发。</span><br><span class="line">不承诺全量群聊分析。</span><br></pre></td></tr></table></figure>
+
+<h3 id="17-2-延迟风险"><a href="#17-2-延迟风险" class="headerlink" title="17.2 延迟风险"></a>17.2 延迟风险</h3><p>风险：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">所有步骤串行执行会导致回复慢。</span><br></pre></td></tr></table></figure>
+
+<p>应对：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">同步链路只做 quick_analyze 和回复。</span><br><span class="line">深度分析放入异步队列。</span><br></pre></td></tr></table></figure>
+
+<h3 id="17-3-AI-输出不稳定"><a href="#17-3-AI-输出不稳定" class="headerlink" title="17.3 AI 输出不稳定"></a>17.3 AI 输出不稳定</h3><p>风险：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LLM 输出 JSON 不稳定，影响写库。</span><br></pre></td></tr></table></figure>
+
+<p>应对：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">使用严格 JSON schema。</span><br><span class="line">后端校验。</span><br><span class="line">失败时重试或降级为简单回复。</span><br></pre></td></tr></table></figure>
+
+<h3 id="17-4-AI-越界表达"><a href="#17-4-AI-越界表达" class="headerlink" title="17.4 AI 越界表达"></a>17.4 AI 越界表达</h3><p>风险：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AI 可能承诺效果或给健康建议。</span><br></pre></td></tr></table></figure>
+
+<p>应对：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">V1 在 quick_analyze 系统提示词中加入边界要求。</span><br><span class="line">命中风险时标记 manual_followup_required。</span><br><span class="line">高风险使用谨慎话术。</span><br></pre></td></tr></table></figure>
+
+<h3 id="17-5-案例沉淀不完整"><a href="#17-5-案例沉淀不完整" class="headerlink" title="17.5 案例沉淀不完整"></a>17.5 案例沉淀不完整</h3><p>风险：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AI 只能看到 @AI 内容，案例来源有限。</span><br></pre></td></tr></table></figure>
+
+<p>应对：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">V1 只做 @AI 互动案例和人工标记案例。</span><br><span class="line">全量案例分析放到后续会话存档方案。</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="十八、落地阶段"><a href="#十八、落地阶段" class="headerlink" title="十八、落地阶段"></a>十八、落地阶段</h2><h3 id="Phase-0：技术验证"><a href="#Phase-0：技术验证" class="headerlink" title="Phase 0：技术验证"></a>Phase 0：技术验证</h3><p>目标：只验证企微接入，不接 LLM、不做分型、不做后台。</p>
+<p>做：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">接入企业微信 AI Bot</span><br><span class="line">测试群内 @AI 消息接收</span><br><span class="line">测试 user_id / group_id 获取</span><br><span class="line">测试 mentioned_bot 判断</span><br><span class="line">测试群内回复</span><br><span class="line">测试失败日志</span><br></pre></td></tr></table></figure>
+
+<h3 id="Phase-1：MVP"><a href="#Phase-1：MVP" class="headerlink" title="Phase 1：MVP"></a>Phase 1：MVP</h3><p>目标：跑通最小业务闭环。</p>
+<p>做：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">WeCom Adapter</span><br><span class="line">Hot Path 同步链路</span><br><span class="line">Cold Path 异步链路</span><br><span class="line">quick_analyze</span><br><span class="line">用户状态库</span><br><span class="line">基础分型</span><br><span class="line">风险/复购/升级字段</span><br><span class="line">运营后台 V1</span><br></pre></td></tr></table></figure>
+
+<h3 id="Phase-2：试点群运行"><a href="#Phase-2：试点群运行" class="headerlink" title="Phase 2：试点群运行"></a>Phase 2：试点群运行</h3><p>目标：验证真实群效果。</p>
+<p>做：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">接入 1-3 个真实群</span><br><span class="line">优化 quick_analyze prompt</span><br><span class="line">优化分型规则</span><br><span class="line">优化回复话术</span><br><span class="line">优化后台字段</span><br><span class="line">沉淀案例候选</span><br></pre></td></tr></table></figure>
+
+<h3 id="Phase-3：扩展"><a href="#Phase-3：扩展" class="headerlink" title="Phase 3：扩展"></a>Phase 3：扩展</h3><p>目标：从试点群扩展到更多群。</p>
+<p>做：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">多群管理</span><br><span class="line">批量数据看板</span><br><span class="line">案例知识库</span><br><span class="line">更完整 28 天协议</span><br><span class="line">90 天守恒路径</span><br><span class="line">产品组合推荐</span><br><span class="line">会话存档可行性评估</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>V1 最稳的技术方案是：</p>
+<blockquote>
+<p><strong>自研 Workflow &#x2F; Pipeline，不直接使用自由发挥式 Agent 作为主系统。</strong></p>
+</blockquote>
+<p>核心链路是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">群内 @AI</span><br><span class="line">→ Workflow 调用 quick_analyze 快速回复</span><br><span class="line">→ 异步分型 / 风险 / 复购 / 案例沉淀</span><br><span class="line">→ 状态写库</span><br><span class="line">→ 运营后台待办</span><br></pre></td></tr></table></figure>
+
+<p>这条路线的优势是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">流程可控</span><br><span class="line">延迟可控</span><br><span class="line">每步可测试</span><br><span class="line">状态可查询</span><br><span class="line">结果可审计</span><br><span class="line">运营可接管</span><br></pre></td></tr></table></figure>
+
+<p>一句话总结：</p>
+<blockquote>
+<p><strong>V1 先做一个“群内 @AI 触发的 SOP 工作流系统”，把企业微信群里的中间督导劳动自动化；等 SOP、数据和运营闭环跑顺后，再升级成更强的 HB.AI 经营中枢。</strong></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%96%B9%E6%A1%88/" rel="tag"># 方案</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/04/29/%E5%81%A5%E8%BA%AB%E5%8A%A8%E4%BD%9C%E6%95%B0%E5%AD%97%E5%8C%96%E8%AE%AD%E7%BB%83%E5%BC%95%E5%AF%BC%E6%96%B9%E6%A1%88/" rel="prev" title="健身动作数字化训练引导方案">
+                  <i class="fa fa-angle-left"></i> 健身动作数字化训练引导方案
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/05/08/%E4%BB%8EHermes-Agent%E6%8A%BD%E7%A6%BBWeCom%E8%83%BD%E5%8A%9B%EF%BC%9A%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E7%8B%AC%E7%AB%8B%E5%8F%AF%E5%A4%8D%E7%94%A8%E7%9A%84%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%8E%A5%E5%85%A5%E9%A1%B9%E7%9B%AE/" rel="next" title="从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目">
+                  从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">546k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">33:07</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
