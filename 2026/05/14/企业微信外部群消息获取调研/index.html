@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"caihaoran-00.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言前面我们做了HB.AI私域分型与督导系统技术方案和从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目，在实操时（API方式获取企业微信群消息时），发生了一些阻塞性的问题，本文记录碰到的问题以及调研别的解决方案。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="企业微信外部群消息获取调研">
+<meta property="og:url" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/index.html">
+<meta property="og:site_name" content="Chr&#39;s Blog">
+<meta property="og:description" content="前言前面我们做了HB.AI私域分型与督导系统技术方案和从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目，在实操时（API方式获取企业微信群消息时），发生了一些阻塞性的问题，本文记录碰到的问题以及调研别的解决方案。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514094130928.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514094441811.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514095344161.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514102343476.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514102401920.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514095506397.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105200589.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105545028.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105824170.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105838335.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105921085.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105946477.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514110012850.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514110107087.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514110157276.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514152625615.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514152958217.png">
+<meta property="og:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514153043181.png">
+<meta property="article:published_time" content="2026-05-14T01:26:29.000Z">
+<meta property="article:modified_time" content="2026-05-14T07:57:07.236Z">
+<meta property="article:author" content="Chr">
+<meta property="article:tag" content="方案">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514094130928.png">
+
+
+<link rel="canonical" href="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/","path":"2026/05/14/企业微信外部群消息获取调研/","title":"企业微信外部群消息获取调研"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>企业微信外部群消息获取调研 | Chr's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Chr's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Record and Share</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E7%BE%A4-VS-%E5%A4%96%E9%83%A8%E7%BE%A4%EF%BC%88%E5%AE%A2%E6%88%B7%E7%BE%A4%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">内部群 VS 外部群（客户群）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F"><span class="nav-number">2.1.1.</span> <span class="nav-text">创建方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BE%A4%E4%BA%8C%E7%BB%B4%E7%A0%81%E6%A0%87%E6%B3%A8"><span class="nav-number">2.1.2.</span> <span class="nav-text">群二维码标注</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BE%A4%E5%90%8D%E6%A0%87%E6%B3%A8"><span class="nav-number">2.1.3.</span> <span class="nav-text">群名标注</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%8A%E5%A4%A9%E4%BF%A1%E6%81%AF"><span class="nav-number">2.1.4.</span> <span class="nav-text">聊天信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%99%BA%E8%83%BD%E6%9C%BA%E5%99%A8%E4%BA%BA"><span class="nav-number">2.1.5.</span> <span class="nav-text">添加智能机器人</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">其他方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%9A%E8%AF%9D%E5%86%85%E5%AE%B9%E5%AD%98%E6%A1%A3-%E5%88%9B%E5%BB%BA%E4%BC%81%E4%B8%9A%E7%BE%A4%E5%8F%91"><span class="nav-number">2.2.1.</span> <span class="nav-text">会话内容存档+创建企业群发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%9B%9E%E5%A4%8D"><span class="nav-number">2.2.2.</span> <span class="nav-text">自动回复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E4%BF%A1%E5%AE%A2%E6%9C%8D"><span class="nav-number">2.2.3.</span> <span class="nav-text">微信客服</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">3.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E7%94%A8%E7%9A%84%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">4.</span> <span class="nav-text">有用的参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Chr</p>
+  <div class="site-description" itemprop="description">Welcome to my little world</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">140</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="mailto:1299964565@qq.com" title="E-Mail → mailto:1299964565@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://caihaoran-00.github.io/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Chr">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chr's Blog">
+      <meta itemprop="description" content="Welcome to my little world">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="企业微信外部群消息获取调研 | Chr's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          企业微信外部群消息获取调研
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-05-14 09:26:29 / 修改时间：15:57:07" itemprop="dateCreated datePublished" datetime="2026-05-14T09:26:29+08:00">2026-05-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/code/" itemprop="url" rel="index"><span itemprop="name">code</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>前面我们做了<a href="https://caihaoran-00.github.io/2026/05/07/HB-AI%E7%A7%81%E5%9F%9F%E5%88%86%E5%9E%8B%E4%B8%8E%E7%9D%A3%E5%AF%BC%E7%B3%BB%E7%BB%9F%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88/">HB.AI私域分型与督导系统技术方案</a>和<a href="https://caihaoran-00.github.io/2026/05/08/%E4%BB%8EHermes-Agent%E6%8A%BD%E7%A6%BBWeCom%E8%83%BD%E5%8A%9B%EF%BC%9A%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E7%8B%AC%E7%AB%8B%E5%8F%AF%E5%A4%8D%E7%94%A8%E7%9A%84%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%8E%A5%E5%85%A5%E9%A1%B9%E7%9B%AE/">从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目</a>，在实操时（API方式获取企业微信群消息时），发生了一些阻塞性的问题，本文记录碰到的问题以及调研别的解决方案。</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h2 id="内部群-VS-外部群（客户群）"><a href="#内部群-VS-外部群（客户群）" class="headerlink" title="内部群 VS 外部群（客户群）"></a>内部群 VS 外部群（客户群）</h2><h3 id="创建方式"><a href="#创建方式" class="headerlink" title="创建方式"></a>创建方式</h3><p>企业微信群分为内部群和外部群，内部群仅限本企业员工参与（所以没跳出企业微信），点击“+”号，勾选同事后即可创建：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514094130928.png" class="" title="image-20260514094130928">
+
+<p>而企业微信外部群（即客户群），可邀请微信用户进入（即跳出了企业微信），从工作台里的客户群创建：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514094441811.png" class="" title="image-20260514094441811">
+
+<h3 id="群二维码标注"><a href="#群二维码标注" class="headerlink" title="群二维码标注"></a>群二维码标注</h3><p>内部群的群二维码，上方会写：此群是企业内部群聊，仅企业成员可扫码加入</p>
+<p>外部群的写的是：使用微信或企业微信扫码加入</p>
+<h3 id="群名标注"><a href="#群名标注" class="headerlink" title="群名标注"></a>群名标注</h3><p>在群名右侧，外部群会标注<strong>外部</strong></p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514095344161.png" class="" title="image-20260514095344161">
+
+<h3 id="聊天信息"><a href="#聊天信息" class="headerlink" title="聊天信息"></a>聊天信息</h3><p>内部群：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514102343476.png" class="" title="image-20260514102343476">
+
+<p>外部群：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514102401920.png" class="" title="image-20260514102401920">
+
+<p>也有些不一样，主要是内部群可以添加自动推送（webhook推送消息），而外部客户群添加的是自动回复（后文会介绍这是啥，主要就是按规则触发事先定义好的回复）</p>
+<hr>
+<h3 id="添加智能机器人"><a href="#添加智能机器人" class="headerlink" title="添加智能机器人"></a>添加智能机器人</h3><p>我们试下将智能机器人添加到群聊：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514095506397.png" class="" title="image-20260514095506397">
+
+<p>内部群是可以添加的，而外部群不能添加（是灰色的），xxx那个群已经添加过这个智能机器人了，所以也是灰的。</p>
+<p>而智能机器人的API接入方式是我们需要的（获取群内at机器人的消息，然后经过LLM回复，再从智能机器人输出出去），并且当前项目的使用场景就是外部客户群。想想其它办法。</p>
+<hr>
+<h2 id="其他方式"><a href="#其他方式" class="headerlink" title="其他方式"></a>其他方式</h2><p>既然不能实现外部群内添加智能机器人（企业微信的限制），那只能想想其他办法了。</p>
+<p>首先想到的就是<strong>让客户下载个企业微信</strong>，成为企业员工，自然就可以拉内部群，也就可以添加智能机器人了；（用户摩擦较大）</p>
+<p>如果不依赖这个智能机器人（也就不需要内部群，客户也就不需要下载企业微信了），有没有别的方式：<br>最直观的方案是<strong>在别的地方交流</strong>，比如小程序、网页、自己的App等，不依赖于企微，就不用受企微的限制（成本相对较高）</p>
+<h3 id="会话内容存档-创建企业群发"><a href="#会话内容存档-创建企业群发" class="headerlink" title="会话内容存档+创建企业群发"></a>会话内容存档+创建企业群发</h3><p>如果还是在企业微信外部客户群，有没有别的方式实现同等或者相似的效果呢？</p>
+<p>群内的消息获取，官方给出了一种方式<a target="_blank" rel="noopener" href="https://developer.work.weixin.qq.com/document/path/91360">会话内容存档</a>，不要通话录音的话就选服务版(￥900），反之选企业版（￥1800），<a target="_blank" rel="noopener" href="https://work.weixin.qq.com/wework_admin/frame#/financial/corpEncryptData">链接</a></p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105200589.png" class="" title="image-20260514105200589">
+
+<p>消息的发送，官方方式：<a target="_blank" rel="noopener" href="https://developer.work.weixin.qq.com/document/path/92135">创建企业群发</a>，</p>
+<p>但消息发送限制一天一条（30天30条），故这个方案pass。</p>
+<h3 id="自动回复"><a href="#自动回复" class="headerlink" title="自动回复"></a>自动回复</h3><p>我们看下上面提到的自动回复是干啥的：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105545028.png" class="" title="image-20260514105545028">
+
+<p>来到管理后台-客户联系-聊天工具，<a target="_blank" rel="noopener" href="https://work.weixin.qq.com/wework_admin/frame#/customer/autoReply">链接</a></p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105824170.png" class="" title="image-20260514105824170">
+
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105838335.png" class="" title="image-20260514105838335">
+
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105921085.png" class="" title="image-20260514105921085">
+
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514105946477.png" class="" title="image-20260514105946477">
+
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514110012850.png" class="" title="image-20260514110012850">
+
+<p>我们去群里试下效果，打开自动回复后，群里就出现了个小助理：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514110107087.png" class="" title="image-20260514110107087">
+
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514110157276.png" class="" title="image-20260514110157276">
+
+<p>这个方案如果能穷举客户会询问&#x2F;咨询&#x2F;闲聊的内容，也可以使用本方案（但我看来并不能穷举），pass。</p>
+<hr>
+<h3 id="微信客服"><a href="#微信客服" class="headerlink" title="微信客服"></a>微信客服</h3><p><a target="_blank" rel="noopener" href="https://developer.work.weixin.qq.com/document/path/94638">参考链接</a></p>
+<p>微信客服是1V1咨询了，使用这种方式也就意味着不在企微外部群与AI交流了，企微外部群的员工引导用户去与微信客服交流，注意想使用微信客服的API接口的话，需要在这里先自建个应用：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514152625615.png" class="" title="image-20260514152625615">
+
+<p>然后回到微信客服，点击API，再点击设置：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514152958217.png" class="" title="image-20260514152958217">
+
+<p>勾选上，点击确定，注意需要给AI客服这个自建应用添加可信IP才可以使用API（这里我就不配置了）：</p>
+<img src="/2026/05/14/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E5%A4%96%E9%83%A8%E7%BE%A4%E6%B6%88%E6%81%AF%E8%8E%B7%E5%8F%96%E8%B0%83%E7%A0%94/image-20260514153043181.png" class="" title="image-20260514153043181">
+
+<hr>
+<h1 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h1><p>本文我们一起尝试了从企微外部群获取和发送消息，发现：</p>
+<ol>
+<li>无法向企微外部群添加智能机器人（智能机器人才可以API方式调用）</li>
+<li>会话内容存档+创建企业群发方式无法达到我们的需求，因为创建企业群发这个方式平均一天只能发一个消息</li>
+<li>自动回复方式是枚举方式，不灵活，不满足需求</li>
+<li>微信客服方式是1V1聊天，无法在企微外部群内聊，<a target="_blank" rel="noopener" href="https://work.weixin.qq.com/wework_admin/frame#/app/servicer/scene/weCom">链接</a></li>
+</ol>
+<blockquote>
+<p>当然还有一种方式是灰产的方式，使用真实的企微用户（比如就是你的账号）作为消息的收发点，通过逆向出来的API操作你的账号，我看的一个账号一年费用是￥960。链接就不放出来了。</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">我：仅使用一个账号用于消息出入口，将这个号加入几千个几个人的小群（聊天信息不太多），是否能承载的了</span><br><span class="line"></span><br><span class="line">技术支持：消息间隔2~3秒就可以，</span><br><span class="line">		消息不频繁   行为想人为操作就没问题</span><br></pre></td></tr></table></figure></blockquote>
+<h1 id="有用的参考链接"><a href="#有用的参考链接" class="headerlink" title="有用的参考链接"></a>有用的参考链接</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://work.weixin.qq.com/wework_admin/frame#/app/servicer/scene/weCom">https://work.weixin.qq.com/wework_admin/frame#/app/servicer/scene/weCom</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%96%B9%E6%A1%88/" rel="tag"># 方案</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/08/%E4%BB%8EHermes-Agent%E6%8A%BD%E7%A6%BBWeCom%E8%83%BD%E5%8A%9B%EF%BC%9A%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E7%8B%AC%E7%AB%8B%E5%8F%AF%E5%A4%8D%E7%94%A8%E7%9A%84%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%9C%BA%E5%99%A8%E4%BA%BA%E6%8E%A5%E5%85%A5%E9%A1%B9%E7%9B%AE/" rel="prev" title="从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目">
+                  <i class="fa fa-angle-left"></i> 从Hermes Agent抽离WeCom能力：封装一个独立可复用的企业微信机器人接入项目
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Chr</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">548k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">33:12</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","src":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
